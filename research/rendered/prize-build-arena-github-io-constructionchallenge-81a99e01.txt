@@ -1,1 +1,328 @@
 BuildArena 2.0 — Construction Challenge
+
+BuildArena _2.0 Season Tracks How it Works Scoring Awards Leaderboard FAQ Organizers
+中文 ICML 2026 Join on Kaggle Join
+
+Current: S02 View S01
+Construction Challenge
+Season 2 · Of Course I Still Love You
+Let your agents build, control, simulate, and iterate.
+This time, bring the machine home.
+✗ Human pilots the machine
+✓ Your agent closes the loop
+
+Step 1 · Claim your key Fill the form, get a FREE Besiege base-game key · 300 available
+300 keys, first come, first served. Email may be delayed; check spam. No DLC.
+Get Your Free Steam Key
+Step 2 · Join the competition Join on Kaggle How it works · Read S02 Rules
+
+BuildArena · Season 2 Watch on YouTube
+
+One Prompt to Get Started
+Copy this prompt into your agent. It will check prerequisites and guide you through setup.
+Please help me set up BuildArena 2.0.
+
+Official repository: https://github.com/build-arena/BuildArena-2.0
+
+First read the repository README and Chinese setup guide. Check Windows 10/11, a licensed Steam copy of Besiege, both The Splintered Sea and The Broken Beyond DLCs, and the specified BuildArena ToolKit. Verify that installation and downloads are complete. If prerequisites are missing, tell me what I need to add.
+
+Get the repository while preserving existing files, then follow the official guide to run the one-click setup. If you cannot locate the game, ask me for the Besiege_Data path. Run examples only after the setup command exits successfully and .local/setup-report.json reports status as passed. Otherwise, diagnose the logs and verify again. Copy Setup Prompt
+
+2026.09.14 – 2026.11.14 AOE · BuildArena × Besiege
+
+// 01 — Season 02 Season 2
+"Of Course I Still Love You"
+
+The Mission
+
+Release an unpowered payload, complete three independent orbits, and recover as much launch hardware as possible near the launch site.
+The entire payload must stay more than 1100 game-distance units from the planet center during qualifying flight and remain valid through evaluation.
+Agents build, control, simulate, and iterate. Recovery and landing account for 70% of performance.
+
+Competition window AOE (UTC−12)
+From 2026.09.14 Until 2026.11.14
+AOE (UTC−12)
+
+The Autonomous Agent Loop
+Build & Control
+The agent constructs the machine through BuildArena MCP and writes its controller.
+
+Simulate & Observe
+The agent runs simulations with ba-control, pilots the machine, and reads live telemetry.
+
+Diagnose & Iterate
+The agent revises the design and controller, tests again, and selects its final result.
+
+// 02 — Tracks Choose Your Track
+Autopilot and Copilot share the Build with Agent main track.
+Agents execute construction, control, simulation, and iteration.
+
+Build
+Autopilot
+Coefficient ×1.25
+A fully autonomous engineering loop.
+Rules
+Configure models, tools, workflows, and initial instructions before Engineering Start.
+The agent autonomously designs, builds, controls, simulates, and iterates.
+No human engineering guidance or human selection of designs, branches, or final results after start.
+
+Build
+Copilot
+Coefficient ×1.00
+Human guidance. Agent execution.
+Rules
+Discuss strategies, hypotheses, and failures with the agent in natural language.
+The agent implements the machine, controller, tuning, and flight control.
+No manual edits or piloting, including live flight commands relayed through the agent.
+
+Human Boss Challenge
+Exhibition / baseline
+Build, tune, and fly by hand.
+A separate human baseline.
+Rules
+Build, tune, and fly by hand under the same mission and physical restrictions.
+Disclose any human-authored control code.
+Separate exhibition and human baseline; no main-track cash prizes.
+
+Both AI modes prohibit manual engineering edits, human piloting, and prebuilt mission machines or controllers.
+
+// 03 — How it Works 3 Steps to the Finish Line
+Design → Build → Fly → Observe → Diagnose → Improve → Repeat.
+
+Prepare
+01 Prepare the system
+Prepare Windows 10/11, Besiege, and both DLCs: The Splintered Sea and The Broken Beyond.
+Get Your Free Steam Key
+
+02 Configure Your Agent
+Copy the setup prompt into your agent. It checks prerequisites, follows the official setup guide, and verifies the result.
+Get Setup Prompt
+
+Run the mission
+03 Build & Control
+The agent constructs the machine and writes its controller to launch, separate the payload, and recover hardware.
+
+04 Simulate & Iterate
+The agent runs simulations, reads telemetry, diagnoses failures, and revises the machine or controller for the next test.
+
+Submit evidence
+05 Deliver. Separate. Return.
+Submit the final machine, controller, complete mission evidence, and writeup on Kaggle.
+
+Submit on Kaggle
+
+// 04 — Scoring How Scores Are Computed
+A valid unpowered payload must complete three revolutions. Then the performance score is multiplied by the Build-mode coefficient.
+
+Performance · 100 pts
+Orbital Payload 15%
+
+Deliver more useful payload mass. PayloadScore = 6 + 9 × M_payload / M_best for a positive qualified run; the best applicable pool receives 15/15.
+
+Payload Fuel Efficiency 15%
+
+η = M_payload / F_expended; EfficiencyScore = 6 + 9 × η / η_best. Fuel left on lost hardware counts as expended; fuel brought home does not. A verified legal zero-propellant mission receives 15/15.
+
+Recovery Completeness 30%
+
+RecoveryScore = 30 × validly recovered dry hardware mass / initial non-payload dry hardware mass. Recovery requires ≥90% structural integrity and stable landing without propulsive support for 10 seconds.
+
+Landing Accuracy 40%
+
+Dry-mass-weighted accuracy: land closer to the launch site. Credit falls sharply beyond about 30 game-distance units; lost hardware earns zero.
+
+Mission Rules
+Three-orbit gate The payload must fly unpowered through three complete revolutions, with the entire payload strictly above 1100 game-distance units from the planet center during the qualifying interval; otherwise competitive score is 0.
+
+Mission time and cost Mission Time has no competition-imposed maximum or speed component in the main score. Season 02 has no token-cost or API-cost deduction from the main score.
+
+Fuel accounting Fuel expenditure covers the entire mission, including recovery. Fuel remaining in validly recovered hardware is not expended.
+
+PerformanceScore
+PayloadScore + EfficiencyScore + RecoveryScore + LandingScore
+FinalScore
+PerformanceScore × BuildModeCoefficient
+Mode coefficient
+Autopilot ×1.25 · Copilot ×1.00
+
+Mission requirement
+Mission
+Deliver · Separate · Return
+Qualifying payload
+3 complete revolutions · unpowered · >1100 distance units
+
+No mission-duration limit, speed bonus, or token/API-cost deduction in the main score. Full formulas and validation follow Kaggle Rules and the official S02 scorer.
+
+// 05 — Submission & Validation What You'll Submit
+For Build with Agent, submit the exact final scored machine and the reproducible control/evidence package through Kaggle.
+
+AI Track · 6 Files
+machine.bsg — exact final scored machine
+build_history.json
+build_history_full.json
+trajectory.csv — official telemetry from one final mission
+control/ — controller source, config, explanation, and one-command reproduction
+chat_transcript.md — Autopilot or Copilot record
+
+Writeup must include
+Machine Name / Track / Autopilot or Copilot
+Mission Summary and Final Run metrics
+Video (optional but encouraged)
+LLM / Agent Setup
+Prompts and Workflow
+Control System
+Engineering Iteration
+Notes
+
+Human BOSS
+final machine.bsg
+final trajectory.csv
+Kaggle writeup describing the control method
+controller package if code-based control was used
+
+Official Review
+› Deadline: Nov 14, 2026 AOE; check Kaggle for the exact cutoff.
+› Multiple submissions are allowed; the highest team submission becomes the Effective Final Submission.
+› Scoring and winners follow unified verification after the deadline.
+
+S02 Validation Rules
+01 No manual control in Build with Agent
+
+Agents pilot the submitted machine. Humans may not edit geometry/controller, tune engineering parameters, or pilot development/final flights.
+
+02 Reproducible controller
+
+control/ must explain telemetry inputs, outputs, phases, state transitions, guidance/PID/scripted/hybrid logic, staging, recovery, landing, thresholds, and mission completion; the official S02 entry point must reproduce the run.
+
+03 Evidence integrity
+
+Histories must correspond to machine.bsg and trajectory.csv must come from the single final mission through the Evaluation Endpoint.
+
+04 Rejection conditions
+
+Manual geometry changes, behavior-changing mods, illegal vanilla values, fabricated/manipulated evidence, or a prohibited ready-made machine/controller can be rejected.
+
+05 Official Environment
+
+Use the pinned S02 environment (Besiege Build 24131898) and map. All tracks ban Automation, Surface, and Parachute blocks and parachute-equivalent mechanisms; no illegal parameters, physics changes, or fabricated evidence.
+
+06 Prelaunch Declaration
+
+Declare payload objects, recovery machines, trackers, and mass/fuel inventories before launch. The payload denylist is separate from global block bans; see Kaggle Rules.
+
+Read S02 Rules Submit on Kaggle
+
+// 06 — Awards Glory & Prizes
+
+Season 02 prize pool
+$3,000 total
+
+Main cash awards
+$700
+Agent Master Builder
+Major prize Best overall verified Build with Agent result.
+
+$500
+Best Build Autopilot
+Major prize Best verified Autopilot result.
+
+$500
+Best Build Copilot
+Major prize Best verified Copilot result.
+
+Special titles
+Powerful but Brutal
+$300
+A powerful machine that pays a price.
+
+Cheap Thrills
+$300
+Strong performance with an economical design.
+
+Most Creative Machine
+$300
+The most inventive machine or architecture.
+
+Funniest Failure
+$200
+The failure everyone remembers.
+
+Community
+Community Favorite $200
+Fastest Qualified Mission Non-cash title
+Best Human BOSS Build Exhibition
+
+Award allocation A machine may earn multiple display titles, but at most one major cash prize. If a winner is ineligible or cannot be verified, the official roll-down and verification rules apply.
+
+// 07 — Leaderboard Season 2 Leaderboard
+
+Results After Review
+Overall Autopilot Copilot Human BOSS
+#
+Team
+Machine
+Mode
+Payload
+Efficiency
+Recovery
+Landing
+Performance
+Final
+Status
+
+Awaiting Final Results
+The leaderboard and entry showcase will follow unified scoring and verification after the deadline.
+
+// 08 — FAQ Frequently Asked
+
+Can the agent keep revising its machine?
+
+How can humans help?
+
+Must I open-source my entire agent system?
+
+Can a team submit more than once?
+
+Is a video required?
+
+Is there an extra key after the competition?
+
+How do I get a free game key?
+
+Ready to build
+with your agents?
+Step 1 · Claim your key Fill the form, get a FREE Besiege base-game key · 300 available
+300 keys, first come, first served. Email may be delayed; check spam. No DLC.
+Get Your Free Steam Key
+Step 2 · Join the competition Join on Kaggle
+
+// 09 — Organizers & Sponsors
+Hosts
+Uniforce AI AI for Engineering beyond limits
+
+Dedicated to accelerating industrial design and manufacturing through advanced AI.
+Making engineering smarter, faster, and more efficient.
+
+Westlake University
+A new type of research university in Hangzhou, China.
+Publicly supported and privately funded.
+Dedicated to top-talent cultivation and breakthroughs in basic research and cutting-edge technology.
+https://www.westlake.edu.cn/
+AI for Scientific Simulation and Discovery Lab
+Solving core AI × science problems:
+Generative AI for physical simulation, control & design
+Self-evolving architectures and generalist AI scientists & engineers
+AI virtual cells decoding the logic of living systems.
+https://ai4s.lab.westlake.edu.cn/
+
+Become a Sponsor
+BuildArena is an open academic challenge bridging AI research and mechanical engineering simulation.
+If your organization is interested in co-sponsoring a future season, featuring your brand, we'd love to hear from you.
+All sponsorships will be used for prize and maintenance.
+
+Get in Touch
+
+Links
+Kaggle Code Repo BuildArena Besiege ICML 2026 Paper
+
+© 2026 Uniforce AI · AI for Scientific Simulation and Discovery Lab, Westlake University

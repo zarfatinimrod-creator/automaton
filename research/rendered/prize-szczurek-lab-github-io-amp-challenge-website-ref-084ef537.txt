@@ -1,1 +1,258 @@
 AMP Challenge | Generative AI for Antimicrobial Peptide Design
+
+AMP Challenge About Timeline Recognition How It Works Submission Evaluation Bacterial Panel Organizers FAQ Submit
+
+International Competition
+Official NeurIPS 2026 Competition Track
+AMP Challenge
+The first standardized, head-to-head benchmarking competition for generative AI in antimicrobial peptide design.
+Submit Your Model Learn More
+
+Why AMP Challenge?
+Antimicrobial resistance is one of healthcare's most pressing crises. AMPs offer a promising new class of therapeutics, and generative AI is increasingly used to design them. But the field currently faces a reproducibility problem: published studies rely on different training data, different bacterial strains, different assay conditions, different levels of human post hoc curation, and different definitions of success.
+As a result, it is frequently unclear whether an apparent success reflects the quality of the model itself or the quality of the manual selection process. AMP Challenge addresses this through a common benchmark design, a shared experimental pipeline, and transparent reporting requirements.
+
+Free Wet-Lab Validation
+25 peptides per team are synthesized and tested at no cost. MIC assays against 20 bacterial strains and HC50 measurements are performed by the de la Fuente lab at UPenn.
+
+Truly Controlled Comparison
+Same protocols, same bacterial panel, blinded to team identity, randomized order. Every variable except the model is held constant.
+
+Open Benchmark Dataset
+All experimental data released under CC-BY 4.0, including both successful and unsuccessful peptides to reduce publication bias.
+
+Expected Outcomes
+The competition will produce the following deliverables for the research community.
+
+Benchmark Dataset
+An open dataset pairing computational metrics with standardized experimental MIC data.
+
+Public Model Repository
+Submitted methods, trained weights, code, and detailed usage documentation from all participating teams.
+
+Benchmarking Paper
+A jointly authored paper reporting the first controlled, head-to-head comparison of generative approaches for AMP design.
+
+Metric Validation
+Empirical evidence identifying which computational metrics, ranking strategies, and filtering rules are actually associated with experimental antimicrobial efficacy.
+
+Curated Peptide Set
+A set of both successful and unsuccessful experimentally tested peptides, essential for reducing publication bias and improving future model development.
+
+Key Dates
+Computational Wet lab
+
+April 2026
+Competition call opens
+
+October 1, 2026 AOE
+Submission deadline
+
+October 2026
+Phase 1 computational evaluation
+
+6-12 December 2026
+AMP Challenge at NeurIPS Competition Track
+
+Oct 2026 to Feb 2027
+Peptide synthesis window
+
+Mar to Apr 2027
+Experimental validation (MIC / HC50) and final data analysis
+
+Late 2027
+Benchmarking paper submission
+
+Recognition & Data Sharing
+
+Co-authorship
+All teams advancing to the experimental validation phase will be co-authors on the jointly published benchmarking paper and will receive full experimental results for all tested peptides.
+
+Public Archival
+Models and code will be archived in a public repository cited in the paper. All tested peptides will be deposited to the DBAASP and APD3 databases.
+
+Data Sharing and IP
+All results will be made public, including submitted sequences and all MIC and HC50 measurements across all tested strains. Raw and processed experimental data will be released after the challenge under a CC-BY 4.0 license to maximize community reuse. Data sharing will follow University of Pennsylvania guidelines.
+
+How It Works
+01 Submit
+Generate 50,000 AMP sequences and rank your top 100 candidates. Any generative approach is welcome: language models, diffusion models, VAEs, GFlowNets, RL, Bayesian optimization, evolutionary methods, or hybrids.
+
+02 Compliance Check
+All submissions undergo an automated compliance screening that verifies sequence validity, amino acid alphabet, length limits, duplicate detection, and metadata completeness. Training data sources, non-public data releases, and repository licenses are also verified. Teams that do not pass are notified and given a fixed window to resolve issues before disqualification.
+
+03 Computational Screening
+Full 50,000-sequence libraries are evaluated using the seqme framework for sequence diversity, novelty relative to known AMP databases, and physicochemical property distributions. Sequences are also screened for exact and near-exact matches against established AMP repositories (DBAASP, dbAMP, APD) to quantify genuinely novel designs versus previously known peptides. If the number of teams exceeds experimental capacity, teams are ranked by this phase and the top 20 advance.
+
+04 Experimental Validation
+From each advancing team's top 100 list, 25 peptides are selected at random, forming a total cohort of 500 peptides. All candidates in the top-100 list must have no more than 80% sequence identity to any peptide in the competition's reference database of known AMPs. Candidates exceeding this threshold are treated as invalid and replaced by the next valid candidate. This random selection ensures the evaluation reflects model robustness rather than a single lucky sequence.
+
+05 Results & Publication
+All MIC and HC50 measurements are performed in a single laboratory under identical protocols. Teams are ranked across five competition categories. Results will be shared at dedicated events (TBA). A joint benchmarking paper is planned for teams meeting full requirements.
+
+Submission Requirements
+Any generative approach is welcome: language models, diffusion models, VAEs, GFlowNets, RL, Bayesian optimization, evolutionary methods, or hybrids.
+Minimum Requirements
+Benchmark participation
+An abstract summarizing the method
+A generated peptide library of 50,000 designed AMPs for computational evaluation
+A ranked candidate list of your top 100 AMPs with documentation of your selection and ranking procedure
+A short summary describing training data, external databases used, and any manual intervention or computational filters applied
+A GitHub repository (private is fine) with model weights and inference code; grant read access to @RasmusML and @szymczakpau
+
+Teams that meet only the minimum requirements will be included in the experimental benchmark and receive their results, but will not be eligible for co-authorship.
+
+Full Requirements
+Co-authorship eligibility
+A public GitHub repository following the provided template ( https://github.com/szczurek-lab/amp-challenge-2027 ) containing trained model weights, inference code, and detailed usage documentation
+A permissive OSI-approved license (e.g., MIT, BSD-3-Clause, or Apache 2.0) specified in the repository
+A fixed default random seed such that running the generation script twice produces identical output
+Full training data disclosure: if any proprietary or non-public data is used, it must be released publicly under a permissive license as part of the submission
+
+Commonly used public AMP databases such as DBAASP, APD, and Peptipedia provide open access to peptide data for research purposes. Teams should verify that their use of any data source complies with that source's terms of use.
+
+Reproducibility Verification
+Organizers will verify reproducibility by running uv sync followed by the entry-point script. The output will be compared against the submitted library.
+
+Peptide Design Constraints
+All submitted sequences (both the 50,000-member library and the top 100 list) must adhere to the following constraints:
+• 20 standard proteinogenic amino acids only
+• Length: 8 to 50 residues
+• Linear peptides only
+• No terminal modifications (free termini), including amidation
+• No non-canonical AAs, stapled peptides, lipidated, glycosylated, PEGylated, or dendrimeric constructs
+• Unique sequences only (no duplicates)
+
+Qualification for Experimental Validation
+
+If the number of qualifying teams exceeds experimental capacity, teams will be ranked based on computational evaluation of the peptide library and the top candidate list. A maximum of 20 teams will advance to experimental validation.
+
+Organizer Participation
+
+Organizing Committee members may participate in the benchmark but are not eligible for prizes or rankings. Their peptides will be tested under the same protocols using a separate experimental pool outside the 500-peptide budget allocated to competing teams.
+
+Evaluation Framework
+Teams are ranked based on the arithmetic mean of individual peptide metrics across their randomly selected evaluation batch.
+Competition Categories
+
+Broad-Spectrum Activity
+Ranked by team average of Overall Success Rate across all 20 strains. Ties broken by MIC90 across all 20 strains.
+
+Gram-Positive Activity
+Ranked by team average of Gram-positive Success Rate. Ties broken by MIC50 across Gram-positive strains.
+
+Gram-Negative Activity
+Ranked by team average of Gram-negative Success Rate. Ties broken by MIC50 across Gram-negative strains.
+
+MDR ESKAPE Activity
+Ranked by team average of MDR Success Rate against 8 multi-drug resistant ESKAPE isolates. Ties broken by MIC50 across MDR ESKAPE strains.
+
+Optimal Selectivity
+Ranked by team average of Safety Window (HC50 / MIC50). A peptide must meet the Potency Threshold (MIC ≤ 16 µM) in at least one tested strain to be included. Completely inactive sequences are excluded. Tied inequalities resulting from non-hemolytic limits (>128 µM) are broken by the team's lowest MIC50 across all tested strains.
+
+Official Bacterial Panel
+20 clinically relevant strains
+Gram-Negative (15)
+A. baumannii ATCC 19606
+A. baumannii ATCC BAA-1605 (CGTPACCIMRA) MDR
+E. cloacae ATCC 13047
+E. coli ATCC 11775
+E. coli AIC221
+E. coli AIC222 (CRE) MDR
+E. coli ATCC BAA-3170 (CRE) MDR
+E. coli K-12 BW25113
+K. pneumoniae ATCC 13883
+K. pneumoniae ATCC BAA-2342 (EIRK) MDR
+P. aeruginosa PAO1
+P. aeruginosa PA14
+P. aeruginosa ATCC BAA-3197 (FBCRP) MDR
+S. enterica ATCC 9150
+S. enterica Typhimurium ATCC 700720
+
+Gram-Positive (5)
+B. subtilis ATCC 23857
+S. aureus ATCC 12600
+S. aureus ATCC BAA-1556 (MRSA) MDR
+E. faecalis ATCC 700802 (VRE) MDR
+E. faecium ATCC 700221 (VRE) MDR
+
+MDR Subset (8 strains scored in the MDR category)
+A. baumannii BAA-1605
+E. coli AIC222
+E. coli BAA-3170
+K. pneumoniae BAA-2342
+P. aeruginosa BAA-3197
+S. aureus BAA-1556 (MRSA)
+E. faecalis ATCC 700802 (VRE)
+E. faecium ATCC 700221 (VRE)
+
+Definitions and Parameters
+MIC: Minimum Inhibitory Concentration, recorded in micromolar (µM). The highest tested concentration is 64 µM. For strains where no growth inhibition is observed at this limit, MIC is recorded as >64 µM.
+HC50: Half-maximal hemolytic concentration, recorded in micromolar (µM). For non-hemolytic peptides reaching the assay limit, HC50 is recorded as >128 µM.
+Potency Threshold: A peptide is considered active if its MIC ≤ 16 µM.
+Success Rate: The percentage of tested strains within a specified panel (Overall, Gram-positive, Gram-negative, or MDR) where the candidate peptide meets the Potency Threshold.
+MIC50: The median MIC value across all strains in the relevant panel (50th percentile).
+MIC90: The MIC value at the 90th percentile across all strains in the relevant panel.
+Safety Window (SW): Calculated as SW = HC50 / MIC50 across all 20 strains. For non-hemolytic peptides reaching the 128 µM assay limit, HC50 is recorded as >128 µM, yielding an inequality for the SW.
+
+Standardized Wet-Lab Validation Protocols
+• All tested peptides are synthesized under the same vendor workflow (AAPPtec) and subjected to the same minimum quality control for identity and purity.
+• Peptide synthesis is purchased by the Ewa Szczurek lab at Helmholtz Munich and the University of Warsaw.
+• Wet-lab work is conducted by the Cesar de la Fuente group at the University of Pennsylvania.
+• All MIC measurements use the same broth microdilution protocol, inoculum size, media, solvent policy, and incubation conditions for all teams.
+• Appropriate positive and negative controls are included in every experimental batch.
+• All experimental samples are blinded to team identity and tested in randomized order.
+
+Organizing Committee
+PS
+Paulina Szymczak
+Helmholtz Munich
+
+RML
+Rasmus Møller Larsen
+Helmholtz Munich
+
+MS
+Mathieu Seyfrid
+Helmholtz Munich
+
+BP
+Bruno Puczko-Szymański
+University of Warsaw
+
+MDTT
+Marcelo Der Torossian Torres
+University of Pennsylvania
+
+CdlF
+Cesar de la Fuente
+University of Pennsylvania
+
+ES
+Ewa Szczurek
+Helmholtz Munich / University of Warsaw
+
+Frequently Asked Questions
+Prospective answers to common questions. If something is not covered here, open an issue on GitHub .
+Who can participate?
+Is there a registration fee?
+How many peptides does each team get tested?
+Can a team submit more than one entry?
+What happens if some of my peptides fail synthesis or quality control?
+Do I need wet-lab expertise to participate?
+What computational resources are required?
+When will experimental results be released?
+How is co-authorship on the benchmarking paper determined?
+Can organizer-affiliated teams compete?
+What if more teams register than experimental capacity allows?
+
+Ready to Compete?
+Submit your generative model and get free wet-lab validation for your designed AMPs. Submission deadline: October 1, 2026 (AOE) .
+Submit via Kaggle GitHub Template
+
+References
+Szymczak P., Zarzecki W., Wang J., Duan Y., Wang J., Coelho L.P., de la Fuente-Nunez C., Szczurek E. AI-Driven Antimicrobial Peptide Discovery: Mining and Generation. Accounts of Chemical Research, 2025, 58, 1831-1846.
+Moller-Larsen R., Izdebski A., Olszewski J., Gawade P., Kmicikiewicz M., Zarzecki W., Szczurek E. seqme: a Python library for evaluating biological sequence design. arXiv:2511.04239, 2025.
+
+© 2026-2027 AMP Challenge. All experimental data released under CC-BY 4.0.
+GitHub
