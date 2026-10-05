@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rules &amp; FAQ — RoCo-Spring</title>
+    <meta name="description"
+        content="Competition rules, workshop information, and frequently asked questions for RoCo-Spring.">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/site-layout.js" defer></script>
+</head>
+
+<body>
+    <canvas id="flow-canvas" aria-hidden="true"></canvas>
+
+    <header id="site-header"></header>
+
+    <main>
+        <section class="page-header section">
+            <div class="eyebrow">Rules &amp; FAQ</div>
+            <h1>Policy, Workshop, and Clarifications</h1>
+            <p class="page-intro">
+                Fair, reproducible, and transparent evaluation guidelines for all participants.
+            </p>
+        </section>
+
+        <section class="section">
+            <div class="section-heading">
+                <div class="eyebrow">Rules</div>
+                <h2>Competition Rules</h2>
+            </div>
+
+            <div class="rule-list content-card">
+                <div>Each team must register once and use exactly one team ID.</div>
+                <div>Each submitted archive must follow the task format and include the team ID.</div>
+                <div>Every challenge-team paper must include the exact registered team name and team number in its
+                    abstract.</div>
+                <div>Test ground truth is private.</div>
+                <div>Participants must not infer, reconstruct, scrape, or obtain test labels.</div>
+                <div>All training data, pretraining data, model checkpoints, and external resources must be declared.
+                </div>
+                <div>External public data is allowed but flagged separately in leaderboard analysis.</div>
+                <div>Test-time adaptation is allowed only without test labels, manual annotation, or information from
+                    future leaderboard evaluations.</div>
+                <div>Manual per-sample editing of test predictions is prohibited.</div>
+                <div>Public leaderboard submissions will be rate limited.</div>
+                <div>Final submissions are frozen after the deadline.</div>
+                <div>Award candidates must have an accepted workshop paper and submit a complete reproducibility package
+                    (training and evaluation scripts, dataset declaration, resource requirements, and environment
+                    setup). See the <a href="call-for-papers.html#reproducibility">reproducibility requirements</a> for
+                    details.</div>
+            </div>
+
+            <div class="notice content-card">
+                <h3>Rule Changes</h3>
+                <p>
+                    Rule changes will be versioned, dated, and announced to registered teams.
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-heading">
+                <div class="eyebrow">Workshop</div>
+                <h2>Workshop and Review</h2>
+            </div>
+
+            <div class="content-card">
+                <ul class="feature-list">
+                    <li>Use the official NeurIPS 2026 paper format.</li>
+                    <li>Main papers are 4–6 pages; references and an optional appendix do not count toward that
+                        limit.</li>
+                    <li>Reviewing is single-blind, so author identities remain visible to reviewers. Use the
+                        template's <code>sglblindworkshop</code> option.</li>
+                    <li>Challenge teams must put their exact registered team name and team number in the abstract.</li>
+                    <li>Acceptance depends on technical soundness, clarity, reproducibility, and relevance to robust
+                        dense correspondence, not only leaderboard rank.</li>
+                    <li>Accepted papers may be forwarded for the official PMLR volume of NeurIPS workshop proceedings.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-heading">
+                <div class="eyebrow">FAQ</div>
+                <h2>Frequently Asked Questions</h2>
+            </div>
+
+            <div class="faq-list content-card">
+                <details>
+                    <summary>Can I participate in only one task?</summary>
+                    <p>
+                        Yes. Single-task participation is allowed. A Cross-Task Leaderboard will
+                        rank teams that submit to all three quantitative tasks.
+                    </p>
+                </details>
+
+                <details>
+                    <summary>Is external data allowed?</summary>
+                    <p>
+                        Yes, if it is public and declared. Entries using external data will be
+                        flagged separately.
+                    </p>
+                </details>
+
+                <details>
+                    <summary>Is test-time adaptation allowed?</summary>
+                    <p>
+                        Yes, but only without test labels, manual annotation, or future
+                        leaderboard information.
+                    </p>
+                </details>
+
+                <details>
+                    <summary>Do I need to submit a paper?</summary>
+                    <p>
+                        Yes. Each quantitative or Exploration Track entry must submit a single-blind workshop paper
+                        in the official NeurIPS 2026 format. The main paper is 4–6 pages; references and an optional
+                        appendix may follow. Challenge teams must include their exact registered team name and team
+                        number in the abstract. See the <a href="call-for-papers.html">Call for Papers</a>.
+                    </p>
+                </details>
+
+                <details>
+                    <summary>What must the reproducibility package include?</summary>
+                    <p>
+                        With the camera-ready deadline, each entry must submit training and
+                        evaluation scripts, a complete dataset declaration, documented resource
+                        requirements, and a README with a pinned environment—either via
+                        <code>pyproject.toml</code> or explicit conda instructions with library
+                        versions. See the
+                        <a href="call-for-papers.html#reproducibility">reproducibility requirements</a>
+                        for the full checklist.
+                    </p>
+                </details>
+
+                <details>
+                    <summary>How are ties broken?</summary>
+                    <p>
+                        First by the normalized RobustSpring term, then by the normalized Spring
+                        term.
+                    </p>
+                </details>
+
+                <details>
+                    <summary>Where should questions be asked?</summary>
+                    <p>
+                        Through GitHub issues and public question threads, or the contact email <a
+                            href="mailto:roco-spring-org@googlegroups.com">roco-spring-org@googlegroups.com</a>.
+                    </p>
+                </details>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-heading">
+                <div class="eyebrow">Contact</div>
+                <h2>Get in Touch</h2>
+            </div>
+
+            <div class="contact-card content-card">
+                <p>
+                    Challenge email:
+                    <a href="mailto:roco-spring-org@googlegroups.com">roco-spring-org@googlegroups.com</a>
+                </p>
+
+                <p>
+                    GitHub issues:
+                    <a href="https://github.com/roco-spring/roco-spring.github.io/issues" target="_blank"
+                        rel="noopener noreferrer">Report a website or challenge issue</a>
+                </p>
+
+                <p>
+                    Questions and discussion:
+                    <a href="https://github.com/roco-spring/roco-spring.github.io/issues/new/choose" target="_blank"
+                        rel="noopener noreferrer">Start a public support thread</a>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script src="assets/flow.js"></script>
+</body>
+
+</html>

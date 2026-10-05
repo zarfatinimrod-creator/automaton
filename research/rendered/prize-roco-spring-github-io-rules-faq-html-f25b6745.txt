@@ -1,0 +1,121 @@
+Rules & FAQ — RoCo-Spring
+
+Rules & FAQ
+
+Policy, Workshop, and Clarifications
+
+Fair, reproducible, and transparent evaluation guidelines for all participants.
+
+Rules
+
+Competition Rules
+
+Each team must register once and use exactly one team ID.
+
+Each submitted archive must follow the task format and include the team ID.
+
+Every challenge-team paper must include the exact registered team name and team number in its
+abstract.
+
+Test ground truth is private.
+
+Participants must not infer, reconstruct, scrape, or obtain test labels.
+
+All training data, pretraining data, model checkpoints, and external resources must be declared.
+
+External public data is allowed but flagged separately in leaderboard analysis.
+
+Test-time adaptation is allowed only without test labels, manual annotation, or information from
+future leaderboard evaluations.
+
+Manual per-sample editing of test predictions is prohibited.
+
+Public leaderboard submissions will be rate limited.
+
+Final submissions are frozen after the deadline.
+
+Award candidates must have an accepted workshop paper and submit a complete reproducibility package
+(training and evaluation scripts, dataset declaration, resource requirements, and environment
+setup). See the reproducibility requirements for
+details.
+
+Rule Changes
+
+Rule changes will be versioned, dated, and announced to registered teams.
+
+Workshop
+
+Workshop and Review
+
+Use the official NeurIPS 2026 paper format.
+
+Main papers are 4–6 pages; references and an optional appendix do not count toward that
+limit.
+
+Reviewing is single-blind, so author identities remain visible to reviewers. Use the
+template's sglblindworkshop option.
+
+Challenge teams must put their exact registered team name and team number in the abstract.
+
+Acceptance depends on technical soundness, clarity, reproducibility, and relevance to robust
+dense correspondence, not only leaderboard rank.
+
+Accepted papers may be forwarded for the official PMLR volume of NeurIPS workshop proceedings.
+
+FAQ
+
+Frequently Asked Questions
+
+Can I participate in only one task?
+
+Yes. Single-task participation is allowed. A Cross-Task Leaderboard will
+rank teams that submit to all three quantitative tasks.
+
+Is external data allowed?
+
+Yes, if it is public and declared. Entries using external data will be
+flagged separately.
+
+Is test-time adaptation allowed?
+
+Yes, but only without test labels, manual annotation, or future
+leaderboard information.
+
+Do I need to submit a paper?
+
+Yes. Each quantitative or Exploration Track entry must submit a single-blind workshop paper
+in the official NeurIPS 2026 format. The main paper is 4–6 pages; references and an optional
+appendix may follow. Challenge teams must include their exact registered team name and team
+number in the abstract. See the Call for Papers .
+
+What must the reproducibility package include?
+
+With the camera-ready deadline, each entry must submit training and
+evaluation scripts, a complete dataset declaration, documented resource
+requirements, and a README with a pinned environment—either via
+pyproject.toml or explicit conda instructions with library
+versions. See the
+reproducibility requirements
+for the full checklist.
+
+How are ties broken?
+
+First by the normalized RobustSpring term, then by the normalized Spring
+term.
+
+Where should questions be asked?
+
+Through GitHub issues and public question threads, or the contact email roco-spring-org@googlegroups.com .
+
+Contact
+
+Get in Touch
+
+Challenge email:
+roco-spring-org@googlegroups.com
+
+GitHub issues:
+Report a website or challenge issue
+
+Questions and discussion:
+Start a public support thread
