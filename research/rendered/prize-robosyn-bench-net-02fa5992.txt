@@ -1,0 +1,63 @@
+Evaluation | RoboSynChallenge
+
+RS
+
+RoboSynChallenge
+NeurIPS 2026 Competition
+
+Menu
+
+Home Data FAQ Evaluation Leaderboard
+
+Sign in
+Request access
+
+Evaluation
+Sim first. Robot final.
+
+RoboSynChallenge evaluation includes one simulation-only preliminary round and one real-robot
+final round. Published results report success rate, action steps, and inference time.
+
+Submit Policy
+Policy tutorial ↗
+View leaderboard
+
+Preliminary round Simulation-only evaluation
+
+01 stage
+
+Policies are evaluated in RoboSynChallenge simulation on held-out test settings before finalists are selected.
+
+Simulation only. No physical robot is used in the preliminary round.
+
+Same metrics. Success rate, action steps, and inference time are reported.
+
+Finalists advance. Approximately 30-40 teams move to the real-robot final round.
+
+Final round Real-robot evaluation
+
+02 stage
+
+Finalist policies are run by organizers on the standardized RoboSynChallenge real-robot setup.
+
+Robot only. The final round runs on the real RoboSynChallenge platform.
+
+Same metrics. Success rate, action steps, and inference time are reported.
+
+Final ranking. Published results determine the final leaderboard.
+
+RoboSynChallenge
+
+A public benchmark for studying how synthesized manipulation data improves real-world
+generalization under scarce physical supervision.
+
+Resources
+
+RoboSynChallenge GitHub
+Released data
+Tutorial
+Competition FAQ
+Competition report
+
+© 2026 RoboSynChallenge
+Designed for open research evaluation
