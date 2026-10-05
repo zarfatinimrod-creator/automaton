@@ -628,10 +628,7 @@ step 6 carries `edit_products` (Gumroad's `doorkeeper.rb:10`, `oauth_application
    refund policy buyers will see is a bounded window of at least 14 days (`MIN_REFUND_DAYS`); the deployed
    `refundPeriodDays` is exactly that window, compared as the price is; and that policy's fine print is the
    committed text. See "Refunds", below.
-4. `refund --email <addr> [--requested-at <iso>] [--apply]` — what the brand-mail responder calls; and
-   `refund --sale <id> --requested-at <iso> [--email <addr>] [--apply]`, its retry of one sale Gumroad refused for
-   balance, whose last line names what happened (`refunded`, `already-refunded`; anything else stops, exit 1) and
-   whose `--email` only reports whether that address is the sale's buyer. See "Refunds".
+4. `refund --email <addr> [--requested-at <iso>] [--apply]` — what the brand-mail responder calls. See "Refunds".
 
 Without the secret `create`, `enable` and `check` exit 0 with a notice; `refund` exits 1, because nothing was
 refunded and the responder must not answer as if it had been. `.github/workflows/gumroad-pro-probe.yml` then checks the real
@@ -723,18 +720,23 @@ unless ticked. It logs sale ids and counts, never an address; Gumroad's refund e
 no separate refund id (`api/v2/sales_controller.rb#refund`, read 29.9.2026; not yet run). A refunded key switches
 Pro off at its next weekly re-check (above). **Kill rule:** if Pro is disabled or the line is killed, the responder
 keeps running for `refundPeriodDays + 7` days after the last sale, so every buyer inside the window is still
-answered. **The balance** (RULING-2026-09-30-documents (d)): Gumroad refuses a refund the unpaid balance cannot
-cover ("Your balance is insufficient to process this refund.", `refundable.rb:99-100`), so the first refund on a new
-account waits for more sales. `refund` exits 3 on that refusal alone and names the sale; the responder then sends
-one holding reply (facts only, no date), records `{saleId, requestedAt, holdingReplySentAt}` in
-`state/colony/refund-retries.json` (never an address or a name; `brand-mail.yml` commits it), marks the request
-answered, and at the start of every run retries that sale with `refund --sale <id> --requested-at <the original
-request>` (the request's own receipt time), handing the command the sender of the request it finds again so the
-command can say whether that is the sale's buyer. Only a refund that happened (`refunded`, or `already-refunded`)
-drops the retry, and the usual reply goes out in the request's thread only to the sale's buyer, once per sender per
-run; anything else - outside the window as it now stands, disputed, another product - keeps the retry and fails the
-run for a session to look at, because the holding reply said the refund will be issued. The first real refund is
-still the recorded check.
+answered. **The balance** (RULING-2026-09-30-documents (d); where it waits, RULING-2026-10-05-refund-state): Gumroad
+refuses a refund the unpaid balance cannot cover ("Your balance is insufficient to process this refund.",
+`refundable.rb:99-100`), so the first refund on a new account waits for more sales. `refund` exits 3 on that refusal
+alone and names the sale; the responder then sends one holding reply (facts only, no date) and marks the request
+`\Answered` and `\Flagged` in one IMAP command: the request itself, flagged in the brand mailbox, is the waiting
+state. Nothing about the buyer is written to a file or committed, no sale id is printed (the responder redacts them),
+and its job holds `contents: read` only. A second request for a sale already waiting is marked answered, with no
+second holding reply and no second flag. At the start of every run the responder searches the flagged requests, with
+no date bound - flagged and answered, since it sets the flag only together with `\Answered`: a star a person puts on
+mail nobody has answered yet is not a waiting request, and it comes off when that request is answered for good - and
+runs the first lookup again: `refund --email <the sender> --requested-at <the request's receipt
+time>`. When nothing is eligible any more but the most recent sale of this product to that address inside the window
+is wholly refunded, `refund` says `already-refunded`. Only a refund that happened (`refunded`, or
+`already-refunded`) answers, with the usual reply in the request's thread, once per sender per run, and takes the
+flag off; the balance again waits quietly; anything else - `none`, a stop - keeps the flag and fails the run for a
+session to look at, because the holding reply said the refund will be issued. A request deleted from the mailbox
+loses its waiting state, so flagged brand mail is left alone. The first real refund is still the recorded check.
 
 No Gumroad code runs on this site: no SDK, no overlay, no iframe. The only contact is one `fetch` from the
 buyer's browser to `api.gumroad.com/v2/licenses/verify`, at activation and at most every 7 days after. The
