@@ -101,17 +101,26 @@ class FakeIMAP:
         command = command.upper()
         if command == "SEARCH":
             self.searches.append(args)
-            # The waiting requests (FLAGGED, any date: a SINCE here would drop an old promise; the tests assert there is
-            # none) or the new ones (NOT ANSWERED SINCE <date>).
-            flagged = args[:1] == ("FLAGGED",)
-            assert flagged or (args[:3] == ("NOT", "ANSWERED", "SINCE") and len(args) == 4), args
-            keys = list(args[1:] if flagged else args[2:])
-            dates = dict(zip(keys[0::2], keys[1::2]))
-            assert set(dates) <= {"SINCE"} and len(keys) % 2 == 0, args
-            since = dt.datetime.strptime(dates["SINCE"], "%d-%b-%Y").replace(tzinfo=UTC) if "SINCE" in dates else None
-            uids = [str(i + 1).encode() for i, m in enumerate(self.inbox)
-                    if (("\\Flagged" in m["flags"]) if flagged else ("\\Answered" not in m["flags"]))
-                    and (since is None or m["received"] >= since)]
+            # The keys respond-refunds may send, ANDed as IMAP does: FLAGGED, ANSWERED, NOT <key>, SINCE <date>. The
+            # waiting requests are FLAGGED ANSWERED with no date (a SINCE there would drop an old promise; the tests
+            # assert there is none), the new ones NOT ANSWERED SINCE <date>, and the stars a person put on those FLAGGED
+            # NOT ANSWERED SINCE <date>. Any other combination of these keys is evaluated, not refused, so a mutated
+            # search is caught by what it finds.
+            keys, tests = list(args), []
+            while keys:
+                key = keys.pop(0)
+                negate = key == "NOT"
+                if negate:
+                    key = keys.pop(0)
+                if key == "SINCE" and not negate:
+                    since = dt.datetime.strptime(keys.pop(0), "%d-%b-%Y").replace(tzinfo=UTC)
+                    tests.append(lambda m, since=since: m["received"] >= since)
+                elif key in ("FLAGGED", "ANSWERED"):
+                    tests.append(lambda m, flag="\\" + key.capitalize(), negate=negate: (flag in m["flags"]) != negate)
+                else:
+                    raise AssertionError("unexpected SEARCH %r" % (args,))
+            assert tests, args
+            uids = [str(i + 1).encode() for i, m in enumerate(self.inbox) if all(t(m) for t in tests)]
             return "OK", [b" ".join(uids)]
         if command == "FETCH":
             uid, parts = args
@@ -640,6 +649,12 @@ def flagged(**kw):
     return dict(mail(**kw), flags=set(WAITING))
 
 
+def starred(**kw):
+    """Mail a person starred while it was still unanswered: \\Flagged without \\Answered. Not the waiting state - this
+    responder sets \\Flagged only together with \\Answered, in one STORE."""
+    return dict(mail(**kw), flags={"\\Flagged"})
+
+
 class BalanceWaitTests(RespondHarness):
     """RULING-2026-10-05-refund-state (a), on RULING-2026-09-30-documents (d): a refund Gumroad refuses for balance (the
     refund command's exit 3) gets one facts-only holding reply and ONE STORE +FLAGS (\\Answered \\Flagged). The request
@@ -881,8 +896,9 @@ class BalanceWaitTests(RespondHarness):
         code, out, err, runner = self.respond(inbox, "--apply", runner=Runner(*BALANCE))
         self.assertEqual(code, 0, err)
         searches = FakeIMAP.instances[-1].searches
-        self.assertEqual(searches[0], ("FLAGGED",))  # first, and with no SINCE
-        self.assertEqual(sum(1 for s in searches if s[:1] == ("FLAGGED",)), 1)
+        # First, and with no SINCE: the waiting state is \\Flagged on an ANSWERED request (reviewer of 5.10, defect 2).
+        self.assertEqual(searches[0], ("FLAGGED", "ANSWERED"))
+        self.assertEqual([s for s in searches if "SINCE" not in s], [("FLAGGED", "ANSWERED")])
         self.assertEqual(runner.calls, [(BUYER, days_ago(200), True)])
         self.assertEqual(json.loads(out)["waiting"], 1)
 
@@ -939,6 +955,90 @@ class BalanceWaitTests(RespondHarness):
         self.assertEqual(self.replies(), [])
         self.assertEqual(FakeIMAP.instances[0].store_ops, [])
         self.assertEqual(inbox[0]["flags"], set())
+
+    # A star a person put on a request nobody has answered yet is not the waiting state (RULING-2026-10-05-refund-state
+    # (a)2: "a stray star is harmless by construction"; reviewer of 5.10, defect 2). This responder sets \\Flagged only
+    # together with \\Answered, so only FLAGGED ANSWERED is retried; a starred unanswered request is a new request, and
+    # once answered for good its star comes off first, or every later run would read it as waiting.
+    def test_a_starred_unanswered_request_refused_for_balance_gets_the_holding_reply_and_runs_the_command_once(self):
+        inbox = [starred(received=days_ago(2))]
+        code, out, err, runner = self.respond(inbox, "--apply", runner=Runner(*BALANCE))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(runner.calls, [(BUYER, days_ago(2), True)])  # once, as a new request
+        self.assertEqual([r.get_content().strip() for r in self.replies()], [brand_mail.HOLDING_REPLY])
+        self.assertEqual(FakeIMAP.instances[-1].store_ops, [(1, "+FLAGS", "(\\Answered \\Flagged)")])
+        self.assertEqual(inbox[0]["flags"], WAITING)
+        report = json.loads(out)
+        self.assertEqual((report["retries"], report["flaggedIgnored"], report["waiting"]), ([], 0, 1))
+        self.assertIn("holding reply", report["handled"][0]["outcome"])
+
+    def test_a_starred_unanswered_request_answered_for_good_loses_the_star_and_is_never_retried(self):
+        for answer in (NONE, REFUNDED):
+            FakeSMTP.instances = []
+            inbox = [starred(received=days_ago(2))]
+            code, out, err, runner = self.respond(inbox, "--apply", runner=Runner(*answer))
+            self.assertEqual(code, 0, err)
+            self.assertEqual(len(runner.calls), 1, answer)
+            self.assertEqual([r.get_content().strip() for r in self.replies()], [brand_mail.REFUND_REPLY], answer)
+            # The star off FIRST: a failure between the two STOREs can repeat an answer, never invent a wait.
+            self.assertEqual(FakeIMAP.instances[-1].store_ops, [(1, "-FLAGS", "(\\Flagged)"), (1, "+FLAGS", "(\\Answered)")], answer)
+            self.assertEqual(inbox[0]["flags"], {"\\Answered"}, answer)
+            report = json.loads(out)
+            self.assertEqual(report["waiting"], 0, answer)
+            self.assertIn("star", report["handled"][0]["outcome"], answer)
+            # The next run has nothing to retry and nothing to answer: no command, no reply, green.
+            FakeSMTP.instances = []
+            code, out, err, idle = self.respond(inbox, "--apply", runner=Runner(*NONE), now=NOW + dt.timedelta(days=1))
+            self.assertEqual(code, 0, (answer, err))
+            self.assertEqual(idle.calls, [], answer)
+            self.assertEqual(self.replies(), [], answer)
+
+    def test_a_starred_request_marked_answered_without_its_own_wait_loses_the_star(self):
+        # A second request for a sale already waiting, and a follow-up covered by this run's answer to the same sender:
+        # \\Answered only, and a person's star taken off first - the waiting state is the earlier flagged request.
+        follow_up = dict(message_id="<req-2@example.org>", body="still waiting for my refund", received=days_ago(0.5))
+        inbox = [flagged(received=days_ago(2)), starred(**follow_up)]
+        code, out, err, _ = self.respond(inbox, "--apply", runner=Runner(*BALANCE))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.replies(), [])
+        self.assertEqual(FakeIMAP.instances[-1].store_ops, [(2, "-FLAGS", "(\\Flagged)"), (2, "+FLAGS", "(\\Answered)")])
+        self.assertEqual([m["flags"] for m in inbox], [WAITING, {"\\Answered"}])
+        self.assertEqual(json.loads(out)["waiting"], 1)
+        inbox = [flagged(received=days_ago(2)), starred(**follow_up)]
+        code, out, err, _ = self.respond(inbox, "--apply", runner=Runner(*REFUNDED))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(FakeIMAP.instances[-1].store_ops,
+                         [(1, "-FLAGS", "(\\Flagged)"), (2, "-FLAGS", "(\\Flagged)"), (2, "+FLAGS", "(\\Answered)")])
+        self.assertEqual([m["flags"] for m in inbox], [{"\\Answered"}, {"\\Answered"}])
+
+    def test_a_starred_unanswered_mail_left_unanswered_keeps_its_star(self):
+        # Not a request, unauthenticated, or a command that stopped: nothing is answered, so nothing is stored.
+        stray = [starred(body="How do I activate the key?", subject="Pro", message_id="<s1@example.org>"),
+                 starred(sender=VICTIM, auth=(FAIL_AR,), message_id="<s2@example.net>")]
+        code, out, err, runner = self.respond(stray, "--apply", runner=Runner(*REFUNDED))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(runner.calls, [])
+        self.assertEqual(FakeIMAP.instances[-1].store_ops, [])
+        self.assertEqual([m["flags"] for m in stray], [{"\\Flagged"}, {"\\Flagged"}])
+        inbox = [starred(received=days_ago(2))]
+        code, out, err, _ = self.respond(inbox, "--apply", runner=Runner(1, ["STOPPED: GET /v2/sales was refused live (HTTP 500)."]))
+        self.assertEqual(code, 1)
+        self.assertEqual(FakeIMAP.instances[-1].store_ops, [])
+        self.assertEqual(inbox[0]["flags"], {"\\Flagged"})
+
+    def test_a_new_requests_lines_carry_no_address_at_all_not_only_the_senders(self):
+        # The docstring says "never an address": the sender's own address and anyone else's alike (reviewer of 5.10,
+        # defect 3). The flagged loop already redacted every address; the new-request loop redacted the sender's alone.
+        other = "other.person@example.net"
+        for answer in ((1, ["STOPPED: PUT /v2/sales/sale-A/refund was refused live (HTTP 422: account %s)." % other]),
+                       (0, ["echo %s" % other.upper(), "refund: none"]),
+                       (brand_mail.BALANCE_EXIT, ["note %s" % other] + BALANCE_LINES)):
+            FakeSMTP.instances = []
+            code, out, err, _ = self.respond([mail(received=days_ago(2))], "--apply", runner=Runner(*answer))
+            text = out + err
+            for leak in (other, other.upper(), "other.person", "OTHER.PERSON", BUYER, "sale-A"):
+                self.assertNotIn(leak, text, (answer, leak))
+            self.assertIn("[address]", json.dumps(json.loads(out)["handled"][0]["refundLog"]), answer)
 
     def test_the_holding_reply_states_facts_and_promises_no_date(self):
         s = brand_mail.HOLDING_REPLY

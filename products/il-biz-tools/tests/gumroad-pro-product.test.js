@@ -1225,6 +1225,26 @@ describe('refund --email: one sale of this product, by this buyer, inside the li
       }
     });
 
+    it('only the MOST RECENT sale inside the window counts: an older refunded sale under a newer disputed one is "none"', async () => {
+      // RULING-2026-10-05-refund-state (a)5 (reviewer of 5.10, defect 1): the balance refusal named the newest sale; if
+      // that one is now disputed, charged back or partly refunded, an older refund is not the kept promise - answering
+      // "your refund was made" would be false and would take the waiting flag off.
+      const { sitePath, env } = cli();
+      for (const over of [{ disputed: true }, { chargedback: true }, { partially_refunded: true }]) {
+        const f = gumroadWith([at(10, { id: 'sale-old', refunded: true }), at(3, { id: 'sale-new', ...over })]);
+        const log = sink();
+        expect(await main(['refund', '--email', BUYER, '--apply'], env, { fetchImpl: f, log, sitePath }), JSON.stringify(over)).toBe(0);
+        expect(log.lines.at(-1), JSON.stringify(over)).toBe('refund: none');
+        expect(log.lines.join('\n'), JSON.stringify(over)).not.toContain('sale-old');
+        expect(puts(f), JSON.stringify(over)).toHaveLength(0);
+      }
+      // The other way round - the newer sale refunded, an older one disputed - is the kept promise.
+      const kept = gumroadWith([at(10, { id: 'sale-old', disputed: true }), at(3, { id: 'sale-new', refunded: true })]);
+      const keptLog = sink();
+      expect(await main(['refund', '--email', BUYER, '--apply'], env, { fetchImpl: kept, log: keptLog, sitePath })).toBe(0);
+      expect(keptLog.lines.at(-1)).toBe('refund: already-refunded (sale sale-new)');
+    });
+
     it('the retired --sale mode is a usage error before Gumroad is asked anything, and refundSaleById is gone', async () => {
       const { sitePath, env } = cli();
       const asked = new Date(Date.now() - DAY).toISOString();
