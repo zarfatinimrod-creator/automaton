@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T23:21:51.964Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1065968,
-  "sha256": "86fe15c6afcf2cf60592602cf70806e57e324a36368db6b8d3082879128daccf",
+  "byteLength": 1065967,
+  "sha256": "aa980822c051268a6e8841d8a1e671b24e2cbd011ae040b853b9b1458e31035a",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/yk2-ftc-channel-owners.html",
   "textPath": "research/rendered/yk2-ftc-channel-owners.txt",

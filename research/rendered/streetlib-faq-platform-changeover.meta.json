@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:34.957Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 79812,
-  "sha256": "9b3d0df5ccad3e479ee77d382e0542bebe0190facad85c3d8a542969ecc9e262",
+  "byteLength": 79830,
+  "sha256": "6608c7977053d5c4703ece02f030dd9b5644d9598039cc7222ddbfe83067432c",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/streetlib-faq-platform-changeover.html",
   "textPath": "research/rendered/streetlib-faq-platform-changeover.txt",

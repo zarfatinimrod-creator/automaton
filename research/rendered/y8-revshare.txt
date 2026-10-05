@@ -434,7 +434,7 @@ Yes. Y8 may restrict, suspend, or close accounts involved in fraud, stolen conte
 
 How can I contact Y8?
 
-Use the game’s Feedback tab for game review questions. For account, studio, advertising, payment, partnership, or technical problems, contact Y8 Support by email at developers@y8.com and include your studio name, game title, and a clear explanation of the issue.
+Use the game’s Feedback tab for game review questions. For account, studio, advertising, payment, partnership, or technical problems, contact Y8 Support by email at [redacted:email]@y8.com and include your studio name, game title, and a clear explanation of the issue.
 
 Start Publishing on Y8
 

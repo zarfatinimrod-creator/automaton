@@ -184,9 +184,9 @@ Select Manage settings .
 
 Scroll to "Payments contacts."
 
-Contacts must verify their email address through an email from payments-noreply@google.com.
+Contacts must verify their email address through an email from [redacted:email]@google.com.
 
-Contacts receive notifications from payments-noreply@google.com whenever an action is needed with a bank account or other payments settings. They also receive a simple notification whenever a payment is issued, usually once a month.
+Contacts receive notifications from [redacted:email]@google.com whenever an action is needed with a bank account or other payments settings. They also receive a simple notification whenever a payment is issued, usually once a month.
 
 Need more help?
 Try these next steps:

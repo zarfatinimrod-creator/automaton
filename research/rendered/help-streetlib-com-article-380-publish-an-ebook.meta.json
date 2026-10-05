@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:16.969Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 86962,
-  "sha256": "0bc2ee15b1f5975ec64832a12a3ea533bfd0ccfe3aebe58a804f815b9544c3d7",
+  "byteLength": 86980,
+  "sha256": "787dfed9992a4bec8ed50540bd41f44767bce9cbd9a9badd7a4041f896f72a46",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-article-380-publish-an-ebook.html",
   "textPath": "research/rendered/help-streetlib-com-article-380-publish-an-ebook.txt",

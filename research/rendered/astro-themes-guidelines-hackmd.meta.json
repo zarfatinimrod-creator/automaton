@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:57.768Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 72757,
-  "sha256": "290fc24ee5160086e06ecde44a358a4bcbcae0ea6fedf441f3ba0cc3333ac35e",
+  "byteLength": 72785,
+  "sha256": "bb57cf28223928709bdfd65330c53d42151bc919285ae7676516f3d94f147e96",
   "truncated": false,
+  "redacted": 6,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 6,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/astro-themes-guidelines-hackmd.html",
   "textPath": "research/rendered/astro-themes-guidelines-hackmd.txt",

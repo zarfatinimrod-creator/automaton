@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T23:22:00.540Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 118097,
-  "sha256": "09b0429b302c7dd1f8b24df3febe17434ddf390438ab0af9bd79084953a637a3",
+  "byteLength": 118110,
+  "sha256": "5410d456374abee1ce9f30bd57b660564d1df3180306665919002532accaee32",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/yk2-hf-pocket-tts-onnx.html",
   "textPath": "research/rendered/yk2-hf-pocket-tts-onnx.txt",

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-27T09:56:38.045Z",
   "status": 200,
   "contentType": "application/rdap+json",
-  "byteLength": 2528,
-  "sha256": "dd79efa698593740e9070b3b95c0756f87cff5fa5487e29a8d4187bc53a93dc7",
+  "byteLength": 2541,
+  "sha256": "e128b9e75cef95d1500da318c0dcd4e8762a202e9782386ca59b2012375218ff",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/rdap-bediyuk-com.json",
   "textPath": null,

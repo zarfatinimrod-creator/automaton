@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:58.751Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1658237,
-  "sha256": "b8a9e89dd67b29a8ede90e85716b8703f73c176f271d3da3f4a625dc0242c512",
+  "byteLength": 1658234,
+  "sha256": "9abdf2fb644fc23a0fb2818660f519f4bec018b24ea2eff9e7d3c215fb3370df",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-policy-changelog.html",
   "textPath": "research/rendered/youtube-policy-changelog.txt",

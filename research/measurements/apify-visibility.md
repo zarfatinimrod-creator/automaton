@@ -5,7 +5,7 @@ GitHub (`apify/apify-docs`, branch `master`, raw files, read 28.9.2026).
 
 **What was read:**
 - `research/rendered/apify-store-israel-all-2026-09-28.json` (`?search=israel&limit=1000&includeUnrunnableActors=true`, captured
-  13:18:14Z, sha256 `c5efd9ea…`);
+  13:18:14Z, sha256 `c5efd9ea…`; re-masked 5.10.2026, one address: now `c031fd6d…`);
 - `research/rendered/apify-store-israel-default-2026-09-28.json` (the same query without the parameter, captured 13:18:15Z,
   sha256 `0a94cd5d…`).
 

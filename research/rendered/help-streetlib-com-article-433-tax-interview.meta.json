@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:46.012Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 83311,
-  "sha256": "555b194430d6a61478cc901c5adfb33ecb0ecbffa7e391526f66bec36a9f982c",
+  "byteLength": 83329,
+  "sha256": "3208ed2471b4ba0e14cbaffe1f37354e5d097bb4178c1fc1618fe6b30baa0654",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-article-433-tax-interview.html",
   "textPath": "research/rendered/help-streetlib-com-article-433-tax-interview.txt",

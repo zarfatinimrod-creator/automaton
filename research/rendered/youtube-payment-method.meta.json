@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:16.615Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1645776,
-  "sha256": "13a208ab8dd5f4dd533229b0516959915623dfaf09ebad8ec5ee6fb0ce38da96",
+  "byteLength": 1645773,
+  "sha256": "cd12d03478f4e92c1dcaac95987542e10addece3096bb6bae18cd23b65349b2d",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-payment-method.html",
   "textPath": "research/rendered/youtube-payment-method.txt",

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-07T17:11:18.959Z",
   "status": 200,
   "contentType": "application/json; charset=utf-8",
-  "byteLength": 3027635,
-  "sha256": "b9be855bbb81a10d8d41ccda259809bbfbad0781b2ab7efd21ff82bc6320ddd6",
+  "byteLength": 3027642,
+  "sha256": "6d190ccecd93eb4b039a7e1c09c0dfd457ac7a884fbef36e9ed792bb09e5bb01",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/apify-store-accessibility-2026-09-07.json",
   "textPath": null,

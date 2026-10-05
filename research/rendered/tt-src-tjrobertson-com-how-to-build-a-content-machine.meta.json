@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:02:13.489Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 110631,
-  "sha256": "56c0a28e6a6e0eb5c977aa1a370976612f030a4bda8c3d9c19d3717f7fd7039d",
+  "byteLength": 110645,
+  "sha256": "7d59d78cdfe4737a54b03ae5744c549ae1fe63281fac0a0b9972f4078d1dcdeb",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-tjrobertson-com-how-to-build-a-content-machine.html",
   "textPath": "research/rendered/tt-src-tjrobertson-com-how-to-build-a-content-machine.txt",

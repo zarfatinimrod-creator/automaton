@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T18:36:18.404Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 244890,
-  "sha256": "ca9983b4c2c7943cb5af34ce3bd7228a248e9f4b357692bcec1c6354d48f2395",
+  "byteLength": 244908,
+  "sha256": "db188292c016ea74e40ec612c3799e2b666759d52488fdd6050343a8ec8dbc46",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/gamedistribution-sdk-implementation-2026-09-28.html",
   "textPath": "research/rendered/gamedistribution-sdk-implementation-2026-09-28.txt",

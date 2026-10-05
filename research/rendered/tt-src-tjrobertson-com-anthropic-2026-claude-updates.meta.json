@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:01:01.748Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 106740,
-  "sha256": "936b83d0455666e8b6152d9ec3918be112c04e63d063c5fd08e416eac7e00b38",
+  "byteLength": 106754,
+  "sha256": "2c6d35631bd837fdc22f68c8a346eda879c8e594535f64d6494e70b1e0b60b32",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-tjrobertson-com-anthropic-2026-claude-updates.html",
   "textPath": "research/rendered/tt-src-tjrobertson-com-anthropic-2026-claude-updates.txt",

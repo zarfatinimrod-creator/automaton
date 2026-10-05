@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T18:36:12.279Z",
   "status": 200,
   "contentType": "application/javascript; charset=UTF-8",
-  "byteLength": 1141780,
-  "sha256": "0a69bfd2b6c78fc1ea0290ec774f1c2932998b470f3f7fa52f1e1cc888457047",
+  "byteLength": 1141926,
+  "sha256": "86029b2c395da85ef9c70587e5f13a30c0b4ace7965b29fb1795b4a82edbadd6",
   "truncated": false,
+  "redacted": 18,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 18,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/facer-templates-js.bin",
   "textPath": null,

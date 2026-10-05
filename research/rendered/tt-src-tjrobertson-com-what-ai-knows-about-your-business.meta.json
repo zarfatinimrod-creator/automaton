@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:01:38.272Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 107541,
-  "sha256": "8f77d8a87e86b72ad44ecf75e08afeda829b07676f84d0e7e1bb1e6c7baaa36e",
+  "byteLength": 107555,
+  "sha256": "c8ae46413186b16f7aac9fa471b2ed6a3e34bf8ff18a298caeb327c905baa34d",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-tjrobertson-com-what-ai-knows-about-your-business.html",
   "textPath": "research/rendered/tt-src-tjrobertson-com-what-ai-knows-about-your-business.txt",

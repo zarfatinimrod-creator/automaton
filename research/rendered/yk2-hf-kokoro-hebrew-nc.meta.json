@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T23:21:57.342Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 104597,
-  "sha256": "f73285f6b1d538e627723b8128277726502d0ade44b960eed9620ca38b7a6aab",
+  "byteLength": 104610,
+  "sha256": "7ec7759f65623f436d3be520e0fb5ed6c4e7a81f411291bf0093c57365109087",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/yk2-hf-kokoro-hebrew-nc.html",
   "textPath": "research/rendered/yk2-hf-kokoro-hebrew-nc.txt",

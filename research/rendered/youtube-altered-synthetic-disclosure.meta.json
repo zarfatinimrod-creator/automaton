@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:38.219Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1601956,
-  "sha256": "562d1e004a2237d1aca7c9b39efa5d850c7af20ff738eb7806baddada9da515f",
+  "byteLength": 1601953,
+  "sha256": "6a0e1e5ba5d9ae5bead6e992a38307c3189c5c03d50e055d854766975d6dbaf2",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-altered-synthetic-disclosure.html",
   "textPath": "research/rendered/youtube-altered-synthetic-disclosure.txt",

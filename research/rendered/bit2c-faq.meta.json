@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:28:57.790Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 158128,
-  "sha256": "7cfdb78aa2dd1863c2bbcfe77afd114605df4552d510f6f7901124298ab4fa06",
+  "byteLength": 158178,
+  "sha256": "eedd406d214b9dce4e3220e6471dff4a858b85aa6d9de8449fa6920bdc9509d2",
   "truncated": false,
+  "redacted": 6,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 6,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/bit2c-faq.html",
   "textPath": "research/rendered/bit2c-faq.txt",

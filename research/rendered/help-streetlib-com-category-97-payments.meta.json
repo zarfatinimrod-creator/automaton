@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:40.117Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 81921,
-  "sha256": "5e94736b1c6c4689da772e16c012fb2b76b78181b7bce44dc57624dab47b3ca5",
+  "byteLength": 81939,
+  "sha256": "65a3ec21707376d58e249793d132af71dadb6cf383e6ac0b3aaa55175768e2ed",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-category-97-payments.html",
   "textPath": "research/rendered/help-streetlib-com-category-97-payments.txt",

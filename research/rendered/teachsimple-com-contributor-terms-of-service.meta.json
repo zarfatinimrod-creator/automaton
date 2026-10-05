@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:31.228Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 385412,
-  "sha256": "9e7acf24cebc6c60d1d888826e6a5e7cab0e2a69fd3df3514f854cf73629a92c",
+  "byteLength": 385430,
+  "sha256": "32948420dbce3055099ccf46d37bb4b3ec6211b480cd1748b3901940eb2eb636",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/teachsimple-com-contributor-terms-of-service.html",
   "textPath": "research/rendered/teachsimple-com-contributor-terms-of-service.txt",

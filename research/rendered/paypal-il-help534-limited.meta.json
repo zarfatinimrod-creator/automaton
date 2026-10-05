@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:05.734Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 328727,
-  "sha256": "9b4ef83d97c8ab9e1652ff02829bb7322f946de58f4f2aef00809bd1ff3b9c3d",
+  "byteLength": 328791,
+  "sha256": "28dd3014f19454dce3b65b17c532a583ad6093b57b04c63a1c8d2e0d79e25690",
   "truncated": false,
+  "redacted": 9,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 9,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/paypal-il-help534-limited.html",
   "textPath": "research/rendered/paypal-il-help534-limited.txt",

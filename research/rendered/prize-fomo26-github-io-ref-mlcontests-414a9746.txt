@@ -533,7 +533,7 @@ Reorientation, resampling, and intensity normalization
 
 If you're uncertain whether a specific step or tool falls within the rules, please send us
 the explicit list of preprocessing steps and tools you intend to use at
-fomo26@di.ku.dk and we'll
+[redacted:email]@di.ku.dk and we'll
 confirm.
 
 What preprocessing have we applied to the challenge data?
@@ -639,6 +639,6 @@ See the Results!
 ✦
 ✦
 
-Or contact us at fomo26@di.ku.dk
+Or contact us at [redacted:email]@di.ku.dk
 
 &copy; 2026 FOMO Challenge. All rights reserved.

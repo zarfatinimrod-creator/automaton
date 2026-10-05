@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:51.070Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1600451,
-  "sha256": "3f3bd95f6f0b8ea032dad385ede3552f42889f5aeb4b04d9a2fad4809b1454f4",
+  "byteLength": 1600448,
+  "sha256": "ef4d2df3ebe87abeb045e48516c68ce2ddb32fb4ef1ff75ecbf081e758bb97d9",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-ypp-overview.html",
   "textPath": "research/rendered/youtube-ypp-overview.txt",

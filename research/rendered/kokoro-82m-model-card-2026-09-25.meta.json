@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-25T16:04:30.468Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 118604,
-  "sha256": "cb06b91ec334c0e20c4affa09ef2b885a1daebcce6413933d09f176e0377579d",
+  "byteLength": 118617,
+  "sha256": "24c0fa8e9e9dd743455aab2b8ce433181e5781eb5beb7639d4bf5f541edcd20f",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/kokoro-82m-model-card-2026-09-25.html",
   "textPath": "research/rendered/kokoro-82m-model-card-2026-09-25.txt",

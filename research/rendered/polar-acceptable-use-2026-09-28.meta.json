@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T07:15:22.367Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 371132,
-  "sha256": "8b94125b7f6892145054422d4f9d31cdd7db9285f9fa55243f0c7a75fa302ea2",
+  "byteLength": 371141,
+  "sha256": "73feedd2721f2f95992d71c70ab5a862a55065d266c9dcba5124e3658dd2d8fb",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/polar-acceptable-use-2026-09-28.html",
   "textPath": "research/rendered/polar-acceptable-use-2026-09-28.txt",

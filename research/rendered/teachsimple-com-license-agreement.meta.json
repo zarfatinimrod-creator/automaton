@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:42.737Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 350948,
-  "sha256": "03e6f3fb48dacf1a7a1d7ccb6f88d1eda322806e79d8a43678042a33da921668",
+  "byteLength": 350966,
+  "sha256": "ccd17e83d7e0e5f8c3158594014bf944ecceb68f66be71112b515c1be716aae7",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/teachsimple-com-license-agreement.html",
   "textPath": "research/rendered/teachsimple-com-license-agreement.txt",

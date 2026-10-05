@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:31:31.974Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 153038,
-  "sha256": "c1d8c6bc51aca0faa07663747adcedaf80e4adbf5f7364bbbf1968038f849789",
+  "byteLength": 153065,
+  "sha256": "1b064cc8650f4c4b457f8a1d0a2b69b637e2086d578a00ed1980030b1ce67452",
   "truncated": false,
+  "redacted": 6,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 6,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/gumroad-terms.html",
   "textPath": "research/rendered/gumroad-terms.txt",

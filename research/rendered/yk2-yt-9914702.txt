@@ -96,7 +96,7 @@ Multi-channel networks (MCN): If you’re an affiliate channel partnering with a
 
 I don’t know if I already have an AdSense or an Adsense for YouTube account
 
-Search your inboxes for emails from "adsense-noreply@google.com".
+Search your inboxes for emails from "[redacted:email]@google.com".
 
 You can only have one AdSense or AdSense for YouTube account under the same payee name per AdSense's Terms and Conditionsor AdSense for YouTube Terms of Service, as applicable. If you're found to have a duplicate, your AdSense for YouTube account will be disapproved and you'll be asked to close other related accounts.
 

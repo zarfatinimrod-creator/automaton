@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T14:02:40.857Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 39416,
-  "sha256": "f36c55d97d657f277d2f8766fbea1eb000638d8740f60d9a82ae83d0c63a0e28",
+  "byteLength": 39419,
+  "sha256": "114625dd912009680826a570262fd3babb6524e477b01c8a3e8f3d74e9f903b7",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-data-gov-il.html",
   "textPath": "research/rendered/terms-data-gov-il.txt",

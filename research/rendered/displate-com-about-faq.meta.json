@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:25.650Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 530768,
-  "sha256": "3755f64caa1ec9e1d3d2226e12f41a30d90991e280098aa618d908719aff3b18",
+  "byteLength": 530786,
+  "sha256": "930db2eb6fd9ee21a9344cf4d5030fc663ee0f2ee29599ff350bb27a85a1c52b",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/displate-com-about-faq.html",
   "textPath": "research/rendered/displate-com-about-faq.txt",

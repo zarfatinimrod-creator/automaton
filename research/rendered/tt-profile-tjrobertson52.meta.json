@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:00:43.914Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 388292,
-  "sha256": "cc30a7845205ee0bb017ca11a6adb6f374507cd9284449b5fa4c9a194d13342a",
+  "byteLength": 388301,
+  "sha256": "0e82a09139bc42bafb8605b806e113dd0254f08464dab056b1279c503d73b18d",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-profile-tjrobertson52.html",
   "textPath": "research/rendered/tt-profile-tjrobertson52.txt",

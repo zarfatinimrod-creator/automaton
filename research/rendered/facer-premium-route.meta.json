@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:18.180Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 326743,
-  "sha256": "25af6c56b92dd3bcc3dc0b55157f5f0cfcf65289357ba449686a3d3b3cd727dc",
+  "byteLength": 326752,
+  "sha256": "d8f81c860d94b5a5f44f1b04580071e3b7c014f6080591a99c6f903af737023f",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/facer-premium-route.html",
   "textPath": "research/rendered/facer-premium-route.txt",

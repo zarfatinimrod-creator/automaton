@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T17:19:50.199Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 5242880,
-  "sha256": "81a5d7c398064abcd36dde62f76ed61517233ad51d9132f9a226979c87fc736b",
+  "byteLength": 5242904,
+  "sha256": "bb83331c4a315359a5d85cec51dd168446e484a35f6d38bf8c32df281a5280f7",
   "truncated": true,
+  "redacted": 4,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 4,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/gamedistribution-guidelines-2026-09-28.html",
   "textPath": "research/rendered/gamedistribution-guidelines-2026-09-28.txt",

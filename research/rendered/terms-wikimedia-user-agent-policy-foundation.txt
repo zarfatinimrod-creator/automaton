@@ -339,7 +339,7 @@ Our servers are currently experiencing a technical problem. Please try again in 
 
 This change is most likely to affect scripts (bots) accessing Wikimedia websites such as Wikipedia automatically, via api.php or otherwise, and command line programs. [ 3 ] If you operate a bot, please send a User-Agent header identifying the bot in a way that isn't going to be confused with many other bots, and supplying some way of contacting you, the operator, in accordance with the API Usage Guidelines . The contact information should be given as an email address, a website, or a wiki user using the format (<project>; User:<name>) , e.g. (wikipedia:de; User:DuesenBot) . For example:
 
-User-Agent: CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org) generic-library/0.0
+User-Agent: CoolBot/0.0 (https://example.org/coolbot/; [redacted:email]@example.org) generic-library/0.0
 
 The generic format is <client name>/<version> (<contact information>) <library/framework name>/<version> [<library name>/<version> ...] . Parts that are not applicable can be omitted.
 
@@ -399,13 +399,13 @@ PHP
 
 In PHP, you can identify your user-agent with code such as this:
 
-ini_set ( 'user_agent' , 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)' );
+ini_set ( 'user_agent' , 'CoolBot/0.0 (https://example.org/coolbot/; [redacted:email]@example.org)' );
 
 cURL
 
 Or if you use cURL :
 
-curl_setopt ( $curl , CURLOPT_USERAGENT , 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)' );
+curl_setopt ( $curl , CURLOPT_USERAGENT , 'CoolBot/0.0 (https://example.org/coolbot/; [redacted:email]@example.org)' );
 
 Python
 
@@ -414,7 +414,7 @@ In Python, you can use the Requests library to set a header:
 import requests
 
 url = 'https://example/...'
-headers = { 'User-Agent' : 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)' }
+headers = { 'User-Agent' : 'CoolBot/0.0 (https://example.org/coolbot/; [redacted:email]@example.org)' }
 
 response = requests . get ( url , headers = headers )
 
@@ -423,7 +423,7 @@ Or, if you want to use SPARQLWrapper like in https://people.wikimedia.org/~bearl
 from SPARQLWrapper import SPARQLWrapper , JSON
 
 url = 'https://example/...'
-user_agent = 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)'
+user_agent = 'CoolBot/0.0 (https://example.org/coolbot/; [redacted:email]@example.org)'
 
 sparql = SPARQLWrapper ( url , agent = user_agent )
 results = sparql . query ()

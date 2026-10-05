@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T14:03:00.572Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 271797,
-  "sha256": "a1f419fc501f44ae799d19f58ad2921b89517c34d9d78df7fc4cbe2b1bd6080e",
+  "byteLength": 272118,
+  "sha256": "6c78e92736215a3776ceb032796ac17658df44c12d1d358bd66e21b7dcf7fb6b",
   "truncated": false,
+  "redacted": 40,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 40,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-stripe-privacy-and-terms.html",
   "textPath": "research/rendered/terms-stripe-privacy-and-terms.txt",

@@ -45,7 +45,7 @@ Terms of Service
 
 Thanks for using Hugging Face and being part of our awesome community! 🤗
 
-We drafted the following Terms of Service to make your user experience as smooth, private and secure as possible. We are very much open to feedback - contact us at legal@huggingface.co with any question or concern!
+We drafted the following Terms of Service to make your user experience as smooth, private and secure as possible. We are very much open to feedback - contact us at [redacted:email]@huggingface.co with any question or concern!
 
 Please read these Terms carefully as they contain important information about what we do and do not offer, and what you can and cannot do.
 
@@ -217,7 +217,7 @@ Proprietary Rights . We retain ownership of all of our intellectual property rig
 
 Nothing in these Terms is intended to limit our use of our knowledge , skills, experience, ideas, concepts, know-how and/or techniques developed or learned at any time, without limitation. If you provide us feedback regarding the use, operation, performance, or functionality of our Website, Services, or business (collectively, " Feedback "), you hereby grant us a perpetual, irrevocable, worldwide, royalty-free, and non-exclusive right and license to exploit and commercialize the Feedback, improve the Services, and develop and/or commercialize new offerings, which we will solely and exclusively own. In addition and subject to our Privacy Policy, we may aggregate , anonymize, or otherwise learn from data relating to your use of the Services, and use the foregoing to improve those Services.
 
-DMCA Policy . We comply with the Digital Millennium Copyright Act Policy! If you have any claims that any content on our Website violates or infringes your intellectual property rights, you may send your complaint to dmca@huggingface.co with detailed and accurate information supporting your claim. You also represent and warrant that you will not knowingly provide misleading information to support your claim.
+DMCA Policy . We comply with the Digital Millennium Copyright Act Policy! If you have any claims that any content on our Website violates or infringes your intellectual property rights, you may send your complaint to [redacted:email]@huggingface.co with detailed and accurate information supporting your claim. You also represent and warrant that you will not knowingly provide misleading information to support your claim.
 
 Open Source . Certain items provided with the Services may be subject to "open source" or "creative commons" or other similar licenses (collectively, " Open Source "). The Open Source license terms are not intended to be replaced or overridden by the license and other terms of these Terms; however, the limitations of liabilities, disclaimers, and this provision apply to any such Open Source. Nothing in these Terms limit your rights under, or grants you rights that supersede, the terms and conditions of any applicable Open Source license. If we (or you) make modifications to Open Source, and if the applicable Open Source requires that such modifications be made available, and we (or you) do not already publish such modifications via the applicable open source community, then modifications will be available on applicable websites.
 

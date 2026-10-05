@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:08.545Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1592336,
-  "sha256": "bc4ec9c66c0cc037ce066d0c2d6f34c9e21666d3115db9f6d4d14ec64ebe8e5b",
+  "byteLength": 1592333,
+  "sha256": "3fd5fa38e9da00a4f58f8cf34991b9d51cce825560b7d1a7a5812b0136469c68",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-impressions-ctr.html",
   "textPath": "research/rendered/youtube-impressions-ctr.txt",

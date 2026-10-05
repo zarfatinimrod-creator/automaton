@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:09.901Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1594841,
-  "sha256": "5d09dc6c585d5617aaf54ab11780802e6c5352e15275b461986125e7638a5329",
+  "byteLength": 1594838,
+  "sha256": "aab148a5f982adc52d9cfa510c6ee67c99ec4d0401dc699deb37260f2b21924a",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-rpm-definition.html",
   "textPath": "research/rendered/youtube-rpm-definition.txt",

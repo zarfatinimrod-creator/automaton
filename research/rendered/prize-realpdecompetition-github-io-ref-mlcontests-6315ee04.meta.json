@@ -4,9 +4,15 @@
   "fetchedAt": "2026-10-05T13:19:14.951Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 41719,
-  "sha256": "0edc7affdfc6edb8ef1e537ef0a769b7b3e006519348aae5eb0bf816415eb18f",
+  "byteLength": 41710,
+  "sha256": "1ae436cc4d8241cea45b800858d5621503dcdfceabf6efa06223b1e94a95dc70",
   "truncated": false,
+  "redacted": 4,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 4,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/prize-realpdecompetition-github-io-ref-mlcontests-6315ee04.html",
   "textPath": "research/rendered/prize-realpdecompetition-github-io-ref-mlcontests-6315ee04.txt",

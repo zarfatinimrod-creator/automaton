@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-22T20:40:14.652Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 56164,
-  "sha256": "218da1d566e60104ea6109b9a14a1e8859cff37c248ec0ffea21ecb0072f6a4f",
+  "byteLength": 56190,
+  "sha256": "44e4a1ed7c52b9aab6b8f21f267916f11cadadb5b7b1c006f1bf177e56f4db52",
   "truncated": false,
+  "redacted": 6,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 6,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/sweep2-google-vrp-faq-2026-09-22.html",
   "textPath": "research/rendered/sweep2-google-vrp-faq-2026-09-22.txt",

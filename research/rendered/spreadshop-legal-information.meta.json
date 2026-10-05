@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:56.284Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 156335,
-  "sha256": "c70869987af83b607fae9227ca94109e768ff17365b5cbb618b7cc8860df7ac0",
+  "byteLength": 156404,
+  "sha256": "7226a687d5d860782be0270a82298329f3162494150f0db7df3d8f4e8375d8d8",
   "truncated": false,
+  "redacted": 9,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 9,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/spreadshop-legal-information.html",
   "textPath": "research/rendered/spreadshop-legal-information.txt",

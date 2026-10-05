@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:14.776Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 87924,
-  "sha256": "70251bb1a5c7f61846c2ea976384adb1a26e69352f814fd1021f6230d3faedc9",
+  "byteLength": 87942,
+  "sha256": "3dbe0ba723dd43c24e0190ae4fc478408e31824b3fb842ed2b3d2ab7bcd3ba93",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-article-421-streetlib-content-integrity-g.html",
   "textPath": "research/rendered/help-streetlib-com-article-421-streetlib-content-integrity-g.txt",

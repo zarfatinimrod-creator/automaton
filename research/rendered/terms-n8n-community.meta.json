@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T14:02:54.716Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 263121,
-  "sha256": "e5ebe7cd91586742381f889c42fb6b3ff381df3d3d2859d53b4b5d670d5c485a",
+  "byteLength": 263190,
+  "sha256": "a9c3135a53428ac3a74116c5066435394bc20830a8172ec1e294380c92122a27",
   "truncated": false,
+  "redacted": 8,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 8,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-n8n-community.html",
   "textPath": "research/rendered/terms-n8n-community.txt",

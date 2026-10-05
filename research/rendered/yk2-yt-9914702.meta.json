@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T23:21:45.417Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1610378,
-  "sha256": "cc9b5d55449a26d3ec259cc41bb2bf3e74439e44fdbb2eaadedbf8157f1530a6",
+  "byteLength": 1610376,
+  "sha256": "88a4c51230806884c44b1b3a2388b6ea6cc6fa7816e913ac7184a6b8595959a8",
   "truncated": false,
+  "redacted": 4,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 4,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/yk2-yt-9914702.html",
   "textPath": "research/rendered/yk2-yt-9914702.txt",

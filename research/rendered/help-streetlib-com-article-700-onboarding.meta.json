@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:50.643Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 83992,
-  "sha256": "6ad9c080de934e5d8392d45994f64535bffb3ab2f346680163b6ab381b7b5ea1",
+  "byteLength": 84010,
+  "sha256": "2786d55474294009837d518e6800a199c3aeb6bfb5f328abfb54fd79a7b11e3f",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-article-700-onboarding.html",
   "textPath": "research/rendered/help-streetlib-com-article-700-onboarding.txt",

@@ -5,8 +5,14 @@
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 40291,
-  "sha256": "04ec3d60190d4b7e57e85241c34a02ffe856444cc971ac02b54303712cb3c419",
+  "sha256": "a8163958c1cc5efe306d0c8439e1a288e7a7e208200b77433aa6427fbe1a4917",
   "truncated": false,
+  "redacted": 10,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 10,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/unesco-uis-databrowser-terms-2026-09-29.html",
   "textPath": "research/rendered/unesco-uis-databrowser-terms-2026-09-29.txt",

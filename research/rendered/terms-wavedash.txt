@@ -81,7 +81,7 @@ Delete or alter any copyright, trademark, or other proprietary rights notices fr
 
 You must not access or use for any commercial purposes any part of the Website or any services or materials available through the Website.
 
-If you wish to make any use of material on the Website other than that set out in this section, please address your request to: partnerships@wavedash.com .
+If you wish to make any use of material on the Website other than that set out in this section, please address your request to: [redacted:email]@wavedash.com .
 
 If you print, copy, modify, download, or otherwise use or provide any other person with access to any part of the Website in breach of the Terms of Use, your right to use the Website will stop immediately and you must, at our option, return or destroy any copies of the materials you have made. No right, title, or interest in or to the Website nor any content on the Website is transferred to you, and all rights not expressly granted are
 
@@ -197,7 +197,7 @@ Copyright Infringement
 
 If you use the Website in the United States of America, you will not export or re-export any materials from us except as authorized and permitted by the laws of the United States of America and the laws of your jurisdiction.
 
-Anyone may submit a written notice to Wavedash regarding an allegation that the Website or any other content that is hosted or made available from Wavedash infringes that person's copyright by emailing us at dmca@wavedash.com . Wavedash will respond to notices of alleged copyright that comply with applicable law. If you believe any materials accessible on or from the site infringe your copyright, you may request removal of those materials (or access to them) from the site by submitting written notification to Wavedash's copyright agent designated below. In accordance with the Online Copyright Infringement Liability Limitation Act of the Digital Millennium Copyright Act (17 U.S.C. §512(c)(3)) ("DMCA"), your written notice ("DMCA Notice") must include substantially the following:
+Anyone may submit a written notice to Wavedash regarding an allegation that the Website or any other content that is hosted or made available from Wavedash infringes that person's copyright by emailing us at [redacted:email]@wavedash.com . Wavedash will respond to notices of alleged copyright that comply with applicable law. If you believe any materials accessible on or from the site infringe your copyright, you may request removal of those materials (or access to them) from the site by submitting written notification to Wavedash's copyright agent designated below. In accordance with the Online Copyright Infringement Liability Limitation Act of the Digital Millennium Copyright Act (17 U.S.C. §512(c)(3)) ("DMCA"), your written notice ("DMCA Notice") must include substantially the following:
 
 Identification of the copyrighted work that you claim has been infringed, or, if multiple copyrighted works at a single online site are covered by a single notification, a representative list of such works at the site;
 
@@ -333,4 +333,4 @@ Your Comments and Concerns
 
 This website is operated by Snowday Software, Inc. at 2261 Market Street STE 85387 San Francisco, CA 94114.
 
-All feedback, comments, requests for technical support, and other communications relating to the Website should be directed to: support@wavedash.com.
+All feedback, comments, requests for technical support, and other communications relating to the Website should be directed to: [redacted:email]@wavedash.com.

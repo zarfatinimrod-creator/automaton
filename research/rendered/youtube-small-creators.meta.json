@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:20.763Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1583221,
-  "sha256": "b5b7b24d0736e2722c6e41a784554077e83eabecdaba55435b912dce59f09503",
+  "byteLength": 1583218,
+  "sha256": "7467dbdab7f7ea540b6e280e57080f15b016317dcdd475791800109afb40aa8d",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-small-creators.html",
   "textPath": "research/rendered/youtube-small-creators.txt",

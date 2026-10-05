@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:01:34.386Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 367041,
-  "sha256": "5bec39944e8b8805e73b6d4086a3d36de4c1aa529ef8ae863ec154381737a64a",
+  "byteLength": 367050,
+  "sha256": "2226d0a704890cb3f8f8064cb576cc4c3d934462ff1f713dac452268cdf4c775",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-tiktok-com-discover-how-to-sell-a-digital-product-as-a-faceless.html",
   "textPath": "research/rendered/tt-src-tiktok-com-discover-how-to-sell-a-digital-product-as-a-faceless.txt",

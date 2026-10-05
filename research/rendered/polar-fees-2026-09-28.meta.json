@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T07:15:23.537Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 411220,
-  "sha256": "f1a66d91b3ff9917ea1db2faf5382aa1d02815c0b7e84cd94a41a1a0a1098065",
+  "byteLength": 411229,
+  "sha256": "468d494c9cb95ef965b00fa417c7b5fafe5fe0bf55712445f552b2f07d896398",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/polar-fees-2026-09-28.html",
   "textPath": "research/rendered/polar-fees-2026-09-28.txt",

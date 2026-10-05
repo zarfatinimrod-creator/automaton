@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:17.983Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1596837,
-  "sha256": "b5a40b4ef921c85641596b55e6ed3e62ae6338742fa4021945b2b4441f8d038a",
+  "byteLength": 1596834,
+  "sha256": "4a2cdb55f86005163ba4951bb9209a054de4c4eca667384a1cef46a1c5f086ff",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-address-pin.html",
   "textPath": "research/rendered/youtube-address-pin.txt",

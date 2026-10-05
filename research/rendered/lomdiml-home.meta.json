@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:48.108Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 278551,
-  "sha256": "8d176dde48a8df645b4ac69b07d6f0118f36d159ab42ef74c5477dcd93f1128d",
+  "byteLength": 278552,
+  "sha256": "97ab99ee1d1edb344107a7e4847bb1787df0fe98b23f93dc7b57656d909d5fee",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/lomdiml-home.html",
   "textPath": "research/rendered/lomdiml-home.txt",

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:28:47.343Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1444173,
-  "sha256": "49cfb75bc8deb5686168e23d213a371b44970b49f2225f730b61d6906e4c5dea",
+  "byteLength": 1444170,
+  "sha256": "e9f144ac9e357abad615658cd7b02726596f58e5f6ce98cfb45519783891717e",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/play-books-payment-countries.html",
   "textPath": "research/rendered/play-books-payment-countries.txt",

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T23:21:16.221Z",
   "status": 200,
   "contentType": "text/javascript; charset=utf-8",
-  "byteLength": 67536,
-  "sha256": "6a43b628f0347b5f873b230b3ab3a8c3f1dbda3b2cfd46880b2bdc0d0b3b32d4",
+  "byteLength": 67575,
+  "sha256": "e76db8bbad8c6fdecfa1d798addc6cfe0dcffd6552465827b7c946ff33b45ba9",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/displate-about-privacy-chunk-2026-09-28.txt",
   "textPath": null,

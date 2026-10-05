@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:13.678Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 84891,
-  "sha256": "511acc12d393dc153cb3d4c393ae51c5925229645d5e44bc3774e855765c1fd2",
+  "byteLength": 84909,
+  "sha256": "d77f331a012e8de355458398becc72b2e45fd01c7d992710e15c8e8ec1e0dfe3",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-article-677-earnings.html",
   "textPath": "research/rendered/help-streetlib-com-article-677-earnings.txt",

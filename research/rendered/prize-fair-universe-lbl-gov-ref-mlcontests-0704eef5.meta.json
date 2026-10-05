@@ -4,9 +4,15 @@
   "fetchedAt": "2026-10-05T13:19:12.795Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 31305,
-  "sha256": "9a7d0a8f74b3bc0e49f2a4e19c0a6fccbb4704afe957ba921d554548682cb4bd",
+  "byteLength": 31308,
+  "sha256": "1e6ddb7ec5b9b5b94ecbeba984ba3335f9e28fc61b07111e23991471286e0679",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/prize-fair-universe-lbl-gov-ref-mlcontests-0704eef5.html",
   "textPath": "research/rendered/prize-fair-universe-lbl-gov-ref-mlcontests-0704eef5.txt",

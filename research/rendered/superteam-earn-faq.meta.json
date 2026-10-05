@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T13:17:43.021Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 523337,
-  "sha256": "a2b93e230817ba6ae11f468a60bd6b0303e564f03dd5055483a262f1a4fd1603",
+  "byteLength": 523359,
+  "sha256": "76ac3b5485432786003ec61899e6ad007335edbad9711b6f967935ff9cd66628",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/superteam-earn-faq.html",
   "textPath": "research/rendered/superteam-earn-faq.txt",

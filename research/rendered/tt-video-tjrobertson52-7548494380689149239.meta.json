@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:00:45.423Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 409082,
-  "sha256": "1105ca83c5a19029cbbd6474b617966b0d7272139fdeacc9245f395a2c15bab5",
+  "byteLength": 409091,
+  "sha256": "2841cc5b3de57067976754406776ff4052c29bca8fa462b24d0d6bbfd19cdaa0",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-video-tjrobertson52-7548494380689149239.html",
   "textPath": "research/rendered/tt-video-tjrobertson52-7548494380689149239.txt",

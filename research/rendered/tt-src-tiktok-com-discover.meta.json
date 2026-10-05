@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:02:07.511Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 366030,
-  "sha256": "135e48b6761af3602c7c9a1785ab62089a1e63c2f9c23f0c699c25cf6167d610",
+  "byteLength": 366039,
+  "sha256": "663f6b6c91e70dc8b68d4ba4dedb499ff99d804a58f6c8606b56595bc8ff27d3",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-tiktok-com-discover.html",
   "textPath": "research/rendered/tt-src-tiktok-com-discover.txt",

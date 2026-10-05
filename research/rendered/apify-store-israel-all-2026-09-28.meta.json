@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T13:18:14.268Z",
   "status": 200,
   "contentType": "application/json; charset=utf-8",
-  "byteLength": 1709644,
-  "sha256": "c5efd9ead014e40033f97415ef836592bb66ca23090d6476415bc0f24aa0d0cc",
+  "byteLength": 1709654,
+  "sha256": "c031fd6d38afe0e99ac485a51cd1f9adab252e03e2c3e4d24284f5fd915e9c38",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/apify-store-israel-all-2026-09-28.json",
   "textPath": null,

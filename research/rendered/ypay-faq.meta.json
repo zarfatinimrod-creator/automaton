@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T08:59:33.835Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 93863,
-  "sha256": "dcb9bab8cf8229ec9f3fbe6d07738b88bd0ae7ec4cac5440bd5df73a1edff634",
+  "byteLength": 93901,
+  "sha256": "2c9d0dee0d65705ca4d2ac17beaffec41ee777f6d3fedc2e5c6179cae075be3d",
   "truncated": false,
+  "redacted": 7,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 7,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/ypay-faq.html",
   "textPath": "research/rendered/ypay-faq.txt",

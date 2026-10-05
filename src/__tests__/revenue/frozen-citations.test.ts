@@ -238,9 +238,9 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
   it("polar-rail.md names copies whose metas say what its source lines say (fetchedAt, sha256, byteLength)", () => {
     const p = read("research/measurements/polar-rail.md");
     for (const [slug, fetchedAt, sha] of [
-      ["polar-supported-countries-2026-09-28", "2026-09-28T01:55:22", "80ca9109"],
-      ["polar-acceptable-use-2026-09-28", "2026-09-28T07:15:22", "8b94125b7f68"],
-      ["polar-fees-2026-09-28", "2026-09-28T07:15:23", "f1a66d91b3ff"],
+      ["polar-supported-countries-2026-09-28", "2026-09-28T01:55:22", "05cc3bd8"],
+      ["polar-acceptable-use-2026-09-28", "2026-09-28T07:15:22", "73feedd2721f"],
+      ["polar-fees-2026-09-28", "2026-09-28T07:15:23", "468d494c9cb9"],
     ]) {
       expect(p, slug).toContain(slug);
       expect(metaOf(slug).fetchedAt.slice(0, 19), slug).toBe(fetchedAt);

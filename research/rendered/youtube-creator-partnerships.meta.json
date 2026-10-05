@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:57.432Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1613497,
-  "sha256": "1e6d47ded4ab5dcf80c5b9dd91b57816e31f4d8adbcf9e798eb79be82d576b0e",
+  "byteLength": 1613430,
+  "sha256": "57020c1f65efeca5079baf83f6b96724ade22a6c54696e97898d4f6a11a74e1b",
   "truncated": false,
+  "redacted": 8,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 8,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-creator-partnerships.html",
   "textPath": "research/rendered/youtube-creator-partnerships.txt",

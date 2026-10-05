@@ -7,6 +7,12 @@
   "byteLength": 453489,
   "sha256": "c2eea38553395b6f9aceb33718ec92bfc3b62a375664216c80d0759105592fc4",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/streetlib-hub-agreement-20250130-en.pdf",
   "textPath": "research/rendered/streetlib-hub-agreement-20250130-en.txt",

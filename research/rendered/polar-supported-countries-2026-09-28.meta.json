@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T01:55:22.949Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 386196,
-  "sha256": "80ca9109d36b1740c4c60a6115b05a1392fca4aff2a9cd704c45802c8837e954",
+  "byteLength": 386205,
+  "sha256": "05cc3bd8e7361715b43bfc21ae25c67ca3ff9015d90185eef299bd91a9a31688",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/polar-supported-countries-2026-09-28.html",
   "textPath": "research/rendered/polar-supported-countries-2026-09-28.txt",

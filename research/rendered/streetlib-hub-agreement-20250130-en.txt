@@ -3,7 +3,7 @@
                                    Milan, version “January 2025”
 
 StreetLib S.r.l., with registered office in Corso Venezia 10, 20123 Milan (MI), Italy, tax code and VAT
-number 05338720963, email (certified): simplicissimus@pec-mail.it, REA MI-2094063, is a
+number 05338720963, email (certified): [redacted:email]@pec-mail.it, REA MI-2094063, is a
 company providing services related to digital publishing and production of latest-generation
 audiobooks and ebooks (i.e. works in different digital formats, such as PDF, ePub and Kindle).
 StreetLib S.r.l. is the owner of “StreetLib”, an online computer platform , which allows authors and
@@ -742,7 +742,7 @@ ISBN VIA STREETLIB
 
   ●​ The Publisher can use up to 5 ISBNs per day and 100 in total: free of charge within
      the platform, when creating the work's product sheet (one ISBN code per work);
-  ●​ beyond these limits: only possible upon written request to SL support@streetlib.com,
+  ●​ beyond these limits: only possible upon written request to SL [redacted:email]@streetlib.com,
      which will discretionally assess, on a case-by-case basis, the possibility and manner
      of fulfilling the request.
 

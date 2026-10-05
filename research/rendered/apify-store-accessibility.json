@@ -12673,7 +12673,7 @@
           "minimalMaxTotalChargeUsd": null,
           "pricingModel": "PAY_PER_EVENT",
           "isPriceChangeNotificationSuppressed": false,
-          "reasonForChange": "Apify is removing their rental pricings, to be compatible the pricing is moving to pay-per-event. If you have any query regarding it please contact thenetaji@proton.me",
+          "reasonForChange": "Apify is removing their rental pricings, to be compatible the pricing is moving to pay-per-event. If you have any query regarding it please contact [redacted:email]@proton.me",
           "pricingPerEvent": {
             "actorChargeEvents": {
               "apify-actor-start": {

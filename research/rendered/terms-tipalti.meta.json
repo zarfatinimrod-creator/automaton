@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T16:22:24.307Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 166682,
-  "sha256": "069955227186922406e5110e9c9dec559b0944710e39548d0a7677380f7a2f15",
+  "byteLength": 166718,
+  "sha256": "efccb9d0c8611abd7426ad0452afdffa59c19e7534edc50885f97c07a2bc836e",
   "truncated": false,
+  "redacted": 6,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 6,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-tipalti.html",
   "textPath": "research/rendered/terms-tipalti.txt",

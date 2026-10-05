@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:26.863Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 86138,
-  "sha256": "62081232226a1f750b1563b9f16258c1f948c76c43e5d2a5561de2b14b8a4c26",
+  "byteLength": 86156,
+  "sha256": "b571f2ded2423fdc7736ca2956752983a1b0d7f9f2efdef4d2e319cb39eed12b",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/displate-com-about-copyright.html",
   "textPath": "research/rendered/displate-com-about-copyright.txt",

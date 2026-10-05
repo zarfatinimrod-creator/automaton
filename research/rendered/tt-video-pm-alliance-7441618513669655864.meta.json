@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:03:01.535Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 391179,
-  "sha256": "3288378708bd2813813f9940eb1e496cc9ceabf43a52f0b16452f3ce756879eb",
+  "byteLength": 391188,
+  "sha256": "046bf44a35f8f80ebba3e2666577cb313b06beff150f4f9e86afd4b634da28e9",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-video-pm-alliance-7441618513669655864.html",
   "textPath": "research/rendered/tt-video-pm-alliance-7441618513669655864.txt",

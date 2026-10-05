@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T23:21:15.078Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 81493,
-  "sha256": "aee4c2f6d08a952e8d06142b65be176bd0c7b1064f75c9bf631a518be66d1c36",
+  "byteLength": 81511,
+  "sha256": "fb8c8142ffddf4a2983872145fc8e4d4e6fa06ab80bc38571bd1e83d3e5c578a",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-category-72-account.html",
   "textPath": "research/rendered/help-streetlib-com-category-72-account.txt",

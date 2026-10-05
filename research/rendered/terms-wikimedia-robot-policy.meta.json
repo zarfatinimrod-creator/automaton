@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-30T10:25:31.631Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 68248,
-  "sha256": "afa1cf99ce43d94e19cf8e8eba79f53ced1553893ef888ccec512c73852df839",
+  "byteLength": 68258,
+  "sha256": "0b4d31bf9f5f4f5566dd76b7fa5cb7f2685aa7f1f33ba97cf1e0d3c637e592b0",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-wikimedia-robot-policy.html",
   "textPath": "research/rendered/terms-wikimedia-robot-policy.txt",

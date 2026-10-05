@@ -7,6 +7,12 @@
   "byteLength": 304839,
   "sha256": "d409a8da62d1e5e250f96a2a1957edae9cae4bf9357a82fcf488e0b23eb93c15",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/crazygames-developer-terms.pdf",
   "textPath": "research/rendered/crazygames-developer-terms.txt",

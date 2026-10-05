@@ -7,6 +7,12 @@
   "byteLength": 49176,
   "sha256": "072e03fbb4c5a1f9742dd14f2c225903b0ea27c7f22ad8fd154d28a2763fc61b",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/pcn874-gov-il-874-eng.pdf",
   "textPath": null,

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T17:19:49.044Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 454105,
-  "sha256": "3e9eb3f6fa3dcbb1a3733fbbff072a3a363945c26c93e7c189d94627477ee00a",
+  "byteLength": 454129,
+  "sha256": "24fb47fb8ccaaa67bb7608a4c9fbedc70b7c6a59be07989fa04e6caff668d211",
   "truncated": false,
+  "redacted": 4,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 4,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/gamedistribution-developer-terms-2026-09-28.html",
   "textPath": "research/rendered/gamedistribution-developer-terms-2026-09-28.txt",

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:54.850Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1616681,
-  "sha256": "11f056afbe2f37bc4c8b6de190cec1914e4ee40f04314b8743ada5d20a5cced6",
+  "byteLength": 1616678,
+  "sha256": "59e2538a47e2b57c19bcf3cc3fb7349f63493e99e8a2e22a2c4e40f154cbb034",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-us-tax.html",
   "textPath": "research/rendered/youtube-us-tax.txt",

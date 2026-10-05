@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:02:31.830Z",
   "status": 200,
   "contentType": "text/html; charset=windows-1255",
-  "byteLength": 56657,
-  "sha256": "02b81763ce67926c4c401b22fd36a3c99ce33ccf86974dec49bb52712b706b26",
+  "byteLength": 56677,
+  "sha256": "41b6af82f895986e449574638ea07def0f5eae39a40b71daae2f242208a4d1c7",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-capitax-co-il-content-2-3311.html",
   "textPath": "research/rendered/tt-src-capitax-co-il-content-2-3311.txt",

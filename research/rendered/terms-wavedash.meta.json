@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T16:22:25.540Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 153231,
-  "sha256": "fbca1a19003578d7cf67ea1c70037b059eedd99b800505685cbdce388238f506",
+  "byteLength": 153315,
+  "sha256": "685a66951bfb69295c5781720d7c2917eb5f1cbfd2a47690f9272c819a70b465",
   "truncated": false,
+  "redacted": 13,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 13,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-wavedash.html",
   "textPath": "research/rendered/terms-wavedash.txt",

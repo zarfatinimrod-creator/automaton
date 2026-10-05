@@ -333,7 +333,7 @@ information.
 
 5.8 Support. Publisher makes available a QA tool, FAQ and other technical documentation via the
 Developer Portal to support the Developer with the submission of its Game(s) and the SDK
-integration. Developer may contact Publisher at technical-support@crazygames.com for support.
+integration. Developer may contact Publisher at [redacted:email]@crazygames.com for support.
 
                                                ARTICLE VI.
                                                INVOICING
@@ -544,7 +544,7 @@ Publisher, whichever comes first.
 Each newly published Game will constitute a separate and new Initial Term under this clause.
 Thereafter, the Terms and Conditions will automatically renew for successive one (1) year periods
 unless either Party provides written notice of termination at least one (1) month before the end of the
-then-current Term. Such notice must be sent via email to developer-relations@crazygames.com and
+then-current Term. Such notice must be sent via email to [redacted:email]@crazygames.com and
 must state the full legal name of the Developer, the title of the Game(s), and the reason for
 termination.
 

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T07:15:19.056Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 683473,
-  "sha256": "f3da3f30874298d61ca9289f8890e935434e039e1be88d2939429d6f7fb75587",
+  "byteLength": 683469,
+  "sha256": "000ca91a5d1d3aedf3fe039fe97d2b2034bff020f30b351f5b8364dcf0170830",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/wix-partner-agreement-body.html",
   "textPath": "research/rendered/wix-partner-agreement-body.txt",

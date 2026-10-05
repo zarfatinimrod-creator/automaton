@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:26.268Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 671055,
-  "sha256": "a36ed16aa047c6517566b21c2a692af30b76d27ec84d14816db9aba064919a86",
+  "byteLength": 671089,
+  "sha256": "08af7cba7c99506e9caf35129951685fda4b2375dc94bc9f4ded67540580a8b0",
   "truncated": false,
+  "redacted": 4,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 4,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/y8-revshare.html",
   "textPath": "research/rendered/y8-revshare.txt",

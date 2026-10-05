@@ -11,7 +11,7 @@ Stripe mechanism") and Q11 of `research/measurements/stripe-israel.md`.
 - `research/rendered/polar-supported-countries-2026-09-28.txt` (431 lines), read in full: extracted text of
   `https://polar.sh/docs/merchant-of-record/supported-countries`.
 - `.meta.json`: `status` 200, `fetchedAt` `2026-09-28T01:55:22.949Z`, `byteLength` 386196, `truncated` false, `firstFetch` true,
-  `sha256` `80ca9109d36b1740c4c60a6115b05a1392fca4aff2a9cd704c45802c8837e954`.
+  `sha256` `05cc3bd8e7361715b43bfc21ae25c67ca3ff9015d90185eef299bd91a9a31688` (since the one-time re-mask of 5.10.2026, one address masked; before it `80ca9109…`).
 - `.html`, read only for link targets and to confirm the Israel entry: 2 hits, the rendered `<li>🇮🇱 Israel` (HTML line 446)
   and the same list item in the page's own script bundle (line 527).
 - Searches over the `.txt`: `grep -n -i israel` gives 1 hit (`:246`). `grep -n -w IL` gives 0. "Global Payouts" gives 0.
@@ -75,8 +75,8 @@ and which identity documents does it require.
 **Ordered by:** `research/channel-loop/ZERO-TESTS.md:28-30` (rows 19-21). **Grades:** as at the top of this file.
 **Read in full:** the three `.txt` files below, plus their `.html` (for link targets and, for Stripe, the page state). All have `status`
 200, `truncated` false and `firstFetch` true. For Stripe, `redacted` 65 means 65 copies of `[redacted:stripe-secret-key]` (the docs sample key).
-- `polar-acceptable-use-2026-09-28.txt` (177 lines), `.../merchant-of-record/acceptable-use/introduction`, `fetchedAt` `2026-09-28T07:15:22.367Z`, sha256 `8b94125b7f68…`
-- `polar-fees-2026-09-28.txt` (330 lines), `.../merchant-of-record/fees`, `fetchedAt` `2026-09-28T07:15:23.537Z`, sha256 `f1a66d91b3ff…`
+- `polar-acceptable-use-2026-09-28.txt` (177 lines), `.../merchant-of-record/acceptable-use/introduction`, `fetchedAt` `2026-09-28T07:15:22.367Z`, sha256 `73feedd2721f…` (re-masked 5.10.2026, one address; was `8b94125b7f68…`)
+- `polar-fees-2026-09-28.txt` (330 lines), `.../merchant-of-record/fees`, `fetchedAt` `2026-09-28T07:15:23.537Z`, sha256 `468d494c9cb9…` (re-masked 5.10.2026, one address; was `f1a66d91b3ff…`)
 - `stripe-connect-required-verification.txt` (79 lines), `docs.stripe.com/connect/required-verification-information`, `2026-09-28T07:15:21.014Z`, sha256 `60805c9a4ea0…`
 
 ### (1) Acceptable use
