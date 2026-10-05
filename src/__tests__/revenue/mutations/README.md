@@ -57,8 +57,8 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
   | `render-watch.json` | 53 | 117 |
   | `freeze-capture.json` | 23 | 171 |
   | `loop-edit.json` | 46 | 188, 191 |
-  | `sim-tree.json` | see the file | 182-184 before the fixer's entries; the fixer's run is in the tick-51 log |
-  | `mutate.json` | see the file | 243-249 before the fixer's entries; the fixer's run is in the tick-51 log |
+  | `sim-tree.json` | 24 | 349 (182-184 with the first 14) |
+  | `mutate.json` | 11 | 393 (243-249 with the first 6) |
   | `remask-captures.json` | 45 | 523 |
   | `capture-check.json` | 42 | 785, 827 (its test file alone takes about 18 s) |
 
