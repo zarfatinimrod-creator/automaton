@@ -24,6 +24,12 @@ import { PAUSED_LINE } from "../../../scripts/robots-verdict.mjs";
  * ai-allowed-events.urls.txt every Wednesday with [skip ci], and reorders it by the quarter window of the day it runs, so
  * a test or a citation by line that reads the live file goes wrong without anyone touching this repo's code. The fixture
  * is the file at 548be52 byte for byte, and the notes cite it as ai-allowed-events.urls.txt@548be52:N.
+ *
+ * The main thread's rulings of 5.10 (the audit note's "Main-thread rulings" section) settle the three questions the
+ * review left open. R1: exhaustive-negative does not require GitHub code search, so every NO_TERMS site of this audit is
+ * exhaustive-negative and gets one robots.txt probe. R2: grand-challenge.org's terms URL, derived from the platform's own
+ * source at a pinned commit, is admitted as a narrow exception that urls.txt's header records. R3: an organisation's,
+ * project's or mailing-list address is a role address, not personal information; a named individual's address is.
  */
 const VERDICTS = "research/channel-loop/terms-verdicts.json";
 const URLS = "research/rendered/urls.txt";
@@ -69,6 +75,22 @@ const zeroRows = () => {
   }
   return rows;
 };
+/** The urls.txt comment line that cites ZERO-TESTS row n, and the line under it. */
+const listedRow = (n: number) => {
+  const text = readFileSync(URLS, "utf8").split("\n");
+  const at = text.findIndex((l) => l.startsWith(`# research/channel-loop/ZERO-TESTS.md row ${n} — `));
+  return { comment: at < 0 ? undefined : text[at], line: at < 0 ? undefined : text[at + 1] };
+};
+/** urls.txt's header (everything before its first section rule), its comment lines unwrapped into one text. */
+const urlsHeader = () => {
+  const lines = readFileSync(URLS, "utf8").split("\n");
+  const end = lines.findIndex((l) => l.startsWith("# ----"));
+  return lines
+    .slice(0, end)
+    .map((l) => l.replace(/^#\s?/, ""))
+    .join(" ")
+    .replace(/\s+/g, " ");
+};
 /** Every line number in "ai-allowed-events.urls.txt@548be52:N, :M, ..." groups of a text. */
 const pinnedLines = (text: string) => {
   const out: number[] = [];
@@ -77,12 +99,14 @@ const pinnedLines = (text: string) => {
   }
   return out;
 };
+/** An email address, as the owner's grep looks for one: none may be written into a note (ruling R3 names kinds only). */
+const ADDRESS = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/;
 
 const AUDITED: Record<string, string> = {
   "adaptionlabs.ai": "TERMS_PENDING",
   "agenthon.net": "NO_TERMS",
   "aicrowd.com": "NO_TERMS",
-  "aimo-interp.github.io": "CONDITIONAL_UNMET",
+  "aimo-interp.github.io": "CONDITIONAL_MET",
   "alignmentforum.org": "NO_TERMS",
   "ansperformance.eu": "CONDITIONAL_UNMET",
   "bcamlc.com": "NO_TERMS",
@@ -93,7 +117,7 @@ const AUDITED: Record<string, string> = {
   "drivendata.org": "NO_TERMS",
   "eurocontrol.int": "TERMS_PENDING",
   "flagos.io": "NO_TERMS",
-  "fomo26.github.io": "CONDITIONAL_UNMET",
+  "fomo26.github.io": "CONDITIONAL_MET",
   "geminixprize.com": "NO_TERMS",
   "grand-challenge.org": "TERMS_PENDING",
   "health-data-hub.fr": "NO_TERMS",
@@ -108,9 +132,9 @@ const AUDITED: Record<string, string> = {
   "opensky-network.org": "TERMS_PENDING",
   "openreview.net": "NOT_BARRED",
   "pasteurlabs.ai": "NO_TERMS",
-  "realpdecompetition.github.io": "CONDITIONAL_UNMET",
+  "realpdecompetition.github.io": "CONDITIONAL_MET",
   "robosyn-bench.net": "CONDITIONAL_MET",
-  "roco-spring.github.io": "CONDITIONAL_UNMET",
+  "roco-spring.github.io": "CONDITIONAL_MET",
   "situatedevals.org": "NO_TERMS",
   "solafune.com": "NO_TERMS",
   "sophelio.io": "NO_TERMS",
@@ -137,21 +161,51 @@ const PAGES = [
   "xiuwenz2.github.io",
 ];
 /**
- * The Pages sites whose page carries email addresses, where the verifiers' condition is "redact addresses before
- * commit" (tick 45 review, defect 1). render-watch commits every capture and masks no address, so the runner does not
- * meet it: CONDITIONAL_UNMET, as mozilla.org (RULING-2026-10-04-mozilla-precondition.md §3 rule 3).
+ * Ruling R3 (5.10): the Pages sites whose pages carry only role addresses (a project mailbox, a mailing list). A role
+ * address is not personal information, so AUP §7's "non-personal" limb is met as for the other Pages sites, and the
+ * verdict is CONDITIONAL_MET. The four that the tick 45 review had moved to CONDITIONAL_UNMET return; lbl.gov never left.
  */
-const REDACT_BEFORE_COMMIT = ["aimo-interp.github.io", "fomo26.github.io", "realpdecompetition.github.io", "roco-spring.github.io", "xiuwenz2.github.io"];
-/** NO_TERMS sites whose auditor searched Open Terms Archive in only eight declarations repos: never a probe. */
-const THIN = ["health-data-hub.fr", "ijcai.org", "mozilladatacollective.com"];
+const ROLE_ADDRESSES_ONLY = ["aimo-interp.github.io", "fomo26.github.io", "lbl.gov", "realpdecompetition.github.io", "roco-spring.github.io"];
 /**
- * NO_TERMS sites whose verified record says "the search is not exhaustive" (GitHub code search not run; tick 45 review,
- * defect 3). Their robots probes were queued as rows 245, 247, 249, 250, 252 and 253 and are paused until the main thread
- * rules whether code search is required.
+ * Ruling R3: the Pages site whose page carries a named individual's address. The verifiers' condition is "redact
+ * addresses before commit" (tick 45 review, defect 1); render-watch commits every capture and masks no address, so the
+ * runner does not meet it: CONDITIONAL_UNMET, as mozilla.org (RULING-2026-10-04-mozilla-precondition.md §3 rule 3),
+ * until render-watch masks addresses before it commits a capture.
  */
-const CODE_SEARCH_OPEN = ["agenthon.net", "alignmentforum.org", "bcamlc.com", "flagos.io", "geminixprize.com", "k12-ai-infrastructure.org"];
-/** The terms- line held for a main-thread ruling: its URL is assembled from a template, not written verbatim anywhere (defect 4). */
-const HELD_TERMS = { site: "grand-challenge.org", url: "https://grand-challenge.org/policies/terms-of-service/", slug: "terms-grand-challenge", row: 237 };
+const NAMED_ADDRESSES = ["xiuwenz2.github.io"];
+/**
+ * Ruling R1 (5.10): the nine NO_TERMS sites the review had left short of exhaustive-negative, six because GitHub code
+ * search was not run and three because their auditors probed Open Terms Archive in eight declarations repos only (their
+ * verifiers covered the organisation's full listing). Code search is outside this session's scope and the ruling does not
+ * require it, so each note now opens "exhaustive-negative" and each site has one robots.txt probe.
+ */
+const RULED_EXHAUSTIVE = [
+  "agenthon.net",
+  "alignmentforum.org",
+  "bcamlc.com",
+  "flagos.io",
+  "geminixprize.com",
+  "health-data-hub.fr",
+  "ijcai.org",
+  "k12-ai-infrastructure.org",
+  "mozilladatacollective.com",
+];
+/** The six probes the review had paused (rows 245-253) and ruling R1 restored. */
+const UNPAUSED_PROBES = [245, 247, 249, 250, 252, 253];
+/** The three probes ruling R1 queued: sites that never had one. */
+const NEW_PROBES = [
+  { row: 262, site: "health-data-hub.fr", url: "https://www.health-data-hub.fr/robots.txt", slug: "robots-health-data-hub" },
+  { row: 263, site: "ijcai.org", url: "https://2026.ijcai.org/robots.txt", slug: "robots-ijcai-2026" },
+  { row: 264, site: "mozilladatacollective.com", url: "https://competitions.mozilladatacollective.com/robots.txt", slug: "robots-mozilladatacollective" },
+];
+/** The comment every active probe line of this audit carries in urls.txt; the rows ruling R1 queued say so. */
+const PROBE_COMMENT =
+  /^# research\/channel-loop\/ZERO-TESTS\.md row \d+ — exhaustive-negative NO_TERMS site( \(ruling R1, 5\.10\))?; the probe scripts\/robots-verdict\.mjs reads; no rules page is fetched before it \(5\.10\.2026\)\.$/;
+/** grand-challenge.org's terms line, admitted by ruling R2 as a URL derived from the platform's own source. */
+const DERIVED_TERMS = { site: "grand-challenge.org", url: "https://grand-challenge.org/policies/terms-of-service/", slug: "terms-grand-challenge", row: 237 };
+/** Ruling R2's sentence, which urls.txt's header carries directly after its one rule. */
+const EXCEPTION =
+  "Exception (ruling 5.10.2026, tick 45, TERMS-AUDIT-2026-10-05-prize-events.md): a terms- line of a TERMS_PENDING site may carry a URL derived from the site's own source code at a pinned commit when its comment cites the template line and the domain line; a 404, or a redirect to another host, retires the line. Never a rules page.";
 
 describe("tick 45: the prize-event sites' terms verdicts", () => {
   it("audits the list as it stood at 548be52, kept byte for byte as a fixture", () => {
@@ -206,13 +260,17 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       expect(pinnedLines(cell), site).toEqual(mine);
       expect(cell.startsWith(`${mine.length} (`), site).toBe(true);
     }
-    // Each URL the note lists as renderable names the fixture line it is on.
+    // Each URL the note lists as renderable names the fixture line it is on, and its site may be rendered now.
     const listed = [...audit.matchAll(new RegExp(`^- \`(https?://\\S+)\` \\(([a-z0-9.-]+); ai-allowed-events\\.urls\\.txt@${PIN}:(\\d+)\\)$`, "gm"))];
     expect(listed.length).toBeGreaterThan(0);
     for (const [, url, site, n] of listed) {
       expect(byN.get(Number(n))?.url, `${site} :${n}`).toBe(url);
       expect(siteOfUrl(url), url).toBe(site);
+      expect(termsGate(url, "x", v).ok, url).toBe(true);
     }
+    // ...and every rules URL the gate admits today is listed there.
+    const open = audited().filter((e) => termsGate(e.url, e.slug, v).ok).map((e) => e.url);
+    expect(listed.map(([, url]) => url).sort()).toEqual(open.sort());
   });
 
   it("rests the GitHub-hosted verdicts on the saved copies, and the GitHub Pages ones on github.com's open-access condition", () => {
@@ -223,44 +281,58 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       expect(v[site].note, site).toContain("the condition holds only while this research is published open access, i.e. while the repo is public");
     }
     expect(Object.entries(AUDITED).filter(([, x]) => x === "CONDITIONAL_MET").map(([s]) => s).sort()).toEqual(
-      PAGES.filter((s) => !REDACT_BEFORE_COMMIT.includes(s)).sort(),
+      PAGES.filter((s) => !NAMED_ADDRESSES.includes(s)).sort(),
     );
     expect(v["openreview.net"].source).toContain("research/channel-loop/terms/openreview-terms-of-use-2026-10-05.md");
     expect(v["codabench.org"].source).toContain("research/channel-loop/terms/codabench-privacy-and-terms-2026-10-05.md");
     expect(v["ansperformance.eu"].source).toContain("research/channel-loop/terms/ansperformance-disclaimer-2026-10-05.md");
   });
 
-  it("keeps the verifiers' 'redact addresses before commit' condition, which the runner does not meet, so the five Pages sites with addresses are CONDITIONAL_UNMET", () => {
-    // The premise: render-watch masks keys and tokens before it writes and commits a capture, never an email address.
-    // If it ever learns to, this fails: the five verdicts move to CONDITIONAL_MET in that fold (mozilla.org's rule).
+  it("applies ruling R3: Pages sites with only role addresses are CONDITIONAL_MET, one with a named individual's address stays CONDITIONAL_UNMET", () => {
+    // The premise of the UNMET verdict: render-watch masks keys and tokens before it writes and commits a capture, never
+    // an email address. If it ever learns to, this fails: the verdict moves to CONDITIONAL_MET in that fold (R3; §9).
     const page = Buffer.from("<p>Contact: organisers@example.org</p>", "utf8");
     expect(redactSecrets(page, "text/html").count).toBe(0);
     const v = verdicts();
-    for (const site of REDACT_BEFORE_COMMIT) {
+    for (const site of NAMED_ADDRESSES) {
       expect(v[site].verdict, site).toBe("CONDITIONAL_UNMET");
       expect(v[site].note, site).toMatch(/^CONDITIONAL_UNMET \(tick 45 review/);
       expect(v[site].note, site).toContain("redact addresses before commit");
       expect(v[site].note, site).toContain("RULING-2026-10-04-mozilla-precondition.md §3 rule 3");
+      expect(v[site].note, site).toContain("ruling R3");
+      expect(v[site].note, site).toContain("named individuals' university addresses");
       expect(v[site].note, site).not.toMatch(/before (a capture is|it is) relied on/);
       for (const e of audited().filter((x) => siteOfUrl(x.url) === site)) {
         expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(false);
       }
     }
+    for (const site of ROLE_ADDRESSES_ONLY) {
+      expect(v[site].verdict, site).toBe("CONDITIONAL_MET");
+      expect(v[site].note, site).toMatch(/^CONDITIONAL_MET on github\.com's condition/);
+      expect(v[site].note, site).toContain("a role address");
+      expect(v[site].note, site).toContain("ruling R3");
+      expect(v[site].note, site).not.toContain("named individual's address");
+      for (const e of audited().filter((x) => siteOfUrl(x.url) === site)) {
+        expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(true);
+      }
+    }
+    // The notes name the kind of address, never the address.
+    for (const site of Object.keys(AUDITED)) {
+      expect(ADDRESS.test(v[site].note ?? ""), site).toBe(false);
+      expect(ADDRESS.test(v[site].source), site).toBe(false);
+    }
     const audit = readFileSync(AUDIT, "utf8");
     expect(audit).not.toMatch(/[Bb]efore relying on a capture|before (a capture is|it is) relied on/);
     expect(audit).toContain("redact addresses before commit");
+    expect(ADDRESS.test(audit.slice(0, audit.indexOf("## Every URL the agents fetched")))).toBe(false);
   });
 
-  it("queues exactly one terms- line for each TERMS_PENDING site but grand-challenge.org, at the terms URL its verdict names, and nothing else of it", () => {
+  it("queues exactly one terms- line for each TERMS_PENDING site, at the terms URL its verdict names, and nothing else of it", () => {
     const v = verdicts();
     const lines = active();
     for (const [site, verdict] of Object.entries(AUDITED)) {
       if (verdict !== "TERMS_PENDING") continue;
       const mine = lines.filter((e) => siteOfUrl(e.url) === site);
-      if (site === HELD_TERMS.site) {
-        expect(mine, site).toEqual([]);
-        continue;
-      }
       expect(mine, site).toHaveLength(1);
       expect(mine[0].slug, site).toMatch(/^terms-/);
       expect(v[site].source.startsWith(`${mine[0].url} (`), site).toBe(true);
@@ -268,71 +340,99 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     }
   });
 
-  it("holds grand-challenge.org's terms line, whose URL no file writes verbatim, until the main thread rules on the exception", () => {
+  it("queues grand-challenge.org's derived terms URL under ruling R2's exception, which urls.txt's header records after its one rule", () => {
     const v = verdicts();
-    const e = v[HELD_TERMS.site];
+    const e = v[DERIVED_TERMS.site];
     expect(e.verdict).toBe("TERMS_PENDING");
-    expect(e.source.startsWith(`${HELD_TERMS.url} (`)).toBe(true);
-    expect(e.note).toMatch(/^terms unread\. Held \(tick 45 review, defect 4\): /);
-    expect(e.note).toContain("research/rendered/urls.txt's one rule");
-    const held = pausedLines().filter((p) => p.url === HELD_TERMS.url);
-    expect(held).toHaveLength(1);
-    expect(held[0].slug).toBe(HELD_TERMS.slug);
-    expect(held[0].line).toMatch(/^# paused \(held for a main-thread ruling, 5\.10\.2026\): grand-challenge\.org is TERMS_PENDING in research\/channel-loop\/terms-verdicts\.json — /);
-    expect(zeroRows().get(HELD_TERMS.row)?.row).toContain("**PAUSED 5.10 (tick 45 review):");
+    expect(e.source.startsWith(`${DERIVED_TERMS.url} (`)).toBe(true);
+    expect(e.note).toMatch(/^terms unread\. Queued under ruling R2 \(5\.10/);
+    expect(e.note).not.toContain("Held (tick 45 review");
+    // The header: the one rule's paragraph, then the exception, word for word; the one rule itself unchanged.
+    const header = urlsHeader();
+    expect(header).toContain(
+      'No URL is invented, guessed, or extrapolated from a pattern — including "the same site probably has a /pricing page". A URL nobody wrote down is a URL nobody can cite. ' +
+        EXCEPTION,
+    );
+    expect(header.split("Exception (ruling").length).toBe(2);
+    // The line is active, and its comment cites the template line and the domain line.
+    expect(active().filter((l) => l.url === DERIVED_TERMS.url).map((l) => [l.url, l.slug])).toEqual([[DERIVED_TERMS.url, DERIVED_TERMS.slug]]);
+    expect(termsGate(DERIVED_TERMS.url, DERIVED_TERMS.slug, v).ok).toBe(true);
+    expect(pausedLines().filter((p) => p.url === DERIVED_TERMS.url)).toEqual([]);
+    const { comment, line: under } = listedRow(DERIVED_TERMS.row);
+    expect(under).toBe(`${DERIVED_TERMS.url}\t${DERIVED_TERMS.slug}`);
+    expect(comment).toContain("URL derived from the platform's own source (exception, ruling R2, 5.10.2026)");
+    expect(comment).toContain("app/config/settings.py:767");
+    expect(comment).toContain("app/grandchallenge/subdomains/utils.py:24");
+    expect(comment).toContain("at ff2fb5c");
+    expect(comment).not.toMatch(/[Pp]aused/);
+    expect(zeroRows().get(DERIVED_TERMS.row)?.row).not.toContain("**PAUSED");
   });
 
-  it("opens the note exhaustive-negative only where the verified records claim it, and queues each such site one robots.txt probe", () => {
+  it("opens every NO_TERMS note exhaustive-negative, by the verified records and ruling R1, and queues each such site one robots.txt probe", () => {
     const v = verdicts();
     const lines = active();
     for (const [site, verdict] of Object.entries(AUDITED)) {
       if (verdict !== "NO_TERMS") continue;
       const mine = lines.filter((e) => siteOfUrl(e.url) === site);
-      if (THIN.includes(site) || CODE_SEARCH_OPEN.includes(site)) {
-        expect(isExhaustiveNegative(v[site]), site).toBe(false);
-        expect(v[site].note, site).toMatch(/^not exhaustive-negative: /);
-        expect(mine, site).toEqual([]);
-        continue;
-      }
       expect(isExhaustiveNegative(v[site]), site).toBe(true);
       expect(v[site].note, site).toMatch(/^exhaustive-negative \(Open Terms Archive: .*tosdr\/tosdr-snapshots.*auditor and verifier\)\. /);
+      expect(v[site].note, site).not.toContain("not exhaustive-negative");
       expect(mine, site).toHaveLength(1);
       expect(isRobotsProbe(mine[0].url, mine[0].slug), site).toBe(true);
       // The probe reads the host that serves the site's rules pages.
       const hosts = new Set(audited().filter((e) => siteOfUrl(e.url) === site).map((e) => new URL(e.url).hostname));
       expect(hosts.has(new URL(mine[0].url).hostname), site).toBe(true);
       expect(termsGate(mine[0].url, mine[0].slug, v).ok, site).toBe(true);
+      expect(v[site].note, site).toContain(mine[0].url);
+    }
+    for (const site of RULED_EXHAUSTIVE) {
+      expect(v[site].verdict, site).toBe("NO_TERMS");
+      expect(v[site].note!.endsWith("(ruling R1, 5.10, TERMS-AUDIT-2026-10-05-prize-events.md)"), site).toBe(true);
+      expect(v[site].note, site).not.toMatch(/until (that|the main thread's) ruling|is paused, not fetched/);
     }
     expect(Object.values(AUDITED).filter((x) => x === "NO_TERMS")).toHaveLength(21);
-    expect(Object.keys(AUDITED).filter((s) => isExhaustiveNegative(v[s]))).toHaveLength(12);
+    expect(Object.keys(AUDITED).filter((s) => isExhaustiveNegative(v[s]))).toHaveLength(21);
+    // mozilladatacollective.com keeps both readings of whose terms govern it, and R3's address rule for its rules pages.
+    const mdc = v["mozilladatacollective.com"].note!;
+    expect(mdc).toContain("DrivenData");
+    expect(mdc).toContain("en/websites_tou.md:13");
+    expect(mdc).toContain("reads only robots.txt");
+    expect(mdc).toContain("ruling R3");
   });
 
-  it("pauses the six probes whose sites' own records say 'not exhaustive', pending the main thread's ruling on code search", () => {
-    const v = verdicts();
+  it("pauses no line of the audit after the rulings: the six probes are active again and three were queued", () => {
     const rows = zeroRows();
-    for (const site of CODE_SEARCH_OPEN) {
-      expect(v[site].note, site).toContain("GitHub code search");
-      expect(v[site].note, site).toContain("main thread");
-      const probe = pausedLines().filter((p) => siteOfUrl(p.url) === site);
-      expect(probe, site).toHaveLength(1);
-      expect(isRobotsProbe(probe[0].url, probe[0].slug), site).toBe(true);
-      expect(probe[0].line, site).toMatch(new RegExp(`^# paused \\(terms unread, 5\\.10\\.2026\\): ${site.replace(/\./g, "\\.")} is NO_TERMS in research/channel-loop/terms-verdicts\\.json — `));
-      expect(termsGate(probe[0].url, probe[0].slug, v).ok, site).toBe(false);
-      const row = [...rows.values()].find((r) => r.url === probe[0].url);
-      expect(row?.row, site).toContain("**PAUSED 5.10 (tick 45 review):");
+    const paused = pausedLines().filter((p) => Object.hasOwn(AUDITED, siteOfUrl(p.url)));
+    expect(paused).toEqual([]);
+    for (let n = 235; n <= 264; n += 1) expect(rows.get(n)?.row, `row ${n}`).not.toContain("**PAUSED");
+    for (const n of UNPAUSED_PROBES) {
+      const { comment, line } = listedRow(n);
+      expect(comment, `row ${n}`).toMatch(PROBE_COMMENT);
+      expect(comment, `row ${n}`).not.toContain("(ruling R1, 5.10)");
+      expect(line, `row ${n}`).toBe(`${rows.get(n)?.url}\t${active().find((l) => l.url === rows.get(n)?.url)?.slug}`);
     }
+    for (const p of NEW_PROBES) {
+      const { comment, line } = listedRow(p.row);
+      expect(comment, p.site).toMatch(PROBE_COMMENT);
+      expect(comment, p.site).toContain("(ruling R1, 5.10)");
+      expect(line, p.site).toBe(`${p.url}\t${p.slug}`);
+      const row = rows.get(p.row)?.row ?? "";
+      expect(row, p.site).toContain(`| terms audit (tick 45, ruling R1): ${p.site} robots.txt, prize-event reading (BOARD-LOOP §13; ruling 30.9 16(d) D2(v)) | ${p.url} |`);
+      expect(row, p.site).toContain(`whether ${new URL(p.url).hostname}'s robots.txt allows the rules paths listed in research/measurements/ai-allowed-events.urls.txt, for scripts/robots-verdict.mjs to judge`);
+      expect(siteOfUrl(p.url)).toBe(p.site);
+    }
+    for (let n = 244; n <= 264; n += 1) expect(listedRow(n).comment, `row ${n}`).toMatch(PROBE_COMMENT);
   });
 
-  it("ties each tick-45 ZERO-TESTS row to the urls.txt line under its comment, active or paused", () => {
-    const text = readFileSync(URLS, "utf8").split("\n");
+  it("ties each tick-45 ZERO-TESTS row to the active urls.txt line under its comment", () => {
     const rows = zeroRows();
-    for (let n = 235; n <= 261; n += 1) {
-      const at = text.findIndex((l) => l.startsWith(`# research/channel-loop/ZERO-TESTS.md row ${n} — `));
-      expect(at, `row ${n}`).toBeGreaterThan(-1);
-      const line = text[at + 1];
-      const url = line.startsWith("#") ? PAUSED_LINE.exec(line)?.[1] : line.split("\t")[0];
-      expect(url, `row ${n}`).toBe(rows.get(n)?.url);
+    for (let n = 235; n <= 264; n += 1) {
+      const { comment, line } = listedRow(n);
+      expect(comment, `row ${n}`).toBeDefined();
+      expect(line!.startsWith("#"), `row ${n}`).toBe(false);
+      expect(line!.split("\t")[0], `row ${n}`).toBe(rows.get(n)?.url);
     }
+    expect(Math.max(...rows.keys())).toBe(264);
   });
 
   it("puts no rules page into research/rendered/urls.txt, and the gate refuses every audited rules URL it should", () => {
@@ -351,6 +451,21 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(applyVerdicts(readFileSync(URLS, "utf8"), v).paused).toEqual([]);
   });
 
+  it("records the main thread's three rulings in the audit note, and the render groups add up to the 101 URLs over 45 sites", () => {
+    const audit = readFileSync(AUDIT, "utf8");
+    const at = audit.indexOf("## Main-thread rulings (5.10.2026, tick 45; Fable 5.1, the session model)");
+    expect(at).toBeGreaterThan(-1);
+    expect(at).toBeLessThan(audit.indexOf("## Every URL the agents fetched"));
+    for (const r of ["**R1. Exhaustive-negative does not require GitHub code search.**", "**R2. grand-challenge.org's terms URL.**", "**R3. Personal versus role addresses.**"]) {
+      expect(audit.slice(at), r).toContain(r);
+    }
+    expect(audit).not.toContain("Waiting on a main-thread ruling");
+    const total = audit.match(/^Total: ([\d + ]+) = (\d+) URLs, over ([\d + ]+) = (\d+) sites\.$/m);
+    expect(total).not.toBeNull();
+    const sum = (s: string) => s.split("+").reduce((a, b) => a + Number(b.trim()), 0);
+    expect([sum(total![1]), Number(total![2]), sum(total![3]), Number(total![4])]).toEqual([101, 101, 45, 45]);
+  });
+
   it("confines lbl.gov's CONDITIONAL_MET to the GitHub Pages host it rests on", () => {
     const v = verdicts();
     const limit = (PATH_LIMITS as Record<string, { hosts?: string[]; prefixes: string[]; why: string }>)["lbl.gov"];
@@ -365,6 +480,7 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     }
     expect(applyVerdicts("https://www.lbl.gov/x\tlbl-x\n", v).urls).toMatch(/^# paused \(path limit\): lbl\.gov — see PATH_LIMITS/);
     expect(v["lbl.gov"].note).toContain("admits lbl.gov lines on fair-universe.lbl.gov only");
+    expect(v["lbl.gov"].note).toContain("the project mailbox (index.html:481), a role address and not personal information (ruling R3");
     // posthog.com's path limit names no hosts and reads as before.
     expect(termsGate("https://posthog.com/pricing", "x", v).why).toMatch(/^posthog\.com lines may be active only under \/docs\/ or \/tutorials\//);
   });
