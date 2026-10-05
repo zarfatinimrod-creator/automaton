@@ -16,9 +16,9 @@ import { parseUrlList, termsBarred } from "../../../scripts/render-watch.mjs";
  * scripts/prize-dispatch.mjs (logs/CHANNEL_LOOP.md §9, queued 5.10 by tick 45, item 2) prints the lines of
  * research/measurements/ai-allowed-events.urls.txt whose site passes termsGate: the text for render-watch.yml's `urls`
  * workflow_dispatch input. The whole file can never be pasted: render-watch's parser refuses a line on a barred host
- * (sites.google.com today), and the rule of tick 20 (a site's terms are read before its first line is fetched) fails most of the rest. What it
- * must never do: print a line the gate refuses, print anything but the lines on stdout, add a js flag, or print a
- * line render-watch's own parser would refuse.
+ * (sites.google.com today), and the rule of tick 20 (a site's terms are read before its first line is fetched) fails
+ * most of the rest. What it must never do: print a line the gate refuses, print anything but the lines on stdout, add
+ * a js flag, or print a line render-watch's own parser would refuse.
  */
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");

@@ -122,3 +122,36 @@ prize-dispatch: read 101 line(s) of research/measurements/ai-allowed-events.urls
 - פלט הסיכום המלא של הריצה האמיתית (34 שורות ארוכות) הודפס פעמיים: כ-6 אלף.
 - סבב המוטציות הראשון עם שלושת ה-"killed?" ופלט ה-tail שלהם: כ-3 אלף שהיו נחסכים לו הבדיקה לא הייתה מחשבת בזמן איסוף.
 - רשימת המשימות של ה-thread הראשי שהוצגה שוב ושוב בתזכורות: כ-15 אלף שלא היו בשליטתי.
+
+## 9. תיקוני הסקירה (סבב התיקון אחרי הסקירה של הענף)
+הסקירה מצאה ממצא חוסם אחד (תהליך, לא קוד), ארבעה "fix" וארבע הערות. כל ממצא שוחזר קודם (פקודה ופלט), והקוד תוקן בבדיקה-קודם. קומיט התיקון: `c5bde7b`; היומן הזה בקומיט שאחריו.
+
+### ממצא אחר ממצא
+1. **חוסם — מחיקת קבצי העבודה של ה-thread הראשי** (סעיף 5): אירוע תהליך, לא פגם בקוד, ולא ניתן לתקן אותו כאן: תוכן הקבצים (סקריפט הדירוג, תיקיות הקריאה, גופי השיגור) לא ידוע לי ואין להם עותק, ובנייתם מחדש היא של ה-thread הראשי. מה שבדקתי: `node scripts/prize-dispatch.mjs` על ה-HEAD של הענף מדפיס את 12 השורות (יציאה 0), כך שאת `dispatch-urls.txt` אפשר לבנות מחדש בפקודה אחת. לא כתבתי שום קובץ לתיקייה המשותפת `scratchpad/tick47/`: ה-scratch שלי היה בתת-תיקייה פרטית משלו ונמחק בסוף בשמו.
+2. **fix — מספרי השורות בדחייה של `parseUrlList`: תוקן.** שחזור: רשימה עם slug כפול בשורות 5 ו-8 של הקלט (שלוש הערות ושורה ריקה לפניהן, שתי שורות נכשלות ביניהן) הודפסה כ-`urls.txt line 2: slug "prize-dup" is already used on line 1` (יציאה 1, stdout ריק) — שורות של טקסט הפלט, לא של הקובץ. התיקון: הפרסור החוזר עטוף ב-try/catch, וכל `line N` בהודעה ממופה ל-`passed[N - 1].lineNumber` (`lines` ו-`passed` מקבילים); ההודעה נפתחת ב-"render-watch's parser refuses the output:". עכשיו: `line 8: slug "prize-dup" is already used on line 5`. בדיקות: בפונקציה (כפילות 5/8, ושורת tiktok.com בשורה 4 של הקלט) וב-CLI (כפילות בשורות 4/6).
+3. **fix — ה-CLI כש-`--skip-captured` מדלג על כל השורות העוברות: נבדק.** ההתנהגות הייתה נכונה (יציאה 3, stdout ריק) אבל לא נבדקה, ומוטנט R3 (יציאה 0 ושורה ריקה ב-stdout — שיגור ריק ל-render-watch) שרד. נוספה בדיקת CLI: `<slug>.meta.json` לכל ארבע השורות העוברות → יציאה 3, stdout ריק, השורה הראשונה "4 pass the terms gate (3 site(s)), 6 fail", ו-"every passing line is already captured". R3 נהרג.
+4. **fix — פיצול שדות על כל רווח: נבדק.** כל שורות הפיקסצ'ר היו מופרדות ב-TAB, ו-R2 (הדפסת השורה הגולמית) ו-R6 (פיצול על TAB בלבד) שרדו. ב-`LIST` שורה אחת מופרדת עכשיו ב-" \t " ואחת ברווחים בלבד, והפלט הצפוי (`PASSING`) נשאר `URL<TAB>slug`; נוספה גם בדיקה ייעודית לשלוש צורות ההפרדה. שניהם נהרגו.
+5. **fix — שני המשפטים הישנים מחוץ להיקף: נדחה בענף הזה.** `scripts/prize-intake.ts:14-15` ("to paste into render-watch.yml's `urls` input") ו-`describeAiAllowed` ב-`src/revenue/ai-allowed-events.ts:909` (עם הליטרל ב-`prize-intake-rules.test.ts:825`) לא שונו. הסיבה: ה-spec של הסבב קובע "Scope limit: nothing else … If something outside this scope is wrong, write it in the log's section 4 and leave it", וההצעה של הממצא עצמו היא "Next tick, main thread". הם רשומים בסעיף 4 ונשארים לסבב הבא.
+6. **הערה — `meta.json` של רינדור שנכשל נחשב "צולם": לא שונה.** זו החלטת עיצוב וה-spec מגדיר צילום כקיום `<slug>.meta.json`. שאלה פתוחה ל-thread הראשי: האם meta עם `error` לא ריק צריך להיחשב לא-מצולם, ולהופיע ב-stderr בנפרד.
+7. **הערה — קובץ `--verdicts` בלי `sites`: תוקן** (זול, ובתוך ההיקף — הסקריפט עצמו). שחזור: `--verdicts package.json` → יציאה 3 ו-"has no verdict" לכל 101 השורות, אבחנה מטעה. עכשיו: יציאה 1, stdout ריק, `--verdicts package.json has no "sites" object (the shape of research/channel-loop/terms-verdicts.json)`; גם `sites: []` נדחה. `sites: {}` נשאר תקין (יציאה 3, כמו קודם).
+8. **הערה — שתי הערות שמזכירות שורה אחת של רשימה שבועית: תוקן.** בראש הסקריפט ובראש קובץ הבדיקה: "a line on a barred host (sites.google.com today)".
+9. **הערה — R1, ספירת ה-pass ב-stderr כשיש דילוגים: תוקן.** בדיקת `describeSelection` עם דילוג בודקת עכשיו את השורה הראשונה ("4 pass the terms gate (3 site(s)), 6 fail") ואת שורת הסיום המדויקת ("every passing line is already captured: nothing to dispatch", ולא "nothing passes"). R1 נהרג.
+
+### בדיקות ופעולות ולידציה
+- אדום קודם: `npx vitest run src/__tests__/revenue/prize-dispatch.test.ts` אחרי הוספת הבדיקות ולפני תיקון הקוד — יציאה 1, 3 נכשלו מתוך 29 (מספרי השורות בפונקציה, מספרי השורות ב-CLI, צורת קובץ ה-verdicts). לבדיקות שסוגרות פער (ממצאים 3, 4, 9) האדום הוא המוטנט: על `6ac28bf`, `node scripts/mutate.mjs --plan <plan.json>` עם R1, R2, R3, R6 — יציאה 1, 4 survived.
+- אחרי התיקון: אותה בדיקה 29/29, יציאה 0.
+- `VERIFY_OUT=<scratch>/verify scripts/verify.sh src/__tests__/revenue/prize-dispatch.test.ts src/__tests__/revenue/queue-zero-test.test.ts src/__tests__/revenue/prize-intake.test.ts src/__tests__/revenue/prize-intake-rules.test.ts src/__tests__/revenue/prize-intake-workflow.test.ts src/__tests__/revenue/prize-terms-audit.test.ts` — typecheck יציאה 0, vitest יציאה 0, 6 קבצים, 178/178; verify יציאה 0, על `c5bde7b` ושוב על העץ של קומיט היומן (שבו גם יישור שורות של הערת הראש בקובץ הבדיקה, הערה בלבד).
+- מוטציות על `c5bde7b`: `node scripts/mutate.mjs --plan <plan.json>` עם הבדיקה `prize-dispatch.test.ts` — 28 הוחלו, 28 killed, 0 survived, יציאה 0:
+
+| קבוצה | מוטציות | תוצאה |
+|---|---|---|
+| 13 של הבונה | drop-reparse (מכוון מחדש: `parseUrlList(...)` בתוך ה-try → `void 0;`), invert-gate, print-failing, cli-ignore-skip, fn-ignore-skip, accept-third-field, accept-no-slug, exit-0-when-empty, sort-ascending, summary-on-stdout, comments-not-skipped, capture-by-txt, why-ignored | 13 killed |
+| 10 של הסוקר (B1-B3 הן שלוש של הבונה) | R1 ספירת pass בלי הדילוגים; R2 `lines.push(t)`; R3 יציאה 0 כשהכול צולם; R4 בלי שובר השוויון בשם; R5 ספירת אתרים לפי slug; R6 פיצול על TAB בלבד; R7 פרסור שורה-שורה (מאבד כפילויות); R8 משפט התבנית ב-`ai-allowed-events.ts`; R9 שדה שלישי `js` מותר; R10 `--rendered` מתעלמים ממנו | 10 killed |
+| 5 חדשות, על הקוד שנוסף | N1 בלי מיפוי השורות; N2 off-by-one (`passed[Number(n)]`); N3 בלי בדיקת הצורה של ה-verdicts; N4 מערך `sites` מותר; N5 הדחייה נבלעת (`void new Error`) | 5 killed |
+
+- ריצה על הקבצים האמיתיים אחרי התיקון: `node scripts/prize-dispatch.mjs` — יציאה 0, **12 שורות** ב-stdout, בכל אחת TAB אחד בדיוק, כולל `https://fair-universe.lbl.gov/?ref=mlcontests`; שורת ה-stderr הראשונה זהה לזו שבסעיף 6 ("12 pass the terms gate (11 site(s)), 89 fail"). `--skip-captured`: יציאה 3, stdout ריק, "skipped 12".
+- חיפוש `grep -riE` של שם הבעלים (התבנית שבתדריך) על כל קובץ ששונה: 0; כתובות דוא"ל בתוכן החדש: 0.
+
+### עבודה שחזרה על עצמה / אסימונים
+- **תוכניות מוטציה נכתבו שוב ביד** — של הבונה, של הסוקר, ועכשיו מאוחדות: 28 שורות JSON. זה מחזק את ההצעה בסעיף 7 לשמור תוכניות ליד הבדיקות, כדי שסבב תיקון יריץ את אותה תוכנית במקום להעתיק find/replace מתוך דוחות.
+- **אסימונים:** קריאת הסקריפט, קובץ הבדיקה והיומן במלואם (כ-25 אלף) — הכרחית; פלט ה-tail של `mutate.mjs` לכל מוטנט נקרא רק דרך סינון שורות הסיכום.
