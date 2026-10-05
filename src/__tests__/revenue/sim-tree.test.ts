@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -112,6 +112,21 @@ describe("scripts/sim-tree.sh: the tree", () => {
     // The node_modules link is not an untracked file in the tree.
     expect(st).toBe("");
     expect(r.stderr).toContain(`sim-tree: from v1 at ${v1}`);
+  });
+
+  it("commits every tracked file, one .gitignore matches (force-added) too, and the node_modules link is never untracked", () => {
+    const { repo, tmp } = makeRepo();
+    // A .gitignore that does not name node_modules, and a tracked file it does name.
+    writeFileSync(join(repo, ".gitignore"), "build/\n");
+    mkdirSync(join(repo, "build"));
+    writeFileSync(join(repo, "build", "kept.txt"), "forced\n");
+    git(repo, "add", "-f", ".gitignore", "build/kept.txt");
+    git(repo, ...who, "commit", "-q", "-m", "three");
+    const r = sim(repo, tmp, sh("git ls-files; echo ---; git status --porcelain --untracked-files=all; [ -L node_modules ] && echo linked"));
+    expect(r.code).toBe(0);
+    const [files, rest] = r.stdout.split("---\n");
+    expect(files.split("\n").filter(Boolean).sort()).toEqual([".gitignore", "build/kept.txt", "file.txt"]);
+    expect(rest).toBe("linked\n");
   });
 
   it("links node_modules to the checkout's, and has none when the checkout has none", () => {
@@ -249,6 +264,28 @@ describe("scripts/sim-tree.sh: refusals exit 2 and create nothing", () => {
     refused(sim(repo, tmp, []), /no command after --/, tmp);
     refused(sim(repo, tmp, ["--bogus", "--", "true"]), /unknown option: --bogus/, tmp);
     refused(sim(repo, tmp, ["--ref"]), /--ref needs a value/, tmp);
+  });
+});
+
+describe("scripts/sim-tree.sh: a failed build", () => {
+  it("removes the half-built tree, exits with the failing step's code, and never runs the command", () => {
+    const { repo, tmp } = makeRepo();
+    const bin = join(dirname(tmp), "fakebin");
+    mkdirSync(bin);
+    const realGit = spawnSync("sh", ["-c", "command -v git"], { encoding: "utf8" }).stdout.trim();
+    // A git whose init fails (exit 7) and which is the real git otherwise.
+    writeFileSync(join(bin, "git"), `#!/usr/bin/env bash\nfor a in "$@"; do [ "$a" = init ] && exit 7; done\nexec "${realGit}" "$@"\n`);
+    chmodSync(join(bin, "git"), 0o755);
+    const marker = join(dirname(tmp), "ran");
+    const r = spawnSync("bash", [SCRIPT, "--", "touch", marker], {
+      cwd: repo,
+      env: { ...process.env, ...gitEnv, TMPDIR: tmp, PATH: `${bin}:${process.env.PATH}` },
+      encoding: "utf8",
+    });
+    expect(r.status).toBe(7);
+    expect(r.stderr).toMatch(/sim-tree: building the tree failed; removed \//);
+    expect(readdirSync(tmp)).toEqual([]);
+    expect(existsSync(marker)).toBe(false);
   });
 });
 

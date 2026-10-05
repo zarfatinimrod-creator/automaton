@@ -1,0 +1,204 @@
+[
+  {
+    "id": "C1",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "bytes: ext === \"meta.json\" ? metaBytes(newMeta) : masked.files.get(ext),",
+    "replace": "bytes: ext === \"meta.json\" ? metaBytes(newMeta) : files.get(ext),",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 50 C1: a new frozen copy is written with the unmasked bytes"
+  },
+  {
+    "id": "C2",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "const newMeta = frozenMeta(masked.meta, {",
+    "replace": "const newMeta = frozenMeta(meta, {",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 50 C2: the frozen copy's meta is the unmasked one (no redacted/remasked, old sha256)"
+  },
+  {
+    "id": "C3",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "ext === textExt ? \"text/plain\" : EXT_TYPES[ext]",
+    "replace": "ext === textExt ? \"application/octet-stream\" : EXT_TYPES[ext]",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 50 C3: the text (textPath) is not masked"
+  },
+  {
+    "id": "C4",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "let name = existingCopy(dir, slug, maskCapture(version.files, on).files);",
+    "replace": "let name = existingCopy(dir, slug, version.files);",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 50 C4: --cited compares an existing copy with the unmasked version, so a re-masked copy is frozen again under a new name"
+  },
+  {
+    "id": "C5",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "return JSON.stringify(undated(a)) === JSON.stringify(undated(b));",
+    "replace": "return JSON.stringify(a) === JSON.stringify(b);",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 50 C5: sameCapture compares remasked.on, so one version masked on two days is two captures"
+  },
+  {
+    "id": "C6",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "return JSON.stringify(undated(rest));",
+    "replace": "return JSON.stringify(rest);",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 50 C6: dataOf compares remasked.on"
+  },
+  {
+    "id": "C7",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "addresses: earlier + addresses,",
+    "replace": "addresses: addresses,",
+    "test": [
+      "src/__tests__/revenue/freeze-capture.test.ts",
+      "src/__tests__/revenue/remask-captures.test.ts"
+    ],
+    "note": "tick 50 C7 (= B1 on the code moved here): remasked.addresses is replaced, not accumulated"
+  },
+  {
+    "id": "C8",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "const remasked = { on,",
+    "replace": "const remasked = { on: meta.remasked?.on ?? on,",
+    "test": [
+      "src/__tests__/revenue/freeze-capture.test.ts",
+      "src/__tests__/revenue/remask-captures.test.ts"
+    ],
+    "note": "tick 50 C8 (= B2): the earlier remasked.on is kept instead of the new day"
+  },
+  {
+    "id": "C9",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "if (follows && key === \"sha256\") out.sha256 = sha256(body.bytes);",
+    "replace": "if (follows && key === \"sha256\") out.sha256 = sha256(body.before);",
+    "test": [
+      "src/__tests__/revenue/freeze-capture.test.ts",
+      "src/__tests__/revenue/remask-captures.test.ts"
+    ],
+    "note": "tick 50 C9: sha256 is not of the masked body"
+  },
+  {
+    "id": "C10",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "const masks = plan.masked && !plan.already ? `; ${apply ? \"masked\" : \"would mask\"} ${plan.masked}` : \"\";",
+    "replace": "const masks = \"\";",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 50 C10: --cited does not print how many strings a freeze masks"
+  },
+  {
+    "id": "C11",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "addresses += emailMasks(masked.bytes) - emailMasks(bytes);",
+    "replace": "addresses += 0;",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 50 C11: a masked freeze records remasked.addresses 0"
+  },
+  {
+    "id": "C12",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "const redacted = prev === undefined ? count :",
+    "replace": "const redacted = prev === undefined ? 0 :",
+    "test": [
+      "src/__tests__/revenue/freeze-capture.test.ts",
+      "src/__tests__/revenue/remask-captures.test.ts"
+    ],
+    "note": "tick 50 C12: redacted does not grow by the masks (a meta with no redacted gets 0)"
+  },
+  {
+    "id": "C13",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "writes, already, masked: masked.count };",
+    "replace": "writes, already, masked: 0 };",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 50 C13: the plan reports no masks"
+  },
+  {
+    "id": "F12",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "const t = redactSecrets(Buffer.from(s, \"utf8\"), \"text/plain\").bytes.toString(\"utf8\");",
+    "replace": "const t = s;",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 50 fixer F12: --cited prints a DRIFTED then/now line from git history unmasked"
+  },
+  {
+    "id": "T7",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "if (busy(name)) name = `${name}-${version.commit}`;",
+    "replace": "if (false) name = `${name}-${version.commit}`;",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 38 T7: a second version of one fetch day takes the name already taken"
+  },
+  {
+    "id": "T9",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "if (!flagged && meta.textError) flagged = {",
+    "replace": "if (false) flagged = {",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 38 T9: a meta with textError is frozen unflagged"
+  },
+  {
+    "id": "T10",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "else if (sha256(readFileSync(path)) !== hash) problems.push(",
+    "replace": "else if (false) problems.push(",
+    "test": [
+      "src/__tests__/revenue/freeze-capture.test.ts",
+      "src/__tests__/revenue/frozen-citations.test.ts"
+    ],
+    "note": "tick 38 T10: FROZEN.sha256's hashes are not checked"
+  },
+  {
+    "id": "T11",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "if (!value || value.startsWith(\"-\")) throw",
+    "replace": "if (!value) throw",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 38 T11: resolveCommit takes a value starting with - (git reads it as an option)"
+  },
+  {
+    "id": "T17",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "|| classifyFiles(slug, older).kind !== \"ok\") return version;",
+    "replace": ") return version;",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 38 T17: a failed fetch falls back to an older text that was itself no read page"
+  },
+  {
+    "id": "T18",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "return dataOf(existingMeta) !== dataOf(newMeta);",
+    "replace": "return false;",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 38 T18 (reviewer R3/R4): an existing copy's meta is not compared"
+  },
+  {
+    "id": "T19",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "!(already && existingMeta?.frozen?.flagged?.kind === flagged.kind)",
+    "replace": "!already",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 38 T19 (reviewer R5): a flagged capture is accepted as already frozen without its flag record"
+  },
+  {
+    "id": "T21",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "if (!plan.already) for (const w of plan.writes) writeFileSync(w.path, w.bytes);",
+    "replace": "for (const w of plan.writes) writeFileSync(w.path, w.bytes);",
+    "test": "src/__tests__/revenue/freeze-capture.test.ts",
+    "note": "tick 38 T21 (reviewer R16): an already frozen copy is rewritten"
+  },
+  {
+    "id": "N1",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "const NOTE_RE = ",
+    "replace": "const NOTE_RE = /(?!)/g; const NOTE_RE_UNUSED = ",
+    "test": [
+      "src/__tests__/revenue/freeze-capture.test.ts",
+      "src/__tests__/revenue/frozen-citations.test.ts"
+    ],
+    "note": "tick 38 N1: no note marks (a citation of the note itself is read as one of a capture)"
+  }
+]

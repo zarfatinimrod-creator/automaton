@@ -1,0 +1,226 @@
+[
+  {
+    "id": "drop-reparse",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "      parseUrlList(`${lines.join(\"\\n\")}\\n`);",
+    "replace": "      void 0;",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder (re-aimed by the fixer): the output is never re-parsed by render-watch's parseUrlList, so a line it refuses reaches a dispatch"
+  },
+  {
+    "id": "invert-gate",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "if (!gate.ok) {",
+    "replace": "if (gate.ok) {",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: the terms gate inverted, failing sites printed and passing ones dropped"
+  },
+  {
+    "id": "print-failing",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "why: gate.why });\n        return;",
+    "replace": "why: gate.why });",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: a failing line is recorded and then printed as well"
+  },
+  {
+    "id": "cli-ignore-skip-captured",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "skipCaptured: values[\"skip-captured\"],",
+    "replace": "skipCaptured: false,",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: the CLI drops --skip-captured"
+  },
+  {
+    "id": "fn-ignore-skip-captured",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "if (skipCaptured && captureExists(slug))",
+    "replace": "if (false && captureExists(slug))",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: selectDispatchLines ignores skipCaptured"
+  },
+  {
+    "id": "accept-third-field",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "if (fields.length > 2) {",
+    "replace": "if (fields.length > 3) {",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: a line with a third field (a flag) is accepted"
+  },
+  {
+    "id": "accept-no-slug",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "if (fields.length < 2) throw",
+    "replace": "if (fields.length < 1) throw",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: a line with no slug is accepted"
+  },
+  {
+    "id": "exit-0-when-empty",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "if (out.lines.length === 0) return 3;",
+    "replace": "if (out.lines.length === 0) return 0;",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: nothing passes and the exit is 0, not 3"
+  },
+  {
+    "id": "sort-ascending",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "y.count - x.count",
+    "replace": "x.count - y.count",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: failing sites listed fewest first"
+  },
+  {
+    "id": "summary-on-stdout",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "console.error(line);",
+    "replace": "console.log(line);",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: the summary goes to stdout and pollutes the dispatch text"
+  },
+  {
+    "id": "comments-not-skipped",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "if (t === \"\" || t.startsWith(\"#\")) return;",
+    "replace": "if (t === \"\") return;",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: a # comment line is read as a URL line"
+  },
+  {
+    "id": "capture-by-txt",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "`${slug}.meta.json`",
+    "replace": "`${slug}.txt`",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: --skip-captured looks for <slug>.txt, not the meta"
+  },
+  {
+    "id": "why-ignored",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "if (why) for (const p of passed)",
+    "replace": "if (false) for (const p of passed)",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 builder: --why prints nothing"
+  },
+  {
+    "id": "R1",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "const pass = passed.length + skipped.length;",
+    "replace": "const pass = passed.length;",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 reviewer: the pass count leaves out the captured lines --skip-captured skipped"
+  },
+  {
+    "id": "R2",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "lines.push(`${url}\\t${slug}`);",
+    "replace": "lines.push(t);",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 reviewer: the line is printed as read (spaces, not one TAB) instead of URL<TAB>slug"
+  },
+  {
+    "id": "R3",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "if (out.lines.length === 0) return 3;",
+    "replace": "if (out.lines.length === 0 && !values[\"skip-captured\"]) return 3;",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 reviewer: exit 0 (and an empty line on stdout) when every passing line is already captured"
+  },
+  {
+    "id": "R4",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": " || (a < b ? -1 : a > b ? 1 : 0)",
+    "replace": "",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 reviewer: no tie-breaker by site name among sites with the same count"
+  },
+  {
+    "id": "R5",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "const sites = new Set([...passed, ...skipped].map((p) => p.site));",
+    "replace": "const sites = new Set([...passed, ...skipped].map((p) => p.slug));",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 reviewer: passing sites counted by slug, not by site"
+  },
+  {
+    "id": "R6",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "const fields = t.split(/\\s+/);",
+    "replace": "const fields = t.split(\"\\t\");",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 reviewer: fields split on a TAB only, so a space-separated line has one field"
+  },
+  {
+    "id": "R7",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "      parseUrlList(`${lines.join(\"\\n\")}\\n`);",
+    "replace": "      for (const l of lines) parseUrlList(`${l}\\n`);",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 reviewer: the output parsed line by line, so a duplicate slug across lines is never refused"
+  },
+  {
+    "id": "R8",
+    "file": "src/revenue/ai-allowed-events.ts",
+    "find": "never the whole file (render-watch's parser refuses a ",
+    "replace": "the whole file (render-watch's parser refuses a ",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 reviewer: the intake template's step 1 no longer says the dispatch takes prize-dispatch's output, never the whole file"
+  },
+  {
+    "id": "R9",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "if (fields.length > 2) {",
+    "replace": "if (fields.length > 2 && fields[2] !== \"js\") {",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 reviewer: a third field `js` is accepted, so an automatic filter could ask for a JavaScript render"
+  },
+  {
+    "id": "R10",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "join(values.rendered,",
+    "replace": "join(RENDERED,",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 reviewer: --rendered is ignored and research/rendered is always the place looked in"
+  },
+  {
+    "id": "N1",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": ".replace(/\\bline (\\d+)/g, (_, n) => `line ${inputLine(n)}`)",
+    "replace": "",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 fixer: a parseUrlList refusal names the line of the re-parsed text, not of the input file"
+  },
+  {
+    "id": "N2",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "passed[Number(n) - 1]",
+    "replace": "passed[Number(n)]",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 fixer: the output line is mapped to the input line one off"
+  },
+  {
+    "id": "N3",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "if (verdicts === null || typeof verdicts !== \"object\" || Array.isArray(verdicts)) {",
+    "replace": "if (false) {",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 fixer: a --verdicts file with no sites object is not refused, so every line fails for a wrong reason"
+  },
+  {
+    "id": "N4",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": " || Array.isArray(verdicts)) {",
+    "replace": ") {",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 fixer: a sites array is taken for the verdicts object"
+  },
+  {
+    "id": "N5",
+    "file": "scripts/prize-dispatch.mjs",
+    "find": "throw new Error(`--verdicts",
+    "replace": "void new Error(`--verdicts",
+    "test": "src/__tests__/revenue/prize-dispatch.test.ts",
+    "note": "tick 47 fixer: the refusal of a verdicts file without a sites object is built and swallowed"
+  }
+]

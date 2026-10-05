@@ -1,0 +1,429 @@
+[
+  {
+    "id": "T48-M1",
+    "file": "scripts/render-watch.mjs",
+    "find": "const addresses = maskAddresses(text);",
+    "replace": "const addresses = { text, count: 0 };",
+    "test": [
+      "src/__tests__/revenue/render-watch.test.ts",
+      "src/__tests__/revenue/prize-terms-audit.test.ts"
+    ],
+    "note": "tick 48 M1: redactSecrets masks no address"
+  },
+  {
+    "id": "T48-M2",
+    "file": "scripts/render-watch.mjs",
+    "find": "[redacted:email]${written === \"%40\" ? written : m[1]}${m[2]}`",
+    "replace": "[redacted:email]`",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M2: the mask drops the domain"
+  },
+  {
+    "id": "T48-M3",
+    "file": "scripts/render-watch.mjs",
+    "find": "(?<!\\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?))/gi;",
+    "replace": "/gi;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M3: a retina asset name (<name>@2x.png) is masked as an address"
+  },
+  {
+    "id": "T48-M4",
+    "file": "scripts/render-watch.mjs",
+    "find": "const masked = redactSecrets(Buffer.from(String(text), \"utf8\"), \"text/plain\");",
+    "replace": "const masked = { bytes: Buffer.from(String(text), \"utf8\"), count: 0 };",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M4: a PDF's extracted text is stored unmasked"
+  },
+  {
+    "id": "T48-M5",
+    "file": "scripts/render-watch.mjs",
+    "find": "count += addresses.count;",
+    "replace": "count += 0;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M5: masked addresses are not counted, so a body with only addresses comes back unmasked"
+  },
+  {
+    "id": "T48-M6",
+    "file": "scripts/render-watch.mjs",
+    "find": "    from = inText(m.index + m[0].length);\n    count += 1;",
+    "replace": "    from = inText(m.index + m[0].length);",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M6: maskView counts no mask (and so returns the text unmasked)"
+  },
+  {
+    "id": "T48-M7",
+    "file": "scripts/render-watch.mjs",
+    "find": "(?<=^|[^A-Za-z0-9._%+\\-\\/\\\\]|",
+    "replace": "(?<=^|[^A-Za-z0-9._%+\\-\\/\\\\:]|",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M7: a : blocks a local part again, so mailto:/Email: addresses are not masked"
+  },
+  {
+    "id": "T48-M8",
+    "file": "scripts/render-watch.mjs",
+    "find": "(?<=^|[^A-Za-z0-9._%+\\-\\/\\\\]|",
+    "replace": "(?<=^|[^A-Za-z0-9._%+\\-\\\\]|",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M8: / no longer blocks a local part, so a path or a DSN user is masked"
+  },
+  {
+    "id": "T48-M9",
+    "file": "scripts/render-watch.mjs",
+    "find": "(?<!\\/[^\\s\"'<>()?=&,;|#]{0,256}:[A-Za-z0-9._%+-]+(?:@|\\\\u0040|\\\\x40))",
+    "replace": "",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M9: the colon-in-a-path rule removed, so a URL's password is masked"
+  },
+  {
+    "id": "T48-M10",
+    "file": "scripts/render-watch.mjs",
+    "find": "(?<=^|[^A-Za-z0-9._%+\\-\\/\\\\]|",
+    "replace": "(?<=^|[^\\/\\\\]|",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M10: the boundary class reduced to / and backslash, so a local part starts mid-word"
+  },
+  {
+    "id": "T48-M11",
+    "file": "scripts/render-watch.mjs",
+    "find": "|\\\\(?:u00(?!2f)[0-9a-f]{2}|x(?!2f)[0-9a-f]{2}|[nrtbfv]))",
+    "replace": ")",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M11: a script escape no longer ends the word before a local part"
+  },
+  {
+    "id": "T48-M12",
+    "file": "scripts/render-watch.mjs",
+    "find": "u00(?!2f)[0-9a-f]{2}",
+    "replace": "u00[0-9a-f]{2}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M12: an escaped slash \\u002F no longer counts as a slash, so a handle after it is masked"
+  },
+  {
+    "id": "T48-M13",
+    "file": "scripts/render-watch.mjs",
+    "find": ": decodeEntities(ref));",
+    "replace": ": ref);",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M13: character references are not decoded, so an address spelt in &#NNN; is missed"
+  },
+  {
+    "id": "T48-M14",
+    "file": "scripts/render-watch.mjs",
+    "find": "    return i + shift;",
+    "replace": "    return i;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M14: view offsets are not mapped back to the text"
+  },
+  {
+    "id": "T48-M15",
+    "file": "scripts/render-watch.mjs",
+    "find": "let text = bytes.toString(\"latin1\");",
+    "replace": "let text = bytes.toString(\"utf8\");",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M15: the body is read as UTF-8, so bytes outside a mask change"
+  },
+  {
+    "id": "T48-M16",
+    "file": "scripts/render-watch.mjs",
+    "find": "(?![A-Za-z0-9]|\\.[A-Za-z0-9-])(?<!\\.(?:png",
+    "replace": "(?![A-Za-z0-9-]|\\.[A-Za-z0-9-])(?<!\\.(?:png",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M16: a hyphen after the domain stops the match"
+  },
+  {
+    "id": "T48-M17",
+    "file": "scripts/render-watch.mjs",
+    "find": "(?![A-Za-z0-9]|\\.[A-Za-z0-9-])(?<!\\.(?:png",
+    "replace": "(?![A-Za-z0-9])(?<!\\.(?:png",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 M17: the domain may stop before a further .label"
+  },
+  {
+    "id": "T48-R9",
+    "file": "scripts/render-watch.mjs",
+    "find": "[nrtbfv]",
+    "replace": "[nrbfv]",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 reviewer R9: \\t no longer ends the word before a local part"
+  },
+  {
+    "id": "T48-R10",
+    "file": "scripts/render-watch.mjs",
+    "find": "jpe?g|gif|svg|webp|avif|css",
+    "replace": "jpe?g|webp|css",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 reviewer R10: gif, svg and avif asset names are masked as addresses"
+  },
+  {
+    "id": "T48-N1",
+    "file": "scripts/render-watch.mjs",
+    "find": "|x(?!2f)[0-9a-f]{2}|[nrtbfv]))",
+    "replace": "|[nrtbfv]))",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 fixer N1: a \\xHH escape no longer ends the word (an address after \\x22 is kept)"
+  },
+  {
+    "id": "T48-N2",
+    "file": "scripts/render-watch.mjs",
+    "find": "[nrtbfv]",
+    "replace": "[nrt]",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 fixer N2: \\b, \\f and \\v no longer end the word"
+  },
+  {
+    "id": "T48-N3",
+    "file": "scripts/render-watch.mjs",
+    "find": "x(?!2f)[0-9a-f]{2}",
+    "replace": "x[0-9a-f]{2}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 fixer N3: \\x2F no longer counts as a slash"
+  },
+  {
+    "id": "T48-N4",
+    "file": "scripts/render-watch.mjs",
+    "find": "[^\\s\"'<>()?=&,;|#]{0,256}",
+    "replace": "[^\\s\"'<>()]{0,256}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 fixer N4: the password window runs over ?, =, &, comma, ;, | and # back to an earlier slash"
+  },
+  {
+    "id": "T48-N5",
+    "file": "scripts/render-watch.mjs",
+    "find": "[^\\s\"'<>()?=&,;|#]{0,256}",
+    "replace": "[^\\s\"'<>()?=&;|#]{0,256}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 fixer N5: a comma no longer stops the password window"
+  },
+  {
+    "id": "T48-N6",
+    "file": "scripts/render-watch.mjs",
+    "find": "[^\\s\"'<>()?=&,;|#]{0,256}",
+    "replace": "[^\\s\"'<>()?=&,;|]{0,256}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 fixer N6: # no longer stops the password window"
+  },
+  {
+    "id": "T48-N7",
+    "file": "scripts/render-watch.mjs",
+    "find": "[^\\s\"'<>()?=&,;|#]{0,256}",
+    "replace": "[^\\s\"'<>()?=&,|#]{0,256}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 fixer N7: ; no longer stops the password window"
+  },
+  {
+    "id": "T48-N8",
+    "file": "scripts/render-watch.mjs",
+    "find": "[^\\s\"'<>()?=&,;|#]{0,256}",
+    "replace": "[^\\s\"'<>()?=&,;#]{0,256}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 fixer N8: | no longer stops the password window"
+  },
+  {
+    "id": "T48-N9",
+    "file": "scripts/render-watch.mjs",
+    "find": "[^\\s\"'<>()?=&,;|#]{0,256}",
+    "replace": "[^\\s\"'<>(),;|#]{0,256}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 fixer N9: ?, = and & no longer stop the password window"
+  },
+  {
+    "id": "T48-N10",
+    "file": "scripts/render-watch.mjs",
+    "find": "const text = redactSecrets(Buffer.from(`${extractText(result.bytes.toString(\"utf8\"))}\\n`, \"utf8\"), \"text/plain\");",
+    "replace": "const text = { bytes: Buffer.from(`${extractText(result.bytes.toString(\"utf8\"))}\\n`, \"utf8\"), count: 0 };",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 48 fixer N10: an HTML page's extracted .txt is not masked on its own"
+  },
+  {
+    "id": "A1",
+    "file": "scripts/render-watch.mjs",
+    "find": "&[a-z]+;|%[0-9a-f]{2}/gi;",
+    "replace": "&[a-z]+;/gi;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A1: percent escapes are not decoded, so <local>%40<domain> is missed"
+  },
+  {
+    "id": "A2",
+    "file": "scripts/render-watch.mjs",
+    "find": ")?|email-protection#)",
+    "replace": ")?)",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A2 (re-aimed by the fixer): an email-protection# hash is not masked"
+  },
+  {
+    "id": "A3",
+    "file": "scripts/render-watch.mjs",
+    "find": "b ^ bytes[0]",
+    "replace": "b ^ bytes[1]",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A3: the Cloudflare XOR key is the wrong byte, so no domain is kept"
+  },
+  {
+    "id": "A4",
+    "file": "scripts/render-watch.mjs",
+    "find": "return `${prefix}[redacted:email]${domain ? `@${domain}` : \"\"}`;",
+    "replace": "return _m;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A4: a Cloudflare value is kept whole (the address stays recoverable)"
+  },
+  {
+    "id": "A5",
+    "file": "scripts/render-watch.mjs",
+    "find": "masked += `${text.slice(from, start)}",
+    "replace": "masked += `${text.slice(from, written === \"%40\" ? inText(sep) : start)}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A5: a %40 address keeps its local part"
+  },
+  {
+    "id": "A6",
+    "file": "scripts/render-watch.mjs",
+    "find": "hex) => {\n    count += 1;",
+    "replace": "hex) => {",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A6: a Cloudflare mask is not counted"
+  },
+  {
+    "id": "A7",
+    "file": "scripts/render-watch.mjs",
+    "find": "(?<!\\.(?:png|jpe?g",
+    "replace": "(?<!\\.(?:jpe?g",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A7: an asset name (<name>@2x.png) is masked"
+  },
+  {
+    "id": "A8",
+    "file": "scripts/render-watch.mjs",
+    "find": "written === \"%40\" ? written : m[1]",
+    "replace": "m[1]",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A8: a %40 address's mask is written with @ instead of the %40 it had"
+  },
+  {
+    "id": "A9",
+    "file": "scripts/render-watch.mjs",
+    "find": "(@|\\\\u0040|\\\\x40)(?<!",
+    "replace": "(@|\\\\x40)(?<!",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A9: an @ written \\u0040 in a script is not read"
+  },
+  {
+    "id": "A10",
+    "file": "scripts/render-watch.mjs",
+    "find": "${domain ? `@${domain}` : \"\"}",
+    "replace": "@${domain}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A10: a bare mask writes a domain (@null)"
+  },
+  {
+    "id": "A11",
+    "file": "scripts/render-watch.mjs",
+    "find": "if (hex.length < 4 || hex.length % 2 !== 0) return null;",
+    "replace": "if (hex.length < 4) return null;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A11: an odd-length hex is decoded"
+  },
+  {
+    "id": "A12",
+    "file": "scripts/render-watch.mjs",
+    "find": "([0-9a-f]+)(?![0-9a-z])/gi;",
+    "replace": "([0-9a-f]+)/gi;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 A12: the hex need not end the token"
+  },
+  {
+    "id": "T50-R4",
+    "file": "scripts/render-watch.mjs",
+    "find": ":[A-Za-z0-9._%+-]+(?:@|\\\\u0040|\\\\x40))",
+    "replace": ":[A-Za-z0-9._%+-]+@)",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 reviewer R4: a URL password whose @ is a script escape is masked"
+  },
+  {
+    "id": "F1",
+    "file": "scripts/render-watch.mjs",
+    "find": "for (const references of [CHARACTER_REFERENCE, REFERENCE_OR_ESCAPE]) {",
+    "replace": "for (const references of [REFERENCE_OR_ESCAPE]) {",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F1: no raw pass, the regression (a plain @ after %2F, %5C or %3A left unmasked)"
+  },
+  {
+    "id": "F2",
+    "file": "scripts/render-watch.mjs",
+    "find": "for (const references of [CHARACTER_REFERENCE, REFERENCE_OR_ESCAPE]) {",
+    "replace": "for (const references of [CHARACTER_REFERENCE]) {",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F2: no decoded pass, so %40 addresses are missed"
+  },
+  {
+    "id": "F3",
+    "file": "scripts/render-watch.mjs",
+    "find": "data-cfemail=(?:\\\\?[\"']|",
+    "replace": "data-cfemail=(?:[\"']|",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F3: a data-cfemail quoted \\\" (inside JSON) is missed"
+  },
+  {
+    "id": "F4",
+    "file": "scripts/render-watch.mjs",
+    "find": "data-cfemail=(?:\\\\?[\"']|",
+    "replace": "data-cfemail=(?:\\\\?[\"]|",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F4 (the reviewer's R3): a data-cfemail in single quotes is missed"
+  },
+  {
+    "id": "F5",
+    "file": "scripts/render-watch.mjs",
+    "find": "|&quot;|&#0*34;|",
+    "replace": "|&#0*34;|",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F5: a data-cfemail quoted &quot; is missed"
+  },
+  {
+    "id": "F6",
+    "file": "scripts/render-watch.mjs",
+    "find": "&#0*34;|&#x0*22;",
+    "replace": "&#x0*22;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F6: a data-cfemail quoted &#34; is missed"
+  },
+  {
+    "id": "F7",
+    "file": "scripts/render-watch.mjs",
+    "find": "&#x0*22;|\\\\u0022",
+    "replace": "\\\\u0022",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F7: a data-cfemail quoted &#x22; is missed"
+  },
+  {
+    "id": "F8",
+    "file": "scripts/render-watch.mjs",
+    "find": "|\\\\u0022|\\\\x22)?",
+    "replace": "|\\\\x22)?",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F8: a data-cfemail quoted \\u0022 is missed"
+  },
+  {
+    "id": "F9",
+    "file": "scripts/render-watch.mjs",
+    "find": "|\\\\u0022|\\\\x22)?",
+    "replace": "|\\\\u0022)?",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F9: a data-cfemail quoted \\x22 is missed"
+  },
+  {
+    "id": "F10",
+    "file": "scripts/render-watch.mjs",
+    "find": "\\\\x22)?|email-protection#",
+    "replace": "\\\\x22)|email-protection#",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F10: a data-cfemail must be quoted"
+  },
+  {
+    "id": "F11",
+    "file": "scripts/render-watch.mjs",
+    "find": "count += pass.count;",
+    "replace": "count += 0;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 50 fixer F11: the passes' counts are discarded"
+  }
+]

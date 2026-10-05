@@ -1,0 +1,50 @@
+[
+  {
+    "id": "K1-runs",
+    "file": "scripts/mutate.mjs",
+    "find": "  if (opts.check) return check(opts, root);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51: --check runs the plan for real (takes the lock, runs the baseline)"
+  },
+  {
+    "id": "K2-no-test-paths",
+    "file": "scripts/mutate.mjs",
+    "find": "const missing = opts.isDefaultCmd ? m.tests.filter((t) => !existsSync(resolve(t))) : [];",
+    "replace": "const missing = [];",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51: --check does not check the test paths"
+  },
+  {
+    "id": "K3-exit-0",
+    "file": "scripts/mutate.mjs",
+    "find": "  return bad ? 1 : 0;",
+    "replace": "  return 0;",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51: --check exits 0 when a mutation would not apply"
+  },
+  {
+    "id": "K4-cmd-paths",
+    "file": "scripts/mutate.mjs",
+    "find": "const missing = opts.isDefaultCmd ?",
+    "replace": "const missing = !opts.isDefaultCmd ?",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51: test paths checked under --cmd (pytest-product.sh's are the product's) and not under the default command"
+  },
+  {
+    "id": "K5-always-dirty",
+    "file": "scripts/mutate.mjs",
+    "find": "prepare(m, root, opts.allowDirty).reason",
+    "replace": "prepare(m, root, true).reason",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51: --check accepts a file with uncommitted changes without --allow-dirty"
+  },
+  {
+    "id": "K6-says-ok",
+    "file": "scripts/mutate.mjs",
+    "find": "console.log(reason ? `${m.id}  would not apply: ${reason}` : `${m.id}  ok  ${m.file}`);",
+    "replace": "console.log(`${m.id}  ok  ${m.file}`);",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51: --check prints ok for a mutation that would not apply (and names no reason)"
+  }
+]

@@ -1,0 +1,114 @@
+[
+  {
+    "id": "S1-no-cleanup",
+    "file": "scripts/sim-tree.sh",
+    "find": "  rm -rf -- \"$tree\"\n  echo \"sim-tree: removed $tree\" >&2",
+    "replace": "  echo \"sim-tree: removed $tree\" >&2",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: the tree is never removed after a pass"
+  },
+  {
+    "id": "S2-no-keep",
+    "file": "scripts/sim-tree.sh",
+    "find": "if [ \"$keep\" -eq 1 ]; then",
+    "replace": "if false; then",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: --keep is ignored and a passing run's tree is removed"
+  },
+  {
+    "id": "S3-exit-0",
+    "file": "scripts/sim-tree.sh",
+    "find": "exit \"$code\"",
+    "replace": "exit 0",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: the command's exit code is not sim-tree's"
+  },
+  {
+    "id": "S4-remove-on-failure",
+    "file": "scripts/sim-tree.sh",
+    "find": "elif [ \"$code\" -ne 0 ]; then",
+    "replace": "elif false; then",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: a failed command's tree is removed, nothing left to inspect"
+  },
+  {
+    "id": "S5-link-always",
+    "file": "scripts/sim-tree.sh",
+    "find": "if [ -d \"$root/node_modules\" ]; then",
+    "replace": "if true; then",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: node_modules is linked even when the checkout has none (a dangling link)"
+  },
+  {
+    "id": "S6-dir-inside-repo",
+    "file": "scripts/sim-tree.sh",
+    "find": "inside \"$tree\" && refuse",
+    "replace": "false && refuse",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: a --dir inside the repository is accepted (git status and vitest would see the tree)"
+  },
+  {
+    "id": "S7-existing-dir",
+    "file": "scripts/sim-tree.sh",
+    "find": "{ [ -e \"$dir\" ] || [ -L \"$dir\" ]; } && refuse",
+    "replace": "false && refuse",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: an existing --dir is accepted and written into"
+  },
+  {
+    "id": "S8-tmp-inside-repo",
+    "file": "scripts/sim-tree.sh",
+    "find": "inside \"$base\" && refuse",
+    "replace": "false && refuse",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: a TMPDIR inside the repository puts the default tree inside it"
+  },
+  {
+    "id": "S9-unknown-ref",
+    "file": "scripts/sim-tree.sh",
+    "find": "|| refuse \"unknown ref: $ref\"",
+    "replace": "|| true",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: an unknown ref is not refused (exit 2) before anything is created"
+  },
+  {
+    "id": "S10-no-sim-tree-env",
+    "file": "scripts/sim-tree.sh",
+    "find": "SIM_TREE=\"$tree\" exec \"$@\"",
+    "replace": "exec \"$@\"",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: the command runs without SIM_TREE"
+  },
+  {
+    "id": "S11-cwd-checkout",
+    "file": "scripts/sim-tree.sh",
+    "find": "( cd \"$tree\" && SIM_TREE=\"$tree\" exec \"$@\" )",
+    "replace": "( SIM_TREE=\"$tree\" exec \"$@\" )",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: the command runs in the caller's directory (the checkout), not in the tree"
+  },
+  {
+    "id": "S12-ignored-tracked",
+    "file": "scripts/sim-tree.sh",
+    "find": "git -C \"$tree\" add -A -f",
+    "replace": "git -C \"$tree\" add -A",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: a tracked file that .gitignore matches (force-added) is left out of the tree's commit"
+  },
+  {
+    "id": "S13-no-setup-cleanup",
+    "file": "scripts/sim-tree.sh",
+    "find": "trap 'rm -rf -- \"$tree\"; echo \"sim-tree: building the tree failed; removed $tree\" >&2' EXIT",
+    "replace": "trap '' EXIT",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: a failed build leaves the half-built tree behind"
+  },
+  {
+    "id": "S14-no-exclude",
+    "file": "scripts/sim-tree.sh",
+    "find": "  echo \"/node_modules\" >> \"$tree/.git/info/exclude\"\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: the node_modules link shows as untracked in a tree whose .gitignore does not name it"
+  }
+]
