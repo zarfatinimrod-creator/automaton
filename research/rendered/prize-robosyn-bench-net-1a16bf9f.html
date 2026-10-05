@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Data | RoboSynChallenge</title>
+    <meta name="description" content="RoboSynChallenge is a NeurIPS 2026 competition on sim-to-real robot manipulation with synthesized and real-world co-training.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/site.css?v=20260909-leaderboard-faq">
+    <link rel="stylesheet" href="static/css/pages.css?v=20260906-success-faq">
+    <script defer="" src="static/assets/result-videos/baseline-results.js"></script>
+    <script defer="" src="static/assets/released-checkpoint-evals.js?v=20260903-smolvla-sample-sr"></script>
+    <script defer="" src="static/config.js"></script>
+    <script defer="" src="static/js/pages-app.js?v=20260926-deadline-oct11"></script>
+  </head>
+  <body>
+    <div class="site-chrome"></div>
+    <header class="site-header">
+      <div class="shell header-row">
+        <a class="brand" href="#/home">
+          <span class="brand-mark">RS</span>
+          <span class="brand-copy">
+            <strong>RoboSynChallenge</strong>
+            <small>NeurIPS 2026 Competition</small>
+          </span>
+          <img class="brand-event-logo" src="static/assets/neurips-logo.svg" alt="NeurIPS">
+        </a>
+        <button class="nav-toggle" type="button" data-nav-toggle="" aria-label="Toggle navigation">
+          Menu
+        </button>
+        <nav class="site-nav" data-nav-menu="" id="site-nav"><a href="#/home" class="">Home</a><a href="#/data" class="active">Data</a><a href="#/faq" class="">FAQ</a><a href="#/evaluation" class="">Evaluation</a><a href="#/leaderboard" class="">Leaderboard</a></nav>
+        <div class="header-actions" id="header-actions">
+        <a href="#/login" class="button button-secondary">Sign in</a>
+        <a href="#/register" class="button button-primary">Request access</a>
+      </div>
+      </div>
+    </header>
+
+    <section class="flash-zone shell" id="flash-zone"></section>
+    <main id="app"><div class="page-shell">
+      <section class="page-hero shell data-hero">
+        <span class="eyebrow">Competition data</span>
+        <h1>Train with scale. Ground in reality.</h1>
+        <p class="lead data-lead">
+          RoboSynChallenge pairs procedurally generated manipulation trials with a small, structured
+          real-world dataset to support data-efficient Sim2Real learning.
+        </p>
+        <div class="cta-row">
+          <a href="https://edem-ai.github.io/RoboSynChallenge/html/tutorials/collect_data.html" target="_blank" rel="noreferrer" class="button button-primary">Open generation toolkit ↗</a>
+          <a href="https://huggingface.co/RoboSynChallenge/datasets" target="_blank" rel="noreferrer" class="button button-secondary">Released data on Hugging Face ↗</a>
+          <a href="https://edem-ai.github.io/RoboSynChallenge/html/getting_started/overview.html" target="_blank" rel="noreferrer" class="button button-ghost">Read tutorial ↗</a>
+        </div>
+      </section>
+
+      <section class="section shell data-section">
+        <div class="data-columns">
+          <article class="data-panel data-panel-real">
+            <header class="data-panel-header">
+              <div><span class="tag">Real-world data</span><h2>Carefully collected demonstrations</h2></div>
+              <strong class="data-count">60<small>trials / task</small></strong>
+            </header>
+            <p>Teleoperated dual-arm trajectories provide physical grounding across controlled changes in appearance, lighting, clutter, position, and orientation.</p>
+            <img src="static/assets/realworld-env.png" alt="RoboSynChallenge real-world dual-arm collection platform">
+            <div class="data-facts">
+              <span><strong>5</strong> collection conditions</span>
+              <span><strong>4</strong> object positions</span>
+              <span><strong>3</strong> object orientation settings</span>
+            </div>
+            <div class="condition-list">
+              
+                <div><strong>White background</strong><span>Fixed lighting · None</span></div>
+              
+                <div><strong>White background</strong><span>Enhanced lighting · None</span></div>
+              
+                <div><strong>White background</strong><span>Fixed lighting · 2-3 distractors</span></div>
+              
+                <div><strong>Blue background</strong><span>Fixed lighting · None</span></div>
+              
+                <div><strong>Yellow background</strong><span>Fixed lighting · None</span></div>
+              
+            </div>
+          </article>
+
+          <article class="data-panel data-panel-sim">
+            <header class="data-panel-header">
+              <div><span class="tag">Simulated data</span><h2>Scale through procedural generation</h2></div>
+              <strong class="data-count">1,000<small>trials / task</small></strong>
+            </header>
+            <p>Multimodal trajectories combine RGB-D observations, robot state, actions, contact events, task annotations, and outcomes under broad domain randomization.</p>
+            <img src="static/assets/robosynchallenge-pipeline.png" alt="RoboSynChallenge synthetic data generation pipeline">
+            <div class="randomization-list">
+              
+                <div><strong>Lighting and scene appearance</strong><span>Light intensity, position, and color · Background plate color variation · Table color and texture probability</span></div>
+              
+                <div><strong>Object geometry and pose</strong><span>Initial object position offsets · Initial object rotation range · Object size scaling and surface material colors</span></div>
+              
+                <div><strong>Camera calibration and viewpoint</strong><span>Camera intrinsics on fx and fy · Camera position XYZ offsets · Camera roll, pitch, and yaw perturbations</span></div>
+              
+                <div><strong>Robot initialization</strong><span>Joint configuration randomization · End-effector position variation · Diverse feasible starting states for recovery behavior</span></div>
+              
+                <div><strong>Workspace and distractors</strong><span>Table height variation up to plus or minus 4 cm · Distractor objects such as bowls, cups, and toys · Mixed task-irrelevant items for scene complexity</span></div>
+              
+            </div>
+          </article>
+        </div>
+      </section>
+    </div></main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div>
+          <div class="footer-heading">RoboSynChallenge</div>
+          <p>
+            A public benchmark for studying how synthesized manipulation data improves real-world
+            generalization under scarce physical supervision.
+          </p>
+        </div>
+        <div>
+          <div class="footer-heading">Resources</div>
+          <a href="https://github.com/EDEM-AI/RoboSynChallenge/tree/main" target="_blank" rel="noreferrer">RoboSynChallenge GitHub</a>
+          <a href="https://huggingface.co/RoboSynChallenge/datasets" target="_blank" rel="noreferrer">Released data</a>
+          <a href="https://edem-ai.github.io/RoboSynChallenge/html/getting_started/overview.html" target="_blank" rel="noreferrer">Tutorial</a>
+          <a href="#/faq">Competition FAQ</a>
+          <a href="material/RoboSynChallenge-report.pdf" target="_blank" rel="noreferrer">Competition report</a>
+        </div>
+      </div>
+      <div class="shell footer-bottom">
+        <span>© 2026 RoboSynChallenge</span>
+        <span>Designed for open research evaluation</span>
+      </div>
+    </footer>
+  
+
+</body></html>

@@ -1,0 +1,22 @@
+{
+  "url": "https://robosyn-bench.net/#/register",
+  "slug": "prize-robosyn-bench-net-4c5bbb15",
+  "fetchedAt": "2026-10-05T22:12:18.090Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 6589,
+  "sha256": "28780a4d663a566badba13c354da09d0eb49ee4ebfe4b63bbcf32172a372287c",
+  "truncated": false,
+  "redacted": 2,
+  "error": null,
+  "bodyPath": "research/rendered/prize-robosyn-bench-net-4c5bbb15.html",
+  "textPath": "research/rendered/prize-robosyn-bench-net-4c5bbb15.txt",
+  "renderedWith": "chromium",
+  "networkIdle": true,
+  "robots": "none",
+  "robotsUrl": "https://robosyn-bench.net/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

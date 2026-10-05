@@ -1,0 +1,43 @@
+Sign In | RoboSynChallenge
+
+RS
+
+RoboSynChallenge
+NeurIPS 2026 Competition
+
+Menu
+
+Home Data FAQ Evaluation Leaderboard
+
+Sign in
+Request access
+
+Token access
+Sign in
+
+Use the email and access token issued by the RoboSynChallenge organizers.
+
+Email
+
+Access token
+
+Sign in
+
+Need an account token?
+Request access here
+
+RoboSynChallenge
+
+A public benchmark for studying how synthesized manipulation data improves real-world
+generalization under scarce physical supervision.
+
+Resources
+
+RoboSynChallenge GitHub
+Released data
+Tutorial
+Competition FAQ
+Competition report
+
+© 2026 RoboSynChallenge
+Designed for open research evaluation

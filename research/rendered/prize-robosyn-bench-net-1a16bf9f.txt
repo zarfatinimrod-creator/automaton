@@ -1,0 +1,75 @@
+Data | RoboSynChallenge
+
+RS
+
+RoboSynChallenge
+NeurIPS 2026 Competition
+
+Menu
+
+Home Data FAQ Evaluation Leaderboard
+
+Sign in
+Request access
+
+Competition data
+Train with scale. Ground in reality.
+
+RoboSynChallenge pairs procedurally generated manipulation trials with a small, structured
+real-world dataset to support data-efficient Sim2Real learning.
+
+Open generation toolkit ↗
+Released data on Hugging Face ↗
+Read tutorial ↗
+
+Real-world data Carefully collected demonstrations
+
+60 trials / task
+
+Teleoperated dual-arm trajectories provide physical grounding across controlled changes in appearance, lighting, clutter, position, and orientation.
+
+5 collection conditions
+4 object positions
+3 object orientation settings
+
+White background Fixed lighting · None
+
+White background Enhanced lighting · None
+
+White background Fixed lighting · 2-3 distractors
+
+Blue background Fixed lighting · None
+
+Yellow background Fixed lighting · None
+
+Simulated data Scale through procedural generation
+
+1,000 trials / task
+
+Multimodal trajectories combine RGB-D observations, robot state, actions, contact events, task annotations, and outcomes under broad domain randomization.
+
+Lighting and scene appearance Light intensity, position, and color · Background plate color variation · Table color and texture probability
+
+Object geometry and pose Initial object position offsets · Initial object rotation range · Object size scaling and surface material colors
+
+Camera calibration and viewpoint Camera intrinsics on fx and fy · Camera position XYZ offsets · Camera roll, pitch, and yaw perturbations
+
+Robot initialization Joint configuration randomization · End-effector position variation · Diverse feasible starting states for recovery behavior
+
+Workspace and distractors Table height variation up to plus or minus 4 cm · Distractor objects such as bowls, cups, and toys · Mixed task-irrelevant items for scene complexity
+
+RoboSynChallenge
+
+A public benchmark for studying how synthesized manipulation data improves real-world
+generalization under scarce physical supervision.
+
+Resources
+
+RoboSynChallenge GitHub
+Released data
+Tutorial
+Competition FAQ
+Competition report
+
+© 2026 RoboSynChallenge
+Designed for open research evaluation
