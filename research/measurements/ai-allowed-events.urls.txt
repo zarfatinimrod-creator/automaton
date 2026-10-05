@@ -2,8 +2,11 @@
 #
 # render-watch's urls syntax (research/rendered/urls.txt): one URL per line, a slug after a TAB, a line starting
 # with # is a comment. It holds the URLs of every row of research/measurements/ai-allowed-events.md
-# that no session has graded yet. To render them, paste these lines into render-watch.yml's `urls` input
-# (workflow_dispatch); each capture lands at research/rendered/<slug>.txt, the pointer a session cites in the table.
+# that no session has graded yet. Never paste the whole file: `node scripts/prize-dispatch.mjs` prints the lines
+# whose site passes the terms gate (a site's terms are read before its first line is fetched, logs/CHANNEL_LOOP.md
+# §9, the rule of tick 20), and its output is what goes in render-watch.yml's `urls` input (workflow_dispatch);
+# render-watch's parser refuses a line on a barred host, such as sites.google.com. Each capture lands at
+# research/rendered/<slug>.txt, the pointer a session cites in the table.
 # This is NOT research/rendered/urls.txt, and nothing here is ever appended to it.
 #
 # Every URL is verbatim from the mlcontests list (read 2026-09-30T13:02:14.346Z, sha256 49e374691c73417e…)
