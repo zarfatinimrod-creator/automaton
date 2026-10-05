@@ -597,7 +597,8 @@ class RecognitionTests(RespondHarness):
 
     def test_only_recent_unanswered_inbox_mail_is_searched(self):
         self.respond([mail()], "--apply")
-        (search,) = FakeIMAP.instances[0].searches
+        # The waiting requests' FLAGGED search comes first and carries no date (BalanceWaitTests); this is the other one.
+        (search,) = [s for s in FakeIMAP.instances[0].searches if s[:2] == ("NOT", "ANSWERED")]
         since = dt.datetime.strptime(search[3], "%d-%b-%Y").replace(tzinfo=UTC)
         self.assertEqual((NOW - since).days, brand_mail.REFUND_LOOKBACK_DAYS)
 
