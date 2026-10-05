@@ -1413,7 +1413,7 @@ Four residuals remain, and none is a REOPEN trigger as the ruling words them (`R
 
 **Pointer drift recorded 5.10 (row 19 fold; lines above are not rewritten).** Old → new, re-checked at `5c4bad0`; `RULING` is `research/channel-loop/RULING-2026-09-30-documents.md`:
 - `:1331` cites `logs/CHANNEL_LOOP.md:164` for Indiebook → row 22 is `:166`.
-- `:1346`, `:1003`, `:1037` cite `docs/OWNER_STEPS.he.md:156` → `:160`; the wording is now reg 22(2) (`:1346` quotes the old clause).
+- `:1346`, `:1003`, `:1037`, `:1116` cite `docs/OWNER_STEPS.he.md:156` → `:160` (`:1116` as a bare `(:156)`); the wording is now reg 22(2) (`:1346` quotes the old clause; `:1003`, `:1037` and `:1116` quote "פעם בשנה", which has 0 hits on the page).
 - `:1072` cites `:149` → `:150`/`:153`.
 - `:940`, `:1036`, `:1116` cite `:130` → `:134`/`:149`.
 - `:908`, `:933`, `:1066`, `:1099`, `:1113` cite the occupation line at `:146` → `:150`; the wording changed (`:1066` quotes the old wording).

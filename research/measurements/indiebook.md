@@ -263,4 +263,4 @@ is a plain `fetch` (`scripts/render-watch.mjs:612-622`), and a form shows its fi
 stance. It would settle less than the question. The question waits on step 8. Until then row 22 stays parked at NEEDS_MORE,
 with nothing left to render.
 
-Pointer drift recorded 5.10: `:227` `MISSION.md:412-413` → `:432-433`.
+Pointer drift recorded 5.10: `:227` and `:256` `MISSION.md:412-413` → `:432-433`; `:147` `MISSION.md:420` → `:440`, where the sentence reads "The owner does not talk to customers."
