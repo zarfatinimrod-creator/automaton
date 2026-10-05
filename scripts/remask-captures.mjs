@@ -39,8 +39,8 @@
  * It refuses (exit 1, nothing written): a directory under no git repository; a meta naming a bodyPath or textPath that
  * does not exist, or that is not JSON; a meta it would rewrite whose bytes are not that JSON as render-watch writes it;
  * a mask that would move a line; a frozen file FROZEN.sha256 does not record, or records with other bytes than are on
- * disk; and with --apply, uncommitted changes (or untracked files) among the files it would write, FROZEN.sha256
- * included: the earlier bytes must be in git history.
+ * disk; and with --apply, uncommitted changes (or untracked files) among the files of the captures it would touch,
+ * FROZEN.sha256 included when it would be rewritten: the earlier bytes must be in git history.
  *
  * src/__tests__/revenue/remask-captures.test.ts runs it on fixtures and, as a dry run, on the real research/rendered.
  */
@@ -51,6 +51,7 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import {
   activeSlugs,
+  CAPTURE_EXTS,
   decisionFiles,
   isDay,
   isSlug,
@@ -290,7 +291,7 @@ const extOf = (name) => name.slice(name.lastIndexOf(".") + 1);
 const plural = (k, one, many = `${one}s`) => `${k} ${k === 1 ? one : many}`;
 
 /** The summary's lines, from a plan. Kinds and counts only: no address, no domain. */
-function summarize(plan, verb, cited) {
+function summarize(plan, verb, cited, citedVerb) {
   const changed = plan.captures.filter((c) => c.changed);
   const parts = changed.flatMap((c) => c.parts.filter((p) => p.count > 0));
   const byExt = new Map();
@@ -326,7 +327,7 @@ function summarize(plan, verb, cited) {
   lines.push(`  frozen copies among them: ${plural(frozen.length, "capture")} (${plural(frozenFiles, "file")}; their lines in ${MANIFEST}, metas included)`);
   lines.push(`  asset names masked: ${assetNames}`);
   if (other) lines.push(`  secret-shaped strings masked as well: ${other}`);
-  lines.push(`  cited lines that would change: ${cited.length}`);
+  lines.push(`  cited lines that ${citedVerb}: ${new Set(cited.map((h) => `${h.capture}:${h.line}`)).size} (${plural(cited.length, "citation")})`);
   for (const h of cited) lines.push(`    ${h.capture}:${h.line} → cited by ${h.file}:${h.fileLine}`);
   return lines;
 }
@@ -381,7 +382,9 @@ export function main(argv, { log = console.log, error = console.error } = {}) {
   }
   for (const w of writes) if (plan.manifest.has(w.name)) hashes.set(w.name, sha256(w.bytes));
   if (v.apply && writes.length) {
-    const names = [...writes.map((w) => w.name), ...(hashes.size ? [MANIFEST] : [])];
+    // Every file of a capture it touches (a PDF beside a text it rewrites, say), and FROZEN.sha256 when it is rewritten.
+    const touched = changed.flatMap((c) => CAPTURE_EXTS.map((ext) => `${c.slug}.${ext}`)).filter((name) => existsSync(join(dir, name)));
+    const names = [...new Set([...touched, ...writes.map((w) => w.name), ...(hashes.size ? [MANIFEST] : [])])];
     const status = git(dir, ["status", "--porcelain", "--untracked-files=all", "--", ...names]);
     if (status.status !== 0) plan.problems.push(`git status failed: ${String(status.stderr).trim()}`);
     else if (status.stdout.trim()) plan.problems.push(`uncommitted changes among the files it would write (commit them first): ${status.stdout.trim().split("\n").join("; ")}`);
@@ -402,7 +405,7 @@ export function main(argv, { log = console.log, error = console.error } = {}) {
   log(`remask-captures: ${v.apply ? "apply" : "dry run"} over ${where} (${plural(plan.captures.length, "capture")})`);
 
   if (!v.apply) {
-    for (const line of summarize(plan, "would change", cited)) log(line);
+    for (const line of summarize(plan, "would change", cited, "would change")) log(line);
     return changed.length ? 3 : 0;
   }
   for (const w of writes) writeAtomic(join(dir, w.name), w.bytes);
@@ -417,7 +420,7 @@ export function main(argv, { log = console.log, error = console.error } = {}) {
       .join("\n");
     writeAtomic(path, Buffer.from(text));
   }
-  for (const line of summarize(plan, "changed", cited)) log(line);
+  for (const line of summarize(plan, "changed", cited, "changed")) log(line);
   return 0;
 }
 

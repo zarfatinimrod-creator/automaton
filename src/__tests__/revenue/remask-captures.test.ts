@@ -174,7 +174,7 @@ describe("--dry-run", () => {
     expect(text).not.toMatch(/^ {2}quiet/m);
     expect(text).toContain("unchanged: 2 captures");
     // Only line 3 of the cited copy carries an address; line 2 is cited too and does not change.
-    expect(text).toContain("cited lines that would change: 1");
+    expect(text).toContain("cited lines that would change: 1 (1 citation)");
     expect(text).toContain("research/rendered/page-2026-09-28.txt:3 → cited by research/measurements/note.md:1");
     expect(text).not.toContain("page-2026-09-28.txt:2 →");
     // Never an address, and never a kept domain: kinds and counts only.
@@ -199,6 +199,8 @@ describe("--apply", () => {
     const { code, text } = run(["--apply", "--date", "2026-10-05", ...rendered(f)]);
     expect(code, text).toBe(0);
     expect(text).toContain("changed: 5 captures, 7 files (2 .html, 3 .txt, 2 .json); 12 addresses masked");
+    expect(text).toContain("cited lines that changed: 1 (1 citation)");
+    expect(text).toContain("research/rendered/page-2026-09-28.txt:3 → cited by research/measurements/note.md:1");
 
     const now = snapshot(f.dir);
     const changedNames = [...now.keys()].filter((name) => !(now.get(name) as Buffer).equals(before.get(name) as Buffer)).sort();
@@ -303,6 +305,15 @@ describe("--apply", () => {
     expect(code).toBe(1);
     expect(text).toContain("api.json");
     expect(snapshot(f.dir)).toEqual(dirty);
+
+    // A file of a capture it touches, though it would not rewrite that file: the PDF beside a text it masks.
+    const p = fixture();
+    writeFileSync(join(p.dir, "doc.pdf"), Buffer.concat([PDF, Buffer.from("x")]));
+    const dirtyPdf = snapshot(p.dir);
+    const refused = run(["--apply", "--date", "2026-10-05", ...rendered(p)]);
+    expect(refused.code).toBe(1);
+    expect(refused.text).toContain("doc.pdf");
+    expect(snapshot(p.dir)).toEqual(dirtyPdf);
 
     const g = fixture();
     writeFileSync(join(g.dir, "quiet.txt"), "edited by hand\n");
