@@ -262,3 +262,5 @@ is off indiebook.co.il, so :169 does not reach it. But [INFERENCE] a hosted form
 is a plain `fetch` (`scripts/render-watch.mjs:612-622`), and a form shows its fields, not the share, the fee or the AI
 stance. It would settle less than the question. The question waits on step 8. Until then row 22 stays parked at NEEDS_MORE,
 with nothing left to render.
+
+Pointer drift recorded 5.10: `:227` `MISSION.md:412-413` → `:432-433`.
