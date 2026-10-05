@@ -137,7 +137,15 @@ shared WebSearch budget. See `docs/CRITERIA_SWEEP.md`.
   and requirements under `~/.cache/mehudak-pytest/`, and fails on skips where the product's CI does.
 - **Mutation checks: `node scripts/mutate.mjs --plan <plan.json>`** (or `--file --find --replace --test`): applies one exact
   edit at a time, runs the tests, restores the file byte for byte, and reports killed or survived after a passing
-  baseline. Use it instead of a hand-written harness; `--cmd "scripts/pytest-product.sh <product>"` for Python.
+  baseline. Use it instead of a hand-written harness; `--cmd "scripts/pytest-product.sh <product>"` for Python. **The plans
+  live beside the tests, `src/__tests__/revenue/mutations/<script>.json`** (one per script; `mutations/README.md` has the
+  measured run time of each): a build's review re-runs the script's plan and adds its new mutations there, never a plan
+  in a scratch folder; `node scripts/mutate.mjs --check --plan <file>` validates a plan without running a test, and
+  `mutation-plans.test.ts` fails when a refactor moves a `find` text until the plan follows.
+- **Simulate a write-for-real command on a throwaway copy: `scripts/sim-tree.sh [--ref <ref>] [--keep] -- <cmd>`** (a
+  `git archive` of the checkout with its own commit and the checkout's `node_modules` linked in; the tree is removed on
+  success and kept, with a removal hint, on failure). A long mutation plan runs inside it so the checkout's lock stays
+  free. Never build such a tree by hand under the scratch folder.
 - **New render captures: `node scripts/capture-check.mjs <slug...>` before reading them** (exit 3 = flagged: `status`,
   `bot-challenge`, `js-shell` or `short`). It only flags; the reader judges.
 - **Loop-file edits: `node scripts/loop-edit.mjs set-status|set-cell|insert-after|replace-in-line|repoint-capture …`** (usage in its
