@@ -76,6 +76,14 @@ the second and third of those. To move one:
    `robots.txt disallows this URL` or `robots.txt could not be read` means the fetcher did not ask for
    that URL at all: the site's robots.txt said no, or could not be read (below) — our refusal, not the
    site's answer.
+   A `redacted` count says how many strings were masked before the capture was written: secret-shaped
+   strings, as `[redacted:<kind>]`, and since 5.10.2026 email addresses, whose local part is masked and
+   domain kept, as `[redacted:email]@<domain>`, because every capture is committed to this public repository
+   and a person's address is personal information (ruling R3,
+   `research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md`). The masking runs when a capture is
+   written: a capture stored before 5.10.2026 and not fetched since keeps its addresses, and git history keeps
+   every earlier byte; an address whose @ is itself encoded (`%40`, a script escape, Cloudflare's email
+   protection) is not found.
 3. **Answer the specific question the research file asked**, not a question the page happens to
    answer. Each entry in `urls.txt` carries the sentence that put it there, quoted from the file
    that wants it.
@@ -261,7 +269,7 @@ instead of fetched. What that does and does not do:
   reading the DOM, all inside the same 30 s as a plain GET (a page whose DOM cannot be read in the time
   left, such as a script that never yields, is closed and recorded as a timeout); the DOM as it stands
   then is stored as `<slug>.html` and goes through
-  the same text extraction, secret masking, 5 MB cap, hash and quiet-history rule as any page. No
+  the same text extraction, secret and address masking, 5 MB cap, hash and quiet-history rule as any page. No
   clicks, no typing, no form fills, no logins; a fresh browser context per URL, so no cookie or
   storage survives from one URL to the next; the same identifying User-Agent as a plain GET, no
   stealth plugin, no anti-detection setting — the site can see a browser under automation. The host's

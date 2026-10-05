@@ -1,0 +1,177 @@
+Speech Accessibility Project Challenge 2 | Speech Accessibility Project Challenge 2
+
+Speech Accessibility Project Challenge 2
+Advancing universal dysarthric speech recognition from offline to real time
+
+News
+Timeline
+Leaderboard
+Baseline
+Papers
+FAQs
+
+Challenge Overview
+
+Welcome to the Speech Accessibility Project Challenge 2 (SAPC2) .
+
+Building on the success of the
+
+Interspeech 2025 Speech Accessibility Project Challenge
+,
+where the best system reduced WER from the Whisper-large-v2 baseline of
+17.82% to 8.11% , SAPC2 introduces a
+larger, more diverse, and etiology-balanced speech corpus .
+
+Competition Deadline: October 24, 2026 (AoE) |
+Paper Deadline: October 31, 2026 (AoE) |
+Workshop: NeurIPS 2026, Sydney, Australia |
+Contact:
+
+[redacted:email]@lists.illinois.edu
+
+Challenge Tracks
+
+The challenge features two complementary tracks:
+
+Unconstrained ASR Track : Participants may use models of any size or architecture, aiming to advance the state of the art in dysarthric speech recognition.
+
+Streaming ASR Track : Submitted systems will be placed on a Pareto chart of system latency and system accuracy, promoting lightweight and deployable solutions for real-world use.
+
+Competitors will submit trained model parameters and inference code through Codabench ( Track 1 ; Track 2 ) up to a maximum number of permitted submissions. Results on test1 will be released within three days of submission. Results on test2 will be released after the close of competition.
+
+Prizes & Publication
+
+A total prize of U.S. $10,000 will be divided equally among all teams with a system on the Pareto frontier of accuracy and latency, as measured using the sequestered test2 set.
+
+To clarify how winners are selected across tracks:
+
+Track 1 (Unconstrained ASR): submissions are non-streaming systems and are ranked by recognition accuracy. For Pareto comparison, Track 1 latency is set to inf . Exactly one non-streaming ASR system will win.
+
+Track 2 (Streaming ASR): submissions are ranked by the competition’s accuracy-latency criteria, and one or more streaming systems may win.
+
+Teams submitting to the competition are invited to present their work at the SAPC2 competition workshop at NeurIPS 2026 in Sydney, Australia . Teams are welcome to submit a non-archival workshop paper describing their system (see Call for Papers ) and should confirm their intent to attend. NeurIPS 2026 Workshops & Competitions will take place on December 11–12, 2026 . The SAPC2 session is tentatively scheduled for Friday, December 11, 15:30–17:45 (Room MR C4.3) , subject to change.
+
+How to Participate
+
+Step 1: Register Your Team
+
+Please register your team for the challenge using the Team Registration Form .
+
+Step 2: Request Data Access
+
+To access the SAP corpus, please submit the
+Data Transfer and Use Agreement (DUA)
+and a one-page proposal to [redacted:email]@beckman.illinois.edu .
+
+Note: Approval typically takes ~2–4 weeks.
+
+Step 3: Develop Your System
+
+To help you get started, we have provided a starting kit and local decoding scripts. Check out the
+SAPC-template on GitHub .
+
+Step 4: Submit to Codabench
+
+Competitors will submit trained systems through Codabench:
+Track 1 (Unconstrained ASR) ,
+Track 2 (Streaming ASR) .
+
+Deadline for submissions: October 24, 2026 AoE
+
+Step 5: Submit Your Workshop Paper
+
+Optionally, submit a 3–6 page, non-archival paper describing your system to
+present at the workshop, through the process described on the
+Call for Papers page.
+
+Paper submission deadline: October 31, 2026 (AoE) |
+Acceptance notification: November 7, 2026 |
+Confirm intent to attend: November 15, 2026
+
+Evaluation Metrics
+
+Accuracy metrics (Track 1 & Track 2)
+
+Accuracy transcripts are normalized with a fully formatted normalizer adapted from the HuggingFace ASR leaderboard.
+
+Character Error Rate (CER): primary metric, chosen for better correlation with human judgments and sensitivity to pronunciation variations in dysarthric speech.
+
+Word Error Rate (WER): secondary metric, reported for comparison with prior work and related literature.
+
+CER/WER are clipped to 100% at the utterance level. Scores are computed using two references (with and without disfluencies), and the lower error is selected per utterance.
+
+Latency metrics (Track 2 only)
+
+Latency is computed from streaming partial results on the streaming manifest ( *_streaming.csv ) and reported as median ( P50 , in ms).
+
+Reference implementation: compute_latency.py .
+
+**Time To First Token (TTFT, P50, ms):** `first_non_empty_partial_time - (audio_send_start_time + mfa_speech_start)`.
+
+Time To First Token, stable (TTFT-stable, P50, ms): first_stable_partial_time - (audio_send_start_time + mfa_speech_start) , where first_stable_partial_time is the earliest time at which a system’s first word has already settled to its final value. TTFT-stable replaces TTFT to reduce reward-hacking risk from guessing an early word before enough audio has been processed.
+
+Time To Last Token (TTLT, P50, ms): final_visible_time - audio_end_oracle_time , where audio_end_oracle_time = audio_send_start_time + audio_duration_sec .
+
+For robustness analysis, P90 latency may also be reported in detailed outputs.
+
+For Pareto comparison, we use the average of TTFT-stable and TTLT as latency; non-streaming ASR is assigned infinity.
+
+Track 2 Submission Rejection Policy
+
+A Track 2 submission is rejected (excluded from the final ranking) if either of the following holds:
+
+**Unstable first word:** its [stable sentence-prefix match rate](https://github.com/xiuwenz2/SAPC-template/blob/d96ef4872694f56688efdce884d5751ee5916e26/utils/stable_sentence_prefix_match.py) on Test1 is below **1/3**.
+
+Early first-word emission: on more than 5% of Test1 streaming utterances, the first word has already settled to its final value before speech begins, i.e. first_stable_partial_time < audio_send_start_time + mfa_speech_start (TTFT-stable < 0). A word cannot be recognized before it is spoken, so this indicates the first word was guessed rather than recognized.
+
+Inconsistent Pass 1 / Pass 2 transcripts: CER/WER are scored on Pass 1 (batch) and latency on Pass 2 (streaming), so both passes must produce the same final transcript (after normalization) for every Test1/Test2 streaming utterance. Mismatches lead to rejection unless the organizers judge them to be benign numerical non-determinism.
+
+Reference implementation of both rules: track2_reject_check.py .
+
+Organizers/Contact
+
+Mark Hasegawa-Johnson ( [redacted:email]@illinois.edu ) — University of Illinois
+
+Xiuwen Zheng ( [redacted:email]@illinois.edu ) — University of Illinois
+
+Subhashini Venugopalan — Google
+
+Dhruuv Agarwal — Google
+
+Venkatesh Ravichandran — Amazon
+
+Colin Lea — Apple
+
+Ed Cutrell — Microsoft
+
+General inquiries: [redacted:email]@lists.illinois.edu
+
+Acknowledgements
+
+The Speech Accessibility Project is funded by a grant from the AI Accessibility Coalition. Computational resources for the challenge are provided by the National Center for Supercomputing Applications (NCSA). We would also like to thank Rob Kooper (NCSA), Wei Kang (Xiaomi Corp.), and Maisy Wieman (SoundHound AI) for their expertise and invaluable assistance in setting up the challenge.
+
+References
+
+[1] Hasegawa-Johnson, M., et al. Community-supported shared infrastructure in support of speech accessibility. JSLHR, 67(11), 4162–4175, 2024.
+
+[2] Zheng, X., et al. The Interspeech 2025 Speech Accessibility Project Challenge. Proc. Interspeech, 2025.
+
+[3] Gohider, N., et al. Towards Inclusive and Fair ASR: Insights from the SAPC Challenge for Optimizing Disordered Speech Recognition. Proc. Interspeech, 2025.
+
+[4] Ducorroy, A., et al. Robust fine-tuning of speech recognition models via model merging: application to disordered speech. Proc. Interspeech, 2025.
+
+[5] La Quatra, M., et al. Exploring Generative Error Correction for Dysarthric Speech Recognition. Proc. Interspeech, 2025.
+
+[6] Baumann, I., et al. Pathology-Aware Speech Encoding and Data Augmentation for Dysarthric Speech Recognition. Proc. Interspeech, 2025.
+
+[7] Wagner, D., et al. Personalized Fine-Tuning with Controllable Synthetic Speech from LLM-Generated Transcripts for Dysarthric Speech Recognition. Proc. Interspeech, 2025.
+
+[8] Wang, S., et al. A Self-Training Approach for Whisper to Enhance Long Dysarthric Speech Recognition. Proc. Interspeech, 2025.
+
+[9] Takahashi, K., et al. Fine-tuning Parakeet-TDT for Dysarthric Speech Recognition in the Speech Accessibility Project Challenge. Proc. Interspeech, 2025.
+
+[10] Tan, T., et al. CBA-Whisper: Curriculum Learning-Based AdaLoRA Fine-Tuning on Whisper for Low-Resource Dysarthric Speech Recognition. Proc. Interspeech, 2025.
+
+[11] Thennal, D.K., et al. Advocating Character Error Rate for Multilingual ASR Evaluation. Findings of ACL: NAACL 2025.
+
+&copy; 2026 Speech Accessibility Project Challenge 2

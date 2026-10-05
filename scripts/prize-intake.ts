@@ -12,8 +12,8 @@
  *     in a table whose last three cells a reading session fills from rendered rules pages. The job carries those
  *     cells forward by event URL and never fills one (src/revenue/ai-allowed-events.ts);
  *   - research/measurements/ai-allowed-events.urls.txt — the URLs of rows not yet graded, in render-watch's urls
- *     syntax, to paste into render-watch.yml's `urls` input. Never appended to research/rendered/urls.txt; tiktok.com
- *     URLs are refused.
+ *     syntax; `node scripts/prize-dispatch.mjs` prints the lines whose site passes the terms gate, for render-watch.yml's
+ *     `urls` input (never the whole file). Never appended to research/rendered/urls.txt; tiktok.com URLs are refused.
  *
  * Exit 0 only when all three were written. On a status other than 200, a redirect, a body that is not the list, a
  * list whose deadlines, prizes, launch dates or registration deadlines mostly stopped parsing, or a table the job
