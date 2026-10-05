@@ -491,6 +491,12 @@ const STACK_PATTERNS: Record<string, RegExp> = {
   tests: /\b(?:tests?|unit\s+test|test\s+coverage|vitest|jest|pytest|test\s+suite)\b/i,
 };
 
+/** The stacks that are code. With none of them matched, a docs or translation bounty is text work for the payer. */
+const CODE_STACKS: readonly string[] = ["typescript", "javascript", "python"];
+
+/** A translation deliverable, read from the same labels, title and text as the stacks (RULING-2026-10-05-vat-services.md §9 item 8). */
+const TRANSLATION_PATTERN = /\b(?:translat(?:e|ion|ing)|localis(?:e|ation)|localiz(?:e|ation))\b/i;
+
 const NEEDS_HUMAN_PATTERNS: { id: string; pattern: RegExp }[] = [
   { id: "call-or-meeting", pattern: /\b(?:hop\s+on\s+a\s+call|jump\s+on\s+a\s+call|schedule\s+a\s+(?:call|meeting)|zoom\s+call|video\s+call|pair(?:ing)?\s+session|office\s+hours)\b/i },
   { id: "chat-first", pattern: /\b(?:(?:discuss|talk|chat|sync)\s+(?:this\s+)?(?:with\s+us|with\s+the\s+team|first|before)|(?:ping|dm|message)\s+(?:us|me|the\s+maintainers?)|reach\s+out\s+to\s+(?:us|me))\b/i },
@@ -660,6 +666,16 @@ export function scoreBounty(
     skipped.push({
       rule: "not-our-stack",
       detail: `Nothing in the labels or the issue matches ${config.requiredStacks.join(" / ")}. BOARD.md build #2 restricts this line to those.`,
+    });
+  }
+
+  // 8a. Text only: writing, editing or translation performed for the payer (RULING-2026-10-05-vat-services.md §3.7, §4).
+  // `requiredStacks` and `not-our-stack` are unchanged; the supply counter does not run through this function.
+  const codeStacks = stacks.filter((id) => CODE_STACKS.includes(id));
+  if (codeStacks.length === 0 && (stacks.includes("docs") || TRANSLATION_PATTERN.test(labelText) || TRANSLATION_PATTERN.test(haystack))) {
+    skipped.push({
+      rule: "writing-or-translation-only",
+      detail: "The deliverable is text only (documentation, README, changelog, typo or a translation) with no code stack matched. Writing, editing and translation performed for a payer are the kinds reg 6א(1) of the VAT regulations names, and registration reg 13(1)'s second limb registers a dealer whose occupation is those services as עוסק מורשה; the colony does not attempt them (RULING-2026-10-05-vat-services.md §3.7, §4).",
     });
   }
 
