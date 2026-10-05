@@ -39,7 +39,11 @@ Express account: the only code-level Israeli payability proof the 121-criterion 
    visible text: one inside an HTML comment is none, while a ban anywhere is a ban (28.9.2026).
 3. **Score.** `selectBounties()` returns at most two candidates and an explicit `skipped` list with
    the rule that refused each one. Read the skipped list: a filter nobody argues with is a filter
-   that has stopped filtering.
+   that has stopped filtering. A bounty whose deliverable is text only (documentation, README,
+   changelog, typo or a translation, with no code stack matched) is skipped with
+   `writing-or-translation-only`: writing, editing and translation for a payer are reg 6א(1) kinds,
+   and the exempt-dealer premise of owner step 2 must not rest on them
+   (`research/channel-loop/RULING-2026-10-05-vat-services.md` §3.7, 5.10).
 4. **Attempt.** Comment `/attempt #N` **from the brand machine account** with a real
    implementation plan, as `attemptComment()` writes it and `auditAttemptComment()` passes it: the
    same disclosure as the PR (automated brand account, AI-authored, agent-operated) and the stop
