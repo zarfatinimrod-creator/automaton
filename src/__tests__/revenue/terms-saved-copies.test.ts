@@ -107,11 +107,16 @@ function parse(name: string, raw: Buffer = readFileSync(join(DIR, name))): Parse
 }
 
 describe("saved terms texts (research/channel-loop/terms/) hold what their headers say", () => {
-  it("has the Apify copies and the PostHog references, one form each", () => {
+  it("has the Apify copies, the PostHog references and the tick-45 prize-event texts, one form each", () => {
     const kinds = Object.fromEntries(files().map((f) => [f, parse(f).kind]));
     expect(kinds).toEqual({
+      "ansperformance-disclaimer-2026-10-05.md": "reference",
       "apify-acceptable-use-policy-2026-10-04.md": "verbatim",
       "apify-general-terms-2026-10-04.md": "verbatim",
+      "codabench-privacy-and-terms-2026-10-05.md": "verbatim",
+      "github-acceptable-use-policies-2026-10-05.md": "verbatim",
+      "github-terms-of-service-2026-10-05.md": "verbatim",
+      "openreview-terms-of-use-2026-10-05.md": "verbatim",
       "posthog-privacy-2026-10-04.md": "reference",
       "posthog-terms-2026-10-04.md": "reference",
     });
@@ -295,5 +300,94 @@ describe("posthog.com's verdict rests on the pinned references", () => {
     expect(reopen).toContain("PC `sql/index.mdx:148`");
     expect(reopen).toContain("PC `endpoints-vs-query-api.mdx:16`");
     expect(reopen).toContain("not on the free plan");
+  });
+});
+
+/**
+ * Tick 45 (5.10.2026): the prize-event terms audit (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md). The
+ * GitHub-hosted texts the GitHub-hosted verdicts rest on are saved here: GitHub's Acceptable Use Policies and Terms of
+ * Service (github/docs, CC BY 4.0) for the ten GitHub Pages sites, OpenReview's Terms of Use (AGPL-3.0), Codabench's
+ * Privacy Policy and Terms of Use (Apache-2.0), all verbatim; and ansperformance.eu's disclaimer as a pinned reference,
+ * because its repository has no licence and the notice's own copying condition is the one its verdict leaves unsettled.
+ */
+describe("the tick-45 prize-event texts", () => {
+  const COPIES: [string, string, string, number][] = [
+    ["github-acceptable-use-policies-2026-10-05.md", "2bd66de8cea336061c9ea060c9b37385136e6ab3", "8f22cce7e5e0dfe8555ea60ab5d960f8bd875142011a272a9b236f2fdb44cf8d", 129],
+    ["github-terms-of-service-2026-10-05.md", "2bd66de8cea336061c9ea060c9b37385136e6ab3", "7e2a7a7317a8007c84b5a760f6d9c27796f24253d3257ef8cfa35733167a3d09", 432],
+    ["openreview-terms-of-use-2026-10-05.md", "ed830e1aeeb91ca2606c1f905df2e1e18f150b0e", "f40c4bdc187d00033806430453e45602348165c127ef8ded472cec22f9ce6d5c", 960],
+    ["codabench-privacy-and-terms-2026-10-05.md", "c3be81944cf3733605bcaf311562e472f3e45755", "77668db78774bb06b86315387c0ff5965d411983716a9691e5038f1829caafc7", 66],
+    ["ansperformance-disclaimer-2026-10-05.md", "6a645289e4947d68af532852345efd5f646c5684", "a80515c1a07bd50d62a2f0758f769c4961b91b1b6d70edbd542deae6895123b8", 18],
+  ];
+  const verdicts = () => JSON.parse(readFileSync(VERDICTS, "utf8")).sites as Record<string, { verdict: string; source: string; checked: string; note: string }>;
+  const lineOf = (file: string, n: number) => readFileSync(join(DIR, file), "utf8").split("\n")[n - 1];
+  const linesOf = (file: string, a: number, b: number) =>
+    readFileSync(join(DIR, file), "utf8")
+      .split("\n")
+      .slice(a - 1, b)
+      .map((l) => l.trim())
+      .join(" ");
+
+  it("pins each text to its commit, sha256 and length, and says which licence allows the copy", () => {
+    for (const [file, commit, sha, lines] of COPIES) {
+      const text = readFileSync(join(DIR, file), "utf8");
+      expect(text, file).toContain(`Commit SHA: \`${commit}\``);
+      const p = parse(file);
+      expect(p.sha, file).toBe(sha);
+      expect(p.lines, file).toBe(lines);
+    }
+    for (const f of ["github-acceptable-use-policies-2026-10-05.md", "github-terms-of-service-2026-10-05.md"]) {
+      expect(readFileSync(join(DIR, f), "utf8"), f).toContain('LICENSE:1 "Attribution 4.0 International"');
+    }
+    expect(readFileSync(join(DIR, "openreview-terms-of-use-2026-10-05.md"), "utf8")).toContain("GNU Affero General Public License, version 3 (LICENSE.md:1-2");
+    expect(readFileSync(join(DIR, "codabench-privacy-and-terms-2026-10-05.md"), "utf8")).toContain("Apache License, Version 2.0 (LICENSE.TXT:1-2");
+  });
+
+  it("quotes only part of the unlicensed disclaimer, says how much, and leaves a full copy to the main thread", () => {
+    const f = "ansperformance-disclaimer-2026-10-05.md";
+    const text = readFileSync(join(DIR, f), "utf8");
+    const copied = [...text.matchAll(new RegExp(EXCERPT.source, "gm"))].reduce((n, m) => n + Number(m[2]) - Number(m[1]) + 1, 0);
+    const stated = text.match(/^> - \*\*The body is not copied here\.\*\* .*?: (\d+) of the (\d+) original lines are quoted below/m);
+    expect(stated).not.toBeNull();
+    expect(Number(stated![1])).toBe(copied);
+    expect(Number(stated![2])).toBe(parse(f).lines);
+    expect(copied).toBeLessThan(parse(f).lines);
+    expect(text).toContain("> - Licence of the repo: none.");
+    expect(text).toContain("Whether a full evidence copy is allowed here is the main thread's call.");
+    // Original line 6 ends in a space; the excerpt keeps it, or the block's sha256 would not match.
+    expect(lineOf(f, 27)).toBe("This data is published by EUROCONTROL for information purposes. ");
+  });
+
+  it("refuses a tampered tick-45 copy: a header hash, a body byte, an excerpt byte", () => {
+    const aup = readFileSync(join(DIR, "github-acceptable-use-policies-2026-10-05.md"), "utf8");
+    const swap = (t: string, a: string, b: string) => {
+      expect(t).toContain(a);
+      return Buffer.from(t.replace(a, b), "utf8");
+    };
+    expect(() => parse("x.md", swap(aup, "sha256 `8f22cce7", "sha256 `8f22cce8"))).toThrow(/body sha256/);
+    expect(() => parse("x.md", swap(aup, "Researchers may use public, non-personal information", "Researchers may use public information"))).toThrow(/body sha256/);
+    const ans = readFileSync(join(DIR, "ansperformance-disclaimer-2026-10-05.md"), "utf8");
+    expect(() => parse("y.md", swap(ans, "may not be modified without prior written permission", "may be modified without prior written permission"))).toThrow(/block sha256/);
+  });
+
+  it("lands the verdicts' quotes on the saved lines they cite", () => {
+    const v = verdicts();
+    const cited: [string, string, number, number, string][] = [
+      ["fomo26.github.io", "github-acceptable-use-policies-2026-10-05.md", 102, 102, "Researchers may use public, non-personal information from the Service for research purposes, only if any publications resulting from that research are [open access]"],
+      ["fomo26.github.io", "github-acceptable-use-policies-2026-10-05.md", 82, 82, "excessive automated bulk activity"],
+      ["fomo26.github.io", "github-acceptable-use-policies-2026-10-05.md", 96, 96, "You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service"],
+      ["lbl.gov", "github-terms-of-service-2026-10-05.md", 76, 76, "“User,” “You,” and “Your” refer to the individual person, company, or organization that has visited or is using the Website or Service"],
+      ["openreview.net", "openreview-terms-of-use-2026-10-05.md", 35, 36, "By using OpenReview or any data, products or services accessible from OpenReview sites"],
+      ["openreview.net", "openreview-terms-of-use-2026-10-05.md", 282, 282, "Creative Commons Public Domain Dedication (CC0 1.0)"],
+      ["codabench.org", "codabench-privacy-and-terms-2026-10-05.md", 39, 39, "Any reproduction in whole or in part is prohibited without prior consent of its owner."],
+      ["codabench.org", "codabench-privacy-and-terms-2026-10-05.md", 42, 42, "subject Codabench' network or servers to unreasonable traffic loads"],
+      ["ansperformance.eu", "ansperformance-disclaimer-2026-10-05.md", 28, 28, "provided that EUROCONTROL is mentioned as the source and it is not used for commercial purposes (i.e. for financial gain)"],
+    ];
+    for (const [site, file, a, b, text] of cited) {
+      const e = v[site];
+      expect(e.checked, site).toBe("2026-10-05");
+      expect(`${e.source} ${e.note}`, `${site} ${file}:${a}`).toContain(`${DIR}/${file}:${a === b ? a : `${a}-${b}`}`);
+      expect(e.note, site).toContain(text);
+      expect(linesOf(file, a, b), `${file}:${a}-${b}`).toContain(text);
+    }
   });
 });
