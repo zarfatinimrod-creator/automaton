@@ -8,7 +8,9 @@
  * Why: since merge 12143ca (5.10.2026, tick 48) render-watch masks an address before it writes a capture
  * (redactSecrets: the local part becomes `[redacted:email]`, the domain is kept), but a capture stored before that and
  * not fetched since keeps its addresses, and the repository is public. The decision (main thread, 5.10): mask them in
- * place, once, through the same redactSecrets, and say in the commit that git history keeps the earlier bytes.
+ * place, once, through the same redactSecrets, and say in the commit that git history keeps the earlier bytes. Run again
+ * when the masker learns a new form (tick 50: an @ written %40 or as a script escape, and Cloudflare's email protection,
+ * which the 5.10 run could not see): it changes only what the masker now finds.
  *
  * What it reads: every <slug>.meta.json in --rendered (default research/rendered), frozen copies included, or the
  * --only slugs, less the --except slugs (each named once however often it is given; a positional slug belongs to the
@@ -24,7 +26,9 @@
  * DRY RUN (the default) writes nothing and prints each capture that would change (whether its body and its text would,
  * and how many addresses each masks), then a summary: files that would change, addresses masked by domain kind
  * (domainKind: free-mail provider, organisation or university, mailing-list host, government, placeholder; kinds and
- * counts only, never an address and never a domain), the frozen copies among them, masks whose kept domain is an asset
+ * counts only, never an address and never a domain; a mask is counted in every form redactSecrets writes it,
+ * `[redacted:email]` then @, %40 or a script escape and the domain, or alone where a Cloudflare value was not one
+ * address, which the summary counts as "no domain kept"), the frozen copies among them, masks whose kept domain is an asset
  * name (always 0: the mask leaves `<name>@2x.png` alone), and the cited lines that would change: every citation by line
  * in the decision-bearing files (freeze-capture's decisionFiles and scanCitations, the scan frozen-citations.test.ts
  * runs) whose range holds a line that changes, as `<capture file>:<line> → cited by <file>:<line>`, never the text.
@@ -39,7 +43,8 @@
  * APPLY (--apply --date YYYY-MM-DD; the date is never read from the clock) writes, for each capture that changes, the
  * masked body and text, each through a temp file and a rename, then its meta: `redacted` grows by the masks (a
  * `redacted` that is a sentence, as the AMO captures' hand redaction wrote, stays as it is), `remasked: { on, addresses,
- * fold: "12143ca" }` follows it, and when the body changed, `sha256` and `byteLength` become the new body's — when they
+ * fold: "12143ca" }` follows it (a capture re-masked before keeps one such block: `on` becomes this run's --date and
+ * `addresses` the earlier count plus this run's), and when the body changed, `sha256` and `byteLength` become the new body's — when they
  * were the stored body's (a meta whose sha256 says it is of the body before a hand redaction keeps it). `redacted` and
  * `remasked` sit where buildMeta puts `redacted` (after `truncated`); nothing else in the meta moves, and it is written
  * as render-watch writes one (two-space JSON, its final newline as it was). For a frozen copy the same, and then
@@ -115,8 +120,10 @@ export function domainKind(domain) {
   return "organisation or university";
 }
 
-// A mask as redactSecrets writes it, its kept domain in group 1 (render-watch's ADDRESS_PATTERN domain and end).
-const MASKED = /\[redacted:email\]@((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})(?![A-Za-z0-9]|\.[A-Za-z0-9-])/g;
+// A mask as redactSecrets writes it, its kept domain in group 1 (render-watch's ADDRESS_PATTERN domain and end) after
+// the @ as it was written (@, %40, \u0040, \x40); group 1 is undefined for a bare mask (a Cloudflare value that was not
+// one address).
+const MASKED = /\[redacted:email\](?:(?:@|%40|\\[uU]0040|\\[xX]40)((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})(?![A-Za-z0-9]|\.[A-Za-z0-9-]))?/g;
 // A kept "domain" that is a file name: the mask would have taken an asset name (`<name>@2x.png`) for an address.
 const ASSET_DOMAIN = /\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?)$/i;
 // The type of a capture's file that no meta path names, by its extension: a .pdf or .bin is binary and stays as it is.
@@ -124,7 +131,10 @@ const EXT_TYPES = { txt: "text/plain", html: "text/html", json: "application/jso
 
 const masksIn = (text) => {
   const out = new Map();
-  for (const m of text.matchAll(MASKED)) out.set(m[1].toLowerCase(), (out.get(m[1].toLowerCase()) ?? 0) + 1);
+  for (const m of text.matchAll(MASKED)) {
+    const domain = (m[1] ?? "").toLowerCase(); // "" for a bare mask
+    out.set(domain, (out.get(domain) ?? 0) + 1);
+  }
   return out;
 };
 
@@ -136,9 +146,9 @@ const changedLines = (before, after) => {
 };
 
 /**
- * One file through redactSecrets: { bytes, count, addresses, domains (kept domain -> new masks), lines (changed line
- * numbers), moved (its line count would change) }. count is every mask (addresses and secret-shaped strings);
- * addresses only the new `[redacted:email]@` masks.
+ * One file through redactSecrets: { bytes, count, addresses, domains (kept domain -> new masks; "" for a bare mask),
+ * lines (changed line numbers), moved (its line count would change) }. count is every mask (addresses and secret-shaped
+ * strings); addresses only the new `[redacted:email]` masks.
  */
 export function maskFile(bytes, contentType, redact = redactSecrets) {
   const masked = redact(bytes, contentType);
@@ -173,7 +183,8 @@ export function remaskedMetaText(capture, on) {
   const follows = body && meta.sha256 === sha256(body.before);
   const prev = meta.redacted;
   const redacted = prev === undefined ? capture.count : Number.isInteger(prev) ? prev + capture.count : prev;
-  const remasked = { on, addresses: capture.addresses, fold: FOLD };
+  const earlier = Number.isInteger(meta.remasked?.addresses) ? meta.remasked.addresses : 0;
+  const remasked = { on, addresses: earlier + capture.addresses, fold: FOLD };
   const anchor = ["redacted", "truncated", "sha256"].find((k) => k in meta) ?? null;
   const out = {};
   for (const [key, value] of Object.entries(meta)) {
@@ -384,8 +395,13 @@ function summarize(plan, verb, cited, citedVerb, pins = []) {
   const exts = [...byExt.keys()].sort((a, b) => (EXT_ORDER.indexOf(a) + 1 || 99) - (EXT_ORDER.indexOf(b) + 1 || 99) || (a < b ? -1 : 1));
   const byKind = new Map(KINDS.map((k) => [k, 0]));
   let assetNames = 0;
+  let bare = 0;
   for (const p of parts) {
     for (const [domain, k] of p.domains) {
+      if (domain === "") {
+        bare += k;
+        continue;
+      }
       byKind.set(domainKind(domain), byKind.get(domainKind(domain)) + k);
       if (ASSET_DOMAIN.test(domain)) assetNames += k;
     }
@@ -411,6 +427,7 @@ function summarize(plan, verb, cited, citedVerb, pins = []) {
       `${exts.length ? ` (${exts.map((e) => `${byExt.get(e)} .${e}`).join(", ")})` : ""}; ${plural(addresses, "address", "addresses")} masked`,
   );
   lines.push(`  by domain kind: ${KINDS.map((k) => `${k} ${byKind.get(k)}`).join(", ")}`);
+  if (bare) lines.push(`  no domain kept (a Cloudflare value that is not one address): ${bare}`);
   lines.push(`  frozen copies among them: ${plural(frozen.length, "capture")} (${plural(frozenFiles, "file")}; their lines in ${MANIFEST}, metas included)`);
   lines.push(`  asset names masked: ${assetNames}`);
   const unnamed = parts.filter((p) => p.role === "other");

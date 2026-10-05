@@ -91,7 +91,9 @@ the second and third of those. To move one:
    (`\u0040` or `\x40`, kept as written), and Cloudflare's email protection (`data-cfemail="<hex>"` and
    `email-protection#<hex>`: the hex is decoded in memory only and becomes `[redacted:email]@<domain>`, or
    `[redacted:email]` alone when it is not one address). Still not found: an @ encoded twice (`%2540`, `&#37;40`)
-   or obfuscated (`[at]`), and an address a script assembles.
+   or obfuscated (`[at]`), and an address a script assembles. `remask-captures.mjs`, run again, masks what the
+   masker now finds in the stored captures; a capture re-masked twice keeps one `remasked`, whose `on` is the later
+   run's date and whose `addresses` is the sum of both runs.
 3. **Answer the specific question the research file asked**, not a question the page happens to
    answer. Each entry in `urls.txt` carries the sentence that put it there, quoted from the file
    that wants it.
