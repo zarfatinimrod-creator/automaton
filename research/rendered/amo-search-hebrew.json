@@ -213,7 +213,7 @@
         "language-support"
       ],
       "contributions_url": {
-        "url": "https://www.paypal.com/donate?business=elazar170%40gmail.com&utm_content=product-page-contribute&utm_medium=referral&utm_source=addons.mozilla.org",
+        "url": "https://www.paypal.com/donate?business=[redacted:email]%40gmail.com&utm_content=product-page-contribute&utm_medium=referral&utm_source=addons.mozilla.org",
         "outgoing": "https://prod.outgoing.prod.webservices.mozgcp.net/v1/64c6c3a6780440604f7542c01e208428634ee0f8aa6de878c5fadef14e6faf68/https%3A//www.paypal.com/donate%3Fbusiness=elazar170%2540gmail.com&utm_content=product-page-contribute&utm_medium=referral&utm_source=addons.mozilla.org"
       },
       "created": "2025-01-17T05:04:07Z",
@@ -261,7 +261,7 @@
       },
       "default_locale": "en-US",
       "description": {
-        "en-US": "<b>🚀 Features:</b>\n<ul> <li>✅ Automatically detects RTL content and applies correct text direction (<code>dir=\"rtl\"</code>).</li> <li>⚙️ Customizable global and site-specific toggles for maximum control.</li> <li>💡 Lightweight and efficient, running seamlessly in the background.</li> <li>🌐 Supports multilingual websites with mixed LTR and RTL content.</li> </ul>\n<b>🛠️ How It Works:</b>\nThe extension analyzes visible text on web pages to detect RTL characters and adjusts the direction and alignment as needed. You can enable or disable the extension globally or for specific websites using the simple toggle interface.\n\n<b>👥 Who Is This For?</b>\n<ul> <li>📖 Multilingual users who often read or write in Hebrew, Arabic, or similar languages.</li> <li>💻 Web developers working with RTL content or multilingual websites.</li> <li>🖱️ Anyone seeking a better browsing experience with properly aligned text.</li> </ul>\n<b>❤️ Support the Project:</b>\nIf you enjoy using this extension, consider supporting its development by donating via <a href=\"https://prod.outgoing.prod.webservices.mozgcp.net/v1/b8b8ba2b55266ad34800c1eebaf4207e7ea12ddd1553af25d8abc588bfd42dd5/https%3A//www.paypal.com/donate%3Fbusiness=elazar170%40gmail.com\" rel=\"nofollow\">PayPal</a>. 🙏"
+        "en-US": "<b>🚀 Features:</b>\n<ul> <li>✅ Automatically detects RTL content and applies correct text direction (<code>dir=\"rtl\"</code>).</li> <li>⚙️ Customizable global and site-specific toggles for maximum control.</li> <li>💡 Lightweight and efficient, running seamlessly in the background.</li> <li>🌐 Supports multilingual websites with mixed LTR and RTL content.</li> </ul>\n<b>🛠️ How It Works:</b>\nThe extension analyzes visible text on web pages to detect RTL characters and adjusts the direction and alignment as needed. You can enable or disable the extension globally or for specific websites using the simple toggle interface.\n\n<b>👥 Who Is This For?</b>\n<ul> <li>📖 Multilingual users who often read or write in Hebrew, Arabic, or similar languages.</li> <li>💻 Web developers working with RTL content or multilingual websites.</li> <li>🖱️ Anyone seeking a better browsing experience with properly aligned text.</li> </ul>\n<b>❤️ Support the Project:</b>\nIf you enjoy using this extension, consider supporting its development by donating via <a href=\"https://prod.outgoing.prod.webservices.mozgcp.net/v1/b8b8ba2b55266ad34800c1eebaf4207e7ea12ddd1553af25d8abc588bfd42dd5/https%3A//www.paypal.com/donate%3Fbusiness=[redacted:email]%40gmail.com\" rel=\"nofollow\">PayPal</a>. 🙏"
       },
       "developer_comments": {
         "en-US": "This is the first edition, if you find bugs please report me to the support email :)"

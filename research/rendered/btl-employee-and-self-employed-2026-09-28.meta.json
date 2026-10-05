@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T00:51:56.551Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 132024,
-  "sha256": "3bb8c57c5dded9d10502c6827b38a17a56587ee0ed9f0217160c64ab30e7a3d7",
+  "byteLength": 132035,
+  "sha256": "14768170fac291b07d3188a08cc82dae849d985453838ce5255ada328ad0f54b",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/btl-employee-and-self-employed-2026-09-28.html",
   "textPath": "research/rendered/btl-employee-and-self-employed-2026-09-28.txt",

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T14:03:16.934Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 134759,
-  "sha256": "6b78a4b2333c692f6181dcc362040b06ec5c6c4b7079ca79447e35511ca4a3b9",
+  "byteLength": 134493,
+  "sha256": "722ab354585a2813507892290b5e160e7039485f316385001e9c1a7a33655836",
   "truncated": false,
+  "redacted": 14,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 14,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-upload-post.html",
   "textPath": "research/rendered/terms-upload-post.txt",

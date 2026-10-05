@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:53.507Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 592348,
-  "sha256": "c0e10bbb4ee553a1e559a5ebccf568b4ea4ceeee665be5c92c977e6b4185ceda",
+  "byteLength": 592320,
+  "sha256": "4936c9c4945857d3067f6082e3c4d6f8e5617b251569bc1ff2d364b9611b1934",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/indiebook-terms.html",
   "textPath": "research/rendered/indiebook-terms.txt",

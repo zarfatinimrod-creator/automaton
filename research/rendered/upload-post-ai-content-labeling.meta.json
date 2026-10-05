@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:25.224Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 33623,
-  "sha256": "7ac1d7c76934387469801ff6f5d8ba275fbb60a8b6933832565289646ad0abcf",
+  "byteLength": 33605,
+  "sha256": "0050be685dbd97600972d91908a3f266448f3d49fc8d98cc4a7f67dfee1f7b58",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/upload-post-ai-content-labeling.html",
   "textPath": "research/rendered/upload-post-ai-content-labeling.txt",

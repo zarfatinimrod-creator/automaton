@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:43.652Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 144883,
-  "sha256": "5c816612a7dac9361e3bfc87d291a9a8221f3725430e6c81fe2eb2044240564f",
+  "byteLength": 144894,
+  "sha256": "f2591660f40c2c589ed7649c6fee07b5c3d1a06d9882a4f61a258fefc3677ece",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/btl-not-working-rates.html",
   "textPath": "research/rendered/btl-not-working-rates.txt",

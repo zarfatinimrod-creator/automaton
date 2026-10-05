@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:11.381Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 545153,
-  "sha256": "8ab1114448bfbaf1b6b49ffd68084492728cc2f6ee1d5f470a7bc33e7f991fff",
+  "byteLength": 545083,
+  "sha256": "d81e2c900686ac0860c8b334962b8975121f9d48311f2dd4cffc8b289dffe213",
   "truncated": false,
+  "redacted": 5,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 5,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/indiebook-royalty-guide.html",
   "textPath": "research/rendered/indiebook-royalty-guide.txt",

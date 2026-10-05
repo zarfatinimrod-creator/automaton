@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:06.949Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 58090,
-  "sha256": "86c7af21b3c0fc1321eee0e81563f0bdadc2fc952d166b47aba9b34486dc7f66",
+  "byteLength": 58064,
+  "sha256": "e00cdff5354a868b39c30fb17746a023fb457ac1209445f600b2e70e5af72506",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/freemius-verification.html",
   "textPath": "research/rendered/freemius-verification.txt",

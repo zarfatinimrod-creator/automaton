@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:10.011Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 695592,
-  "sha256": "ae368fd199214a76f49629b510af608166048e37e37f58a360ac10b4da165590",
+  "byteLength": 695564,
+  "sha256": "d49d4b4d538ab38afef4c1077774290f7f168ff658940160e612d77899834847",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/indiebook-home.html",
   "textPath": "research/rendered/indiebook-home.txt",
