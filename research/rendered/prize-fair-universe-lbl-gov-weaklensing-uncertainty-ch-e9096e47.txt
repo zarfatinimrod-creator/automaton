@@ -1,0 +1,25 @@
+WL Phase 1 Final Submission Guidelines | FAIR Universe
+
+FAIR Universe: Weak Lensing Uncertainty Challenge
+
+Phase-1 Final Submission Guidelines
+
+This is a gentle reminder that the Phase 1 competition will end on 2025/11/15.
+
+Dear Weak Lensing Uncertainty Challenge Participants,
+
+To be considered for the monetary prizes and the NeurIPS 2025 workshop invitation, please carefully follow the guidelines below and prepare the necessary items in advance:
+
+The participant or team must send the following items to us fair-universe@lbl.gov before 2025/11/20:
+
+Summary write-up: A brief report summarizing your solution, results, and findings. You can download a LaTeX template for the summary write-up through this https://www.overleaf.com/read/vrskxhgdxvxj#705a8f
+
+Example code or GitHub repository: Provide code that is easy for us to review and evaluate.
+
+After we receive your summary write-up and example code, we will share a holdout dataset with you. The participant or team should then submit their final predictions based on this dataset.
+
+The final ranking will be determined by the score obtained from the holdout dataset predictions.
+
+We will award monetary prizes to the top three participants or teams in the final ranking and invite them to present their solutions at our NeurIPS 2025 workshop. Depending on the available spots, we may also invite the participants who propose particularly innovative solutions, even if they are not among the top three, to present at our NeurIPS 2025 workshop or win a jury prize. Therefore, please feel free to send us the items listed above even if you are not in the top three places in the current leaderboard.
+
+If you encounter any difficulties, need assistance, or wish to provide feedback, please feel free to reach out to us. We will respond as soon as possible.

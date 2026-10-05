@@ -1,0 +1,126 @@
+Participate — RoCo-Spring
+
+Participate
+
+Getting Started
+
+Participants register a team, receive a unique team ID, download the data and Starter Kit,
+generate their model predictions, and submit to the benchmark .
+
+Workflow
+
+Step-by-Step Participation
+
+1
+
+Register Team
+
+Register or manage your team to receive a unique team ID, updates, and access
+to submission instructions.
+
+Register or manage
+team
+
+2
+
+Receive Unique Team ID
+
+After registration, each team is issued a unique identifier that must be used
+for all benchmark submissions and leaderboard entries. Include this team number
+and your exact registered team name in the abstract of your workshop paper.
+
+3
+
+Download Data
+
+Download the Spring and RobustSpring training splits needed for
+model
+development, local validation, and practice runs.
+
+4
+
+Install the Starter Kit
+
+Set up the PTLFlow-based Starter Kit with training and inference scripts,
+data loaders, and example configurations.
+
+GitHub Starter Kit
+
+5
+
+Run Baseline
+
+Run the provided baseline configurations to verify your environment, data paths,
+and end-to-end inference pipeline.
+
+6
+
+Generate Predictions
+
+Produce model outputs for your chosen task(s) and export them in the
+required prediction format.
+
+7
+
+Validate Archive Locally
+
+Package your predictions into a submission archive and run local validation to
+catch formatting or naming issues before uploading.
+
+8
+
+Submit to Benchmark Server
+
+Upload your validated archive to the benchmark to receive scores on the
+development leaderboard.
+
+9
+
+Submit Workshop Paper and Reproducibility Package
+
+Use the official NeurIPS 2026 paper format with its sglblindworkshop option for
+a single-blind submission with
+4–6 main-paper pages; references and an optional appendix may follow outside that
+limit. Challenge teams must include their exact team number and registered team name
+in the abstract. Submit the reproducibility package with the camera-ready paper. See the
+Call for Papers for details.
+
+OpenReview
+Submission
+
+Starter Kit
+
+PTLFlow-Based Tools and Scripts
+
+RoCo-Spring Starter Kit repository:
+hmorimitsu/roco-spring-devkit
+
+Clone the official RoCo-Spring Starter Kit for its PTLFlow-based tools and scripts.
+Challenge submission requirements and validation steps are maintained on this website.
+
+If you use the PTLFlow-based Starter Kit or PTLFlow components in your work, please cite the
+following reference.
+
+Copy BibTeX
+
+@misc{morimitsu2021ptlflow,
+author = {Henrique Morimitsu},
+title = {PyTorch Lightning Optical Flow},
+year = {2021},
+publisher = {GitHub},
+journal = {GitHub repository},
+howpublished = {\url{https://github.com/hmorimitsu/ptlflow}}
+}
+
+Support
+
+Getting Help
+
+GitHub issues:
+Report a website or challenge issue
+
+Questions and discussion:
+Start a public support thread
+
+Email:
+roco-spring-org@googlegroups.com

@@ -1,0 +1,19 @@
+{
+  "url": "https://fair-universe.lbl.gov/WeakLensing-Uncertainty-Challenge-Phase1-Guidelines.html",
+  "slug": "prize-fair-universe-lbl-gov-weaklensing-uncertainty-ch-e9096e47",
+  "fetchedAt": "2026-10-05T13:30:30.447Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 4021,
+  "sha256": "90947242c5406c1d8fb0ccad95aa87373225e71b122680e7cba79d39b02652a9",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/prize-fair-universe-lbl-gov-weaklensing-uncertainty-ch-e9096e47.html",
+  "textPath": "research/rendered/prize-fair-universe-lbl-gov-weaklensing-uncertainty-ch-e9096e47.txt",
+  "robots": "none",
+  "robotsUrl": "https://fair-universe.lbl.gov/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

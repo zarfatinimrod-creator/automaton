@@ -1,0 +1,310 @@
+Participant guide | EEG/EMG Foundation Challenge 2026
+
+Skip to content
+
+EEG/EMG Foundation Challenge 2026
+
+Open navigation
+
+Home
+Tracks & Data
+Participant guide
+Prizes
+Leaderboard
+Rules
+Organizers
+Ecosystem
+Discord ↗
+Register
+
+One shared stack · several valid routes
+Your participant guide.
+
+Go from choosing a track to submitting a trained model. Develop with NeuralBench, Benchopt, both, or your own pipeline, then submit the trained model to Codabench for official evaluation. Each track provides two complementary worked examples: a NeuralBench start kit to explore the task and data through a neuro-specific model-development and evaluation framework, and a Benchopt competition kit to develop and validate against the submission workflow. Both are recommended, not required.
+
+See the workflow ↓
+Open the worked examples ↓
+
+01 · Workflow 02 · Kits and baselines 03 · Build 04 · Submit
+
+01
+
+Connected tools · distinct responsibilities
+Understand the competition ecosystem.
+
+Three complementary tools support different parts of your path from public data to the leaderboard. NeuralBench and Benchopt are strongly recommended but optional. Codabench is required for registration, submission, and official evaluation.
+
+01 · Tasks, data & baselines
+NeuralBench
+
+Neurophysiology task and model environment.
+Defines the public tasks, datasets, preprocessing, splits, and reference baselines. Use it to explore a task and run a catalogue model — a task-specific network or a pretrained foundation model (probed or fine-tuned).
+
+Open the NeuralBench guides ↗
+
+02 · Develop and package
+Benchopt
+
+Reproducible experimentation and competition preparation.
+Use it to develop your own model and compare methods reproducibly. A new architecture lives in your submission.py as plain PyTorch; Benchopt reuses the NeuralBench task and data layer to train, validate, and package it into a submission.
+
+Open the Benchopt competition kit ↗
+
+03 · Submit and score
+Codabench
+
+Official participation and evaluation platform.
+Use it to register, read the current submission requirements, upload your trained model package, and receive official scores on the track leaderboards.
+
+Open a Codabench track portal ↓
+
+02
+
+Optional but recommended · two complementary entry points
+Start with worked examples.
+
+Each track offers a NeuralBench start kit to explore the task and test a model, plus a Benchopt competition kit to exercise the competition workflow and submission contract. Try the entry point closest to your immediate goal. This does not lock in how you train your final model.
+
+Track 01
+Track worked examples and baselines EEG-to-Image
+
+Open the Track 01 competition kit ↗
+Open Track 01 on NeuralBench ↗
+
+>_
+Benchopt competition kit Train and package a simple baseline with Benchopt
+Open Close
+
+Terminal · Benchopt copy
+
+$ pip install benchopt $ git clone https://github.com/neural-interfaces26/2026-competition $ benchopt install 2026-competition/tracks/image_decoding $ benchopt prepare 2026-competition/tracks/image_decoding --config 2026-competition/tracks/image_decoding/training.yml $ benchopt run 2026-competition/tracks/image_decoding --config 2026-competition/tracks/image_decoding/training.yml
+
+This installs the track dependencies, prepares THINGS-EEG2 through the NeuralBench data pipeline, trains the Torch linear solver, evaluates it on the public split, and writes a submission folder. Zip that folder before uploading it to Codabench.
+
+NB
+NeuralBench start kit Check EEGNet with NeuralBench
+Open Close
+
+Terminal · NeuralBench copy
+
+$ pip install neuralbench $ neuralbench eeg image --download $ neuralbench eeg image --prepare $ neuralbench eeg image -m eegnet --debug
+
+The --debug command quickly checks the NeuralBench task and EEGNet pipeline. Choose this start kit to explore the neuro-specific task, adaptation strategies, and evaluation of catalogue models.
+
+REF
+Public-data reference Baseline results
+Open Close
+
+Baseline results obtained on THINGS-EEG2 ( Gifford2022Large ) , using the split documented in the Track 01 NeuralBench reference guide .
+
+Baseline Family Params Train Reference score Configuration
+
+Chance reference 0 0 GPU-h Top-5 2.22 ± 0.31 Not applicable
+
+EEGNet Lawhern et al., 2018 CNN 0.04 M 2 GPU-h Top-5 28.13 ± 0.14 configs/img/eegnet.yaml
+
+REVE Elouahidi et al., 2025 Foundation 14 M 0.5 GPU-h (probe) Top-5 84.75 ± 0.38 configs/img/reve_frozen.yaml
+
+Reference values: Mean ± standard deviation from NeuralBench (Banville et al., 2026), Table 1.
+
+Track 02
+Track worked examples and baselines BCI decoding
+
+Open the Track 02 competition kit ↗
+Open Track 02 on NeuralBench ↗
+
+>_
+Benchopt competition kit Train and package a simple baseline with Benchopt
+Open Close
+
+Terminal · Benchopt copy
+
+$ pip install benchopt $ git clone https://github.com/neural-interfaces26/2026-competition $ benchopt install 2026-competition/tracks/bci_decoding $ benchopt prepare 2026-competition/tracks/bci_decoding --config 2026-competition/tracks/bci_decoding/training.yml $ benchopt run 2026-competition/tracks/bci_decoding --config 2026-competition/tracks/bci_decoding/training.yml
+
+This installs the track dependencies, prepares Dreyer 2023 through the NeuralBench data pipeline, trains the Torch linear solver, evaluates it on the public split, and writes a submission folder. Zip that folder before uploading it to Codabench.
+
+NB
+NeuralBench start kit Check EEGNet with NeuralBench
+Open Close
+
+Terminal · NeuralBench copy
+
+$ pip install neuralbench 'moabb>=1.7.1' $ neuralbench eeg motor_imagery --dataset dreyer2023 --download $ neuralbench eeg motor_imagery --dataset dreyer2023 --prepare $ neuralbench eeg motor_imagery --dataset dreyer2023 -m eegnet --debug
+
+The --debug command quickly checks the NeuralBench task and EEGNet pipeline on Dreyer 2023. Choose this start kit to explore the neuro-specific task, adaptation strategies, and evaluation of catalogue models.
+
+REF
+Public-data reference Baseline results
+Open Close
+
+Baseline results obtained on Stieger 2021 ( Stieger2021Continuous ) , a four-class motor-imagery dataset, using the split documented in the Track 02 NeuralBench reference guide . Codabench currently uses Dreyer 2023 for warm-up evaluation, so these are not Codabench warm-up scores.
+
+Baseline Family Params Train Reference score Configuration
+
+Chance reference 0 0 GPU-h Bal. Acc 24.81 ± 1.03 Not applicable
+
+EEGNet CNN 0.04 M 4 GPU-h Bal. Acc 58.58 ± 0.34 configs/bci/eegnet.yaml
+
+REVE Foundation 14 M 1 GPU-h (probe) Bal. Acc 68.04 ± 0.73 configs/bci/reve.yaml
+
+Reference values: Mean ± standard deviation from NeuralBench (Banville et al., 2026), Table 1.
+
+Track 03
+Track worked examples and baselines Sleep onset
+
+Open the Track 03 competition kit ↗
+Open Track 03 on NeuralBench ↗
+
+>_
+Benchopt competition kit Train and package a simple baseline with Benchopt
+Open Close
+
+Terminal · Benchopt copy
+
+$ pip install benchopt $ git clone https://github.com/neural-interfaces26/2026-competition $ benchopt install 2026-competition/tracks/sleep_onset $ benchopt prepare 2026-competition/tracks/sleep_onset --config 2026-competition/tracks/sleep_onset/training.yml $ benchopt run 2026-competition/tracks/sleep_onset --config 2026-competition/tracks/sleep_onset/training.yml
+
+This installs the track dependencies, prepares Sleep-EDF through the NeuralBench data pipeline, trains the Torch linear solver, evaluates it on the public split, and writes a submission folder. Zip that folder before uploading it to Codabench.
+
+NB
+NeuralBench start kit Check EEGNet with NeuralBench
+Open Close
+
+Terminal · NeuralBench copy
+
+$ pip install neuralbench $ neuralbench eeg sleep_onset --download $ neuralbench eeg sleep_onset --prepare $ neuralbench eeg sleep_onset -m eegnet --debug
+
+The --debug command quickly checks the NeuralBench task and EEGNet pipeline. Choose this start kit to explore the neuro-specific task, adaptation strategies, and evaluation of catalogue models.
+
+REF
+Public-data reference Baseline results
+Open Close
+
+Baseline results obtained on Sleep-EDF ( Kemp2000Analysis ) , using the participant-level split documented in the Track 03 NeuralBench reference guide .
+
+Baseline Family Params Train Reference score Configuration
+
+Chance reference 0 0 GPU-h bMAE 205.42 ± 0.01 s Not applicable
+
+EEGNet-sleep CNN 0.04 M 4 GPU-h bMAE 143.30 ± 0.40 s configs/sleep/eegnet.yaml
+
+REVE-sleep Foundation 14 M 1 GPU-h (probe) bMAE 134.89 ± 2.02 s configs/sleep/reve.yaml
+
+Reference values: Mean ± standard deviation from NeuralBench (Banville et al., 2026), Table 1. Here, bMAE is the unweighted mean of the MAE computed within each non-empty time-to-onset bin.
+
+Track 04
+Track worked examples and baselines EMG-to-Pose
+
+Open the Track 04 competition kit ↗
+Open Track 04 on NeuralBench ↗
+
+>_
+Benchopt competition kit Train and package a simple baseline with Benchopt
+Open Close
+
+Terminal · Benchopt copy
+
+$ pip install benchopt $ git clone https://github.com/neural-interfaces26/2026-competition $ benchopt install 2026-competition/tracks/emg_pose $ benchopt prepare 2026-competition/tracks/emg_pose --config 2026-competition/tracks/emg_pose/training.yml $ benchopt run 2026-competition/tracks/emg_pose --config 2026-competition/tracks/emg_pose/training.yml
+
+This installs the track dependencies, prepares EMG2Pose through the NeuralBench data pipeline, trains the Torch linear solver, evaluates it on the public split, and writes a submission folder. Zip that folder before uploading it to Codabench. The dataset preparation is large and requires substantial local storage.
+
+NB
+NeuralBench start kit Check VEMG2Pose with NeuralBench
+Open Close
+
+Terminal · NeuralBench copy
+
+$ pip install neuralbench 'eegdash>=0.8.2' $ neuralbench emg pose -m vemg2pose --download $ neuralbench emg pose -m vemg2pose --prepare $ neuralbench emg pose -m vemg2pose --debug
+
+The --debug command quickly checks the NeuralBench task and VEMG2Pose pipeline. Choose this start kit to explore the neuro-specific task, adaptation strategies, and evaluation of catalogue models.
+
+REF
+Public-data reference Baseline result
+Open Close
+
+Baseline result obtained on public EMG2Pose ( Salter2024Emg2pose ) , using the task split documented in the Track 04 NeuralBench reference guide .
+
+Baseline Family Params Train Reference score Configuration
+
+NeuroPose Liu et al., 2021 Pose CNN - paper MAE 17.5 ± 1.5° tasks/emg/pose/config.yaml
+
+Reference values: Mean ± standard deviation from NeuralBench (Banville et al., 2026), Table 1.
+
+03
+
+Your model · three development routes
+Choose where to develop and train your model.
+
+All three routes can use your own architecture. Choose according to the workflow you need.
+
+NeuralBench
+
+Use the neuro-specific environment.
+Best for developing within neuro-specific tasks, data pipelines, preprocessing, metrics, adaptation strategies, and scientific comparisons. Train or evaluate a built-in or custom PyTorch model, then keep the trained checkpoint.
+
+Develop with NeuralBench ↗
+
+Benchopt
+
+Work directly against the competition.
+Best for developing directly against the submission contract with the same core benchmark code Codabench runs. Add your own method, compare configurations, train on public data, and export a submission folder. On real data, Benchopt reuses the NeuralBench task and data layer.
+
+Develop with Benchopt ↗
+
+Independent path
+
+Use your own pipeline.
+Train with your preferred codebase and permitted data. Neither NeuralBench nor Benchopt must control training, provided you save everything needed to reproduce inference and satisfy the track contract.
+
+Review track requirements →
+
+These routes are complementary, not cumulative requirements. You can develop in NeuralBench and use Benchopt only to validate and package the result, develop and package directly in Benchopt, train in your own pipeline and use Benchopt only for final validation, or handle training, contract validation, and packaging entirely yourself. You never need to train the same model twice.
+
+Same destination: whatever the training path, you upload a trained model to Codabench. ↓
+
+04
+
+From trained model to leaderboard
+Package and submit on Codabench.
+
+Whatever training route you used, the final artifact is the same: a trained model wrapped in the required submission class, called a Solver . Before packaging it, read the shared submission guide and open Get Started → Submission Guide on your Codabench track below . They define how to package, validate, and upload it.
+
+1 Read the contract Open Get Started → Submission Guide on your Codabench track.
+
+2 Build the submission Wrap the architecture, inference preprocessing, trained weights, and any optional files in the required Solver .
+
+3 Validate and ZIP Test inference locally with Benchopt, then zip the contents of the submission folder.
+
+4 Upload and check Submit through My Submissions and confirm that evaluation succeeds.
+
+Two evaluation stages: Warm-up scores use public test data and are indicative. Codabench switches to the private 2026 cohorts for the sealed phase, and only sealed scores determine the final ranking.
+
+Track 01 Codabench Submission Guide EEG-to-Image
+
+Open Track 01 Submission Guide ↗
+
+Track 02 Codabench Submission Guide BCI decoding
+
+Open Track 02 Submission Guide ↗
+
+Track 03 Codabench Submission Guide Sleep onset
+
+Open Track 03 Submission Guide ↗
+
+Track 04 Codabench Submission Guide EMG-to-Pose
+
+Open Track 04 Submission Guide ↗
+
+EEG/EMG Foundation Challenge 2026
+
+Home
+Tracks & Data
+Participant guide
+Prizes
+Leaderboard
+Rules
+Ethics
+Organizers
+Ecosystem
+GitHub
+
+Contact us on Discord

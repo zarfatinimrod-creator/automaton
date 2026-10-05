@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Weak Lensing Uncertainty Challenge | FAIR Universe</title>
+  <meta content="Uncertainty aware large-compute-scale AI platform for high energy physics and cosmology"
+    name="description">
+  <meta content="FAIR Universe, High Energy Physics, Cosmology, Uncertainty aware" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.ico" rel="icon">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css?v=2" rel="stylesheet">
+  <link href="assets/css/higgs.css?v=2" rel="stylesheet">
+  <link href="assets/css/leaderboard-table.css?v=2" rel="stylesheet">
+
+</head>
+
+<body>
+  <a class="btn btn-primary rounded-circle home-btn" href="index.html"><i class="bi bi-house"></i></a>
+
+  <!-- ======= Hero Section ======= -->
+  <section class="hero">
+    <h1>FAIR Universe: Weak Lensing Uncertainty Challenge</h1>
+  </section>
+  <!-- End Hero Section -->
+
+  <!-- ======= About Section ======= -->
+  <section>
+      <div class="container">
+        <div class="section-title">
+          <h2>Winners</h2>
+          <p>Phase 1 of the NeurIPS 2025 Weak Lensing ML Uncertainty Challenge has come to an end. We have announced the winners of the competition.</p>
+          <p>In the final evaluation, the final submitted models are tested on a new holdout dataset that contains new realizations of convergence maps obtained from (i) the new simulations with the original cosmological parameters in the training data, and (ii) the new simulations with the cosmological parameters that were not seen in the training data. The new parameters are sampled from the same prior distributions as the training data.</p>
+          <p>After extensive studies, we have decided to award the prizes based on the final rankings in three final leaderboards. The three leaderboards evaluate the model performance on (i), (ii), and the average of (i) and (ii), respectively, to reflect the strengths and robustness of each model.</p>
+            <!-- Winners 1 -->
+            <h4>1. Final leaderboard evaluated solely on (i):</h4>
+            <div class="row">
+              <div class="col-lg-1"></div>
+                <div class="table-responsive col-lg-10">
+                  <table class="table caption-top">
+                    <thead>
+                      <tr>
+                        <th>Rank</th>
+                        <th>Particpant</th>
+                        <th>Final Score</th>
+                        <th>Mean MSE (Standerdized)</th>
+                        <th>Mean Coverage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1st</td>
+                        <td>cmbagent</td>
+                        <td>11.7029</td>
+                        <td>0.1033</td>
+                        <td>0.7000</td>
+                      </tr>
+                      <tr>
+                        <td>2nd</td>
+                        <td>eiffl</td>
+                        <td>11.6535</td>
+                        <td>0.1038</td>
+                        <td>0.7087</td>
+                      </tr>
+                      <tr>
+                        <td>3rd</td>
+                        <td>Shubhojit</td>
+                        <td>11.5987</td>
+                        <td>0.1032</td>
+                        <td>0.6583</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>We will award the prizes to <b>cmbagent</b>,  <b>eiffl</b>, and  <b>Shubhojit</b> for extraordinary performance on the original cosmologies.</p>
+                <div class="row section-body">
+                  <ul>
+                    <li><b>cmbagent:</b> team members Erwan Allys, Boris Bolliet, Tom Borret, Celia Lecat, Andy Nilipour, Sebastien Pierre, Licong Xu</li>
+                    <li><b>eiffl - Transatlantic Dream Team:</b> team members  Noe Dia, Sacha Guerrini, Wassim Kablan, François Lanusse, Julia Linhart, Laurence Perreault-Levasseur, Benjamin Remy, Sammy Sharieff, Andreas Tersenov, Justine Zeghal</li>
+                    <li><b>shubhojit - Shubhojit Naskar</b></li>
+                  </ul>
+                </div>
+            </div>
+            <!-- Winners 2 -->
+            <h4>2. Final leaderboard evaluated solely on (ii):</h4>
+            <div class="row">
+                <div class="col-lg-1"></div>
+                <div class="table-responsive col-lg-10">
+                  <table class="table caption-top">
+                    <thead>
+                      <tr>
+                        <th>Rank</th>
+                        <th>Particpant</th>
+                        <th>Final Score</th>
+                        <th>Mean MSE (Standerdized)</th>
+                        <th>Mean Coverage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1st</td>
+                        <td>Shubhojit</td>
+                        <td>11.3606</td>
+                        <td>0.0968</td>
+                        <td>0.6619</td>
+                      </tr>
+                      <tr>
+                        <td>2nd Tie</td>
+                        <td>THUML</td>
+                        <td>11.0511</td>
+                        <td>0.1051</td>
+                        <td>0.6733</td>
+                      </tr>
+                      <tr>
+                        <td>2nd Tie</td>
+                        <td>jagoncalves</td>
+                        <td>11.0367</td>
+                        <td>0.1073</td>
+                        <td>0.6683</td>
+                      </tr>
+                      <tr>
+                        <td>2nd Tie</td>
+                        <td>andry834</td>
+                        <td>11.0014</td>
+                        <td>0.1076</td>
+                        <td>0.7228</td>
+                      </tr>
+                      <tr>
+                        <td>2nd Tie</td>
+                        <td>jhu_suicee</td>
+                        <td>10.9892</td>
+                        <td>0.1067</td>
+                        <td>0.6451</td>
+                      </tr>
+                      <tr>
+                        <td>2nd Tie</td>
+                        <td>eiffl</td>
+                        <td>10.9883</td>
+                        <td>0.1074</td>
+                        <td>0.6818</td>
+                      </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+                <p>We recognize <b>Shubhojit</b> for the achievement in the best model generalization, with a score clearly separated from the other participants. The other five participants on the leaderboard cannot be separated in a significant way due to the limited samples of (ii).</p>
+            </div>
+            <!-- Winners 3 -->
+            <h4>3. Final leaderboard from the average of the score obtained on (i) and (ii):</h4>
+            <div class="row">
+              <div class="col-lg-1"></div>
+                <div class="table-responsive col-lg-10">
+                  <table class="table caption-top">
+                    <thead>
+                      <tr>
+                        <th>Rank</th>
+                        <th>Particpant</th>
+                        <th>Final Score</th>
+                        <th>Mean MSE (Standerdized)</th>
+                        <th>Mean Coverage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1st</td>
+                        <td>Shubhojit</td>
+                        <td>11.4796</td>
+                        <td>0.1000</td>
+                        <td>0.6601</td>
+                      </tr>
+                      <tr>
+                        <td>2nd</td>
+                        <td>eiffl</td>
+                        <td>11.3209</td>
+                        <td>0.1056</td>
+                        <td>0.6953</td>
+                      </tr>
+                      <tr>
+                        <td>3rd</td>
+                        <td>THUML</td>
+                        <td>11.2848</td>
+                        <td>0.1060</td>
+                        <td>0.6789</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>We will award the prizes to <b>Shubhojit</b>, <b>eiffl</b>, and <b>THUML</b> for demonstrating excellent performance on both new and old cosmologies.</p>
+                <div class="row section-body">
+                  <ul>
+                    <li><b>THUML:</b> team members Mingsheng Long, Yuezhou Ma, Yuanxu Sun, Huikun Weng, Haixu Wu, Hang Zhou, Haonan Shangguan</li>
+                  </ul>
+                </div>
+              </div>
+              <hr>
+            <!-- After winners -->
+            <p>All winners will present at our <b>NeurIPS 2025 Competition Workshop:</b></p>
+            <div class="row section-body">
+              <ul>
+                <li><b>Time:</b> December 7th (Sunday) 11:00 AM -- 1:45 PM (PT)</li>
+                <li><b>Location:</b> Exhibit Hall G, H in San Diego Convention Center</li>
+                <li><b>Agenda & talks:</b> <a target="_blank" href="https://neurips.cc/virtual/2025/loc/san-diego/competition/127728">https://neurips.cc/virtual/2025/loc/san-diego/competition/127728</a></li>
+            </div>
+            <p>We will prepare a paper documenting the top solutions with the winning teams after the workshop. The dataset will also be released permanently to serve as a permanent benchmark.</p>
+            <p>Congratulations to all the winning teams!</p>
+        </div>
+      </div>
+  </section>
+  <!-- End About Section -->
+
+  <!-- ======= About Section ======= -->
+  <section>
+      <div class="container">
+          <div class="section-title">
+              <h2>About the Challenge</h2>
+              <p>The large-scale structure of the universe—the cosmic web of galaxies, galaxy clusters, and dark matter spanning hundreds of millions of light-years—encodes essential information about the composition, evolution, and fundamental laws governing the cosmos. However, the majority of matter in the universe is dark matter, which does not interact with light and can only be observed indirectly through its gravitational effects. According to Einstein’s theory of general relativity, the gravitational field of this large-scale structure bends the path of light traveling through the universe. Weak gravitational lensing refers to the subtle, coherent distortions in the observed shapes of distant galaxies caused by the deflection of light as it traverses the inhomogeneous matter distribution of the universe. By statistically analyzing these distortions across large regions of the sky, weak lensing provides a powerful probe of the matter distribution and the underlying cosmological model that governs the expansion of the universe.</p>
+              <p>Traditional analysis based on two-point correlation functions can only capture limited amount of information from the weak lensing data (2D fields similar to images). To fully exploit the non-Gaussian features present in the cosmic web, higher-order statistics and modern machine learning (ML) methods have become increasingly important. These approaches, including deep learning and simulation-based inference, have been shown to extract significant more information in weak lensing maps than traditional techniques. However, different analyses assume different dataset setups and lead to different results, making it hard to directly compare with existing approaches. Furthermore, most (if not all) of these methods rely heavily on simulations that may not accurately represent real data due to modeling approximations and missing systematics.</p>
+              <p>This competition is motivated by the need to quantify and compare the information content that different analysis methods—ranging from classical statistics to ML-based models—can extract from weak lensing maps, while also evaluating their robustness to simulation inaccuracies and observational systematics.</p>
+              <p>The outcomes of this competition are expected to guide the development of next-generation weak lensing analysis pipelines, foster cross-disciplinary collaboration between the astrophysics and machine learning communities, and ultimately improve the reliability of cosmological inference from current and upcoming surveys such as LSST, Euclid, and the Roman Space Telescope. By explicitly addressing simulation-model mismatch and the need to quantify systematic uncertainties, this competition emphasizes scientific robustness and interpretability, aligning with the growing emphasis on trustworthy ML in scientific domains.</p>
+            </div>
+      </div>
+  </section>
+  <!-- End About Section -->
+
+  <!-- ======= Organizers Section ======= -->
+  <section>
+      <div class="container">
+          <div class="section-title">
+              <h2>Organizers</h2>
+              <p>We gratefully acknowledge the efforts of the FAIR Universe Team, composed of researchers dedicated to advancing high energy physics, cosmology, and machine learning for the benefit of the scientific community.</p>
+              <p>For inquiries, please contact us at: <a href="mailto:fair-universe@lbl.gov">fair-universe@lbl.gov</a></p>
+          </div>
+          <div class="row section-body">
+              <ul>
+                  <li>Wahid Bhimji</li>
+                  <li>Paolo Calafiura</li>
+                  <li>Ragansu Chakkappai</li>
+                  <li>Po-Wen Chang</li>
+                  <li>Yuan-Tang Chou</li>
+                  <li>Biwei Dai</li>
+                  <li>Sascha Diefenbacher</li>
+                  <li>Steven Farrell</li>
+                  <li>Aishik Ghosh</li>
+                  <li>Isabelle Guyon</li>
+                  <li>Chris Harris</li>
+                  <li>Shih-Chieh Hsu</li>
+                  <li>Elham Khoda</li>
+                  <li>Benjamin Nachman</li>
+                  <li>Peter Nugent</li>
+                  <li>David Rousseau</li>
+                  <li>Uros Seljak</li>
+                  <li>Benjamin Thorne</li>
+                  <li>Ihsan Ullah</li>
+                  <li>Daniel Whiteson</li>
+                  <li>Yulei Zhang</li>
+              </ul>
+          </div>
+      </div>
+  </section>
+  <!-- End Organizers Section -->
+  
+  <!-- ======= Competition Section ======= -->
+  <section>
+      <div class="container">
+          <div class="section-title">
+              <h2>Competition Material</h2>
+              <p>Find all the competition resources below:</p>
+              <div class="row section-body">
+                <ul>
+                    <li><strong><a href="https://www.codabench.org/competitions/8934/" target="_blank">Codabench Challenge Page:</a></strong> This serves as the platform to submit entries to the competition.</li>
+                    <li><strong><a href="https://github.com/FAIR-Universe/Cosmology_Challenge/tree/master/" target="_blank">GitHub Repository:</a></strong> This hosts the code for testing submissions, as well as starting kit notebooks</li>
+                </ul>
+            </div>
+          </div>
+      </div>
+  </section>
+  <!-- End Competition Section -->
+
+
+  <!-- ======= Leaderboard Section ======= -->
+  <section>
+    <div class="container">
+      <div class="section-title">
+        <h2>Phase 1 Codabench Leaderboard</h2>
+        <span>Last updated: November 17, 2025 at 02:05 PM UTC</span>
+        <div class="row">
+          <div class="table-responsive">
+            <table id="results-table">
+
+              <thead>
+                <tr>
+                  <th onclick="sortTable(0)">Rank</th>
+                  <th onclick="sortTable(1)">Username</th>
+                  <th onclick="sortTable(2)">Submission ID</th>
+                  <th onclick="sortTable(3)">Score</th>
+                  <th onclick="sortTable(4)">MSE</th>
+                  <th onclick="sortTable(5)">R²</th>
+                  <th onclick="sortTable(6)">Coverage</th>
+                  <th onclick="sortTable(7)">Method Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                <tr class="rank-1">
+                  <td>1</td>
+                  <td>cmbagent (team)</td>
+                  <td>424324</td>
+                  <td>11.7321</td>
+                  <td>0.1022</td>
+                  <td>0.8958</td>
+                  <td>0.7056</td>
+                  <td>tomborrett_cmbagent</td>
+                </tr>
+                
+                <tr class="rank-2">
+                  <td>2</td>
+                  <td>eiffl (team)</td>
+                  <td>424310</td>
+                  <td>11.6612</td>
+                  <td>0.1028</td>
+                  <td>0.8952</td>
+                  <td>0.7095</td>
+                  <td>b-remy_e36uxobt</td>
+                </tr>
+                
+                <tr class="rank-3">
+                  <td>3</td>
+                  <td>shubhojit</td>
+                  <td>417744</td>
+                  <td>11.6192</td>
+                  <td>0.1025</td>
+                  <td>0.8956</td>
+                  <td>0.6583</td>
+                  <td>CNNv48_</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>4</td>
+                  <td>THUML (team)</td>
+                  <td>424064</td>
+                  <td>11.5209</td>
+                  <td>0.1064</td>
+                  <td>0.8916</td>
+                  <td>0.6907</td>
+                  <td>F1</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>5</td>
+                  <td>adscft</td>
+                  <td>424300</td>
+                  <td>11.5142</td>
+                  <td>0.1056</td>
+                  <td>0.8924</td>
+                  <td>0.7279</td>
+                  <td>cnnv11152</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>6</td>
+                  <td>piyush555</td>
+                  <td>394590</td>
+                  <td>11.4681</td>
+                  <td>0.1077</td>
+                  <td>0.8902</td>
+                  <td>0.7103</td>
+                  <td>dns_l</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>7</td>
+                  <td>jhu_suicee</td>
+                  <td>423555</td>
+                  <td>11.4590</td>
+                  <td>0.1077</td>
+                  <td>0.8903</td>
+                  <td>0.6512</td>
+                  <td>STILI</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>8</td>
+                  <td>azhang81</td>
+                  <td>424251</td>
+                  <td>11.4192</td>
+                  <td>0.1098</td>
+                  <td>0.8882</td>
+                  <td>0.7017</td>
+                  <td>m6</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>9</td>
+                  <td>mmayr</td>
+                  <td>424022</td>
+                  <td>11.2759</td>
+                  <td>0.1133</td>
+                  <td>0.8846</td>
+                  <td>0.7080</td>
+                  <td>NL128_LD512_NB2_NSA6_NH16_LR2e4_BS32_NP200_VPR00_noPE_10ens</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>10</td>
+                  <td>jagoncalves</td>
+                  <td>418273</td>
+                  <td>11.2437</td>
+                  <td>0.1160</td>
+                  <td>0.8818</td>
+                  <td>0.6835</td>
+                  <td>20251008_173243</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>11</td>
+                  <td>DOT (team)</td>
+                  <td>422646</td>
+                  <td>11.2203</td>
+                  <td>0.1160</td>
+                  <td>0.8818</td>
+                  <td>0.7016</td>
+                  <td>CNN</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>12</td>
+                  <td>andry834</td>
+                  <td>422647</td>
+                  <td>11.1691</td>
+                  <td>0.1161</td>
+                  <td>0.8817</td>
+                  <td>0.7097</td>
+                  <td>25-11-14-03-31</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>13</td>
+                  <td>hnayak</td>
+                  <td>413583</td>
+                  <td>11.1505</td>
+                  <td>0.1177</td>
+                  <td>0.8801</td>
+                  <td>0.7130</td>
+                  <td>updated3</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>14</td>
+                  <td>Yuedong (team)</td>
+                  <td>422666</td>
+                  <td>11.1385</td>
+                  <td>0.1197</td>
+                  <td>0.8780</td>
+                  <td>0.6775</td>
+                  <td>25-11-13-21-12</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>15</td>
+                  <td>deleted_user_34276</td>
+                  <td>423158</td>
+                  <td>11.1220</td>
+                  <td>0.1174</td>
+                  <td>0.8804</td>
+                  <td>0.6903</td>
+                  <td>777777777</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>16</td>
+                  <td>uccaeid</td>
+                  <td>424311</td>
+                  <td>11.1220</td>
+                  <td>0.1174</td>
+                  <td>0.8804</td>
+                  <td>0.6903</td>
+                  <td>000000000</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>17</td>
+                  <td>farhankhan</td>
+                  <td>423146</td>
+                  <td>11.0931</td>
+                  <td>0.1188</td>
+                  <td>0.8790</td>
+                  <td>0.6871</td>
+                  <td>777777</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>18</td>
+                  <td>ahajighasem</td>
+                  <td>422359</td>
+                  <td>10.9727</td>
+                  <td>0.1219</td>
+                  <td>0.8758</td>
+                  <td>0.7026</td>
+                  <td>444</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>19</td>
+                  <td>MaDESYn (team)</td>
+                  <td>402355</td>
+                  <td>10.9509</td>
+                  <td>0.1235</td>
+                  <td>0.8741</td>
+                  <td>0.7201</td>
+                  <td>argustarv1</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>20</td>
+                  <td>young_hee</td>
+                  <td>409010</td>
+                  <td>10.9447</td>
+                  <td>0.1225</td>
+                  <td>0.8752</td>
+                  <td>0.7037</td>
+                  <td>model8</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>21</td>
+                  <td>mshamani</td>
+                  <td>422137</td>
+                  <td>10.9268</td>
+                  <td>0.1232</td>
+                  <td>0.8745</td>
+                  <td>0.6876</td>
+                  <td>4444</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>22</td>
+                  <td>sakib</td>
+                  <td>375549</td>
+                  <td>10.8968</td>
+                  <td>0.1215</td>
+                  <td>0.8762</td>
+                  <td>0.7216</td>
+                  <td>CNN</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>23</td>
+                  <td>satyamk</td>
+                  <td>424302</td>
+                  <td>10.8300</td>
+                  <td>0.1283</td>
+                  <td>0.8693</td>
+                  <td>0.6970</td>
+                  <td>tta</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>24</td>
+                  <td>hao_chun_liang</td>
+                  <td>403355</td>
+                  <td>10.7856</td>
+                  <td>0.1265</td>
+                  <td>0.8711</td>
+                  <td>0.6934</td>
+                  <td>ensemble_calibrated_exp6_20251027_230608</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>25</td>
+                  <td>Isaul team</td>
+                  <td>424320</td>
+                  <td>10.7320</td>
+                  <td>0.1299</td>
+                  <td>0.8677</td>
+                  <td>0.7017</td>
+                  <td>cnnv11</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>26</td>
+                  <td>ibrahime</td>
+                  <td>395630</td>
+                  <td>10.6497</td>
+                  <td>0.1313</td>
+                  <td>0.8663</td>
+                  <td>0.7115</td>
+                  <td>Ens</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>27</td>
+                  <td>zdu863</td>
+                  <td>416459</td>
+                  <td>10.6023</td>
+                  <td>0.1310</td>
+                  <td>0.8665</td>
+                  <td>0.7412</td>
+                  <td>CNN-06</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>28</td>
+                  <td>ehernandez</td>
+                  <td>dev</td>
+                  <td>10.5582</td>
+                  <td>0.1317</td>
+                  <td>0.8659</td>
+                  <td>0.6421</td>
+                  <td>greedy_jan</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>29</td>
+                  <td>klinjin</td>
+                  <td>423847</td>
+                  <td>10.5465</td>
+                  <td>0.1325</td>
+                  <td>0.8650</td>
+                  <td>0.7296</td>
+                  <td>CNN_clean_V16</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>30</td>
+                  <td>exaltedjoseph</td>
+                  <td>386759</td>
+                  <td>10.5397</td>
+                  <td>0.1335</td>
+                  <td>0.8640</td>
+                  <td>0.6860</td>
+                  <td>op-muy</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>31</td>
+                  <td>nthday_jpg</td>
+                  <td>403758</td>
+                  <td>10.4075</td>
+                  <td>0.1346</td>
+                  <td>0.8629</td>
+                  <td>0.6155</td>
+                  <td>resnetlite</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>32</td>
+                  <td>chenghantsai</td>
+                  <td>385173</td>
+                  <td>10.3880</td>
+                  <td>0.1341</td>
+                  <td>0.8634</td>
+                  <td>0.7980</td>
+                  <td>Optuna CNN 515 depth</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>33</td>
+                  <td>sher_s</td>
+                  <td>413038</td>
+                  <td>10.3542</td>
+                  <td>0.1388</td>
+                  <td>0.8586</td>
+                  <td>0.6709</td>
+                  <td>20251103_193017</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>34</td>
+                  <td>dingjch</td>
+                  <td>424010</td>
+                  <td>10.2044</td>
+                  <td>0.1414</td>
+                  <td>0.8560</td>
+                  <td>0.6071</td>
+                  <td>N32_R01-0039_comb05grps_SBI-10-4</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>35</td>
+                  <td>saibaster</td>
+                  <td>394896</td>
+                  <td>9.9422</td>
+                  <td>0.1563</td>
+                  <td>0.8407</td>
+                  <td>0.7021</td>
+                  <td>xgb</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>36</td>
+                  <td>kunhaoz</td>
+                  <td>423707</td>
+                  <td>9.9117</td>
+                  <td>0.1515</td>
+                  <td>0.8457</td>
+                  <td>0.6775</td>
+                  <td>cnn</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>37</td>
+                  <td>limabar</td>
+                  <td>422717</td>
+                  <td>9.7956</td>
+                  <td>0.1595</td>
+                  <td>0.8376</td>
+                  <td>0.6964</td>
+                  <td>cnn_mcmc1</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>38</td>
+                  <td>faithful</td>
+                  <td>404896</td>
+                  <td>9.7855</td>
+                  <td>0.1628</td>
+                  <td>0.8342</td>
+                  <td>0.7121</td>
+                  <td>newcnnv8</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>39</td>
+                  <td>vodezhaw</td>
+                  <td>424052</td>
+                  <td>9.7018</td>
+                  <td>0.1499</td>
+                  <td>0.8473</td>
+                  <td>0.8327</td>
+                  <td>ResnetDirect+Calib+Ensemble</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>40</td>
+                  <td>bmdlln</td>
+                  <td>416985</td>
+                  <td>9.6539</td>
+                  <td>0.1499</td>
+                  <td>0.8473</td>
+                  <td>0.6774</td>
+                  <td>test</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>41</td>
+                  <td>pajucg2</td>
+                  <td>379685</td>
+                  <td>9.4793</td>
+                  <td>0.1648</td>
+                  <td>0.8321</td>
+                  <td>0.7889</td>
+                  <td>cnn</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>42</td>
+                  <td>Trung Le (team)</td>
+                  <td>375155</td>
+                  <td>9.2332</td>
+                  <td>0.1765</td>
+                  <td>0.8202</td>
+                  <td>0.6717</td>
+                  <td>OkeMCMC</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>43</td>
+                  <td>ssunao</td>
+                  <td>386814</td>
+                  <td>9.1654</td>
+                  <td>0.1749</td>
+                  <td>0.8218</td>
+                  <td>0.6304</td>
+                  <td>angular power spectrum + second third, and fourth order aperture mass statistics</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>44</td>
+                  <td>idkastro</td>
+                  <td>422443</td>
+                  <td>9.1589</td>
+                  <td>0.1833</td>
+                  <td>0.8133</td>
+                  <td>0.6302</td>
+                  <td>dummy_submission</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>45</td>
+                  <td>pruhlman</td>
+                  <td>405469</td>
+                  <td>9.1346</td>
+                  <td>0.1763</td>
+                  <td>0.8204</td>
+                  <td>0.7060</td>
+                  <td>test</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>46</td>
+                  <td>aravindsugu</td>
+                  <td>377027</td>
+                  <td>8.8820</td>
+                  <td>0.1870</td>
+                  <td>0.8096</td>
+                  <td>0.7019</td>
+                  <td>v2</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>47</td>
+                  <td>hzume</td>
+                  <td>398085</td>
+                  <td>8.8059</td>
+                  <td>0.1745</td>
+                  <td>0.8223</td>
+                  <td>0.5871</td>
+                  <td>exp001-sub3</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>48</td>
+                  <td>pwchang</td>
+                  <td>363706</td>
+                  <td>8.6809</td>
+                  <td>0.1949</td>
+                  <td>0.8015</td>
+                  <td>0.6909</td>
+                  <td>Baseline_CNN_MCMC_it100k_006_new_data_score</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>49</td>
+                  <td>maojiexu</td>
+                  <td>423787</td>
+                  <td>8.4055</td>
+                  <td>0.2060</td>
+                  <td>0.7902</td>
+                  <td>0.6455</td>
+                  <td>test_official</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>50</td>
+                  <td>fudawei</td>
+                  <td>393359</td>
+                  <td>8.3463</td>
+                  <td>0.1963</td>
+                  <td>0.8001</td>
+                  <td>0.5693</td>
+                  <td>CNN direct</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>51</td>
+                  <td>TJHSST (team)</td>
+                  <td>420595</td>
+                  <td>7.7703</td>
+                  <td>0.2226</td>
+                  <td>0.7733</td>
+                  <td>0.6996</td>
+                  <td>Trial Sub</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>52</td>
+                  <td>mathfan2020</td>
+                  <td>399432</td>
+                  <td>7.7054</td>
+                  <td>0.2126</td>
+                  <td>0.7834</td>
+                  <td>0.5739</td>
+                  <td>CNNv3</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>53</td>
+                  <td>carmenmisa</td>
+                  <td>367924</td>
+                  <td>4.6266</td>
+                  <td>0.3472</td>
+                  <td>0.6464</td>
+                  <td>0.6737</td>
+                  <td>Phase 1 Starting Kit</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>54</td>
+                  <td>ragansu</td>
+                  <td>357613</td>
+                  <td>4.6012</td>
+                  <td>0.3483</td>
+                  <td>0.6453</td>
+                  <td>0.6736</td>
+                  <td>model_starting_kit</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>55</td>
+                  <td>ravalin2</td>
+                  <td>421539</td>
+                  <td>-6.4842</td>
+                  <td>0.6444</td>
+                  <td>0.3439</td>
+                  <td>0.3755</td>
+                  <td>regvae_local</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>56</td>
+                  <td>sijil_jose</td>
+                  <td>424309</td>
+                  <td>-29.3209</td>
+                  <td>0.9686</td>
+                  <td>0.0136</td>
+                  <td>0.3140</td>
+                  <td>neural_ratio</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>57</td>
+                  <td>ayush_killer</td>
+                  <td>420217</td>
+                  <td>-34.3385</td>
+                  <td>3.7129</td>
+                  <td>-2.7836</td>
+                  <td>0.8472</td>
+                  <td>CNN</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>58</td>
+                  <td>suqik</td>
+                  <td>424008</td>
+                  <td>-38.4488</td>
+                  <td>1.9372</td>
+                  <td>-0.9728</td>
+                  <td>0.3745</td>
+                  <td>hybrid_summary_v1</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>59</td>
+                  <td>garyhornbill28</td>
+                  <td>369950</td>
+                  <td>-1854.2724</td>
+                  <td>163.5679</td>
+                  <td>-165.6699</td>
+                  <td>0.7210</td>
+                  <td>CNN_2</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>60</td>
+                  <td>kadidiakonate</td>
+                  <td>384213</td>
+                  <td>-3795.6503</td>
+                  <td>27.1434</td>
+                  <td>-26.6566</td>
+                  <td>0.6766</td>
+                  <td>dummy submission</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>61</td>
+                  <td>lupodda</td>
+                  <td>367070</td>
+                  <td>-56532.8470</td>
+                  <td>4325.4582</td>
+                  <td>-4405.5530</td>
+                  <td>0.9149</td>
+                  <td>DummySubmission</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>62</td>
+                  <td>rishi</td>
+                  <td>372606</td>
+                  <td>-56532.8470</td>
+                  <td>4325.4582</td>
+                  <td>-4405.5530</td>
+                  <td>0.9149</td>
+                  <td>registration</td>
+                </tr>
+                
+                <tr class="rank-">
+                  <td>63</td>
+                  <td>nithin2003</td>
+                  <td>422946</td>
+                  <td>-56532.8470</td>
+                  <td>4325.4582</td>
+                  <td>-4405.5530</td>
+                  <td>0.9149</td>
+                  <td>Metadata</td>
+                </tr>
+                
+              </tbody>
+
+            </table>
+          </div>
+        </div>
+      </div>
+  </section>
+  <!-- End Leaderboard Section -->
+
+  <script>
+    function sortTable(n) {
+      const table = document.getElementById("results-table");
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const th = table.querySelectorAll("th")[n];
+
+      // Toggle direction on repeated clicks
+      let dir = th.dataset.dir === "asc" ? "desc" : "asc";
+      th.dataset.dir = dir;
+
+      // Sort rows based on column content
+      rows.sort((a, b) => {
+        let x = a.cells[n].innerText.trim();
+        let y = b.cells[n].innerText.trim();
+        const isNumeric = !isNaN(parseFloat(x)) && isFinite(x);
+        if (isNumeric) {
+          x = parseFloat(x);
+          y = parseFloat(y);
+        }
+        if (dir === "asc") {
+          return x > y ? 1 : x < y ? -1 : 0;
+        } else {
+          return x < y ? 1 : x > y ? -1 : 0;
+        }
+      });
+
+      // Rebuild the table with sorted rows
+      rows.forEach(row => tbody.appendChild(row));
+    }
+  </script>
+
+</body>
+
+</html>
