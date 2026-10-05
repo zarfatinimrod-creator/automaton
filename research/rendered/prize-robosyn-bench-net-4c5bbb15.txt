@@ -1,0 +1,61 @@
+Request Access | RoboSynChallenge
+
+RS
+
+RoboSynChallenge
+NeurIPS 2026 Competition
+
+Menu
+
+Home Data FAQ Evaluation Leaderboard
+
+Sign in
+Request access
+
+Participant access
+Request an account token
+
+RoboSynChallenge access requests are reviewed by the organizers through Gmail. Submit the
+required fields here, then the approval workflow can issue an access token after review.
+
+Request id: RSC-REQ-2026-MZ0M5B
+Required fields: email, full name list, team name, affiliation, and intended use
+Full name rule: use English commas to list every team member, max 5 names, final after registration
+Organizer action: approved requests receive an access-token email after review
+
+Email
+
+Full name
+
+Use English commas to list every team member, max 5 names. This field is final after registration.
+
+Team name
+
+Affiliation
+
+Intended use
+
+Misc
+
+Send request
+
+I already have a token
+
+Registration email
+[redacted:email]@gmail.com
+
+RoboSynChallenge
+
+A public benchmark for studying how synthesized manipulation data improves real-world
+generalization under scarce physical supervision.
+
+Resources
+
+RoboSynChallenge GitHub
+Released data
+Tutorial
+Competition FAQ
+Competition report
+
+© 2026 RoboSynChallenge
+Designed for open research evaluation

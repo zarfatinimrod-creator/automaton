@@ -1,0 +1,370 @@
+[
+  {
+    "id": "D1a",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (!dryRun) writeAtomically(file, out.text, buf);",
+    "replace": "if (!dryRun) writeFileSync(file, out.text);",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D1a: the edit is written in place, so a failed write truncates the file"
+  },
+  {
+    "id": "D1b",
+    "file": "scripts/loop-edit.mjs",
+    "find": "throw new WriteFailure(`${err.message}; ${state}${left}`);",
+    "replace": "throw new Refusal(`${err.message}; ${state}${left}`);",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D1b: a failed write is reported as a refusal (\"nothing written\", exit 2)"
+  },
+  {
+    "id": "D1c",
+    "file": "scripts/loop-edit.mjs",
+    "find": "      rmSync(tmp, { force: true });",
+    "replace": "      void tmp;",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D1c: the temporary file is left behind on a failure"
+  },
+  {
+    "id": "D1d",
+    "file": "scripts/loop-edit.mjs",
+    "find": "chmodSync(tmp, mode & 0o7777);",
+    "replace": "void mode;",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D1d: the target's mode is not kept"
+  },
+  {
+    "id": "D2a",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (rowShape(a[t].text) !== rowShape(b[t].text)) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D2a: a row's cell count may change (an unescaped | in the text)"
+  },
+  {
+    "id": "D2b",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (JSON.stringify(tables(a)) !== JSON.stringify(tables(b))) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D2b: a line edit may change the file's tables"
+  },
+  {
+    "id": "D3a",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (n !== width) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D3a: a row of another width is inserted into a table"
+  },
+  {
+    "id": "D3b",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (k < inserted && t !== lastLine(host)) {",
+    "replace": "if (false) {",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D3b: a line that is not a row is inserted inside a table, cutting it off"
+  },
+  {
+    "id": "D3c",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (k < inserted && insertedText[k] !== \"\") {",
+    "replace": "if (false) {",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D3c: a text line straight after a table's last row joins the table"
+  },
+  {
+    "id": "D3d",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (JSON.stringify(tables(b).filter((T) => !fresh(T))) !== JSON.stringify(expected)) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D3d: an insertion's tables are not compared"
+  },
+  {
+    "id": "D3e",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (t === host.header) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D3e: a line is inserted after a table's header row"
+  },
+  {
+    "id": "D4a",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (real !== join(realpathSync(root), relative(root, resolve(file)))) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D4a: a target reached through a linked logs/ is accepted"
+  },
+  {
+    "id": "D4b",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (!existsSync(join(root, \".git\"))) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D4b: a logs/x.md under a folder with no .git (node_modules/pkg/logs) is accepted"
+  },
+  {
+    "id": "D4c",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (real !== join(realpathSync(root), relative(root, resolve(file)))) refuse(",
+    "replace": "if (real !== resolve(file)) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D4c: too strict, a root reached through a link (the temp dir) is refused"
+  },
+  {
+    "id": "R1",
+    "file": "scripts/loop-edit.mjs",
+    "find": "for (const tok of protectedTokens(before)) {",
+    "replace": "for (const tok of new Set(protectedTokens(before))) {",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 reviewer R1: a URL on the line twice counts once, so one copy may be removed"
+  },
+  {
+    "id": "D6",
+    "file": "scripts/loop-edit.mjs",
+    "find": "(mode === \"replace\" || !old ? text : `${text} Was: ${old}`)",
+    "replace": "(mode === \"replace\" ? text : `${text} Was: ${old}`)",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D6 (with the reviewer's R3): an empty status cell becomes \"<text> Was: \""
+  },
+  {
+    "id": "R4",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (sha256(readFileSync(file)) !== sha256(original)) refuse(",
+    "replace": "if (readFileSync(file).length !== original.length) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 reviewer R4: a concurrent change of the same length is overwritten"
+  },
+  {
+    "id": "D7a",
+    "file": "scripts/loop-edit.mjs",
+    "find": "(OPENER[last] !== undefined && count(u, last) > count(u, OPENER[last]))",
+    "replace": "OPENER[last] !== undefined",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D7a: every closing bracket is stripped from a URL's end, also one it opens (Foo_(bar))"
+  },
+  {
+    "id": "D7b",
+    "file": "scripts/loop-edit.mjs",
+    "find": "\".,;:!?\".includes(last)",
+    "replace": "\".,;:!?_*\".includes(last)",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D7b: _ and * are stripped from a URL's end"
+  },
+  {
+    "id": "D8a",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (exact.length === 1) return exact[0];",
+    "replace": "if (false) return exact[0];",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D8a: a line equal to the anchor does not win over longer lines it starts"
+  },
+  {
+    "id": "D8b",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (exact.length > 1) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 D8b: two lines equal to the anchor are not refused"
+  },
+  {
+    "id": "I-status-replace",
+    "file": "scripts/loop-edit.mjs",
+    "find": "(mode === \"replace\" || !old ? text : `${text} Was: ${old}`)",
+    "replace": "(!old ? text : `${text} Was: ${old}`)",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 set-status: --replace prepends instead of replacing"
+  },
+  {
+    "id": "I-status-cells",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (!c || c.length !== STATUS_CELLS) {",
+    "replace": "if (!c) {",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 set-status: a row without exactly 8 cells is edited"
+  },
+  {
+    "id": "I-cell-header",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (!h || c.length !== h.length) {",
+    "replace": "if (!h) {",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 set-cell: a row whose cell count is not its header's is edited"
+  },
+  {
+    "id": "I-cell-append",
+    "file": "scripts/loop-edit.mjs",
+    "find": "(append && old ? `${old} ${text}` : text)",
+    "replace": "text",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 set-cell: --append replaces"
+  },
+  {
+    "id": "I-cell-col",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (k > c.length) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 set-cell: a --col past the row's cells is not refused"
+  },
+  {
+    "id": "I-cell-only",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (k !== cell - 1 && ca[k] !== cb[k]) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 invariant: a table edit may change another cell"
+  },
+  {
+    "id": "I-insert-eol",
+    "file": "scripts/loop-edit.mjs",
+    "find": "const eol = lines[t].eol || fileEol(lines);",
+    "replace": "const eol = \"\\n\";",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 insert-after: inserted lines get LF in a CRLF file"
+  },
+  {
+    "id": "I-replace-twice",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (at.length > 1) refuse(`--old occurs",
+    "replace": "if (false) refuse(`--old occurs",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 replace-in-line: --old found twice in the line is not refused"
+  },
+  {
+    "id": "I-overlap",
+    "file": "scripts/loop-edit.mjs",
+    "find": "i = hay.indexOf(needle, i + 1)",
+    "replace": "i = hay.indexOf(needle, i + needle.length)",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 replace-in-line: overlapping occurrences of --old are not counted"
+  },
+  {
+    "id": "I-repoint-exists",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (!exists(`${to}.${ext}`)) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 repoint-capture: a frozen copy that does not exist is pointed at"
+  },
+  {
+    "id": "I-repoint-boundary",
+    "file": "scripts/loop-edit.mjs",
+    "find": "(?<![A-Za-z0-9._-])${escapeRe(slug)}\\\\.(${EXT_ALT}):",
+    "replace": "${escapeRe(slug)}\\\\.(${EXT_ALT}):",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 repoint-capture: a longer slug that ends with the live one is repointed too"
+  },
+  {
+    "id": "I-line-count",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (b.length !== a.length + inserted) {",
+    "replace": "if (false) {",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 invariant: the line count may change"
+  },
+  {
+    "id": "I-other-eol",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (a[i].text !== b[j].text || a[i].eol !== b[j].eol) refuse(",
+    "replace": "if (a[i].text !== b[j].text) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 invariant: another line's line ending may change"
+  },
+  {
+    "id": "I-final-newline",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (before.endsWith(\"\\n\") !== after.endsWith(\"\\n\")) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 invariant: whether the file ends with a newline may change"
+  },
+  {
+    "id": "I-target-eol",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (b[t].eol !== a[t].eol) refuse(`line ${line}'s line ending would change`);",
+    "replace": "",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 invariant: the target line's ending may change"
+  },
+  {
+    "id": "I-no-change",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (text === source) refuse(\"the edit changes nothing\");",
+    "replace": "",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 invariant: an edit that changes nothing is written"
+  },
+  {
+    "id": "I-utf8",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (!Buffer.from(source, \"utf8\").equals(buf)) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 target: a file that is not valid UTF-8 is edited (its bytes change)"
+  },
+  {
+    "id": "I-symlink",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (st.isSymbolicLink()) refuse(",
+    "replace": "if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 target: a symbolic link is edited"
+  },
+  {
+    "id": "I-target-dir",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (basename(parent) === \"logs\") root = dirname(parent);",
+    "replace": "if (true) root = dirname(parent);",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 target: any .md file, not only logs/ and research/channel-loop/, is accepted"
+  },
+  {
+    "id": "I-url-altered",
+    "file": "scripts/loop-edit.mjs",
+    "find": "else if (!covered(tok)) refuse(`line ${line}: \"${tok}\" would be altered",
+    "replace": "else if (false) refuse(`line ${line}: \"${tok}\" would be altered",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 invariant: a URL may be altered or removed"
+  },
+  {
+    "id": "I-url-created",
+    "file": "scripts/loop-edit.mjs",
+    "find": "for (const tok of left) if (!covered(tok)) refuse(",
+    "replace": "for (const tok of left) if (false) refuse(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 invariant: a URL may appear (one made by joining text)"
+  },
+  {
+    "id": "I-slug-fields",
+    "file": "scripts/loop-edit.mjs",
+    "find": "const slugs = line.includes(\"\\t\") ?",
+    "replace": "const slugs = false ?",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 invariant: a tab-separated line's slug field is not protected"
+  },
+  {
+    "id": "I-exit-refused",
+    "file": "scripts/loop-edit.mjs",
+    "find": "      return 2;\n    }\n    error(err instanceof WriteFailure",
+    "replace": "      return 3;\n    }\n    error(err instanceof WriteFailure",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 exit codes: a refusal exits 3"
+  },
+  {
+    "id": "I-prepend-replace",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (values.prepend && values.replace) throw new Usage(",
+    "replace": "if (false) throw new Usage(",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 CLI: --prepend with --replace is accepted"
+  },
+  {
+    "id": "I-dry-run",
+    "file": "scripts/loop-edit.mjs",
+    "find": "if (!dryRun) writeAtomically(file, out.text, buf);",
+    "replace": "writeAtomically(file, out.text, buf);",
+    "test": "src/__tests__/revenue/loop-edit.test.ts",
+    "note": "tick 43 I24: --dry-run writes (the test that met it on the real queue now parses the command only)"
+  }
+]

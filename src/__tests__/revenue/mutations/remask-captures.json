@@ -1,0 +1,362 @@
+[
+  {
+    "id": "M1",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (textName && textName !== bodyName) parts.push(",
+    "replace": "if (false) parts.push(",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M1: the meta's textPath is never masked"
+  },
+  {
+    "id": "M2",
+    "file": "scripts/remask-captures.mjs",
+    "find": "    const parts = [];\n    const bodyName",
+    "replace": "    if (meta.frozen) continue;\n    const parts = [];\n    const bodyName",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M2: frozen copies are skipped"
+  },
+  {
+    "id": "M3",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "if (follows && key === \"sha256\") out.sha256 = sha256(body.bytes);",
+    "replace": "if (false) out.sha256 = sha256(body.bytes);",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M3 (the code moved to freeze-capture.mjs maskedMeta in tick 50): a changed body's sha256 is not rewritten"
+  },
+  {
+    "id": "M4",
+    "file": "scripts/remask-captures.mjs",
+    "find": "  if (hashes.size) {\n    const path = join(dir, MANIFEST);",
+    "replace": "  if (false) {\n    const path = join(dir, MANIFEST);",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M4: FROZEN.sha256 is not rewritten for the frozen files that changed"
+  },
+  {
+    "id": "M5",
+    "file": "scripts/remask-captures.mjs",
+    "find": "      changed: count > 0,",
+    "replace": "      changed: true,",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M5: idempotence dropped, every capture (also one with nothing to mask) is re-stamped"
+  },
+  {
+    "id": "M6",
+    "file": "scripts/remask-captures.mjs",
+    "find": "else if (status.stdout.trim()) plan.problems.push(",
+    "replace": "else if (false) plan.problems.push(",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M6: --apply writes over uncommitted changes"
+  },
+  {
+    "id": "M7",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (bodyName) parts.push({ role: \"body\", name: bodyName, contentType: meta.contentType });",
+    "replace": "if (bodyName) parts.push({ role: \"body\", name: bodyName, contentType: \"text/plain\" });",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M7: a binary body (a PDF) is masked as text"
+  },
+  {
+    "id": "M8",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "if (follows && key === \"byteLength\") out.byteLength = body.bytes.length;",
+    "replace": "if (false) out.byteLength = body.bytes.length;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M8 (moved to maskedMeta): a changed body's byteLength is not rewritten"
+  },
+  {
+    "id": "M9",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "const follows = body && meta.sha256 === sha256(body.before);",
+    "replace": "const follows = body;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M9 (moved to maskedMeta): sha256 is rewritten where it was not the stored body's (a hand redaction's meta)"
+  },
+  {
+    "id": "M10",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "Number.isInteger(prev) ? prev + count : prev",
+    "replace": "Number.isInteger(prev) ? count : prev",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M10 (moved to maskedMeta): redacted is set to this run's count, not grown from its previous count"
+  },
+  {
+    "id": "M11",
+    "file": "scripts/remask-captures.mjs",
+    "find": "for (const p of parts) if (p.moved) problems.push(",
+    "replace": "for (const p of parts) if (false) problems.push(",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M11: a mask that moves a line is not refused"
+  },
+  {
+    "id": "M12",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (manifest.has(name) && manifest.get(name) !== sha256(before)) problems.push(",
+    "replace": "if (false) problems.push(",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M12: a FROZEN.sha256 line that already disagrees with the file is not refused"
+  },
+  {
+    "id": "M13",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (line < r.range[0] || line > r.range[1]) continue;",
+    "replace": "if (line < r.range[0]) continue;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M13: a cited range is open at its end, so a changed line after it counts as cited"
+  },
+  {
+    "id": "M14",
+    "file": "scripts/remask-captures.mjs",
+    "find": "problems.push(`${metaName} names ${part.role",
+    "replace": "void (`${metaName} names ${part.role",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M14: a meta naming a body or text that does not exist is not refused"
+  },
+  {
+    "id": "M15",
+    "file": "scripts/remask-captures.mjs",
+    "find": "  if (top.status !== 0) {\n    error(`remask-captures: ${dir} is under no git repository",
+    "replace": "  if (false) {\n    error(`remask-captures: ${dir} is under no git repository",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M15: a directory under no git repository is not refused"
+  },
+  {
+    "id": "M16",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (v.apply && !isDay(v.date)) {",
+    "replace": "if (false) {",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M16: --apply without --date is accepted"
+  },
+  {
+    "id": "M17",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "const anchor = [\"redacted\", \"truncated\", \"sha256\"].find((k) => k in meta) ?? null;",
+    "replace": "const anchor = null;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M17 (moved to maskedMeta): redacted and remasked go to the end of the meta, not after truncated"
+  },
+  {
+    "id": "M18",
+    "file": "scripts/remask-captures.mjs",
+    "find": "return `${JSON.stringify(out, null, 2)}${capture.metaText.endsWith(\"\\n\") ? \"\\n\" : \"\"}`;",
+    "replace": "return `${JSON.stringify(out, null, 2)}\\n`;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M18: a final newline is always written, also to a meta that had none"
+  },
+  {
+    "id": "M19",
+    "file": "scripts/remask-captures.mjs",
+    "find": "const names = [...new Set([...touched, ...writes",
+    "replace": "const names = [...new Set([...writes",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M19: the dirty check looks only at the files written, not at a PDF beside a text it rewrites"
+  },
+  {
+    "id": "M20",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (ASSET_DOMAIN.test(domain)) assetNames += k;",
+    "replace": "if (false) assetNames += k;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 M20 (survived the builder's second round; a test has counted asset names since): asset names are never counted"
+  },
+  {
+    "id": "R1",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (`${JSON.stringify(meta, null, 2)}${metaText.endsWith(\"\\n\") ? \"\\n\" : \"\"}` !== metaText) {",
+    "replace": "if (false) {",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 R1: a meta not written as render-watch writes one (4-space indent) is rewritten anyway"
+  },
+  {
+    "id": "R2",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (textName && textName !== bodyName) parts.push(",
+    "replace": "if (textName) parts.push(",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 R2: a text/plain capture whose bodyPath is its textPath is masked twice"
+  },
+  {
+    "id": "R3",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (c.frozen && !manifest.has(name)) problems.push(",
+    "replace": "if (false) problems.push(",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 R3: a frozen copy's file FROZEN.sha256 does not record is not refused"
+  },
+  {
+    "id": "R5",
+    "file": "scripts/remask-captures.mjs",
+    "find": "for (const ext of r.ext ? [r.ext] : [\"txt\", \"html\"])",
+    "replace": "for (const ext of r.ext ? [r.ext] : [\"txt\"])",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 R5: a citation with no extension is not checked against the .html"
+  },
+  {
+    "id": "R6",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "if (key === \"remasked\") continue;",
+    "replace": "if (false) continue;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 R6 (moved to maskedMeta): a second mask keeps the earlier remasked block's values instead of replacing it in place"
+  },
+  {
+    "id": "R10",
+    "file": "scripts/remask-captures.mjs",
+    "find": "      addresses: parts.reduce((s, p) => s + p.addresses, 0),",
+    "replace": "      addresses: count,",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 R10: a secret-shaped string is counted in remasked.addresses, not only in redacted"
+  },
+  {
+    "id": "N1",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (ext === \"meta.json\" || parts.some((p) => p.name === name)",
+    "replace": "if (true || parts.some((p) => p.name === name)",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N1: files no meta path names are skipped"
+  },
+  {
+    "id": "N2",
+    "file": "scripts/remask-captures.mjs",
+    "find": "parts.push({ role: \"other\", name, contentType: EXT_TYPES[ext] });",
+    "replace": "parts.push({ role: \"body\", name, contentType: EXT_TYPES[ext] });",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N2: such a file is taken for the body (its sha256 and byteLength rewritten)"
+  },
+  {
+    "id": "N3",
+    "file": "scripts/remask-captures.mjs",
+    "find": "parts.push({ role: \"other\", name, contentType: EXT_TYPES[ext] });",
+    "replace": "parts.push({ role: \"other\", name, contentType: \"text/plain\" });",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N3/N4: an unnamed .pdf or .bin is read as text"
+  },
+  {
+    "id": "N5",
+    "file": "scripts/remask-captures.mjs",
+    "find": "    if (left.includes(slug)) continue;",
+    "replace": "    if (false) continue;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N5: --except is ignored"
+  },
+  {
+    "id": "N6",
+    "file": "scripts/remask-captures.mjs",
+    "find": "problems.push(`${slug}: no capture to leave out",
+    "replace": "void (`${slug}: no capture to leave out",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N6: an unknown slug in --except is accepted"
+  },
+  {
+    "id": "N7",
+    "file": "scripts/remask-captures.mjs",
+    "find": "only?.length ? [...new Set(only)] :",
+    "replace": "only?.length ? [...only] :",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N7: --only is not deduplicated"
+  },
+  {
+    "id": "N8",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (t.kind === \"positional\" && last) lists[last].push(t.value);",
+    "replace": "if (t.kind === \"positional\" && last) lists.only.push(t.value);",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N8: a positional slug always goes to --only, also after --except"
+  },
+  {
+    "id": "N9",
+    "file": "scripts/remask-captures.mjs",
+    "find": "let text = name !== null ? metaTexts.get(name) : undefined;",
+    "replace": "let text = undefined;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N9: the pin scan reads a rewritten meta from disk, so its previousSha256 is missed"
+  },
+  {
+    "id": "N10",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (file.startsWith(\"logs/\")) continue;",
+    "replace": "if (false) continue;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N10: logs/ (history) is scanned for stale pins"
+  },
+  {
+    "id": "N11",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (countOf.length) out.push({ file, fileLine: i + 1, kind: \"byte count\"",
+    "replace": "if (false) out.push({ file, fileLine: i + 1, kind: \"byte count\"",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N11: byte-count pins are dropped"
+  },
+  {
+    "id": "N12",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (h.hash.startsWith(m[0])) hashOf.add(at(h.name));",
+    "replace": "hashOf.add(at(h.name));",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N12: any hex with the same 8 leading digits counts as a pin"
+  },
+  {
+    "id": "N13",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (hashOf.size) out.push({ file, fileLine: i + 1, kind: \"sha256\"",
+    "replace": "if (false) out.push({ file, fileLine: i + 1, kind: \"sha256\"",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N13: sha256 pins are dropped"
+  },
+  {
+    "id": "N14",
+    "file": "scripts/remask-captures.mjs",
+    "find": ".filter((s) => s.slug.test(line) && s.count.test(line))",
+    "replace": ".filter((s) => s.count.test(line))",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N14: a byte count counts as a pin without the capture's name on the line"
+  },
+  {
+    "id": "N15",
+    "file": "scripts/remask-captures.mjs",
+    "find": "const unnamed = parts.filter((p) => p.role === \"other\");",
+    "replace": "const unnamed = [];",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 49 N15: the summary does not count the masks of files no meta path names"
+  },
+  {
+    "id": "B3",
+    "file": "scripts/remask-captures.mjs",
+    "find": "(?:@|%40|\\\\[uU]0040|\\\\[xX]40)((?:[A-Za-z0-9-]+\\.)+",
+    "replace": "(?:@|\\\\[uU]0040|\\\\[xX]40)((?:[A-Za-z0-9-]+\\.)+",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 50 B3: a mask written with %40 is not counted"
+  },
+  {
+    "id": "B4",
+    "file": "scripts/remask-captures.mjs",
+    "find": "(?![A-Za-z0-9]|\\.[A-Za-z0-9-]))?/g;",
+    "replace": "(?![A-Za-z0-9]|\\.[A-Za-z0-9-]))/g;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 50 B4: a bare mask (a Cloudflare value that was not one address) is not counted"
+  },
+  {
+    "id": "B5",
+    "file": "scripts/remask-captures.mjs",
+    "find": "        bare += k;\n        continue;",
+    "replace": "        bare += k;",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 50 B5: a bare mask is also counted under a domain kind"
+  },
+  {
+    "id": "B6",
+    "file": "scripts/remask-captures.mjs",
+    "find": "if (bare) lines.push(",
+    "replace": "if (false) lines.push(",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 50 B6: the \"no domain kept\" line is not printed"
+  },
+  {
+    "id": "T50-R5",
+    "file": "scripts/remask-captures.mjs",
+    "find": "(?:@|%40|\\\\[uU]0040|\\\\[xX]40)((?:[A-Za-z0-9-]+\\.)+",
+    "replace": "(?:@|%40)((?:[A-Za-z0-9-]+\\.)+",
+    "test": "src/__tests__/revenue/remask-captures.test.ts",
+    "note": "tick 50 fixer (reviewer R5): a mask written with a script escape (u0040, x40) is counted with no domain kind"
+  }
+]

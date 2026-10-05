@@ -1,0 +1,122 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Request Access | RoboSynChallenge</title>
+    <meta name="description" content="RoboSynChallenge is a NeurIPS 2026 competition on sim-to-real robot manipulation with synthesized and real-world co-training.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/site.css?v=20260909-leaderboard-faq">
+    <link rel="stylesheet" href="static/css/pages.css?v=20260906-success-faq">
+    <script defer="" src="static/assets/result-videos/baseline-results.js"></script>
+    <script defer="" src="static/assets/released-checkpoint-evals.js?v=20260903-smolvla-sample-sr"></script>
+    <script defer="" src="static/config.js"></script>
+    <script defer="" src="static/js/pages-app.js?v=20260926-deadline-oct11"></script>
+  </head>
+  <body>
+    <div class="site-chrome"></div>
+    <header class="site-header">
+      <div class="shell header-row">
+        <a class="brand" href="#/home">
+          <span class="brand-mark">RS</span>
+          <span class="brand-copy">
+            <strong>RoboSynChallenge</strong>
+            <small>NeurIPS 2026 Competition</small>
+          </span>
+          <img class="brand-event-logo" src="static/assets/neurips-logo.svg" alt="NeurIPS">
+        </a>
+        <button class="nav-toggle" type="button" data-nav-toggle="" aria-label="Toggle navigation">
+          Menu
+        </button>
+        <nav class="site-nav" data-nav-menu="" id="site-nav"><a href="#/home" class="">Home</a><a href="#/data" class="">Data</a><a href="#/faq" class="">FAQ</a><a href="#/evaluation" class="">Evaluation</a><a href="#/leaderboard" class="">Leaderboard</a></nav>
+        <div class="header-actions" id="header-actions">
+        <a href="#/login" class="button button-secondary">Sign in</a>
+        <a href="#/register" class="button button-primary">Request access</a>
+      </div>
+      </div>
+    </header>
+
+    <section class="flash-zone shell" id="flash-zone"></section>
+    <main id="app"><div class="page-shell">
+      <section class="section shell auth-grid single">
+        <article class="auth-card wide">
+          <span class="eyebrow">Participant access</span>
+          <h1>Request an account token</h1>
+          <p class="lead">
+            RoboSynChallenge access requests are reviewed by the organizers through Gmail. Submit the
+            required fields here, then the approval workflow can issue an access token after review.
+          </p>
+          
+          <div class="task-list">
+            <span><strong>Request id:</strong> <span data-register-request-id="">RSC-REQ-2026-MZ0M5B</span></span>
+            <span><strong>Required fields:</strong> email, full name list, team name, affiliation, and intended use</span>
+            <span><strong>Full name rule:</strong> use English commas to list every team member, max 5 names, final after registration</span>
+            <span><strong>Organizer action:</strong> approved requests receive an access-token email after review</span>
+          </div>
+          <form class="panel-stack compact" data-form="register">
+            <input type="hidden" name="request_id" value="RSC-REQ-2026-MZ0M5B">
+            <label class="field">
+              <span>Email</span>
+              <input type="email" name="email" placeholder="[redacted:email]@example.org" required="">
+            </label>
+            <label class="field">
+              <span><strong>Full name</strong></span>
+              <input type="text" name="full_name" placeholder="Name A, Name B" required="">
+              <p class="field-note"><strong>Use English commas to list every team member, max 5 names. This field is final after registration.</strong></p>
+            </label>
+            <label class="field">
+              <span>Team name</span>
+              <input type="text" name="team_name" placeholder="Team name" required="">
+            </label>
+            <label class="field">
+              <span>Affiliation</span>
+              <input type="text" name="affiliation" placeholder="University, lab, or company" required="">
+            </label>
+            <label class="field">
+              <span>Intended use</span>
+              <textarea name="intended_use" rows="4" placeholder="Brief intended use" required=""></textarea>
+            </label>
+            <label class="field">
+              <span>Misc</span>
+              <textarea name="misc" rows="4" placeholder="Optional extra information"></textarea>
+            </label>
+            <button type="submit" class="button button-primary">Send request</button>
+            <p class="form-status" data-register-status="" aria-live="polite"></p>
+          </form>
+          <div class="cta-row">
+            <a href="#/login" class="button button-secondary">I already have a token</a>
+          </div>
+          <p class="registration-email">
+            <strong>Registration email</strong>
+            <span>[redacted:email]@gmail.com</span>
+          </p>
+        </article>
+      </section>
+    </div></main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div>
+          <div class="footer-heading">RoboSynChallenge</div>
+          <p>
+            A public benchmark for studying how synthesized manipulation data improves real-world
+            generalization under scarce physical supervision.
+          </p>
+        </div>
+        <div>
+          <div class="footer-heading">Resources</div>
+          <a href="https://github.com/EDEM-AI/RoboSynChallenge/tree/main" target="_blank" rel="noreferrer">RoboSynChallenge GitHub</a>
+          <a href="https://huggingface.co/RoboSynChallenge/datasets" target="_blank" rel="noreferrer">Released data</a>
+          <a href="https://edem-ai.github.io/RoboSynChallenge/html/getting_started/overview.html" target="_blank" rel="noreferrer">Tutorial</a>
+          <a href="#/faq">Competition FAQ</a>
+          <a href="material/RoboSynChallenge-report.pdf" target="_blank" rel="noreferrer">Competition report</a>
+        </div>
+      </div>
+      <div class="shell footer-bottom">
+        <span>© 2026 RoboSynChallenge</span>
+        <span>Designed for open research evaluation</span>
+      </div>
+    </footer>
+  
+
+</body></html>
