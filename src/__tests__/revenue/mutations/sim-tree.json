@@ -1,0 +1,194 @@
+[
+  {
+    "id": "S1-no-cleanup",
+    "file": "scripts/sim-tree.sh",
+    "find": "  rm -rf -- \"$tree\"\n  echo \"sim-tree: removed $tree\" >&2",
+    "replace": "  echo \"sim-tree: removed $tree\" >&2",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: the tree is never removed after a pass"
+  },
+  {
+    "id": "S2-no-keep",
+    "file": "scripts/sim-tree.sh",
+    "find": "if [ \"$keep\" -eq 1 ]; then",
+    "replace": "if false; then",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: --keep is ignored and a passing run's tree is removed"
+  },
+  {
+    "id": "S3-exit-0",
+    "file": "scripts/sim-tree.sh",
+    "find": "exit \"$code\"",
+    "replace": "exit 0",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: the command's exit code is not sim-tree's"
+  },
+  {
+    "id": "S4-remove-on-failure",
+    "file": "scripts/sim-tree.sh",
+    "find": "elif [ \"$code\" -ne 0 ]; then",
+    "replace": "elif false; then",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: a failed command's tree is removed, nothing left to inspect"
+  },
+  {
+    "id": "S5-link-always",
+    "file": "scripts/sim-tree.sh",
+    "find": "if [ -d \"$root/node_modules\" ]; then",
+    "replace": "if true; then",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: node_modules is linked even when the checkout has none (a dangling link)"
+  },
+  {
+    "id": "S6-dir-inside-repo",
+    "file": "scripts/sim-tree.sh",
+    "find": "inside \"$tree\" && refuse",
+    "replace": "false && refuse",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: a --dir inside the repository is accepted (git status and vitest would see the tree)"
+  },
+  {
+    "id": "S7-existing-dir",
+    "file": "scripts/sim-tree.sh",
+    "find": "{ [ -e \"$dir\" ] || [ -L \"$dir\" ]; } && refuse",
+    "replace": "false && refuse",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: an existing --dir is accepted and written into"
+  },
+  {
+    "id": "S8-tmp-inside-repo",
+    "file": "scripts/sim-tree.sh",
+    "find": "inside \"$base\" && refuse",
+    "replace": "false && refuse",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: a TMPDIR inside the repository puts the default tree inside it"
+  },
+  {
+    "id": "S9-unknown-ref",
+    "file": "scripts/sim-tree.sh",
+    "find": "|| refuse \"unknown ref: $ref\"",
+    "replace": "|| true",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: an unknown ref is not refused (exit 2) before anything is created"
+  },
+  {
+    "id": "S10-no-sim-tree-env",
+    "file": "scripts/sim-tree.sh",
+    "find": "SIM_TREE=\"$tree\" exec \"$@\"",
+    "replace": "exec \"$@\"",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: the command runs without SIM_TREE"
+  },
+  {
+    "id": "S11-cwd-checkout",
+    "file": "scripts/sim-tree.sh",
+    "find": "( cd \"$tree\" && SIM_TREE=\"$tree\" exec \"$@\" )",
+    "replace": "( SIM_TREE=\"$tree\" exec \"$@\" )",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: the command runs in the caller's directory (the checkout), not in the tree"
+  },
+  {
+    "id": "S12-ignored-tracked",
+    "file": "scripts/sim-tree.sh",
+    "find": "git -C \"$tree\" add -A -f",
+    "replace": "git -C \"$tree\" add -A",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: a tracked file that .gitignore matches (force-added) is left out of the tree's commit"
+  },
+  {
+    "id": "S13-no-setup-cleanup",
+    "file": "scripts/sim-tree.sh",
+    "find": "trap 'rm -rf -- \"$tree\"; echo \"sim-tree: building the tree failed; removed $tree\" >&2' EXIT",
+    "replace": "trap '' EXIT",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: a failed build leaves the half-built tree behind"
+  },
+  {
+    "id": "S14-no-exclude",
+    "file": "scripts/sim-tree.sh",
+    "find": "  echo \"/node_modules\" >> \"$tree/.git/info/exclude\"\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51: the node_modules link shows as untracked in a tree whose .gitignore does not name it"
+  },
+  {
+    "id": "R1-no-git-env-guard",
+    "file": "scripts/sim-tree.sh",
+    "find": "unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES GIT_COMMON_DIR\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51 reviewer R1: a caller's GIT_DIR (as in a git hook) points the tree's init/add/commit at the checkout, which gets a commit"
+  },
+  {
+    "id": "R2-dangling-dir",
+    "file": "scripts/sim-tree.sh",
+    "find": "{ [ -e \"$dir\" ] || [ -L \"$dir\" ]; } && refuse",
+    "replace": "[ -e \"$dir\" ] && refuse",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51 reviewer R2: a --dir that is a dangling symlink is accepted and the tree is built at the link's target"
+  },
+  {
+    "id": "R3-gpgsign",
+    "file": "scripts/sim-tree.sh",
+    "find": " -c commit.gpgsign=false",
+    "replace": "",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51 reviewer R3: a global commit.gpgsign=true makes the tree's commit try to sign, and a failing signer stops the build"
+  },
+  {
+    "id": "R4-trap-armed",
+    "file": "scripts/sim-tree.sh",
+    "find": "trap - EXIT\n",
+    "replace": ":\n",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51 reviewer R4: the setup trap stays armed, so the tree is removed (and 'building the tree failed' printed) after every run"
+  },
+  {
+    "id": "R5-relative-dir",
+    "file": "scripts/sim-tree.sh",
+    "find": "tree=\"$(realpath -m -- \"$dir\")\"",
+    "replace": "tree=\"$dir\"",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51 reviewer R5: a relative --dir is used as given, not made absolute, and its inside-the-repository check is skipped"
+  },
+  {
+    "id": "R15-tmp-is-root",
+    "file": "scripts/sim-tree.sh",
+    "find": "inside() { [ \"$1\" = \"$root\" ] || ",
+    "replace": "inside() { ",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51 reviewer R15: a TMPDIR that is the repository root itself (TMPDIR=. from the root) puts the tree inside the checkout"
+  },
+  {
+    "id": "F1-mkdir-p",
+    "file": "scripts/sim-tree.sh",
+    "find": "if ! err=\"$(mkdir -- \"$tree\" 2>&1)\"; then",
+    "replace": "if ! err=\"$(mkdir -p -- \"$tree\" 2>&1)\"; then",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51 fixer F1 (the reviewer's blocking race): two runs given one --dir both build into it and one deletes the other's tree; a missing parent chain is created and left behind"
+  },
+  {
+    "id": "F2-hint-unquoted",
+    "file": "scripts/sim-tree.sh",
+    "find": "printf -v q '%q' \"$tree\"",
+    "replace": "q=\"$tree\"",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51 fixer F2: the removal hint for a kept tree is not shell-quoted; pasted, a path with a space deletes other directories"
+  },
+  {
+    "id": "F3-empty-dir",
+    "file": "scripts/sim-tree.sh",
+    "find": " [ -n \"$2\" ] || refuse \"--dir is empty\";",
+    "replace": "",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51 fixer F3: --dir \"\" silently falls back to the default temp dir instead of being refused"
+  },
+  {
+    "id": "F4-exists-message",
+    "file": "scripts/sim-tree.sh",
+    "find": "    { [ -e \"$tree\" ] || [ -L \"$tree\" ]; } && refuse \"--dir $tree already exists\"\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 51 fixer F4: a --dir another run created after the existence check is refused as 'cannot create' and not named as existing"
+  }
+]

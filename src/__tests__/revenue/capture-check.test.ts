@@ -360,6 +360,16 @@ describe("capture-check CLI", () => {
     return { code: r.status, stdout: r.stdout, stderr: r.stderr };
   };
 
+  // The job summary names the directory as the repository does, never the runner's absolute path (tick 35 review R6;
+  // its mutation survived in tick 51 because every --summary test passed --dir, which is named as given).
+  it("--summary without --dir names research/rendered, not the checkout's absolute path", () => {
+    const r = cli(["--summary", "trolley-terms-of-service"]);
+    expect(r.code).toBe(0);
+    expect(r.stdout).toContain("Checking 1 capture in research/rendered.");
+    expect(r.stdout).toContain("Every capture in research/rendered reads as a page (1 checked, kind ok).");
+    expect(r.stdout).not.toContain(ROOT);
+  });
+
   it("prints one line per capture (slug, kind, evidence) and exits 3 when any is flagged", () => {
     const r = cli(["terms-israel-post", "trolley-terms-of-service"]);
     expect(r.code).toBe(3);

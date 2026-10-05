@@ -1,0 +1,338 @@
+[
+  {
+    "id": "T34-C1",
+    "file": "scripts/capture-check.mjs",
+    "find": "const shellSigns = length < WEAK_SIGN_TEXT ?",
+    "replace": "const shellSigns = length <= WEAK_SIGN_TEXT ?",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 34 C1: the weak-sign bound moves by one (a page of exactly WEAK_SIGN_TEXT characters counts weak signs)"
+  },
+  {
+    "id": "T34-C2",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (length >= MIN_TERMS_TEXT) {",
+    "replace": "if (length > MIN_TERMS_TEXT) {",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 34 C2: a text of exactly MIN_TERMS_TEXT characters is no longer enough"
+  },
+  {
+    "id": "T34-C3",
+    "file": "scripts/capture-check.mjs",
+    "find": "status < 200 || status > 299) {",
+    "replace": "status < 200 || status > 300) {",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 34 C3: status 300 counts as a fetched page"
+  },
+  {
+    "id": "T34-C4",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (captchas.length && !weak.length) {",
+    "replace": "if (captchas.length) {",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 34 C4: a captcha on a page with weak framework signs is called a bot challenge"
+  },
+  {
+    "id": "T34-C5",
+    "file": "scripts/capture-check.mjs",
+    "find": ": status === 404 || status === 410 ? \"not found\"",
+    "replace": ": status === 404 ? \"not found\"",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 34 C5: 410 Gone is no longer glossed as not found"
+  },
+  {
+    "id": "T34-C6",
+    "file": "scripts/capture-check.mjs",
+    "find": "some((k) => k !== \"ok\") ? 3 : 0;",
+    "replace": "some((k) => k !== \"ok\") ? 1 : 0;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 34 C6: a flagged capture exits 1 instead of 3"
+  },
+  {
+    "id": "T34-C7",
+    "file": "scripts/capture-check.mjs",
+    "find": ".replace(/<noscript\\b[\\s\\S]*?<\\/noscript>/gi, \"\");",
+    "replace": ";",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 34 C7 (survived then; capture-check.test.ts has had the noscript-pixel case since): a body of scripts and a noscript is not taken for an empty body"
+  },
+  {
+    "id": "T34-C8",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (!/^[a-z0-9][a-z0-9._-]*$/i.test(slug)) throw",
+    "replace": "if (false) throw",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 34 C8: a slug that is not a capture slug (a path) is read"
+  },
+  {
+    "id": "T34-C9",
+    "file": "scripts/capture-check.mjs",
+    "find": "const isPdf = /pdf/i.test(type);",
+    "replace": "const isPdf = false;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 34 C9: a PDF capture is called data, not text-checked"
+  },
+  {
+    "id": "T33-radware",
+    "file": "scripts/capture-check.mjs",
+    "find": "/__uzdbm_\\d|validate\\.perfdrive\\.com|shieldsquare/i",
+    "replace": "/(?!)/",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 33: the Radware connector marker never matches (Israel Post's terms capture carries it)"
+  },
+  {
+    "id": "T33-400",
+    "file": "scripts/capture-check.mjs",
+    "find": ": status >= 400 ? \"refused\"",
+    "replace": ": status >= 401 ? \"refused\"",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 33 fixer: status 400 is no longer glossed as refused"
+  },
+  {
+    "id": "T33-300",
+    "file": "scripts/capture-check.mjs",
+    "find": ": status >= 300 ? \"a redirect, not followed\"",
+    "replace": ": status >= 301 ? \"a redirect, not followed\"",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 33 fixer: status 300 is no longer glossed as a redirect"
+  },
+  {
+    "id": "S1",
+    "file": "scripts/capture-check.mjs",
+    "find": "\"--untracked-files=all\", \"--no-renames\"",
+    "replace": "\"--untracked-files=normal\", \"--no-renames\"",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C1: --changed on a first run, a wholly untracked directory, lists only the directory and finds no capture"
+  },
+  {
+    "id": "S2",
+    "file": "scripts/capture-check.mjs",
+    "find": "\"--no-renames\", \"--\", \".\"",
+    "replace": "\"--\", \".\"",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C2: a staged rename is one entry with two paths, and the new meta is misread"
+  },
+  {
+    "id": "S3",
+    "file": "scripts/capture-check.mjs",
+    "find": "\"--no-renames\", \"--\", \".\").split",
+    "replace": "\"--no-renames\").split",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C3: without the pathspec a sibling directory's metas are listed"
+  },
+  {
+    "id": "S4",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (file.includes(\"/\") || !file.endsWith(\".meta.json\")",
+    "replace": "if (!file.endsWith(\".meta.json\")",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C4: a meta in a subdirectory counts as a capture"
+  },
+  {
+    "id": "S5",
+    "file": "scripts/capture-check.mjs",
+    "find": " || !existsSync(join(dir, file))) continue;",
+    "replace": ") continue;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C5: a deleted meta counts as a changed capture"
+  },
+  {
+    "id": "S6",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (r.error || r.status !== 0) throw new Error(`git ${args[0]} could not read",
+    "replace": "if (false) throw new Error(`git ${args[0]} could not read",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C6: a git failure is ignored and --changed lists nothing"
+  },
+  {
+    "id": "S7",
+    "file": "scripts/capture-check.mjs",
+    "find": "String(s).replace(/\\s+/g, \" \").replace(",
+    "replace": "String(s).replace(",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C7: a summary cell keeps its newlines, breaking the table"
+  },
+  {
+    "id": "S8",
+    "file": "scripts/capture-check.mjs",
+    "find": "[\\\\`*_[\\]<>&|~$@]/g",
+    "replace": "[\\\\`*_[\\]<>&~$@]/g",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C8: a | in a cell is not escaped and splits the cell"
+  },
+  {
+    "id": "S9",
+    "file": "scripts/capture-check.mjs",
+    "find": "const flagged = rows.filter((r) => r.kind !== \"ok\");",
+    "replace": "const flagged = rows;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C9: summaryMarkdown lists the ok rows too"
+  },
+  {
+    "id": "S10",
+    "file": "scripts/capture-check.mjs",
+    "find": ".replace(/%/g, \"%25\")",
+    "replace": "",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C10: a % in a workflow command is not escaped"
+  },
+  {
+    "id": "S11",
+    "file": "scripts/capture-check.mjs",
+    "find": ".replace(/:/g, \"%3A\")",
+    "replace": "",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C11: a : in a warning title is not escaped"
+  },
+  {
+    "id": "S12",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (all || args.positionals.length) {",
+    "replace": "if (all) {",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C12: --changed with a slug is accepted"
+  },
+  {
+    "id": "S13",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (summary) process.stdout.write(`### capture-check\\n\\ncapture-check could not list",
+    "replace": "if (false) process.stdout.write(`### capture-check\\n\\ncapture-check could not list",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C13: a git failure under --summary writes no summary line"
+  },
+  {
+    "id": "S14",
+    "file": "scripts/capture-check.mjs",
+    "find": "      if (row.kind !== \"ok\") {\n        flagged += 1;",
+    "replace": "      if (true) {\n        flagged += 1;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C14: a warning and a row for an ok capture too"
+  },
+  {
+    "id": "S15",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (!summary) console.error(err.message);",
+    "replace": "if (false) console.error(err.message);",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C15: without --summary an unreadable capture's error is not printed"
+  },
+  {
+    "id": "S16",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (changed) console.error(`${slugs.length} changed or new captures",
+    "replace": "if (false) console.error(`${slugs.length} changed or new captures",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 C16: no count line for --changed"
+  },
+  {
+    "id": "F1a",
+    "file": "scripts/capture-check.mjs",
+    "find": "Atomics.wait(flag, 0, 0, timeoutS * 1e3);",
+    "replace": "Atomics.wait(flag, 0, 0);",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 fixer F1a: a capture is waited for without a time limit"
+  },
+  {
+    "id": "F1b",
+    "file": "scripts/capture-check.mjs",
+    "find": "        process.stdout.write(summaryRow(row, flagged === 1));",
+    "replace": "        { const r = summaryRow(row, flagged === 1); setImmediate(() => process.stdout.write(r)); }",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 fixer F1b: the summary rows are written at the end, so a run stopped by its timeout keeps none"
+  },
+  {
+    "id": "F1c",
+    "file": "scripts/capture-check.mjs",
+    "find": "export const CAPTURE_TIMEOUT_S = 10;",
+    "replace": "export const CAPTURE_TIMEOUT_S = 0.001;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 fixer F1c: the default per-capture limit is too short to read any capture"
+  },
+  {
+    "id": "F1d",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (!(timeoutS > 0 && Number.isFinite(timeoutS))) {",
+    "replace": "if (!(timeoutS >= 0 && Number.isFinite(timeoutS))) {",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 fixer F1d: --timeout 0 is accepted"
+  },
+  {
+    "id": "F2a",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (errors && !summary) return 2;",
+    "replace": "if (errors) return 2;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 fixer F2a: --summary exits 2 over a full list when one capture is unreadable"
+  },
+  {
+    "id": "F2c",
+    "file": "scripts/capture-check.mjs",
+    "find": "counts[row.kind] = (counts[row.kind] ?? 0) + 1;",
+    "replace": "if (row.kind !== \"unreadable\") counts[row.kind] = (counts[row.kind] ?? 0) + 1;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 fixer F2c: the count line leaves out unreadable captures"
+  },
+  {
+    "id": "R1",
+    "file": "scripts/capture-check.mjs",
+    "find": "spawnSync(\"git\", [\"--no-optional-locks\", ...args], { cwd: dir",
+    "replace": "spawnSync(\"git\", [...args], { cwd: dir",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 reviewer R1: git status may refresh (write) the index"
+  },
+  {
+    "id": "R2",
+    "file": "scripts/capture-check.mjs",
+    "find": ".replace(/\\n/g, \"%0A\")",
+    "replace": ".replace(/\\n/, \"%0A\")",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 reviewer R2: only the first LF of a workflow command is escaped"
+  },
+  {
+    "id": "R3",
+    "file": "scripts/capture-check.mjs",
+    "find": ".replace(/\\r/g, \"%0D\")",
+    "replace": ".replace(/\\r/, \"%0D\")",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 reviewer R3: only the first CR is escaped"
+  },
+  {
+    "id": "R4",
+    "file": "scripts/capture-check.mjs",
+    "find": ".replace(/%/g, \"%25\")",
+    "replace": ".replace(/%/, \"%25\")",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 reviewer R4: only the first % is escaped"
+  },
+  {
+    "id": "R4b",
+    "file": "scripts/capture-check.mjs",
+    "find": ".replace(/:/g, \"%3A\")",
+    "replace": ".replace(/:/, \"%3A\")",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 reviewer R4b: only the first : of a title is escaped"
+  },
+  {
+    "id": "R5",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (!summary) console.error(err.message);",
+    "replace": "console.error(err.message);",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 reviewer R5: under --summary the raw error message reaches stderr, where its newlines could start a workflow command"
+  },
+  {
+    "id": "R6",
+    "file": "scripts/capture-check.mjs",
+    "find": "const where = { where: args.values.dir ?? \"research/rendered\",",
+    "replace": "const where = { where: dir,",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 reviewer R6: the summary names the absolute path"
+  },
+  {
+    "id": "F5b",
+    "file": "scripts/capture-check.mjs",
+    "find": "|~$@]/g",
+    "replace": "|~]/g",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 35 fixer F5b: $ (math) and @ (a mention) are not escaped in a cell"
+  }
+]
