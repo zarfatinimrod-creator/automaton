@@ -101,43 +101,29 @@ describe("brand-mail.yml — what it is allowed to do", () => {
     expect(stepNamed("probe", "Probe the brand mailbox").run).toBe("python scripts/brand_mail.py probe --out state/colony/brand-mail.json");
   });
 
-  // RULING-2026-09-30-documents (d), fold action 5: refunds Gumroad refused for balance wait in
-  // state/colony/refund-retries.json and are retried every run, so that file - and only that file - reaches the
-  // repository, from the branch tip, after a failed run too (a holding reply may already have gone out).
-  it("the responder commits only the balance retries file, from the branch tip, after the respond step", () => {
+  // RULING-2026-10-05-refund-state (b): a refund Gumroad refused for balance waits as \Flagged on the request in the
+  // brand mailbox, so the responder commits nothing. Its job is back on contents: read, no step of it holds a token, and
+  // no credentials are stored for the step that reads untrusted mail beside the mailbox password and the Gumroad token.
+  it("the responder commits nothing: contents: read, no commit or push, no token in any step, nothing stored in .git/config", () => {
     const job = wf().jobs["respond-refunds"];
-    expect(job.permissions).toEqual({ contents: "write" });
-    const checkout = steps("respond-refunds").find((s) => s.uses?.startsWith("actions/checkout")) as { with?: Record<string, unknown> };
-    expect(checkout.with?.["fetch-depth"]).toBe(0);
-    const names = steps("respond-refunds").map((s) => s.name ?? s.uses);
-    const tip = names.findIndex((n) => n?.startsWith("Move to the branch tip"));
-    const respond = names.findIndex((n) => n?.startsWith("Respond to refund requests"));
-    const commit = names.findIndex((n) => n?.startsWith("Commit the balance retries"));
-    expect(tip).toBeGreaterThan(-1);
-    expect(tip).toBeLessThan(respond);
-    expect(commit).toBe(names.length - 1);
-    expect(stepNamed("respond-refunds", "Respond to refund requests").id).toBe("respond");
-    const commits = steps("respond-refunds").filter((s) => /git (commit|push)|remote push/.test(s.run ?? ""));
-    expect(commits.map((s) => s.name)).toEqual(["Commit the balance retries"]);
-    expect(commits[0].run).toContain("FILE=state/colony/refund-retries.json\n");
-    expect(commits[0].run!.match(/git add \S+/g)).toEqual(['git add "$FILE"']);
-  });
-
-  // Reviewers of 30.9: the write token must not sit in .git/config for the respond step, which holds the mailbox
-  // password and the Gumroad token and parses untrusted mail. Only the two steps that talk to the remote get it, by env.
-  it("the responder stores no git credentials: the write token reaches only the branch-tip and commit steps, by env", () => {
+    expect(job.permissions).toEqual({ contents: "read" });
+    for (const s of steps("respond-refunds")) {
+      expect(s.run ?? "", s.name ?? s.uses).not.toMatch(/git (commit|push)|remote push/);
+      expect(JSON.stringify(s), s.name ?? s.uses).not.toMatch(/github\.token|GITHUB_TOKEN|GH_TOKEN/);
+    }
+    expect(JSON.stringify(job)).not.toMatch(/github\.token|GITHUB_TOKEN|GH_TOKEN/);
     const checkout = steps("respond-refunds").find((s) => s.uses?.startsWith("actions/checkout")) as { with?: Record<string, unknown> };
     expect(checkout.with?.["persist-credentials"]).toBe(false);
-    const withToken = steps("respond-refunds").filter((s) => JSON.stringify(s).includes("github.token") || /GITHUB_TOKEN/.test(JSON.stringify(s)));
-    expect(withToken.map((s) => s.name)).toEqual(["Move to the branch tip", "Commit the balance retries"]);
-    for (const s of withToken) {
-      expect(s.env).toEqual({ GH_TOKEN: "${{ github.token }}" });
-      // Handed to git per command, never written to a config file.
-      expect(s.run).not.toMatch(/git config[^\n]*(extraheader|credential|url\.)/);
-      expect(s.run).not.toMatch(/git remote set-url/);
-    }
-    const respond = stepNamed("respond-refunds", "Respond to refund requests");
-    expect(JSON.stringify(respond)).not.toMatch(/github\.token|GITHUB_TOKEN|GH_TOKEN/);
+    expect(checkout.with).not.toHaveProperty("fetch-depth");
+    const names = steps("respond-refunds").map((s) => s.name ?? s.uses);
+    expect(names.at(-1)).toMatch(/^Respond to refund requests/);
+    expect(text()).not.toContain("refund-retries");
+  });
+
+  it("grants write only where a job commits: read for the workflow, write on send (sent.json) and probe (brand-mail.json)", () => {
+    expect(wf().permissions).toEqual({ contents: "read" });
+    expect(wf().jobs.send.permissions).toEqual({ contents: "write" });
+    expect(wf().jobs.probe.permissions).toEqual({ contents: "write" });
   });
 
   it("nothing skips the respond step on the schedule: no job dependency, and no step condition but the main-ref guard's", () => {
@@ -150,7 +136,6 @@ describe("brand-mail.yml — what it is allowed to do", () => {
     const conditions = steps("respond-refunds").filter((s) => s.if !== undefined).map((s) => [s.name, s.if]);
     expect(conditions).toEqual([
       ["Refuse a real refund run from any ref but main", "github.event_name == 'workflow_dispatch' && inputs.really_refund"],
-      ["Commit the balance retries", "always() && steps.respond.outcome != 'skipped'"],
     ]);
   });
 
@@ -296,89 +281,6 @@ esac
       expect(r.status, JSON.stringify(env)).toBe(0);
       expect(r.calls, JSON.stringify(env)).toEqual([call]);
     }
-  });
-
-  /**
-   * A `git` stub that logs each call and, after it, " {auth}" when the call carried the token as actions/checkout's
-   * header (GIT_CONFIG_* env, "AUTHORIZATION: basic base64(x-access-token:<token>)"). `fail` lists "<cmd> <arg>" pairs
-   * that exit 1.
-   */
-  function authGit(box: ReturnType<typeof sandbox>, fail: string[] = []) {
-    const expected = Buffer.from("x-access-token:tok-123").toString("base64");
-    writeFileSync(join(box.bin, "git"), `#!/usr/bin/env bash
-tag=""
-if [ "\${GIT_CONFIG_COUNT:-}" = 1 ] && [ "\${GIT_CONFIG_KEY_0:-}" = "http.https://github.com/.extraheader" ] && [ "\${GIT_CONFIG_VALUE_0:-}" = "AUTHORIZATION: basic ${expected}" ]; then tag=" {auth}"; fi
-echo "git $*$tag" >> "$STUB_LOG"
-case "$1 $2" in
-  "diff --cached") exit 1 ;;
-${fail.map((f) => `  "${f}") exit 1 ;;`).join("\n")}
-  *) exit 0 ;;
-esac
-`);
-    chmodSync(join(box.bin, "git"), 0o755);
-  }
-
-  it("commits the balance retries only when they changed, with [skip ci], the token handed to push alone", () => {
-    const commit = stepNamed("respond-refunds", "Commit the balance retries");
-    const withFile = (changed = true) => {
-      const box = sandbox(changed);
-      mkdirSync(join(box.dir, "state", "colony"), { recursive: true });
-      writeFileSync(join(box.dir, "state", "colony", "refund-retries.json"), '[{"saleId": "sale-A"}]\n');
-      return box;
-    };
-    const box = withFile();
-    authGit(box);
-    const r = run(commit, box, { GITHUB_REF_NAME: "main", GH_TOKEN: "tok-123" });
-    expect(r.status, r.out).toBe(0);
-    expect(r.calls).toEqual([
-      "git add state/colony/refund-retries.json",
-      "git diff --cached --quiet",
-      "git config user.name colony-bot",
-      "git config user.email colony-bot@users.noreply.github.com",
-      "git commit -m brand-mail: refund balance retries [skip ci]",
-      "git push origin HEAD:main {auth}",
-    ]);
-    expect(r.out).not.toContain("tok-123");
-    expect(run(commit, withFile(false), { GITHUB_REF_NAME: "main" }).calls).toEqual(["git add state/colony/refund-retries.json", "git diff --cached --quiet"]);
-    const none = run(commit, sandbox(), { GITHUB_REF_NAME: "main" });
-    expect(none.status).toBe(0);
-    expect(none.calls).toEqual([]);
-  });
-
-  it("when every push fails - and every pull with it, the likely outage - the retries are on the run page and the step says so", () => {
-    // Reviewers of 30.9: an unguarded pull under set -e ended the step after one attempt, with no summary and no error.
-    const commit = stepNamed("respond-refunds", "Commit the balance retries");
-    for (const fail of [["push origin"], ["push origin", "pull --rebase"]]) {
-      const box = sandbox();
-      mkdirSync(join(box.dir, "state", "colony"), { recursive: true });
-      writeFileSync(join(box.dir, "state", "colony", "refund-retries.json"), '[{"saleId": "sale-A"}]\n');
-      authGit(box, fail);
-      const failed = run(commit, box, { GITHUB_REF_NAME: "main", GH_TOKEN: "tok-123" });
-      expect(failed.status, fail.join()).toBe(1);
-      expect(failed.calls.filter((c) => c.startsWith("git push")), fail.join()).toEqual(Array(3).fill("git push origin HEAD:main {auth}"));
-      expect(failed.calls.filter((c) => c.startsWith("git pull")), fail.join()).toEqual(Array(3).fill("git pull --rebase origin main {auth}"));
-      if (fail.includes("pull --rebase")) expect(failed.calls.filter((c) => c === "git rebase --abort")).toHaveLength(3);
-      expect(failed.out, fail.join()).toMatch(/::error::Could not push state\/colony\/refund-retries\.json/);
-      expect(readFileSync(join(box.dir, "summary"), "utf8"), fail.join()).toContain('"saleId": "sale-A"');
-    }
-  });
-
-  it("moves to the branch tip with the token handed to that one pull", () => {
-    const tip = stepNamed("respond-refunds", "Move to the branch tip");
-    const box = sandbox();
-    authGit(box);
-    const r = run(tip, box, { GITHUB_REF_NAME: "main", GH_TOKEN: "tok-123" });
-    expect(r.status, r.out).toBe(0);
-    expect(r.calls).toEqual([
-      "git config user.name colony-bot",
-      "git config user.email colony-bot@users.noreply.github.com",
-      "git pull --rebase origin main {auth}",
-    ]);
-    expect(r.out).not.toContain("tok-123");
-    // A pull that fails fails the step - before any mail is read or any refund is made.
-    const down = sandbox();
-    authGit(down, ["pull --rebase"]);
-    expect(run(tip, down, { GITHUB_REF_NAME: "main", GH_TOKEN: "tok-123" }).status).toBe(1);
   });
 
   it("a scheduled probe before step 8 commits nothing; a dispatched one records that it is not configured", () => {

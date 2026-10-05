@@ -27,7 +27,6 @@ import {
   MIN_REFUND_DAYS,
   REFUND_RESPONDER,
   refundSale,
-  refundSaleById,
   BalanceError,
   BALANCE_EXIT,
   GUMROAD_BALANCE_REFUSAL,
@@ -1076,15 +1075,18 @@ describe('refund --email: one sale of this product, by this buyer, inside the li
     expect(await refund(long, { apply: true })).toMatchObject({ action: 'refunded' });
   });
 
-  it('is idempotent: a refunded sale is never refunded again, and a second request does nothing', async () => {
+  it('is idempotent: a refunded sale is never refunded again; a second request finds it "already-refunded"', async () => {
     const fetchImpl = gumroadWith([sale()]);
     expect(await refund(fetchImpl, { apply: true })).toMatchObject({ action: 'refunded' });
-    expect(await refund(fetchImpl, { apply: true })).toMatchObject({ action: 'none' });
+    expect(await refund(fetchImpl, { apply: true })).toMatchObject({ action: 'already-refunded', saleId: 'sale-A' });
     expect(puts(fetchImpl)).toHaveLength(1);
-    for (const over of [{ refunded: true }, { partially_refunded: true }, { chargedback: true }, { disputed: true }]) {
-      const done = gumroadWith([sale(over)]);
-      expect(await refund(done, { apply: true }), JSON.stringify(over)).toMatchObject({ action: 'none' });
-      expect(puts(done)).toHaveLength(0);
+    const done = gumroadWith([sale({ refunded: true })]);
+    expect(await refund(done, { apply: true })).toMatchObject({ action: 'already-refunded', saleId: 'sale-A' });
+    expect(puts(done)).toHaveLength(0);
+    for (const over of [{ partially_refunded: true }, { chargedback: true }, { disputed: true }]) {
+      const other = gumroadWith([sale(over)]);
+      expect(await refund(other, { apply: true }), JSON.stringify(over)).toMatchObject({ action: 'none' });
+      expect(puts(other)).toHaveLength(0);
     }
   });
 
@@ -1164,179 +1166,75 @@ describe('refund --email: one sale of this product, by this buyer, inside the li
     expect(await main(['refund', '--email', BUYER, '--apply'], env, { fetchImpl: recent([200, { success: false, message: 'nope' }]), log: sink(), sitePath })).toBe(1);
   });
 
-  describe('refund --sale <id> --requested-at <iso>: the retry of one sale, same window rule, same idempotence', () => {
-    const bySale = (fetchImpl, over = {}) => refundSaleById({ fetchImpl, token: TOKEN, site: SITE_READY, saleId: 'sale-A', requestedAtMs: NOW - 2 * DAY, nowMs: NOW, log: sink(), ...over });
-
-    it('refunds that sale in full with --apply, reading it by id - no address is sent or needed', async () => {
-      const fetchImpl = gumroadWith([sale()]);
-      const log = sink();
-      expect(await bySale(fetchImpl, { apply: true, log })).toMatchObject({ action: 'refunded', saleId: 'sale-A' });
-      expect(fetchImpl.calls.map((c) => `${c.method} ${c.url.replace(API, '')}`)).toEqual([
-        `GET /products/${encodeURIComponent(ID)}`,
-        'GET /refund_policy',
-        'GET /sales/sale-A',
-        'PUT /sales/sale-A/refund',
-      ]);
-      expect(puts(fetchImpl)[0].body).toBeUndefined();
-      expect(log.lines.join('\n')).not.toContain(BUYER);
-    });
-
-    it('is a dry run by default', async () => {
-      const fetchImpl = gumroadWith([sale()]);
-      expect(await bySale(fetchImpl)).toMatchObject({ action: 'dry-run', saleId: 'sale-A' });
-      expect(puts(fetchImpl)).toHaveLength(0);
-    });
-
-    it('measures the window at the original request: asked on day 29, retried on day 40, still refunded', async () => {
-      const old = () => gumroadWith([sale({ created_at: iso(NOW - 40 * DAY) })]);
-      expect(await bySale(old(), { apply: true, requestedAtMs: NOW - 11 * DAY })).toMatchObject({ action: 'refunded' });
-      // Outside the window as it now stands is a stop, never a quiet "nothing to refund": the holding reply said the
-      // refund will be issued, so the responder keeps the retry and the run fails for a session to look.
-      const late = old();
-      const err = await bySale(late, { apply: true, requestedAtMs: NOW - 5 * DAY }).catch((e) => e);
-      expect(err).toBeInstanceOf(StopError);
-      expect(err).not.toBeInstanceOf(BalanceError);
-      expect(err.message).toMatch(/outside the 30-day window/);
-      expect(puts(late)).toHaveLength(0);
-      // A request time in the future is clamped to now; a request before the purchase is not about that purchase.
-      const before = gumroadWith([sale({ created_at: iso(NOW - DAY) })]);
-      expect(await bySale(before, { apply: true, requestedAtMs: NOW - 2 * DAY }).catch((e) => e)).toBeInstanceOf(StopError);
-      expect(puts(before)).toHaveLength(0);
-    });
-
-    it('a sale with no purchase time stops: the window cannot be measured', async () => {
-      for (const created_at of [undefined, null, 'yesterday']) {
-        const fetchImpl = gumroadWith([sale({ created_at })]);
-        const err = await bySale(fetchImpl, { apply: true }).catch((e) => e);
-        expect(err, String(created_at)).toBeInstanceOf(StopError);
-        expect(err.message, String(created_at)).toMatch(/no purchase time/);
-        expect(puts(fetchImpl)).toHaveLength(0);
-      }
-    });
-
-    it('is idempotent: a sale Gumroad reports refunded in full is "already-refunded", touched never again', async () => {
-      const done = gumroadWith([sale({ refunded: true })]);
-      expect(await bySale(done, { apply: true })).toMatchObject({ action: 'already-refunded', saleId: 'sale-A' });
-      expect(await bySale(done)).toMatchObject({ action: 'already-refunded', saleId: 'sale-A' });
-      expect(puts(done)).toHaveLength(0);
-      const once = gumroadWith([sale()]);
-      expect(await bySale(once, { apply: true })).toMatchObject({ action: 'refunded' });
-      expect(await bySale(once, { apply: true })).toMatchObject({ action: 'already-refunded' });
-      expect(puts(once)).toHaveLength(1);
-    });
-
-    it('a sale partly refunded, charged back or disputed is never touched, and stops rather than pass as done', async () => {
-      for (const over of [{ partially_refunded: true }, { chargedback: true }, { disputed: true }]) {
-        const fetchImpl = gumroadWith([sale(over)]);
-        const err = await bySale(fetchImpl, { apply: true }).catch((e) => e);
-        expect(err, JSON.stringify(over)).toBeInstanceOf(StopError);
-        expect(err, JSON.stringify(over)).not.toBeInstanceOf(BalanceError);
-        expect(puts(fetchImpl)).toHaveLength(0);
-      }
-    });
-
-    it('never refunds a sale of another product, and says so as a stop', async () => {
-      const other = gumroadWith([sale({ product_id: 'zz-other-product==' })]);
-      expect(await bySale(other, { apply: true }).catch((e) => e)).toBeInstanceOf(StopError);
-      expect(puts(other)).toHaveLength(0);
-    });
-
-    it('--email only says whether the sale\'s buyer is the sender - never the address - and changes nothing', async () => {
-      for (const [who, expected] of [[BUYER, 'buyer: the sender'], [` ${BUYER.toUpperCase()} `, 'buyer: the sender'], ['someone.else@example.net', 'buyer: not the sender']]) {
-        const fetchImpl = gumroadWith([sale()]);
-        const log = sink();
-        expect(await bySale(fetchImpl, { apply: true, email: who, log }), who).toMatchObject({ action: 'refunded' });
-        expect(log.lines, who).toContain(expected);
-        expect(puts(fetchImpl), who).toHaveLength(1);
-        expect(log.lines.join('\n'), who).not.toMatch(/@/);
-      }
-      // The buyer-account address counts as the purchase address does (refundSale's own rule).
-      const account = gumroadWith([sale({ purchase_email: 'other@example.net', email: BUYER })]);
-      const log = sink();
-      await bySale(account, { email: BUYER, log });
-      expect(log.lines).toContain('buyer: the sender');
-      // Without --email there is no buyer line; a malformed one stops before Gumroad is asked.
-      const plain = sink();
-      await bySale(gumroadWith([sale()]), { log: plain });
-      expect(plain.lines.some((l) => l.startsWith('buyer:'))).toBe(false);
-      const bad = gumroadWith([sale()]);
-      expect(await bySale(bad, { email: 'not an address' }).catch((e) => e)).toBeInstanceOf(StopError);
-      expect(bad.calls).toHaveLength(0);
-    });
-
-    it('a balance refusal again is a BalanceError again; an unknown sale or no window in force stops', async () => {
-      expect(await bySale(gumroadWith([sale()], { refundAnswer: BALANCE }), { apply: true }).catch((e) => e)).toBeInstanceOf(BalanceError);
-      for (const [why, fetchImpl, over] of [
-        ['unknown sale', gumroadWith([sale()]), { saleId: 'sale-Z' }],
-        ['no refunds in force', gumroadWith([sale()], { account: accountPolicy('none') }), {}],
-        ['a sale id that is not one', gumroadWith([sale()]), { saleId: '../user' }],
-      ]) {
-        const err = await bySale(fetchImpl, { apply: true, ...over }).catch((e) => e);
-        expect(err, why).toBeInstanceOf(StopError);
-        expect(err, why).not.toBeInstanceOf(BalanceError);
-        expect(puts(fetchImpl), why).toHaveLength(0);
-      }
-    });
-
-    it('never logs or throws a buyer address, even one Gumroad echoes', async () => {
-      const texts = [];
-      for (const [fetchImpl, over] of [
-        [gumroadWith([sale()]), { apply: true }],
-        [gumroadWith([sale()], { refundAnswer: [200, { success: false, message: `No refund for ${BUYER}.` }] }), { apply: true }],
-      ]) {
-        const log = sink();
-        const out = await bySale(fetchImpl, { log, ...over }).catch((e) => e);
-        texts.push(...log.lines, out instanceof Error ? out.message : JSON.stringify(out));
-      }
-      for (const text of texts) expect(text).not.toContain(BUYER);
-    });
-
-    it('the CLI: --sale needs --requested-at; exit 0 on a retry that refunded, 3 on the balance again, 1 on anything else', async () => {
+  // RULING-2026-10-05-refund-state (a)5: a request Gumroad refused for balance waits as a flag on the mail, and its retry
+  // is this same lookup, so the lookup must tell a kept promise from nothing. The most recent sale of this product to
+  // this address, inside the window, that Gumroad reports wholly refunded - when nothing is eligible - is
+  // "already-refunded" (exit 0, no PUT); everything else that is not eligible stays "none".
+  describe('refund --email: "already-refunded" when nothing is eligible and Gumroad reports the sale wholly refunded', () => {
+    const cli = () => {
       const dir = mkdtempSync(join(tmpdir(), 'ilbiz-'));
       const sitePath = join(dir, 'site.json');
       writeFileSync(sitePath, JSON.stringify(SITE_READY));
-      const env = { GUMROAD_ACCESS_TOKEN: TOKEN };
-      const recent = (opts) => gumroadWith([sale({ created_at: new Date(Date.now() - 3 * DAY).toISOString() })], opts);
-      const asked = new Date(Date.now() - DAY).toISOString();
-      const ok = recent();
-      const okLog = sink();
-      expect(await main(['refund', '--sale', 'sale-A', '--requested-at', asked, '--apply'], env, { fetchImpl: ok, log: okLog, sitePath })).toBe(0);
-      expect(puts(ok)).toHaveLength(1);
-      // The result the responder reads is the last line, and names the sale.
-      expect(okLog.lines.at(-1)).toBe('refund: refunded (sale sale-A)');
-      const again = sink();
-      expect(await main(['refund', '--sale', 'sale-A', '--requested-at', asked, '--apply'], env, { fetchImpl: ok, log: again, sitePath })).toBe(0);
-      expect(again.lines.at(-1)).toBe('refund: already-refunded (sale sale-A)');
-      // --email beside --sale is the buyer check: its line, never the address.
-      const checked = sink();
-      expect(await main(['refund', '--sale', 'sale-A', '--email', BUYER, '--requested-at', asked], env, { fetchImpl: recent(), log: checked, sitePath })).toBe(0);
-      expect(checked.lines).toContain('buyer: the sender');
-      expect(checked.lines.at(-1)).toBe('refund: dry-run (sale sale-A) - dry run');
-      expect(checked.lines.join('\n')).not.toContain(BUYER);
-      // Outside the window as it now stands, disputed, another product: exit 1, no "refund:" result line at all.
-      for (const over of [{ created_at: new Date(Date.now() - 90 * DAY).toISOString() }, { disputed: true }, { product_id: 'zz-other-product==' }]) {
-        const stopped = sink();
-        const f = gumroadWith([sale(over)]);
-        expect(await main(['refund', '--sale', 'sale-A', '--requested-at', asked, '--apply'], env, { fetchImpl: f, log: stopped, sitePath }), JSON.stringify(over)).toBe(1);
-        expect(stopped.lines.some((l) => l.startsWith('refund: ')), JSON.stringify(over)).toBe(false);
-        expect(puts(f)).toHaveLength(0);
-      }
-      const dry = recent();
-      expect(await main(['refund', '--sale', 'sale-A', '--requested-at', asked], env, { fetchImpl: dry, log: sink(), sitePath })).toBe(0);
-      expect(puts(dry)).toHaveLength(0);
+      return { sitePath, env: { GUMROAD_ACCESS_TOKEN: TOKEN } };
+    };
+    const at = (days, over = {}) => sale({ created_at: new Date(Date.now() - days * DAY).toISOString(), ...over });
+
+    it('prints "refund: already-refunded (sale <id>)" last and exits 0, with no PUT and no address', async () => {
+      const { sitePath, env } = cli();
+      const done = gumroadWith([at(3, { refunded: true })]);
       const log = sink();
-      expect(await main(['refund', '--sale', 'sale-A', '--requested-at', asked, '--apply'], env, { fetchImpl: recent({ refundAnswer: BALANCE }), log, sitePath })).toBe(3);
-      expect(log.lines).toContain('refund: balance-insufficient (sale sale-A)');
-      for (const argv of [
-        ['refund', '--sale', 'sale-A', '--apply'],
-        ['refund', '--sale', 'sale-A', '--email', BUYER, '--apply'],
-        ['refund', '--sale'],
-        ['refund', '--requested-at', asked],
+      expect(await main(['refund', '--email', BUYER, '--apply'], env, { fetchImpl: done, log, sitePath })).toBe(0);
+      expect(log.lines.at(-1)).toBe('refund: already-refunded (sale sale-A)');
+      expect(puts(done)).toHaveLength(0);
+      expect(log.lines.join('\n')).not.toContain(BUYER);
+      // A dry run says the same, marked as one.
+      const dry = sink();
+      expect(await main(['refund', '--email', BUYER], env, { fetchImpl: gumroadWith([at(3, { refunded: true })]), log: dry, sitePath })).toBe(0);
+      expect(dry.lines.at(-1)).toBe('refund: already-refunded (sale sale-A) - dry run');
+      // The most recent such sale is the one named.
+      const two = gumroadWith([at(10, { id: 'sale-old', refunded: true }), at(3, { id: 'sale-new', refunded: true })]);
+      const twoLog = sink();
+      expect(await main(['refund', '--email', BUYER, '--apply'], env, { fetchImpl: two, log: twoLog, sitePath })).toBe(0);
+      expect(twoLog.lines.at(-1)).toBe('refund: already-refunded (sale sale-new)');
+    });
+
+    it('an open sale inside the window is refunded first: "already-refunded" only when nothing is eligible', async () => {
+      const { sitePath, env } = cli();
+      const mixed = gumroadWith([at(3, { id: 'sale-old', refunded: true }), at(2, { id: 'sale-new' })]);
+      const log = sink();
+      expect(await main(['refund', '--email', BUYER, '--apply'], env, { fetchImpl: mixed, log, sitePath })).toBe(0);
+      expect(log.lines.at(-1)).toBe('refund: refunded (sale sale-new)');
+      expect(puts(mixed)).toHaveLength(1);
+    });
+
+    it('a disputed, charged back or partly refunded sale - or a refunded one outside the window, of another product or to another address - is "none"', async () => {
+      const { sitePath, env } = cli();
+      for (const over of [
+        { disputed: true },
+        { chargedback: true },
+        { partially_refunded: true },
+        { refunded: true, created_at: new Date(Date.now() - 40 * DAY).toISOString() },
+        { refunded: true, product_id: OTHER_PRODUCT },
+        { refunded: true, email: 'someone.else@example.org', purchase_email: 'someone.else@example.org' },
       ]) {
-        const f = recent();
+        const f = gumroadWith([at(3, over)]);
+        const log = sink();
+        expect(await main(['refund', '--email', BUYER, '--apply'], env, { fetchImpl: f, log, sitePath }), JSON.stringify(over)).toBe(0);
+        expect(log.lines.at(-1), JSON.stringify(over)).toBe('refund: none');
+        expect(puts(f), JSON.stringify(over)).toHaveLength(0);
+      }
+    });
+
+    it('the retired --sale mode is a usage error before Gumroad is asked anything, and refundSaleById is gone', async () => {
+      const { sitePath, env } = cli();
+      const asked = new Date(Date.now() - DAY).toISOString();
+      for (const argv of [['refund', '--sale', 'sale-A', '--requested-at', asked, '--apply'], ['refund', '--email', BUYER, '--sale', 'sale-A'], ['refund', '--sale', 'sale-A']]) {
+        const f = gumroadWith([at(3)]);
         expect(await main(argv, env, { fetchImpl: f, log: sink(), sitePath }), argv.join(' ')).toBe(2);
         expect(f.calls).toHaveLength(0);
       }
+      const mod = await import('../scripts/gumroad-pro-product.js');
+      expect(mod.refundSaleById).toBeUndefined();
     });
   });
 
