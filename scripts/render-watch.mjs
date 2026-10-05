@@ -86,9 +86,10 @@
  *     shape it always had
  *   - secret-shaped strings (vendor docs print sample keys) and, since 5.10.2026,
  *     email addresses (the local part; the domain is kept) are masked before the
- *     body is hashed or stored, and the meta file counts them as `redacted`. A PDF
- *     body is binary and stored as fetched; its extracted text is masked instead,
- *     and those are what `redacted` counts for a PDF
+ *     body is hashed or stored, and the meta file counts them as `redacted`. An
+ *     HTML page's extracted .txt is masked again on its own, and anything found
+ *     only there joins the count. A PDF body is binary and stored as fetched; its
+ *     extracted text is masked instead, and those are what `redacted` counts for a PDF
  *   - research/rendered/<slug>.meta.json records url, fetchedAt, status,
  *     contentType, byteLength, sha256, bodyPath, textPath (plus textError, for a
  *     PDF with no text) and whether anything changed
@@ -714,26 +715,31 @@ function isTextLike(contentType) {
  *   - a "domain" ending in a file extension: `<name>@2x.png` and `<name>@2x-<sha>.png`, the
  *     retina image names (64 of the address-shaped strings in research/rendered/ on 5.10)
  *   - a local part that runs on from a longer word, or follows `/` (a path or a URL's
- *     user: a list archive, a form path, a Sentry DSN), or follows a `:` inside a URL or
- *     path (`https://user:password@host`, `/wiki/User:Name@host`); a `:` with no `/`
- *     before it in the same word (`mailto:`, `Email:`, `sip:`) is a boundary like a space
- * A string escape in a script (`\u003e`, `\n`) ends the word before a local part, as
- * a space would, except an escaped slash (`\u002F`), which counts as a slash: a handle
- * after it (`\u002F@<handle>`) stays a handle.
+ *     user: a list archive, a form path, a Sentry DSN), or follows a `:` that comes after
+ *     a `/` with none of space, quote, `<>()?=&,;|#` between them: a URL's password or a
+ *     path segment (`https://user:password@host`, `/wiki/User:Name@host`). Any other `:`
+ *     is a boundary like a space: `mailto:`, `Email:`, `sip:`, and also one after a
+ *     URL's query, fragment or a comma (`/r?to=mailto:`, `https://x.org/,Email:`)
+ * A string escape in a script (`\u003e`, `\x22`, `\n`, `\t`, any one-letter escape) ends
+ * the word before a local part, as a space would, except an escaped slash (`\u002F`,
+ * `\x2F`), which counts as a slash: a handle after it (`\u002F@<handle>`) stays a handle.
+ * Not found at all, and so not masked: an address whose @ is itself encoded (`%40`,
+ * `\u0040`, `\x40`, Cloudflare's data-cfemail), or obfuscated (`[at]`).
  */
 const ADDRESS_PATTERN =
-  /(?<=^|[^A-Za-z0-9._%+\-\/\\]|\\(?:u00(?!2f)[0-9a-f]{2}|[nrt]))[A-Za-z0-9._%+-]+@(?<!\/[^\s"'<>()]{0,256}:[A-Za-z0-9._%+-]+@)((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})(?![A-Za-z0-9]|\.[A-Za-z0-9-])(?<!\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?))/gi;
+  /(?<=^|[^A-Za-z0-9._%+\-\/\\]|\\(?:u00(?!2f)[0-9a-f]{2}|x(?!2f)[0-9a-f]{2}|[nrtbfv]))[A-Za-z0-9._%+-]+@(?<!\/[^\s"'<>()?=&,;|#]{0,256}:[A-Za-z0-9._%+-]+@)((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})(?![A-Za-z0-9]|\.[A-Za-z0-9-])(?<!\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?))/gi;
 
 // A character reference, as decodeEntities reads one: hex, decimal, or a name it knows.
 const CHARACTER_REFERENCE = /&#x[0-9a-f]+;|&#\d+;|&[a-z]+;/gi;
 
 /**
- * Mask every address in a text, keeping its domain. The search runs over the text as
- * decodeEntities decodes it, so an address spelt in character references (each
- * character as `&#NNN;`, as some Markdown converters write a mailto link) is found too,
- * and the .txt extracted from a stored HTML body, which decodes them, cannot show an
- * address the body kept. Each match is replaced in the text itself, so the text changes
- * only where an address was.
+ * Mask the addresses ADDRESS_PATTERN finds in a text, keeping each domain. The search runs
+ * over the text with its character references decoded, so an address spelt in them (each
+ * character as `&#NNN;`, as some Markdown converters write a mailto link) is found too.
+ * The view decodes in one pass; decodeEntities decodes hex, then decimal, then named
+ * references, so a reference that decodes into another (`&#x26;#64;`) is an @ in the
+ * extracted .txt but not here: storeCapture masks that .txt on its own. Each match is
+ * replaced in the text itself, so the text changes only where an address was.
  */
 function maskAddresses(text) {
   let view = "";
@@ -1996,6 +2002,7 @@ export async function storeCapture(
   let pdfText = null;
   let hash = null;
   let byteLength = 0;
+  let htmlText = null;
 
   let redacted = 0;
   if (result.bytes) {
@@ -2006,7 +2013,15 @@ export async function storeCapture(
     hash = sha256(result.bytes);
     const extension = extensionFor(result.contentType);
     bodyPath = `research/rendered/${entry.slug}.${extension}`;
-    if (isHtml(result.contentType)) textPath = `research/rendered/${entry.slug}.txt`;
+    if (isHtml(result.contentType)) {
+      textPath = `research/rendered/${entry.slug}.txt`;
+      // The .txt is masked on its own too, and its count joins the body's: extractText decodes references in passes
+      // (`&#x26;#64;` becomes @), so its text can show an address the body's mask never saw. Masking is idempotent,
+      // so a page whose body mask found everything adds 0 here.
+      const text = redactSecrets(Buffer.from(`${extractText(result.bytes.toString("utf8"))}\n`, "utf8"), "text/plain");
+      htmlText = text.bytes;
+      redacted += text.count;
+    }
   }
 
   // A js line's result carries how it was rendered; a plain fetch's carries nothing, and its meta stays as it was.
@@ -2100,8 +2115,8 @@ export async function storeCapture(
     writeFileSync(join(outDir, basename(bodyPath)), result.bytes);
     if (pdfText !== null) {
       writeFileSync(join(outDir, basename(textPath)), pdfText);
-    } else if (textPath && isHtml(result.contentType)) {
-      writeFileSync(join(outDir, basename(textPath)), `${extractText(result.bytes.toString("utf8"))}\n`);
+    } else if (htmlText !== null) {
+      writeFileSync(join(outDir, basename(textPath)), htmlText);
     } else if (removeOwnText) {
       rmSync(join(outDir, basename(ownTextPath)), { force: true });
     }

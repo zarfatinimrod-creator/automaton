@@ -590,12 +590,46 @@ describe("redactSecrets — email addresses are masked before a capture is writt
     expect(r.count).toBe(2);
   });
 
+  it("masks an address after a script's hex escape or any single-letter escape, but not after an escaped slash", () => {
+    // Review finding 1 (tick 48): a \xHH escape (\x22 a quote, \x3c and \x3e angle brackets) ended no word, so an
+    // address inside such a script string reached the committed .html whole.
+    const escapes = ["\\x22", "\\x27", "\\x3c", "\\x3E", "\\u0022", "\\t", "\\n", "\\r", "\\b", "\\f", "\\v"];
+    for (const escape of escapes) {
+      const r = redactSecrets(Buffer.from(`<script>var s='${escape}${person}${escape}'</script>`), "text/html");
+      expect(r.bytes.toString("utf8"), escape).toBe(`<script>var s='${escape}${masked("example.org")}${escape}'</script>`);
+      expect(r.count, escape).toBe(1);
+    }
+    const page = `<script>u='https:\\x2F\\x2Fwww.example.com\\x2F${at("", "channel.name")}'; v='\\x2f${at("0123abcd", "o1.ingest.example.io")}'</script>`;
+    const handles = redactSecrets(Buffer.from(page), "text/html");
+    expect(handles.count).toBe(0);
+    expect(handles.bytes.equals(Buffer.from(page))).toBe(true);
+  });
+
+  it("masks a mailto: or Email: address that follows a URL's query or a comma, not only one that stands alone", () => {
+    // Review finding 3 (tick 48): the colon rule looked back across ?, =, &, comma, ; and # to any earlier /, and took
+    // these for a URL's password.
+    const cases = [
+      [`<a href="/r?to=mailto:${person}">x</a>`, `<a href="/r?to=mailto:${masked("example.org")}">x</a>`],
+      [`<td>https://example.org/,Email:${person}</td>`, `<td>https://example.org/,Email:${masked("example.org")}</td>`],
+      [`<a href="/a?x=1&amp;to=mailto:${person}">x</a>`, `<a href="/a?x=1&amp;to=mailto:${masked("example.org")}">x</a>`],
+      [`<a href="/contact#mailto:${person}">x</a>`, `<a href="/contact#mailto:${masked("example.org")}">x</a>`],
+      [`see https://example.org/a;Email:${person}`, `see https://example.org/a;Email:${masked("example.org")}`],
+      [`https://example.org/a|Email:${person}`, `https://example.org/a|Email:${masked("example.org")}`],
+    ];
+    for (const [page, expected] of cases) {
+      const r = redactSecrets(Buffer.from(page), "text/html");
+      expect(r.bytes.toString("utf8"), page.replace(person, "<address>")).toBe(expected);
+      expect(r.count).toBe(1);
+    }
+  });
+
   it("leaves image names, paths, URL credentials and handles alone, byte-identical", () => {
     const hex = "9d417ae5210a64ce75de798dbf779eb32df15b6c649b58e889b9d41dcdb9866c";
     const page = [
       // A part after @ that ends in a file extension is an asset name: the retina images that fill many captures.
       `<img src="/img/${at("logo", "2x.png")}" srcset="${at("hero", "2x.jpg")} 2x, ${at("hero", "3x.webp")} 3x">`,
       `<img src="${at("logo", `2x-${hex}.png`)}"><img src="${at("Logo", "2X.PNG")}">`,
+      `<img src="${at("spin", "2x.gif")}"><img src="${at("logo", "2x.svg")}"><img src="${at("logo", "2x.avif")}">`,
       `<link href="${at("icons", "2x.f3a9c1.css")}"><script src="${at("chunk", "1.2.3.js")}"></script>`,
       `<img src="${at("banner", "cdn.example.png")}"><a href="${at("guide", "docs.example.pdf")}">pdf</a>`,
       // A local part after / or : is a path or a URL's user: a list archive, a form path, a Sentry DSN.
@@ -637,6 +671,24 @@ describe("redactSecrets — email addresses are masked before a capture is writt
     expect(meta.redacted).toBe(3);
     expect(meta.sha256).toBe(sha256(body));
     expect(meta.byteLength).toBe(body.length);
+  });
+
+  it("masks the extracted .txt itself: a reference the body keeps can decode into an address there", async () => {
+    // Review finding 4 (tick 48): decodeEntities decodes hex, then decimal, then named references, so `&#x26;#64;` (an
+    // ampersand, then `#64;`) becomes @ in the .txt, while the body's one-pass view of it is a literal `&#64;`.
+    const out = tmpOut();
+    const page = `<html><body><p>Chair: ${person.replace("@", "&#x26;#64;")}</p></body></html>`;
+    const entry = { url: "https://rules.example.test/", slug: "ex-rules", lineNumber: 1 };
+    const result = { status: 200, contentType: "text/html; charset=utf-8", bytes: Buffer.from(page), truncated: false, error: null };
+    const { meta } = await storeCapture(entry, result, { outDir: out, now: () => T0 });
+    const text = readFileSync(join(out, "ex-rules.txt"), "utf8");
+    expect(ADDRESS.test(extractText(page))).toBe(true);
+    expect(ADDRESS.test(text)).toBe(false);
+    expect(text).toBe(`Chair: ${masked("example.org")}\n`);
+    expect(meta.redacted).toBe(1);
+    const body = readFileSync(join(out, "ex-rules.html"));
+    expect(body.equals(Buffer.from(page))).toBe(true);
+    expect(meta.sha256).toBe(sha256(body));
   });
 
   it("masks an address in a PDF's extracted text and counts it, leaving the PDF bytes and hash alone", async () => {

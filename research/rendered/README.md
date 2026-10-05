@@ -80,7 +80,10 @@ the second and third of those. To move one:
    strings, as `[redacted:<kind>]`, and since 5.10.2026 email addresses, whose local part is masked and
    domain kept, as `[redacted:email]@<domain>`, because every capture is committed to this public repository
    and a person's address is personal information (ruling R3,
-   `research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md`).
+   `research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md`). The masking runs when a capture is
+   written: a capture stored before 5.10.2026 and not fetched since keeps its addresses, and git history keeps
+   every earlier byte; an address whose @ is itself encoded (`%40`, a script escape, Cloudflare's email
+   protection) is not found.
 3. **Answer the specific question the research file asked**, not a question the page happens to
    answer. Each entry in `urls.txt` carries the sentence that put it there, quoted from the file
    that wants it.

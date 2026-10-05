@@ -357,8 +357,14 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       expect(v[site].note, site).toContain("RULING-2026-10-04-mozilla-precondition.md §3 rule 3");
       expect(v[site].note, site).toContain("ruling R3");
       expect(v[site].note, site).toContain("named individuals' university addresses");
-      expect(v[site].note, site).toContain("render-watch masks every email address before it hashes, writes or commits a capture");
+      expect(v[site].note, site).toContain("render-watch masks email addresses before it hashes, writes or commits a capture");
       expect(v[site].note, site).toContain("The masking fold of 5.10 (tick 48) did that");
+      // What the mask does not find, and who checks the first capture, said as they are (tick 48 review, finding 2):
+      // the mask does not find every address, and capture-check has no address check.
+      expect(v[site].note, site).toContain("it does not find one inside a URL path, one whose @ is itself encoded");
+      expect(v[site].note, site).toContain("The reader checks the first capture of this page for addresses before citing it");
+      expect(v[site].note, site).toContain("capture-check has no address check");
+      expect(v[site].note, site).not.toMatch(/masks every|capture-check and the reader check|carries no address/);
       expect(v[site].note, site).not.toMatch(/stays CONDITIONAL_UNMET|no line of this site is queued/);
       expect(v[site].note, site).not.toMatch(/before (a capture is|it is) relied on/);
       for (const e of audited().filter((x) => siteOfUrl(x.url) === site)) {
@@ -558,6 +564,9 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect([Number(total![2]), Number(total![4])]).toEqual([101, 45]);
     expect(computed.reduce((a, c) => a + c[0], 0)).toBe(101);
     expect(computed.reduce((a, c) => a + c[1], 0)).toBe(45);
+    // The mask does not find every address (tick 48 review, finding 2), so the section says which forms it masks.
+    expect(section).not.toMatch(/masks? every email address|neither reaches this repository/);
+    expect(section).toContain("in a mailto: link or in character references");
   });
 
   it("states R1's test in the audit note's Verdicts paragraph, and the three R1 notes record their search as it was", () => {
