@@ -315,7 +315,7 @@
     "id": "I-target-dir",
     "file": "scripts/loop-edit.mjs",
     "find": "if (basename(parent) === \"logs\") root = dirname(parent);",
-    "replace": "root = dirname(parent);",
+    "replace": "if (true) root = dirname(parent);",
     "test": "src/__tests__/revenue/loop-edit.test.ts",
     "note": "tick 43 target: any .md file, not only logs/ and research/channel-loop/, is accepted"
   },
