@@ -9,9 +9,108 @@
 # research/rendered/<slug>.txt, the pointer a session cites in the table.
 # This is NOT research/rendered/urls.txt, and nothing here is ever appended to it.
 #
-# Every URL is verbatim from the mlcontests list (read 2026-09-30T13:02:14.346Z, sha256 49e374691c73417e…)
+# Every URL is verbatim from the mlcontests list (read 2026-10-05T14:23:35.777Z, sha256 ef0065f792832de1…)
 # and appears verbatim in its event's row of the table. No rules-page URL is guessed.
 # tiktok.com URLs are refused (logs/CHANNEL_LOOP.md §9: no tiktok.com URL in any render list or override).
+
+# 2026-Q4 · 2026-10-01 · Generative AI for Antimicrobial Peptide Design
+https://szczurek-lab.github.io/amp-challenge-website/?ref=mlcontests	prize-szczurek-lab-github-io-amp-challenge-website-ref-084ef537
+
+# 2026-Q4 · 2026-10-02 · Transcribe Code-Switched Speech in Underserved Languages
+https://competitions.mozilladatacollective.com/competitions/group/lost-in-transcription/?ref=mlcontests	prize-competitions-mozilladatacollective-com-competiti-4208e977
+https://competitions.mozilladatacollective.com/competitions/2/lost-in-transcription-sp-en/	prize-competitions-mozilladatacollective-com-competiti-531a362f
+https://competitions.mozilladatacollective.com/competitions/3/lost-in-transcription-sp-nh/	prize-competitions-mozilladatacollective-com-competiti-25f3bb7b
+https://competitions.mozilladatacollective.com/competitions/1/lost-in-transcription-in-jv/	prize-competitions-mozilladatacollective-com-competiti-ab0b26e8
+
+# 2026-Q4 · 2026-10-05 · Build Models to Transcribe Handwritten Historical Records
+https://zindi.africa/competitions/road-barbados-historic-handwriting-challenge?utm_source=mlcontest&utm_medium=referral&utm_campaign=compupdates	prize-zindi-africa-competitions-road-barbados-historic-9e429ead
+
+# 2026-Q4 · 2026-10-11 · Predict Aircraft Taxi-Out Time at European Airports
+https://ansperformance.eu/study/data-challenge/dc2026/	prize-ansperformance-eu-study-data-challenge-dc2026-81305219
+https://ansperformance.eu/study/data-challenge/	prize-ansperformance-eu-study-data-challenge-e6d87a21
+https://ansperformance.eu/study/data-challenge/dc2026/eligibility.html	prize-ansperformance-eu-study-data-challenge-dc2026-el-4f9d90ec
+https://ansperformance.eu/study/data-challenge/dc2026/rationale.html	prize-ansperformance-eu-study-data-challenge-dc2026-ra-4359f3fb
+https://ansperformance.eu/study/data-challenge/dc2026/data.html	prize-ansperformance-eu-study-data-challenge-dc2026-da-c6494fe4
+https://ansperformance.eu/study/data-challenge/dc2026/ranking.html	prize-ansperformance-eu-study-data-challenge-dc2026-ra-f47c30bc
+https://ansperformance.eu/study/data-challenge/dc2026/teams.html	prize-ansperformance-eu-study-data-challenge-dc2026-te-f7aa703d
+https://opensky-network.org/	prize-opensky-network-org-3623488c
+https://www.eurocontrol.int/air-navigation-services-performance-review	prize-www-eurocontrol-int-air-navigation-services-perf-fd12ebb3
+
+# 2026-Q4 · 2026-10-11 · Sim2Real Bimanual Robot Manipulation
+https://robosyn-bench.net/?ref=mlcontests	prize-robosyn-bench-net-ref-mlcontests-09bc8571
+https://github.com/EDEM-AI/RoboSynChallenge	prize-github-com-edem-ai-robosynchallenge-e073c108
+
+# 2026-Q4 · 2026-10-11 · Weak Lensing Uncertainty under Distribution Shift
+https://www.codabench.org/competitions/10902/?ref=mlcontests	prize-www-codabench-org-competitions-10902-ref-mlconte-1e3fd2ef
+https://fair-universe.lbl.gov/?ref=mlcontests	prize-fair-universe-lbl-gov-ref-mlcontests-0704eef5
+
+# 2026-Q4 · 2026-10-12 · Verifiable AI Agents for Quantitative Finance
+https://www.agenthon.net/?ref=mlcontests	prize-www-agenthon-net-ref-mlcontests-7f4f65c9
+https://www.codabench.org/competitions/17765/	prize-www-codabench-org-competitions-17765-124255c0
+https://www.codabench.org/competitions/17766/	prize-www-codabench-org-competitions-17766-393cbe4c
+https://www.codabench.org/competitions/17767/	prize-www-codabench-org-competitions-17767-8890be64
+https://www.codabench.org/competitions/17768/	prize-www-codabench-org-competitions-17768-e08d2147
+
+# 2026-Q4 · 2026-10-15 · Design Physics Experiments for Gravitational Waves
+https://www.learn2design2026.com/?ref=mlcontests	prize-www-learn2design2026-com-ref-mlcontests-291b339a
+
+# 2026-Q4 · 2026-10-22 · Detect Knee Abnormalities in Multimodal Imaging Data
+https://www.kaggle.com/competitions/rsna-knee-abnormality-detection?ref=mlcontests	prize-www-kaggle-com-competitions-rsna-knee-abnormalit-20ecd9f3
+
+# 2026-Q4 · 2026-10-25 · Generative Modeling of Mouse Embryo Development
+https://virtualembryo.ai/challenge?ref=mlcontests	prize-virtualembryo-ai-challenge-ref-mlcontests-6cd009a6
+
+# 2026-Q4 · 2026-10-26 · Infer Fusion Reactor Magnetic Geometry
+https://fusion-equilibrium-challenge.sophelio.io/?ref=mlcontests	prize-fusion-equilibrium-challenge-sophelio-io-ref-mlc-5c97e826
+
+# 2026-Q4 · 2026-10-30 · Predict Whether AI Systems Answer Benchmark Items Correctly
+https://aimslab.stanford.edu/competition?ref=mlcontests	prize-aimslab-stanford-edu-competition-ref-mlcontests-71212a54
+https://www.codabench.org/competitions/17828/	prize-www-codabench-org-competitions-17828-d6f9cd88
+
+# 2026-Q4 · 2026-11-02 · ARC Prize 2026 - ARC-AGI-2
+https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2?ref=mlcontests	prize-www-kaggle-com-competitions-arc-prize-2026-arc-a-08df5d5a
+
+# 2026-Q4 · 2026-11-02 · ARC Prize 2026 - ARC-AGI-3
+https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3?ref=mlcontests	prize-www-kaggle-com-competitions-arc-prize-2026-arc-a-730335c1
+
+# 2026-Q4 · 2026-11-05 · Quantitative Physical Reasoning for VLMs
+https://quantiphy.stanford.edu/competition/index.html?ref=mlcontests	prize-quantiphy-stanford-edu-competition-index-html-re-8250e6ca
+
+# 2026-Q4 · 2026-11-09 · ARC Prize 2026 - Paper Track
+https://www.kaggle.com/competitions/arc-prize-2026-paper-track?ref=mlcontests	prize-www-kaggle-com-competitions-arc-prize-2026-paper-3554b29f
+
+# 2026-Q4 · 2026-11-12 · Write a Research Paper on Coding Agents
+https://www.kaggle.com/competitions/gemma-4-developer-agent-paper?ref=mlcontests	prize-www-kaggle-com-competitions-gemma-4-developer-ag-701a6ae9
+
+# 2026-Q4 · 2026-11-14 · Generate Synthetic Humanitarian Survey Responses
+https://situatedevals.org/simulacrabench?ref=mlcontests	prize-situatedevals-org-simulacrabench-ref-mlcontests-6174c045
+
+# 2026-Q4 · 2026-11-15 · Optimise LLM Operators & Inference Across AI Chips
+https://flagos.io/race-detail-season2?id=8q4m2x7p&lang=en&ref=mlcontests	prize-flagos-io-race-detail-season2-id-8q4m2x7p-lang-e-9cbab7b3
+https://flagos.io/race-detail-season2?id=782kzq4m&lang=en	prize-flagos-io-race-detail-season2-id-782kzq4m-lang-e-4d39fc5a
+https://flagos.io/race-detail-season2?id=539vlt2p&lang=en	prize-flagos-io-race-detail-season2-id-539vlt2p-lang-e-4a214262
+
+# 2026-Q4 · 2026-11-15 · Predict Price Movements from Limit Order Book Data
+https://wundernn.io/connectome?ref=mlcontests	prize-wundernn-io-connectome-ref-mlcontests-e4db9df4
+https://wundernn.io/connectome/docs/quick_start	prize-wundernn-io-connectome-docs-quick-start-7dfa4b97
+
+# 2026-Q4 · 2026-11-20 · Language-Conditioned Visual Navigation
+https://www.codabench.org/competitions/18185/	prize-www-codabench-org-competitions-18185-b3bb004d
+https://f1y1113.github.io/worldnav-challenge/	prize-f1y1113-github-io-worldnav-challenge-bcfb912a
+https://roboworld2026.github.io/	prize-roboworld2026-github-io-e5c6247b
+https://github.com/F1y1113/worldnav-challenge	prize-github-com-f1y1113-worldnav-challenge-dbaf92aa
+
+# 2026-Q4 · 2026-12-02 · Build Coding Agents with Gemma 4
+https://www.kaggle.com/competitions/gemma-4-developer-agent?ref=mlcontests	prize-www-kaggle-com-competitions-gemma-4-developer-ag-1b70e25f
+
+# 2026-Q4 · 2026-12-07 · Build Speech Recognition Systems for Caribbean Voices
+https://zindi.africa/competitions/caribbean-voices-hackathon?utm_source=mlcontest&utm_medium=referral&utm_campaign=compupdates	prize-zindi-africa-competitions-caribbean-voices-hacka-410cce37
+
+# 2026-Q4 · 2026-12-14 · Predict 2D Chemical Structures From Mass Spectra
+https://www.kaggle.com/competitions/enveda-CASMI26-molecule-id-mass-spectra?ref=mlcontests	prize-www-kaggle-com-competitions-enveda-casmi26-molec-9232a683
+
+# 2026-Q4 · 2026-12-31 · Predict Cross-sectional Equity Returns
+https://hub.crunchdao.com/competitions/datacrunch-2?ref=mlcontests	prize-hub-crunchdao-com-competitions-datacrunch-2-ref-043f8900
 
 # 2026-Q3 · 2026-07-01 · Agentic Pay Zone Identification in Well Logs
 https://thinkonward.com/app/c/challenges/no-second-guessing?ref=mlc	prize-thinkonward-com-app-c-challenges-no-second-guess-1f8e1db9
@@ -81,9 +180,6 @@ https://cockroachdb-ai.devpost.com/?ref=mlcontests	prize-cockroachdb-ai-devpost-
 # 2026-Q3 · 2026-08-19 · Segment and Plan Pelvic Fracture Repair
 https://pengwin2026.grand-challenge.org/?ref=mlcontests	prize-pengwin2026-grand-challenge-org-ref-mlcontests-f3e4f4db
 
-# 2026-Q3 · 2026-08-21 · Build Foundation Models for Brain MRI Analysis
-https://fomo26.github.io/?ref=mlcontests	prize-fomo26-github-io-ref-mlcontests-414a9746
-
 # 2026-Q3 · 2026-08-24 · Build On-Device LLMs for Laptop Hardware
 https://adtc-2026.devpost.com/?ref=mlcontests	prize-adtc-2026-devpost-com-ref-mlcontests-63a931a5
 
@@ -137,111 +233,3 @@ https://www.kaggle.com/competitions/biohub-cell-tracking-during-development?ref=
 
 # 2026-Q3 · 2026-09-30 · Competitive Farming Strategy Game
 https://www.kaggle.com/competitions/kaggriculture?ref=mlcontests	prize-www-kaggle-com-competitions-kaggriculture-ref-ml-6c4c3253
-
-# 2026-Q3 · 2026-09-30 · Robust Optical Flow Correspondence Matching
-https://roco-spring.github.io/?ref=mlcontests	prize-roco-spring-github-io-ref-mlcontests-f530008a
-
-# 2026-Q4 · 2026-10-01 · Generative AI for Antimicrobial Peptide Design
-https://szczurek-lab.github.io/amp-challenge-website/?ref=mlcontests	prize-szczurek-lab-github-io-amp-challenge-website-ref-084ef537
-
-# 2026-Q4 · 2026-10-02 · Transcribe Code-Switched Speech in Underserved Languages
-https://competitions.mozilladatacollective.com/competitions/group/lost-in-transcription/?ref=mlcontests	prize-competitions-mozilladatacollective-com-competiti-4208e977
-https://competitions.mozilladatacollective.com/competitions/2/lost-in-transcription-sp-en/	prize-competitions-mozilladatacollective-com-competiti-531a362f
-https://competitions.mozilladatacollective.com/competitions/3/lost-in-transcription-sp-nh/	prize-competitions-mozilladatacollective-com-competiti-25f3bb7b
-https://competitions.mozilladatacollective.com/competitions/1/lost-in-transcription-in-jv/	prize-competitions-mozilladatacollective-com-competiti-ab0b26e8
-
-# 2026-Q4 · 2026-10-05 · Build Models to Transcribe Handwritten Historical Records
-https://zindi.africa/competitions/road-barbados-historic-handwriting-challenge?utm_source=mlcontest&utm_medium=referral&utm_campaign=compupdates	prize-zindi-africa-competitions-road-barbados-historic-9e429ead
-
-# 2026-Q4 · 2026-10-11 · Predict Aircraft Taxi-Out Time at European Airports
-https://ansperformance.eu/study/data-challenge/dc2026/	prize-ansperformance-eu-study-data-challenge-dc2026-81305219
-https://ansperformance.eu/study/data-challenge/	prize-ansperformance-eu-study-data-challenge-e6d87a21
-https://ansperformance.eu/study/data-challenge/dc2026/eligibility.html	prize-ansperformance-eu-study-data-challenge-dc2026-el-4f9d90ec
-https://ansperformance.eu/study/data-challenge/dc2026/rationale.html	prize-ansperformance-eu-study-data-challenge-dc2026-ra-4359f3fb
-https://ansperformance.eu/study/data-challenge/dc2026/data.html	prize-ansperformance-eu-study-data-challenge-dc2026-da-c6494fe4
-https://ansperformance.eu/study/data-challenge/dc2026/ranking.html	prize-ansperformance-eu-study-data-challenge-dc2026-ra-f47c30bc
-https://ansperformance.eu/study/data-challenge/dc2026/teams.html	prize-ansperformance-eu-study-data-challenge-dc2026-te-f7aa703d
-https://opensky-network.org/	prize-opensky-network-org-3623488c
-https://www.eurocontrol.int/air-navigation-services-performance-review	prize-www-eurocontrol-int-air-navigation-services-perf-fd12ebb3
-
-# 2026-Q4 · 2026-10-11 · Sim2Real Bimanual Robot Manipulation
-https://robosyn-bench.net/?ref=mlcontests	prize-robosyn-bench-net-ref-mlcontests-09bc8571
-https://github.com/EDEM-AI/RoboSynChallenge	prize-github-com-edem-ai-robosynchallenge-e073c108
-
-# 2026-Q4 · 2026-10-11 · Weak Lensing Uncertainty under Distribution Shift
-https://www.codabench.org/competitions/10902/?ref=mlcontests	prize-www-codabench-org-competitions-10902-ref-mlconte-1e3fd2ef
-https://fair-universe.lbl.gov/?ref=mlcontests	prize-fair-universe-lbl-gov-ref-mlcontests-0704eef5
-
-# 2026-Q4 · 2026-10-12 · Verifiable AI Agents for Quantitative Finance
-https://www.agenthon.net/?ref=mlcontests	prize-www-agenthon-net-ref-mlcontests-7f4f65c9
-
-# 2026-Q4 · 2026-10-15 · Design Physics Experiments for Gravitational Waves
-https://www.learn2design2026.com/?ref=mlcontests	prize-www-learn2design2026-com-ref-mlcontests-291b339a
-
-# 2026-Q4 · 2026-10-22 · Detect Knee Abnormalities in Multimodal Imaging Data
-https://www.kaggle.com/competitions/rsna-knee-abnormality-detection?ref=mlcontests	prize-www-kaggle-com-competitions-rsna-knee-abnormalit-20ecd9f3
-
-# 2026-Q4 · 2026-10-25 · Generative Modeling of Mouse Embryo Development
-https://virtualembryo.ai/challenge?ref=mlcontests	prize-virtualembryo-ai-challenge-ref-mlcontests-6cd009a6
-
-# 2026-Q4 · 2026-10-25 · Interpretability for AI Mathematical Olympiad Reasoning
-https://aimo-interp.github.io/?ref=mlcontests	prize-aimo-interp-github-io-ref-mlcontests-8a0c1de0
-https://www.codabench.org/competitions/16180/	prize-www-codabench-org-competitions-16180-0c2f0355
-
-# 2026-Q4 · 2026-10-25 · RealPDE: Scientific ML for Real-World Physical Systems
-https://realpdecompetition.github.io/?ref=mlcontests	prize-realpdecompetition-github-io-ref-mlcontests-6315ee04
-https://www.codabench.org/competitions/17363/	prize-www-codabench-org-competitions-17363-a4b7648a
-https://www.codabench.org/competitions/17385/	prize-www-codabench-org-competitions-17385-bbd2534a
-
-# 2026-Q4 · 2026-10-26 · Infer Fusion Reactor Magnetic Geometry
-https://fusion-equilibrium-challenge.sophelio.io/?ref=mlcontests	prize-fusion-equilibrium-challenge-sophelio-io-ref-mlc-5c97e826
-
-# 2026-Q4 · 2026-10-30 · Predict Whether AI Systems Answer Benchmark Items Correctly
-https://aimslab.stanford.edu/competition?ref=mlcontests	prize-aimslab-stanford-edu-competition-ref-mlcontests-71212a54
-https://www.codabench.org/competitions/17828/	prize-www-codabench-org-competitions-17828-d6f9cd88
-
-# 2026-Q4 · 2026-11-02 · ARC Prize 2026 - ARC-AGI-2
-https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2?ref=mlcontests	prize-www-kaggle-com-competitions-arc-prize-2026-arc-a-08df5d5a
-
-# 2026-Q4 · 2026-11-02 · ARC Prize 2026 - ARC-AGI-3
-https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3?ref=mlcontests	prize-www-kaggle-com-competitions-arc-prize-2026-arc-a-730335c1
-
-# 2026-Q4 · 2026-11-05 · Quantitative Physical Reasoning for VLMs
-https://quantiphy.stanford.edu/competition/index.html?ref=mlcontests	prize-quantiphy-stanford-edu-competition-index-html-re-8250e6ca
-
-# 2026-Q4 · 2026-11-09 · ARC Prize 2026 - Paper Track
-https://www.kaggle.com/competitions/arc-prize-2026-paper-track?ref=mlcontests	prize-www-kaggle-com-competitions-arc-prize-2026-paper-3554b29f
-
-# 2026-Q4 · 2026-11-12 · Write a Research Paper on Coding Agents
-https://www.kaggle.com/competitions/gemma-4-developer-agent-paper?ref=mlcontests	prize-www-kaggle-com-competitions-gemma-4-developer-ag-701a6ae9
-
-# 2026-Q4 · 2026-11-14 · Generate Synthetic Humanitarian Survey Responses
-https://situatedevals.org/simulacrabench?ref=mlcontests	prize-situatedevals-org-simulacrabench-ref-mlcontests-6174c045
-
-# 2026-Q4 · 2026-11-15 · Optimise LLM Operators & Inference Across AI Chips
-https://flagos.io/race-detail-season2?id=8q4m2x7p&lang=en&ref=mlcontests	prize-flagos-io-race-detail-season2-id-8q4m2x7p-lang-e-9cbab7b3
-https://flagos.io/race-detail-season2?id=782kzq4m&lang=en	prize-flagos-io-race-detail-season2-id-782kzq4m-lang-e-4d39fc5a
-https://flagos.io/race-detail-season2?id=539vlt2p&lang=en	prize-flagos-io-race-detail-season2-id-539vlt2p-lang-e-4a214262
-
-# 2026-Q4 · 2026-11-15 · Predict Price Movements from Limit Order Book Data
-https://wundernn.io/connectome?ref=mlcontests	prize-wundernn-io-connectome-ref-mlcontests-e4db9df4
-https://wundernn.io/connectome/docs/quick_start	prize-wundernn-io-connectome-docs-quick-start-7dfa4b97
-
-# 2026-Q4 · 2026-11-21 · Decode Brains Signals in Task-Specific Settings
-https://neural-interfaces26.github.io	prize-neural-interfaces26-github-io-041981fb
-https://www.codabench.org/competitions/17974/	prize-www-codabench-org-competitions-17974-343b23b8
-https://www.codabench.org/competitions/17982/	prize-www-codabench-org-competitions-17982-fcc1edbc
-https://www.codabench.org/competitions/17983/	prize-www-codabench-org-competitions-17983-47fb59a0
-https://www.codabench.org/competitions/17984/	prize-www-codabench-org-competitions-17984-12adcd2a
-
-# 2026-Q4 · 2026-12-02 · Build Coding Agents with Gemma 4
-https://www.kaggle.com/competitions/gemma-4-developer-agent?ref=mlcontests	prize-www-kaggle-com-competitions-gemma-4-developer-ag-1b70e25f
-
-# 2026-Q4 · 2026-12-07 · Build Speech Recognition Systems for Caribbean Voices
-https://zindi.africa/competitions/caribbean-voices-hackathon?utm_source=mlcontest&utm_medium=referral&utm_campaign=compupdates	prize-zindi-africa-competitions-caribbean-voices-hacka-410cce37
-
-# 2026-Q4 · 2026-12-14 · Predict 2D Chemical Structures From Mass Spectra
-https://www.kaggle.com/competitions/enveda-CASMI26-molecule-id-mass-spectra?ref=mlcontests	prize-www-kaggle-com-competitions-enveda-casmi26-molec-9232a683
-
-# 2026-Q4 · 2026-12-31 · Predict Cross-sectional Equity Returns
-https://hub.crunchdao.com/competitions/datacrunch-2?ref=mlcontests	prize-hub-crunchdao-com-competitions-datacrunch-2-ref-043f8900

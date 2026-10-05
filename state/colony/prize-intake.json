@@ -1,16 +1,16 @@
 {
-  "measuredAt": "2026-09-30T13:02:14.346Z",
-  "measuredOn": "2026-09-30",
+  "measuredAt": "2026-10-05T14:23:35.777Z",
+  "measuredOn": "2026-10-05",
   "source": "https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json",
-  "sourceSha256": "49e374691c73417e00c7a7cb18b7d30375b87bab0368b227db8f975667bec389",
-  "sourceBytes": 229200,
-  "listed": 397,
+  "sourceSha256": "ef0065f792832de1745f3656e40fb44ef996168a84c686cd4feea5d38a19d4d3",
+  "sourceBytes": 230170,
+  "listed": 398,
   "undatable": 1,
-  "open": 29,
-  "openRegistrationClosed": 2,
+  "open": 26,
+  "openRegistrationClosed": 1,
   "openNotYetLaunched": 0,
-  "openWithStatedUsdPrize": 23,
-  "openStatedUsdPrizeTotal": 2564825,
+  "openWithStatedUsdPrize": 22,
+  "openStatedUsdPrizeTotal": 2497625,
   "openPrizeUnparsed": 0,
   "openLaunchedUnparsed": 0,
   "openRegistrationDeadlineUnparsed": 0,
@@ -23,26 +23,35 @@
     "table": "research/measurements/ai-allowed-events.md",
     "urlsFile": "research/measurements/ai-allowed-events.urls.txt",
     "window": [
-      "2026-Q3",
-      "2026-Q4"
+      "2026-Q4",
+      "2027-Q1"
     ],
     "quarters": [
       {
         "quarter": "2026-Q3",
-        "position": "current",
+        "position": "closed",
         "eventsInWindow": 39,
-        "rowsGraded": 0,
-        "qualifying": null,
-        "awaiting": 39,
+        "rowsGraded": 2,
+        "qualifying": 0,
+        "awaiting": 37,
         "unsettled": 0
       },
       {
         "quarter": "2026-Q4",
+        "position": "current",
+        "eventsInWindow": 28,
+        "rowsGraded": 3,
+        "qualifying": 0,
+        "awaiting": 24,
+        "unsettled": 1
+      },
+      {
+        "quarter": "2027-Q1",
         "position": "next",
-        "eventsInWindow": 27,
+        "eventsInWindow": 0,
         "rowsGraded": 0,
         "qualifying": null,
-        "awaiting": 27,
+        "awaiting": 0,
         "unsettled": 0
       }
     ],
@@ -50,7 +59,7 @@
     "untabled": 0,
     "relisted": 0,
     "sameEvent": 0,
-    "urlsAwaiting": 101,
+    "urlsAwaiting": 97,
     "urlsRefused": 0,
     "kill": {
       "fired": null,
