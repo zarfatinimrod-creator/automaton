@@ -32,6 +32,8 @@
  *     claim work we can show is correct, and the demo video Algora requires per
  *     claim has to show *something passing*.
  *  5. Require TypeScript / Python / docs / tests — BOARD.md build #2, verbatim.
+ *     Docs alone is not enough: with no code language matched, a docs or a
+ *     translation bounty is refused by rule 11 (a tests-only bounty is not).
  *  6. Refuse anything needing a human conversation, a design review, a signature
  *     or an account we do not have — MISSION rule 1: the owner does not talk to
  *     people, and we do not invent owner steps.
@@ -49,6 +51,13 @@
  * 10. Emit nothing while the board's clock says so — §5.2 item 8: `selectBounties`
  *     shortlists nothing while the week-4 reading of the corrected supply series is
  *     `pending` (or unknown to the caller), and nothing ever after `kill`.
+ * 11. Refuse a bounty whose deliverable is text only, `writing-or-translation-only`:
+ *     documentation, README, changelog, typo or a translation, with no TypeScript,
+ *     JavaScript or Python matched. Source: RULING-2026-10-05-vat-services.md §3.7, §4
+ *     — writing, editing and translation for a payer are reg 6א(1) kinds, and the
+ *     exempt-dealer premise of owner step 2 must not rest on them. `requiredStacks`
+ *     and rule 5 are unchanged, and the weekly supply counter does not run through
+ *     `scoreBounty`, so the board's week-4 series is untouched.
  */
 
 import { DEFAULT_FX_ILS } from "../money.js";
@@ -491,6 +500,18 @@ const STACK_PATTERNS: Record<string, RegExp> = {
   tests: /\b(?:tests?|unit\s+test|test\s+coverage|vitest|jest|pytest|test\s+suite)\b/i,
 };
 
+/** The stacks that are code. With none of them matched, a docs or translation bounty is text work for the payer. */
+const CODE_STACKS: readonly string[] = ["typescript", "javascript", "python"];
+
+/**
+ * A translation deliverable, read from the same labels, title and text as the stacks (RULING-2026-10-05-vat-services.md
+ * §9 item 8). The ruling's constant ended every alternative at `\b`, so "translations", "translated", "localized" and a
+ * `translations` label passed it; this is a strict superset of it, widened in the fold's review (5.10) to those forms and
+ * the `l10n` label. Not "translator": that word also names code (a request translator), and the rule would then skip
+ * code work as a translation.
+ */
+const TRANSLATION_PATTERN = /\b(?:translat(?:e[ds]?|ions?|ing)|locali[sz](?:e[ds]?|ations?|ing)|l10n)\b/i;
+
 const NEEDS_HUMAN_PATTERNS: { id: string; pattern: RegExp }[] = [
   { id: "call-or-meeting", pattern: /\b(?:hop\s+on\s+a\s+call|jump\s+on\s+a\s+call|schedule\s+a\s+(?:call|meeting)|zoom\s+call|video\s+call|pair(?:ing)?\s+session|office\s+hours)\b/i },
   { id: "chat-first", pattern: /\b(?:(?:discuss|talk|chat|sync)\s+(?:this\s+)?(?:with\s+us|with\s+the\s+team|first|before)|(?:ping|dm|message)\s+(?:us|me|the\s+maintainers?)|reach\s+out\s+to\s+(?:us|me))\b/i },
@@ -660,6 +681,16 @@ export function scoreBounty(
     skipped.push({
       rule: "not-our-stack",
       detail: `Nothing in the labels or the issue matches ${config.requiredStacks.join(" / ")}. BOARD.md build #2 restricts this line to those.`,
+    });
+  }
+
+  // 8a. Text only: writing, editing or translation performed for the payer (RULING-2026-10-05-vat-services.md §3.7, §4).
+  // `requiredStacks` and `not-our-stack` are unchanged; the supply counter does not run through this function.
+  const codeStacks = stacks.filter((id) => CODE_STACKS.includes(id));
+  if (codeStacks.length === 0 && (stacks.includes("docs") || TRANSLATION_PATTERN.test(labelText) || TRANSLATION_PATTERN.test(haystack))) {
+    skipped.push({
+      rule: "writing-or-translation-only",
+      detail: "No code stack matched and the bounty reads as documentation or translation work (documentation, README, changelog, typo, or a translation). Writing, editing and translation performed for a payer are the kinds reg 6א(1) of the VAT regulations names, and registration reg 13(1)'s second limb registers a dealer whose occupation is those services as עוסק מורשה; the colony does not attempt them (RULING-2026-10-05-vat-services.md §3.7, §4).",
     });
   }
 
