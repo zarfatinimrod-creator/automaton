@@ -86,8 +86,12 @@ the second and third of those. To move one:
    earlier fetch beside a failed one, a text extracted by hand beside a PDF), and rewrote each one's meta
    (`redacted`, `remasked: { on, addresses, fold }` saying why these bytes differ from the fetch, and `sha256`
    and `byteLength` where the body changed and they were its hash and size) and `FROZEN.sha256`; git history
-   keeps every earlier byte. An address whose @ is itself encoded (`%40`, a script escape, Cloudflare's email
-   protection) is not found.
+   keeps every earlier byte. Since 5.10.2026 (tick 50) the mask also finds an address whose @ is encoded: `%40`
+   (read as the plain rule reads the decoded text, and written `[redacted:email]%40<domain>`), a script escape
+   (`\u0040` or `\x40`, kept as written), and Cloudflare's email protection (`data-cfemail="<hex>"` and
+   `email-protection#<hex>`: the hex is decoded in memory only and becomes `[redacted:email]@<domain>`, or
+   `[redacted:email]` alone when it is not one address). Still not found: an @ encoded twice (`%2540`, `&#37;40`)
+   or obfuscated (`[at]`), and an address a script assembles.
 3. **Answer the specific question the research file asked**, not a question the page happens to
    answer. Each entry in `urls.txt` carries the sentence that put it there, quoted from the file
    that wants it.
