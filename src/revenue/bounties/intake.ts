@@ -507,8 +507,8 @@ const CODE_STACKS: readonly string[] = ["typescript", "javascript", "python"];
  * A translation deliverable, read from the same labels, title and text as the stacks (RULING-2026-10-05-vat-services.md
  * §9 item 8). The ruling's constant ended every alternative at `\b`, so "translations", "translated", "localized" and a
  * `translations` label passed it; this is a strict superset of it, widened in the fold's review (5.10) to those forms and
- * the `l10n` label. Not "translator": that word also names code (a request translator), and the rule's detail would
- * then say "text only" of code work.
+ * the `l10n` label. Not "translator": that word also names code (a request translator), and the rule would then skip
+ * code work as a translation.
  */
 const TRANSLATION_PATTERN = /\b(?:translat(?:e[ds]?|ions?|ing)|locali[sz](?:e[ds]?|ations?|ing)|l10n)\b/i;
 
@@ -690,7 +690,7 @@ export function scoreBounty(
   if (codeStacks.length === 0 && (stacks.includes("docs") || TRANSLATION_PATTERN.test(labelText) || TRANSLATION_PATTERN.test(haystack))) {
     skipped.push({
       rule: "writing-or-translation-only",
-      detail: "The deliverable is text only (documentation, README, changelog, typo or a translation) with no code stack matched. Writing, editing and translation performed for a payer are the kinds reg 6א(1) of the VAT regulations names, and registration reg 13(1)'s second limb registers a dealer whose occupation is those services as עוסק מורשה; the colony does not attempt them (RULING-2026-10-05-vat-services.md §3.7, §4).",
+      detail: "No code stack matched and the bounty reads as documentation or translation work (documentation, README, changelog, typo, or a translation). Writing, editing and translation performed for a payer are the kinds reg 6א(1) of the VAT regulations names, and registration reg 13(1)'s second limb registers a dealer whose occupation is those services as עוסק מורשה; the colony does not attempt them (RULING-2026-10-05-vat-services.md §3.7, §4).",
     });
   }
 

@@ -447,6 +447,10 @@ describe("scoreBounty — every rule", () => {
 
 describe("text-only bounties are not attempted (RULING-2026-10-05-vat-services.md §3.7, §4, §9 item 8)", () => {
   const state = { attempting: [] as string[], now: NOW };
+  // The detail's first sentence says only what the rule matched (the main thread's call on review finding 4, 5.10): a code
+  // bug on a documentation site also lands here, so the reason must not claim the deliverable is text.
+  const DETAIL_OPENING =
+    "No code stack matched and the bounty reads as documentation or translation work (documentation, README, changelog, typo, or a translation). ";
 
   it("skips a README-typo bounty with no code stack, by writing-or-translation-only alone", () => {
     const s = scoreBounty(
@@ -466,6 +470,8 @@ describe("text-only bounties are not attempted (RULING-2026-10-05-vat-services.m
     expect(s.eligible).toBe(false);
     expect(s.skipped.map((k) => k.rule)).toEqual(["writing-or-translation-only"]);
     const detail = s.skipped[0]!.detail;
+    expect(detail.slice(0, DETAIL_OPENING.length)).toBe(DETAIL_OPENING);
+    expect(detail).not.toMatch(/text only/i);
     expect(detail).toMatch(/reg 6א\(1\)/);
     expect(detail).toMatch(/reg 13\(1\)'s second limb/);
     expect(detail).toMatch(/RULING-2026-10-05-vat-services\.md §3\.7, §4/);
@@ -536,7 +542,8 @@ describe("text-only bounties are not attempted (RULING-2026-10-05-vat-services.m
 
   it("skips a README typo whose criteria name the test suite: docs and tests matched, no code language (§3.0(ii))", () => {
     // The trade-off, recorded in the review of the fold (5.10): a language-less code bug that also says "add a
-    // regression test" and "update the docs" is skipped by this rule too, and its detail then overstates "text only".
+    // regression test" and "update the docs" is skipped by this rule too. The main thread kept that skip (review finding
+    // 4) and changed the detail so it says only that no code stack matched and the bounty reads as docs or translation.
     // Firing the docs branch only on a docs-only match would end that, but would admit this bounty, whose deliverable
     // is a typo fix: most text-only bounties name a test suite in their criteria, and rule 4 makes them name a test of
     // some kind. Stack matching cannot tell the two apart; the ruling's 3.0(ii) skips at ₪0 rather than admit text
@@ -558,6 +565,7 @@ describe("text-only bounties are not attempted (RULING-2026-10-05-vat-services.m
     expect(s.stacks).toEqual(["docs", "tests"]);
     expect(s.eligible).toBe(false);
     expect(s.skipped.map((k) => k.rule)).toEqual(["writing-or-translation-only"]);
+    expect(s.skipped[0]!.detail.slice(0, DETAIL_OPENING.length)).toBe(DETAIL_OPENING);
   });
 
   it("cannot move the supply counter: the counter's import graph takes only the bot-comment parser from the intake", () => {
