@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 import {
@@ -504,15 +504,115 @@ describe("text-only bounties are not attempted (RULING-2026-10-05-vat-services.m
     expect(s.skipped).toEqual([]);
   });
 
-  it("cannot move the supply counter: supply.ts and scripts/algora-supply.ts name neither scoreBounty nor requiredStacks", () => {
-    // The weekly claimableBounties count runs through supply.ts, not the intake (ruling §3.7, §7 item 8): a rule in
-    // scoreBounty leaves the board's week-4 series as it was only while these two files never reach for the intake's
-    // scoring or its stacks.
-    for (const path of ["src/revenue/bounties/supply.ts", "scripts/algora-supply.ts"]) {
-      const text = readFileSync(resolve(REPO_ROOT, path), "utf8");
-      expect(text, path).not.toContain("scoreBounty");
-      expect(text, path).not.toContain("requiredStacks");
+  it("reads a translation in its plural, past and third-person forms and from the l10n label (review of the fold, 5.10)", () => {
+    // The ruling's constant ended every alternative at \b, so "translations", "translated", "localized" and a
+    // `translations` label slipped past it while their bounties are translations for the payer (§3.7, §4 row
+    // oss-bounties: "or a translation of text"). The widened pattern is a strict superset of the ruling's.
+    for (const [labels, title, text] of [
+      [["translations"], "Spanish strings for the settings page", "Acceptance criteria:\n- [ ] the settings test suite passes with the es locale"],
+      [["help wanted"], "Add Spanish translations for the settings page", "Acceptance criteria:\n- [ ] the settings test suite passes with the es locale"],
+      [["help wanted"], "Settings page strings", "The settings page should be localized to German.\n\nAcceptance criteria:\n- [ ] the settings test suite passes with the de locale"],
+      [["help wanted"], "Strings translated to French", "Acceptance criteria:\n- [ ] the settings test suite passes with the fr locale"],
+      [["l10n"], "German strings for the settings page", "Acceptance criteria:\n- [ ] the settings test suite passes with the de locale"],
+    ] as const) {
+      const s = scoreBounty(candidate({ labels: [...labels], issueTitle: title, issueText: text }), state);
+      expect(s.stacks, title).toEqual(["tests"]);
+      expect(s.eligible, title).toBe(false);
+      expect(s.skipped.map((k) => k.rule), title).toEqual(["writing-or-translation-only"]);
     }
+  });
+
+  it("finds the translation word in the issue body alone, and in the British spelling (review of the fold, 5.10)", () => {
+    for (const [title, text] of [
+      ["Spanish support for the settings page", "Acceptance criteria:\n- [ ] translate every settings string\n- [ ] the settings test suite passes with the es locale"],
+      ["Localise the settings page into German", "Acceptance criteria:\n- [ ] the settings test suite passes with the de locale"],
+    ] as const) {
+      const s = scoreBounty(candidate({ labels: ["help wanted"], issueTitle: title, issueText: text }), state);
+      expect(s.stacks, title).toEqual(["tests"]);
+      expect(s.eligible, title).toBe(false);
+      expect(s.skipped.map((k) => k.rule), title).toEqual(["writing-or-translation-only"]);
+    }
+  });
+
+  it("skips a README typo whose criteria name the test suite: docs and tests matched, no code language (§3.0(ii))", () => {
+    // The trade-off, recorded in the review of the fold (5.10): a language-less code bug that also says "add a
+    // regression test" and "update the docs" is skipped by this rule too, and its detail then overstates "text only".
+    // Firing the docs branch only on a docs-only match would end that, but would admit this bounty, whose deliverable
+    // is a typo fix: most text-only bounties name a test suite in their criteria, and rule 4 makes them name a test of
+    // some kind. Stack matching cannot tell the two apart; the ruling's 3.0(ii) skips at ₪0 rather than admit text
+    // work, and narrowing it is a ruling-level change, not a fixer's.
+    const s = scoreBounty(
+      candidate({
+        labels: ["documentation"],
+        issueTitle: "Fix a typo in the README",
+        issueText: [
+          "The README says \"recieve\" in the install section.",
+          "",
+          "Acceptance criteria:",
+          "- [ ] the README spells \"receive\" correctly",
+          "- [ ] the docs test suite still passes",
+        ].join("\n"),
+      }),
+      state,
+    );
+    expect(s.stacks).toEqual(["docs", "tests"]);
+    expect(s.eligible).toBe(false);
+    expect(s.skipped.map((k) => k.rule)).toEqual(["writing-or-translation-only"]);
+  });
+
+  it("cannot move the supply counter: the counter's import graph takes only the bot-comment parser from the intake", () => {
+    // The weekly claimableBounties count runs through supply.ts, not the intake (ruling §3.7, §7 item 8): a rule in
+    // scoreBounty leaves the board's week-4 series as it was only while the counter never reaches the intake's scoring.
+    // A list of forbidden names alone was bypassed in review (supply.ts importing selectBounties, which calls
+    // scoreBounty), so this is a whitelist: walk every relative import from the counter's entry script; each file
+    // reached may take ALGORA_BOT_LOGIN, parseAlgoraBotComment and AlgoraBotComment from the intake by a named import
+    // and nothing else, by no other form (namespace, default, re-export, dynamic import), and none may reach a barrel
+    // that re-exports the intake or name the intake's scoring.
+    const INTAKE_FILE = resolve(REPO_ROOT, "src/revenue/bounties/intake.ts");
+    const MAY_IMPORT_FROM_INTAKE = ["ALGORA_BOT_LOGIN", "parseAlgoraBotComment", "AlgoraBotComment"];
+    const SCORING_NAMES = ["scoreBounty", "selectBounties", "defaultIntakeConfig", "requiredStacks"];
+    const target = (from: string, spec: string) => `${resolve(dirname(from), spec).replace(/\.(?:js|ts)$/, "")}.ts`;
+    const problems: string[] = [];
+    const seen = new Set<string>();
+    const queue = [resolve(REPO_ROOT, "scripts/algora-supply.ts")];
+    while (queue.length > 0) {
+      const file = queue.shift()!;
+      if (seen.has(file)) continue;
+      seen.add(file);
+      const rel = relative(REPO_ROOT, file);
+      const text = readFileSync(file, "utf8");
+      for (const name of SCORING_NAMES) if (text.includes(name)) problems.push(`${rel} names ${name}`);
+      let intakeSpecifiers = 0;
+      for (const m of text.matchAll(/(["'`])(\.\.?\/[^"'`\n]*)\1/g)) {
+        const to = target(file, m[2]!);
+        if (to === INTAKE_FILE) intakeSpecifiers += 1;
+        else if (basename(to) === "index.ts") problems.push(`${rel} reaches the barrel ${m[2]}, which re-exports the intake`);
+        else queue.push(to);
+      }
+      const namedFromIntake = [...text.matchAll(/\bimport\s+(?:type\s+)?\{([^}]*)\}\s*from\s*(["'])([^"'\n]+)\2/g)].filter(
+        (m) => target(file, m[3]!) === INTAKE_FILE,
+      );
+      if (namedFromIntake.length !== intakeSpecifiers) problems.push(`${rel} reaches the intake other than by a named import`);
+      for (const m of namedFromIntake) {
+        for (const raw of m[1]!.split(",")) {
+          const name = raw.trim().replace(/^type\s+/, "").split(/\s+as\s+/)[0]!.trim();
+          if (name !== "" && !MAY_IMPORT_FROM_INTAKE.includes(name)) problems.push(`${rel} imports ${name} from the intake`);
+        }
+      }
+    }
+    expect([...seen].map((f) => relative(REPO_ROOT, f))).toEqual(
+      expect.arrayContaining(["scripts/algora-supply.ts", "src/revenue/bounties/supply-github.ts", "src/revenue/bounties/supply.ts"]),
+    );
+    expect(problems).toEqual([]);
+  });
+
+  it("is in the intake's own list of rules, with the ruling it comes from", () => {
+    const text = readFileSync(resolve(REPO_ROOT, "src/revenue/bounties/intake.ts"), "utf8");
+    const start = text.indexOf("── The rules, and where each comes from ──");
+    expect(start).toBeGreaterThan(-1);
+    const header = text.slice(start, text.indexOf("*/", start));
+    expect(header).toMatch(/\b11\. .*`writing-or-translation-only`/);
+    expect(header).toContain("RULING-2026-10-05-vat-services.md §3.7, §4");
   });
 });
 
