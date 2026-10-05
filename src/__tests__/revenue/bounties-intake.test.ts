@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 import {
   ALGORA_BOT_LOGIN,
@@ -18,6 +21,7 @@ import {
 import { DEFAULT_PORTFOLIO, KILLED_LINES, TARGET_BASIS, committedTargetIls } from "../../revenue/portfolio.js";
 
 const NOW = "2026-09-07T12:00:00.000Z";
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 /**
  * The bounty-comment body, built from the only text the sweep actually rendered:
@@ -438,6 +442,77 @@ describe("scoreBounty — every rule", () => {
     const rich = scoreBounty(candidate({ id: "a#1", amount: 500, estimatedHours: 3, botComment: { author: ALGORA_BOT_LOGIN, body: botBody(500, 42) } }), state);
     const thin = scoreBounty(candidate({ id: "b#2", amount: 60, estimatedHours: 4, botComment: { author: ALGORA_BOT_LOGIN, body: botBody(60, 42) } }), state);
     expect(rich.score).toBeGreaterThan(thin.score);
+  });
+});
+
+describe("text-only bounties are not attempted (RULING-2026-10-05-vat-services.md §3.7, §4, §9 item 8)", () => {
+  const state = { attempting: [] as string[], now: NOW };
+
+  it("skips a README-typo bounty with no code stack, by writing-or-translation-only alone", () => {
+    const s = scoreBounty(
+      candidate({
+        labels: ["documentation", "good first issue"],
+        issueTitle: "Fix a typo in the README",
+        issueText: [
+          "The README says \"recieve\" in the install section.",
+          "",
+          "Acceptance criteria:",
+          "- [ ] the README spells \"receive\" correctly",
+        ].join("\n"),
+      }),
+      state,
+    );
+    expect(s.stacks).toEqual(["docs"]);
+    expect(s.eligible).toBe(false);
+    expect(s.skipped.map((k) => k.rule)).toEqual(["writing-or-translation-only"]);
+    const detail = s.skipped[0]!.detail;
+    expect(detail).toMatch(/reg 6א\(1\)/);
+    expect(detail).toMatch(/reg 13\(1\)'s second limb/);
+    expect(detail).toMatch(/RULING-2026-10-05-vat-services\.md §3\.7, §4/);
+  });
+
+  it("skips a translation bounty the same way, whether it names the docs, other text, or only carries the label", () => {
+    for (const [labels, title, text] of [
+      [["i18n", "help wanted"], "Translate the docs into Spanish", "Acceptance criteria:\n- [ ] every page under docs/ has a Spanish version"],
+      [["i18n", "help wanted"], "Translate the error messages into Spanish", "Acceptance criteria:\n- [ ] the i18n test suite passes with the es locale"],
+      [["translation"], "Spanish strings for the settings page", "Acceptance criteria:\n- [ ] the settings test suite passes with the es locale"],
+    ] as const) {
+      const s = scoreBounty(candidate({ labels: [...labels], issueTitle: title, issueText: text }), state);
+      expect(s.eligible, title).toBe(false);
+      expect(s.skipped.map((k) => k.rule), title).toEqual(["writing-or-translation-only"]);
+    }
+  });
+
+  it("still attempts a TypeScript bug whose text also says to update the docs", () => {
+    const s = scoreBounty(candidate({ issueText: `${candidate().issueText}\n- [ ] update the docs for parseDate` }), state);
+    expect(s.stacks).toEqual(expect.arrayContaining(["typescript", "docs"]));
+    expect(s.eligible).toBe(true);
+    expect(s.skipped).toEqual([]);
+  });
+
+  it("leaves a tests-only bounty as it was", () => {
+    const s = scoreBounty(
+      candidate({
+        labels: ["tests", "good first issue"],
+        issueTitle: "Cover the date parser's leap years",
+        issueText: "Acceptance criteria:\n- [ ] unit tests for parseDate cover 29 February\n- [ ] the test suite passes",
+      }),
+      state,
+    );
+    expect(s.stacks).toEqual(["tests"]);
+    expect(s.eligible).toBe(true);
+    expect(s.skipped).toEqual([]);
+  });
+
+  it("cannot move the supply counter: supply.ts and scripts/algora-supply.ts name neither scoreBounty nor requiredStacks", () => {
+    // The weekly claimableBounties count runs through supply.ts, not the intake (ruling §3.7, §7 item 8): a rule in
+    // scoreBounty leaves the board's week-4 series as it was only while these two files never reach for the intake's
+    // scoring or its stacks.
+    for (const path of ["src/revenue/bounties/supply.ts", "scripts/algora-supply.ts"]) {
+      const text = readFileSync(resolve(REPO_ROOT, path), "utf8");
+      expect(text, path).not.toContain("scoreBounty");
+      expect(text, path).not.toContain("requiredStacks");
+    }
   });
 });
 
