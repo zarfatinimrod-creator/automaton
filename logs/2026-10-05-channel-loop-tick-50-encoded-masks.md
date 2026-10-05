@@ -82,3 +82,71 @@
 - שלוש ריצות בדיקה שנכשלו בגלל fixtures לא נאמנים (סעיף 5).
 - תיקון הודעת הקומיט בגלל המרת ה-escape.
 - ריצות המוטציה עצמן (31 ריצות של vitest, כ-10 שניות כל אחת ב-B וב-C) — זמן ולא אסימונים, אבל הפלט נקרא.
+
+## תוספת: תיקוני ה-fixer אחרי ה-review (5.10.2026)
+
+### 1. מה המשתמש ביקש
+
+סקריפט ה-workflow ביקש לתקן כל ממצא "blocking" ו-"fix" ב-review של הבנייה הזו (worktree `build/tick50-encoded-masks` בלבד; בלי push, בלי merge, בלי `--apply` על `research/rendered` האמיתי), לשחזר כל ממצא לפני התיקון, לתקן בדיקה-תחילה, להריץ שוב את `scripts/verify.sh`, את המוטציות של ה-builder ושל ה-reviewer שנוגעות בקוד שהשתנה, ואת ה-dry-run האמיתי, ולהוסיף סעיף ללוג הזה.
+
+### 2. הפעולות המרכזיות שביצעתי
+
+- **שחזור לפני תיקון.** probe שמריץ את ה-masker של `b974d1b` (מ-`git show`) מול זה של HEAD על חמש כתובות שנבנו בזמן ריצה (אחרי `%2F`, אחרי `%5C`, בתוך `{"next":"%2Fusers%2F…"}`, אחרי `Mail%20me%3A%2F`, ואחרי `https%3A%2F%2Fh.org%2Fp%3A`): ה-masker הישן מיסך 1 בכל אחד, HEAD מיסך 0 והשאיר את ה-local part. probe שני על hex של Cloudflare שנבנה בזמן ריצה: `data-cfemail=\"…\"` (JSON), `&quot;`, `&#34;`, ה-escape u0022, ובלי מרכאות — count 0 וה-hex נשאר בכולם; גרש בודד מוסך (אבל בלי בדיקה), וסיסמת URL שה-@ שלה escape נשארה (נכון, בלי בדיקה).
+- **בדיקות תחילה (red).** 3 בדיקות חדשות ב-`render-watch.test.ts`, אחת ב-`remask-captures.test.ts`, והבדיקה של `--cited --history` ב-`freeze-capture.test.ts` הורחבה. לפני התיקון: 3 נכשלו (הרגרסיה, צורות Cloudflare, הדפסת DRIFTED) ושתיים עברו (הן מצמידות התנהגות קיימת, כדי להרוג את המוטציות R4 ו-R5 ששרדו).
+- **`maskAddresses` בשלושה שלבים.** (1) Cloudflare; (2) הכלל כפי שהיה לפני טיק 50, על הטקסט שבו מפוענחים רק character references — כל @ רגיל ו-escape של script נקראים כאן, וה-local part נקרא מהטקסט הגולמי (שם `%2F` הוא שלושה תווים של local part, לא לוכסן); (3) אותו כלל על הטקסט שבו גם percent escapes מפוענחים — צורת `%40`, ו-@ רגיל שהשלב הקודם השאיר רק כי המילה שלו נמשכה דרך percent escape (`/search/Contact%20<local>@…`). הפונקציה `maskView` היא לולאת ה-view הקודמת, עם regex ה-references כפרמטר.
+- **`CLOUDFLARE`.** הקידומת לפני ה-hex: `data-cfemail=` ואחריו `"` או `'` (גם עם backslash לפניו, כמו ב-JSON), ה-escapes u0022 ו-x22, `&quot;`, `&#34;`, `&#x22;`, או כלום; הקידומת נכתבת כפי שהייתה.
+- **`freeze-capture --cited`.** `clip` מעביר את הטקסט דרך `redactSecrets` (text/plain) לפני שהוא חותך ל-400 תווים, כך ששורת `then:` של DRIFTED (מתוך git history) ושורת `now:` מודפסות ממוסכות. מיסוך לפני חיתוך: חיתוך לא יכול לפצל כתובת שהמסכה הייתה מוצאת.
+- **תיעוד שתואם את הקוד.** הערת הכותרת של `ADDRESS_PATTERN` ושל `maskAddresses` אומרות איזה כלל קורא איזה טקסט, אילו צורות Cloudflare נמצאות ואילו לא (`\\\"` — JSON בתוך JSON — ו-`&amp;quot;`), ושכל `email-protection#` שאחריו מילה של ספרות hex בלבד הופך למסכה בלי דומיין (over-mask לא מזיק). הכותרת של `freeze-capture.mjs` ו-`research/rendered/README.md` אומרות מתי sha256/byteLength של meta קפוא עוקבים אחרי המסכה, ושה-`--cited` ממסך את מה שהוא מדפיס.
+- **השוואה דיפרנציאלית בזיכרון** (ספירות בלבד, בלי טקסט): על 902 קבצי הטקסט ב-`research/rendered` ב-HEAD וב-`b339013^` (לפני ה-re-mask של 5.10).
+
+### 3. קבצים/מערכות ששונו
+
+- `scripts/render-watch.mjs` — `maskAddresses` + `maskView` (שני מעברים), `CHARACTER_REFERENCE` (בלי percent) ו-`REFERENCE_OR_ESCAPE` (עם), `CLOUDFLARE` הרחב, הערות.
+- `scripts/freeze-capture.mjs` — `clip` ממסך; הערת הכותרת.
+- `src/__tests__/revenue/render-watch.test.ts` — 3 בדיקות.
+- `src/__tests__/revenue/remask-captures.test.ts` — בדיקה אחת (מסכת escape נספרת תחת סוג הדומיין), והשומר של ה-dry-run האמיתי בודק גם `%40` ו-escapes.
+- `src/__tests__/revenue/freeze-capture.test.ts` — בלי הצמצום לשורות `froze `: אין local part בשום פלט של `cited()`, ב-dry run וב-apply.
+- `research/rendered/README.md` — רשימת "Still not found", איזה כלל קורא איזה טקסט, וכלל ה-sha256 של עותק קפוא.
+- הלוג הזה. שום capture, שום yml ושום קובץ לולאה לא השתנו.
+
+### 4. החלטות והנחות משמעותיות
+
+לכל ממצא:
+- **blocking (רגרסיה של @ רגיל אחרי `%2F`/`%5C`/`%3A`) — תוקן.** ה-reviewer הציע להריץ את המעבר הגולמי *אחרי* המעבר המפוענח. בחרתי *לפני*: כך כל מסכה של @ רגיל זהה בייט-בבייט למה שה-masker הישן כותב. בסדר ההפוך, המעבר המפוענח ממסך קודם ועלול להשאיר גלויה קידומת שהישן מיסך (למשל local part עם `%27`: הישן מיסך את כולו, המפוענח רק את מה שאחרי הגרש). הוכחה על הנתונים: `now(x) === now(base(x))` בכל 902 הקבצים ב-HEAD וב-`b339013^`, ו-`now` אידמפוטנטי בכולם; ה-masker הישן לא מוצא כלום בפלט החדש (0 בשני המקומות). ב-HEAD הפלט החדש זהה בייט-בבייט לפלט של ה-builder בכל 902 הקבצים (75 מסכות בשניהם), ולכן ה-dry-run לא משתנה. ב-`b339013^` (לפני ה-re-mask) 5 קבצים שונים מפלט ה-builder, באותו מספר מסכות (989): היקף המסכה של @ רגיל חוזר להיקף הישן.
+- **fix (צורות Cloudflare מוברחות/בלי מרכאות) — תוקן** בהרחבת הקידומת (לא רק בתיעוד), עם בדיקה לכל צורה. הצורות שעדיין לא נמצאות נכתבו בכותרת וב-README.
+- **fix (3 מוטציות ששרדו) — תוקן.** בדיקות לגרש בודד, לסיסמת URL שה-@ שלה u0040/x40 (וגם `@` ו-`%40` באותה בדיקה), ולסיכום של remask עם מסכת escape (government 2, בלי "no domain kept"). R3 עצמה כבר לא ניתנת להחלה (ה-regex השתנה); המקבילה שלה היא F4 (הסרת `'` מהמחלקה).
+- **fix (`--cited` מדפיס טקסט מההיסטוריה בלי מסכה) — תוקן** כפי שהוצע, אבל עם `utf8` ולא `latin1`: `r.then` הוא מחרוזת שפוענחה כ-UTF-8 (`textOf`), ו-`Buffer.from(s, "latin1")` היה משחית עברית. `redactSecrets` קורא את הבייטים כ-latin1 ומחליף רק טווחי ASCII, כך שבייטים מרובי-בתים עוברים כפי שהם.
+- **note (over-mask של `email-protection#<hex>` ושל `\U0040`) — נשאר, ותועד.** עיגון ל-`cdn-cgi/l/` היה מפספס עוגן בתוך JSON (`cdn-cgi\/l\/`), ו-over-mask לא חושף דבר; התאמה רגישת-רישיות בתוך regex עם `/i` דורשת modifiers ש-Node בגרסה הזו לא בהכרח תומך בהם.
+- **note (sha256 של עותק קפוא עוקב רק כשהיה של הגוף) — נשאר**, לפי הכלל של remask; עכשיו כתוב בכותרת וב-README. הסטייה מהניסוח המילולי של ה-spec (Part C: "sha256 and byteLength are of the masked body"): meta שה-sha256 שלו לא היה של הגוף השמור (redaction ידנית) שומר אותו. בכל meta ש-render-watch כותב זה אותו דבר.
+- **note (השומר של ה-dry-run האמיתי בודק רק @) — תוקן** (זול): `(?:@|%40|\\u0040|\\x40)`, case-insensitive.
+- **note (שלושה קבצי מחקר עם מחרוזות בצורת כתובת: 28, 12, 4) — נשאר, מחוץ ל-scope.** לתור של ה-main thread: סיווג לפי סוג (תפקיד, מותג, placeholder, אדם), והערה בת שורה ב-`brand-mailbox-questions.md` שה-hex נמצא בהיסטוריה מקומיט ה-re-mask ואילך.
+- **note (`classifyFiles` כותב בייטים לא ממוסכים ל-`os.tmpdir()`) — נשאר.** התיקייה נמחקת ב-`finally`, הבייטים לא מגיעים לריפו ולא לטרמינל, ו-`classifyFiles` נקרא גם ב-`sourceVersion` לפני שנבחרת גרסה: סיווג של בייטים ממוסכים יכול לתת פסק דין אחר מזה ש-capture-check נותן ל-capture החי (סף "short"), כלומר שינוי התנהגות מחוץ לשלושת החלקים.
+- **note (הבסיס זז ל-`007e304`) — אין פעולה**; רק `state/colony` השתנה שם.
+- לא נמצא ממצא שדחיתי.
+
+### 5. שגיאות וניסיונות שנכשלו
+
+- שכבת הכלים המירה רצף backslash-u שהקלדתי בפקודה לתו עצמו (בפעם השלישית בטיק הזה): עריכה שמחרוזת ה-find שלה הכילה u0040 לא נמצאה (0 מופעים, לא נכתב דבר); הערה ב-`render-watch.mjs` קיבלה `"` במקום ה-escape u0022 (תוקן); והודעת הקומיט של התיקון קיבלה `"` במקום אותו escape (תוקנה ב-amend). מעקף: עזר עריכה שבו `\` מוחלף ב-backslash, ותוכניות מוטציה שנבנות מאותו placeholder.
+
+### 6. בדיקות ופעולות ולידציה
+
+- red לפני התיקון: `npx vitest run` על שלושת קבצי הבדיקה עם `-t` של הבדיקות החדשות — exit 1, 3 failed, 18 passed.
+- `scripts/verify.sh src/__tests__/revenue/render-watch.test.ts src/__tests__/revenue/remask-captures.test.ts src/__tests__/revenue/freeze-capture.test.ts src/__tests__/revenue/frozen-citations.test.ts src/__tests__/revenue/narration-licence-gate.test.ts src/__tests__/revenue/capture-check.test.ts src/__tests__/revenue/prize-terms-audit.test.ts` — exit 0 (typecheck exit 0; 7 קבצים, 389 passed, 1 skipped — אותו `skipIf` של ארכיון ה-narration שאינו בקונטיינר).
+- `scripts/verify.sh` (ברירת המחדל) — exit 0 (typecheck exit 0; 73 קבצים, 2422 passed, 1 skipped).
+- מוטציות (`node scripts/mutate.mjs --plan <plan> --json <out>`), אחרי הקומיט (הכלי דורש קבצים נקיים):
+  - `render-watch.mjs` נגד `render-watch.test.ts`: 26 הוחלו, 26 killed, 0 survived. A1–A12 של ה-builder (A2 על הקידומת החדשה: `)?|email-protection#)` → `)?)`), R1, R2, R4 של ה-reviewer, ו-F1–F11 חדשות: F1 בלי המעבר הגולמי (הרגרסיה עצמה); F2 בלי המעבר המפוענח; F3 בלי `\"`; F4 בלי `'` (מקבילת R3); F5 בלי `&quot;`; F6 בלי `&#34;`; F7 בלי `&#x22;`; F8 בלי u0022; F9 בלי x22; F10 מרכאות חובה; F11 ספירת המעברים נזרקת.
+  - `freeze-capture.mjs` ו-`remask-captures.mjs` נגד `freeze-capture.test.ts` + `remask-captures.test.ts`: 22 הוחלו, 22 killed, 0 survived: F12 (`clip` בלי מסכה), C1–C13 של ה-builder (C7–C8 הן B1–B2 על הקוד שעבר ל-`freeze-capture.mjs`; B1–B2 עצמן כבר אינן ב-`remask-captures.mjs`), R6–R8 של ה-reviewer, B3–B6 של ה-builder ו-R5 של ה-reviewer. בסך הכול 48 הוחלו, 48 killed. המוטציות רצו על הקומיט `cd16bb7`; ה-amend ל-`327384d` שינה רק את ההודעה, לא את העץ.
+- dry-run אמיתי אחרי התיקונים: `node scripts/remask-captures.mjs --dry-run` ב-worktree — exit 3; `git status --short --untracked-files=all research/rendered | wc -l` = 0 לפני ואחרי; 0 מחרוזות בצורת כתובת בפלט (@, `%40` או escape). 553 captures, 520 ללא שינוי; ישתנו 33 captures ו-33 קבצים (32 html, 1 json); 75 מסכות: free-mail 3, ארגון או אוניברסיטה 56, רשימת תפוצה 0, ממשלה 14, placeholder 1, בלי דומיין 1; עותקים קפואים: 9 (9 קבצים); asset names: 0; קבצים שאף meta לא מציין: 0; שורות מצוטטות שישתנו: 4 (5 ציטוטים, אותם זוגות file:line שה-builder מנה); pins שיתיישנו: 0. זהה למספרים שלפני התיקון, כצפוי מההשוואה הדיפרנציאלית.
+- היגיינה על הקבצים ששונו מול `b974d1b`: grep מזהי הבעלים — 0; כתובות בשורות שנוספו (@, `%40` או escape בין תווי מילה) — 0; hex של Cloudflare בשורות שנוספו — 0; שם מודל בשורות שנוספו — 0 (הפגיעה היחידה של התבנית היא שם הענף `claude/new-session-j071dx` בסעיף 2 של ה-builder, לא שם מודל).
+
+### 7. עבודה ידנית שחזרה על עצמה וכדאי להפוך לאוטומטית
+
+- תוכנית המוטציות של ה-builder (31) נבנתה מחדש מתוך הטקסט המקוצר בדוח שלו, כי התוכניות נמחקו עם תיקיית ה-scratch — שוב §9 tick 49 פריט 5 (`src/__tests__/revenue/mutations/<script>.json`). עכשיו הן 48.
+- עזר עריכה עם placeholder ל-backslash נכתב שוב; כלי `exact-edit` בריפו שקורא find/replace מקבצים (ולא מטקסט הפקודה) היה פותר גם את בעיית ה-escapes.
+- ההשוואה הדיפרנציאלית "masker ישן מול חדש על כל ה-captures" נכתבה בפעם הרביעית (ה-builder, ה-reviewer, וכאן פעמיים): היא יכולה להיות מצב `--compare <ref>` ב-`remask-captures.mjs`.
+
+### 8. על מה בוזבזו אסימונים, לפי פעולה
+
+- שחזור תוכנית המוטציות מהדוח (מציאת כל מחרוזת find בקוד).
+- שלוש עריכות חוזרות בגלל המרת ה-escapes.
+- קריאת `cited()`, `citationVersion` ו-`maskedMeta` ב-`freeze-capture.mjs` כדי לוודא שהטקסט המודפס הוא UTF-8 ושאין עוד נקודת הדפסה של טקסט מההיסטוריה (`REFUSED` מדפיס evidence של capture-check, שאינו מצטט טקסט).
