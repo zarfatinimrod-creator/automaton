@@ -2,8 +2,8 @@
 /**
  * remask-captures — the one-time re-mask of the captures stored before render-watch masked email addresses.
  *
- *   node scripts/remask-captures.mjs [--dry-run] [--rendered <dir>] [--only <slug>...]
- *   node scripts/remask-captures.mjs --apply --date YYYY-MM-DD [--rendered <dir>] [--only <slug>...]
+ *   node scripts/remask-captures.mjs [--dry-run] [--rendered <dir>] [--only <slug>...] [--except <slug>...]
+ *   node scripts/remask-captures.mjs --apply --date YYYY-MM-DD [--rendered <dir>] [--only <slug>...] [--except <slug>...]
  *
  * Why: since merge 12143ca (5.10.2026, tick 48) render-watch masks an address before it writes a capture
  * (redactSecrets: the local part becomes `[redacted:email]`, the domain is kept), but a capture stored before that and
@@ -11,9 +11,15 @@
  * place, once, through the same redactSecrets, and say in the commit that git history keeps the earlier bytes.
  *
  * What it reads: every <slug>.meta.json in --rendered (default research/rendered), frozen copies included, or the
- * --only slugs. A meta's bodyPath is masked with the meta's contentType (redactSecrets leaves a binary body, a PDF,
- * untouched: it masks HTML, text, JSON, XML and JavaScript), its textPath as text/plain; a file named by both is masked
- * once, as the body. Each path is read from --rendered by its file name, as render-watch and freeze-capture do.
+ * --only slugs, less the --except slugs (each named once however often it is given; a positional slug belongs to the
+ * --only or --except just before it). A meta's bodyPath is masked with the meta's contentType (redactSecrets leaves a
+ * binary body, a PDF, untouched: it masks HTML, text, JSON, XML and JavaScript), its textPath as text/plain; a file
+ * named by both is masked once, as the body. Each path is read from --rendered by its file name, as render-watch and
+ * freeze-capture do. The capture's other files, <slug>.<ext> for freeze-capture's CAPTURE_EXTS, that no meta path
+ * names are masked too, with the type their extension says (.txt text/plain, .html, .json, .xml; a .pdf or .bin is
+ * binary and left alone): a failed fetch's meta names no body while the earlier fetch's files still sit beside it, and
+ * a hand extraction sits beside a PDF whose meta has no textPath. They are not the meta's body, so sha256 and
+ * byteLength stay; their masks count in `redacted` and `remasked`.
  *
  * DRY RUN (the default) writes nothing and prints each capture that would change (whether its body and its text would,
  * and how many addresses each masks), then a summary: files that would change, addresses masked by domain kind
@@ -23,8 +29,12 @@
  * in the decision-bearing files (freeze-capture's decisionFiles and scanCitations, the scan frozen-citations.test.ts
  * runs) whose range holds a line that changes, as `<capture file>:<line> → cited by <file>:<line>`, never the text.
  * Masking is inline, so no line of a body or a text moves (a change that would move one is refused); a meta gains
- * keys, so a citation of a meta's line past `truncated` is listed too. Exit 0 when nothing would change, 3 when
- * something would.
+ * keys, so a citation of a meta's line past `truncated` is listed too. Then the pins that go stale (stalePins): every
+ * line in the repository's files (tracked or untracked and not ignored; not logs/, which is history, not the captures'
+ * own files and not FROZEN.sha256, which this rewrites) that holds 8 or more leading hex digits of the old sha256 of a
+ * file it rewrites, or the old byte count of one (`N bytes`, `byteLength N`) on a line naming its capture: a note's or
+ * a test's hash of a capture, and a meta's previousSha256, read the bytes before the mask. Exit 0 when nothing would
+ * change, 3 when something would.
  *
  * APPLY (--apply --date YYYY-MM-DD; the date is never read from the clock) writes, for each capture that changes, the
  * masked body and text, each through a temp file and a rename, then its meta: `redacted` grows by the masks (a
@@ -45,7 +55,7 @@
  * src/__tests__/revenue/remask-captures.test.ts runs it on fixtures and, as a dry run, on the real research/rendered.
  */
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
@@ -109,6 +119,8 @@ export function domainKind(domain) {
 const MASKED = /\[redacted:email\]@((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})(?![A-Za-z0-9]|\.[A-Za-z0-9-])/g;
 // A kept "domain" that is a file name: the mask would have taken an asset name (`<name>@2x.png`) for an address.
 const ASSET_DOMAIN = /\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?)$/i;
+// The type of a capture's file that no meta path names, by its extension: a .pdf or .bin is binary and stays as it is.
+const EXT_TYPES = { txt: "text/plain", html: "text/html", json: "application/json", xml: "application/xml", pdf: "application/pdf", bin: "application/octet-stream" };
 
 const masksIn = (text) => {
   const out = new Map();
@@ -176,15 +188,21 @@ export function remaskedMetaText(capture, on) {
 }
 
 /**
- * Read and mask every capture in dir (or only), in memory: { captures, problems, manifest }. A capture is { slug,
- * frozen, metaName, metaText, meta, parts: [{ role, name, before, bytes, count, addresses, domains, lines, moved }],
- * changed, count, addresses }. problems are the refusals that hold for a dry run as for --apply.
+ * Read and mask every capture in dir (or only, less except), in memory: { captures, problems, manifest, left }. A
+ * capture is { slug, frozen, metaName, metaText, meta, parts: [{ role: body|text|other, name, before, bytes, count,
+ * addresses, domains, lines, moved }], changed, count, addresses }; left is the --except slugs, sorted. problems are
+ * the refusals that hold for a dry run as for --apply.
  */
-export function planRemask({ dir, only = null, redact = redactSecrets }) {
+export function planRemask({ dir, only = null, except = [], redact = redactSecrets }) {
   const problems = [];
   const captures = [];
-  const slugs = only?.length ? only : [...knownSlugs(dir)].sort();
+  const slugs = only?.length ? [...new Set(only)] : [...knownSlugs(dir)].sort();
+  const left = [...new Set(except)].sort();
+  for (const slug of left) {
+    if (!isSlug(slug) || !existsSync(join(dir, `${slug}.meta.json`))) problems.push(`${slug}: no capture to leave out (${slug}.meta.json does not exist)`);
+  }
   for (const slug of slugs) {
+    if (left.includes(slug)) continue;
     const metaName = `${slug}.meta.json`;
     if (!isSlug(slug) || !existsSync(join(dir, metaName))) {
       problems.push(`${slug}: no capture (${metaName} does not exist)`);
@@ -203,6 +221,11 @@ export function planRemask({ dir, only = null, redact = redactSecrets }) {
     const textName = meta.textPath ? basename(meta.textPath) : null;
     if (bodyName) parts.push({ role: "body", name: bodyName, contentType: meta.contentType });
     if (textName && textName !== bodyName) parts.push({ role: "text", name: textName, contentType: "text/plain" });
+    for (const ext of CAPTURE_EXTS) {
+      const name = `${slug}.${ext}`;
+      if (ext === "meta.json" || parts.some((p) => p.name === name) || !existsSync(join(dir, name))) continue;
+      parts.push({ role: "other", name, contentType: EXT_TYPES[ext] });
+    }
     for (const part of parts) {
       const path = join(dir, part.name);
       if (!existsSync(path)) {
@@ -247,7 +270,7 @@ export function planRemask({ dir, only = null, redact = redactSecrets }) {
       if (c.frozen && !manifest.has(name)) problems.push(`${name} is a frozen copy's file that ${MANIFEST} does not record`);
     }
   }
-  return { captures, problems, manifest };
+  return { captures, problems, manifest, left };
 }
 
 /** Every citation by line, in root's decision-bearing files, of a line that changes: [{ capture, line, file, fileLine }]. */
@@ -275,6 +298,68 @@ export function citedChanges({ root, dir, changed }) {
 
 const git = (cwd, args) => spawnSync("git", ["--no-optional-locks", ...args], { cwd, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
 
+const HEX = /(?<![0-9A-Fa-f])[0-9a-f]{8,64}(?![0-9A-Fa-f])/g;
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * The pins that go stale (see the header): [{ file, fileLine, kind: "sha256" | "byte count", of: [capture file...] }].
+ * metaTexts: meta file name -> the text --apply writes for it, read in place of the file on disk.
+ */
+export function stalePins({ root, dir, changed, metaTexts = new Map() }) {
+  if (!changed.length) return [];
+  const where = relative(root, dir).split("\\").join("/");
+  const at = (name) => (where ? `${where}/${name}` : name);
+  const byPrefix = new Map();
+  const sizes = new Map(); // old byte count -> [{ name, slug, count }]
+  for (const c of changed) {
+    const rewritten = c.parts.filter((p) => p.count > 0);
+    for (const f of [...rewritten, { name: c.metaName, before: Buffer.from(c.metaText) }]) {
+      const hash = sha256(f.before);
+      byPrefix.set(hash.slice(0, 8), [...(byPrefix.get(hash.slice(0, 8)) ?? []), { hash, name: f.name }]);
+    }
+    for (const p of rewritten) {
+      if (p.bytes.length === p.before.length) continue;
+      const n = p.before.length;
+      const num = `(?:${[...new Set([String(n), n.toLocaleString("en-US")])].map(escapeRe).join("|")})(?![\\d,]|\\.\\d)`;
+      sizes.set(n, [
+        ...(sizes.get(n) ?? []),
+        {
+          name: p.name,
+          slug: new RegExp(`(?<![A-Za-z0-9-])${escapeRe(c.slug)}(?![A-Za-z0-9-])`),
+          count: new RegExp(`(?<![\\d,.])${num}[\\s-]?(?:bytes?|B)\\b|byteLength\\W{0,4}${num}`),
+        },
+      ]);
+    }
+  }
+  const listed = git(root, ["ls-files", "-z", "--cached", "--others", "--exclude-standard"]);
+  if (listed.status !== 0) throw new Error(`git ls-files failed: ${String(listed.stderr).trim()}`);
+  const out = [];
+  for (const file of [...new Set(listed.stdout.split("\0").filter(Boolean))].sort()) {
+    if (file.startsWith("logs/")) continue;
+    const name = where && file.startsWith(`${where}/`) ? file.slice(where.length + 1) : null;
+    if (name !== null && (name === MANIFEST || (!name.endsWith(".meta.json") && !name.endsWith(".md")))) continue;
+    const path = join(root, file);
+    let text = name !== null ? metaTexts.get(name) : undefined;
+    if (text === undefined) {
+      if (!existsSync(path) || !statSync(path).isFile() || statSync(path).size > 64 * 1024 * 1024) continue;
+      const bytes = readFileSync(path);
+      if (bytes.subarray(0, 8192).includes(0)) continue;
+      text = bytes.toString("utf8");
+    }
+    text.split("\n").forEach((line, i) => {
+      const hashOf = new Set();
+      for (const m of line.matchAll(HEX)) {
+        for (const h of byPrefix.get(m[0].slice(0, 8)) ?? []) if (h.hash.startsWith(m[0])) hashOf.add(at(h.name));
+      }
+      if (hashOf.size) out.push({ file, fileLine: i + 1, kind: "sha256", of: [...hashOf].sort() });
+      const numbers = new Set([...line.matchAll(/\d{1,3}(?:,\d{3})+|\d+/g)].map((m) => Number(m[0].replaceAll(",", ""))));
+      const countOf = [...numbers].flatMap((k) => sizes.get(k) ?? []).filter((s) => s.slug.test(line) && s.count.test(line)).map((s) => at(s.name));
+      if (countOf.length) out.push({ file, fileLine: i + 1, kind: "byte count", of: [...new Set(countOf)].sort() });
+    });
+  }
+  return out;
+}
+
 /** Write through a temp file beside the target and a rename: a reader never sees half a file. */
 function writeAtomic(path, bytes) {
   const tmp = join(resolve(path, ".."), `.${basename(path)}.remask-${process.pid}.tmp`);
@@ -291,7 +376,7 @@ const extOf = (name) => name.slice(name.lastIndexOf(".") + 1);
 const plural = (k, one, many = `${one}s`) => `${k} ${k === 1 ? one : many}`;
 
 /** The summary's lines, from a plan. Kinds and counts only: no address, no domain. */
-function summarize(plan, verb, cited, citedVerb) {
+function summarize(plan, verb, cited, citedVerb, pins = []) {
   const changed = plan.captures.filter((c) => c.changed);
   const parts = changed.flatMap((c) => c.parts.filter((p) => p.count > 0));
   const byExt = new Map();
@@ -316,9 +401,11 @@ function summarize(plan, verb, cited, citedVerb) {
       if (!p) return null;
       return p.count > 0 ? `${role} +${p.addresses} (${p.name})` : `${role} unchanged`;
     };
-    lines.push(`  ${c.slug}${c.frozen ? " (frozen)" : ""}: ${[say("body"), say("text")].filter(Boolean).join(", ")}`);
+    const others = c.parts.filter((p) => p.role === "other" && p.count > 0).map((p) => `other +${p.addresses} (${p.name})`);
+    lines.push(`  ${c.slug}${c.frozen ? " (frozen)" : ""}: ${[say("body"), say("text"), ...others].filter(Boolean).join(", ")}`);
   }
   lines.push(`unchanged: ${plural(plan.captures.length - changed.length, "capture")}`);
+  if (plan.left?.length) lines.push(`left out by --except: ${plural(plan.left.length, "capture")} (${plan.left.join(", ")})`);
   lines.push(
     `${verb}: ${plural(changed.length, "capture")}, ${plural(parts.length, "file")}` +
       `${exts.length ? ` (${exts.map((e) => `${byExt.get(e)} .${e}`).join(", ")})` : ""}; ${plural(addresses, "address", "addresses")} masked`,
@@ -326,28 +413,34 @@ function summarize(plan, verb, cited, citedVerb) {
   lines.push(`  by domain kind: ${KINDS.map((k) => `${k} ${byKind.get(k)}`).join(", ")}`);
   lines.push(`  frozen copies among them: ${plural(frozen.length, "capture")} (${plural(frozenFiles, "file")}; their lines in ${MANIFEST}, metas included)`);
   lines.push(`  asset names masked: ${assetNames}`);
+  const unnamed = parts.filter((p) => p.role === "other");
+  lines.push(`  files no meta path names, masked as well: ${unnamed.length} (${plural(unnamed.reduce((s, p) => s + p.addresses, 0), "address", "addresses")})`);
   if (other) lines.push(`  secret-shaped strings masked as well: ${other}`);
   lines.push(`  cited lines that ${citedVerb}: ${new Set(cited.map((h) => `${h.capture}:${h.line}`)).size} (${plural(cited.length, "citation")})`);
   for (const h of cited) lines.push(`    ${h.capture}:${h.line} → cited by ${h.file}:${h.fileLine}`);
+  lines.push(`  pins that go stale: ${pins.length} (a hash or byte count of the bytes before the mask)`);
+  for (const p of pins) lines.push(`    ${p.file}:${p.fileLine} → old ${p.kind} of ${p.of.join(", ")}`);
   return lines;
 }
 
 /** The command line. io: { log, error }, and redact, the masker (redactSecrets; a test stands in a faulty one). */
 export function main(argv, { log = console.log, error = console.error, redact = redactSecrets } = {}) {
   const usage =
-    "usage: node scripts/remask-captures.mjs [--dry-run] [--rendered <dir>] [--only <slug>...]\n" +
-    "       node scripts/remask-captures.mjs --apply --date YYYY-MM-DD [--rendered <dir>] [--only <slug>...]";
+    "usage: node scripts/remask-captures.mjs [--dry-run] [--rendered <dir>] [--only <slug>...] [--except <slug>...]\n" +
+    "       node scripts/remask-captures.mjs --apply --date YYYY-MM-DD [--rendered <dir>] [--only <slug>...] [--except <slug>...]";
   let args;
   try {
     args = parseArgs({
       args: argv,
       allowPositionals: true,
+      tokens: true,
       options: {
         "dry-run": { type: "boolean" },
         apply: { type: "boolean" },
         date: { type: "string" },
         rendered: { type: "string" },
         only: { type: "string", multiple: true },
+        except: { type: "string", multiple: true },
       },
     });
   } catch (err) {
@@ -355,7 +448,17 @@ export function main(argv, { log = console.log, error = console.error, redact = 
     return 1;
   }
   const v = args.values;
-  if ((v.apply && v["dry-run"]) || (args.positionals.length && !v.only)) {
+  // A positional slug belongs to the --only or --except right before it.
+  const lists = { only: [], except: [] };
+  let last = null;
+  let stray = false;
+  for (const t of args.tokens) {
+    if (t.kind === "option") last = t.name in lists ? t.name : null;
+    if (t.kind === "option" && last) lists[last].push(t.value);
+    if (t.kind === "positional" && last) lists[last].push(t.value);
+    else if (t.kind === "positional") stray = true;
+  }
+  if ((v.apply && v["dry-run"]) || stray) {
     error(usage);
     return 1;
   }
@@ -370,7 +473,7 @@ export function main(argv, { log = console.log, error = console.error, redact = 
     return 1;
   }
   const root = top.stdout.trim();
-  const plan = planRemask({ dir, only: v.only ? [...v.only, ...args.positionals] : null, redact });
+  const plan = planRemask({ dir, only: lists.only.length ? lists.only : null, except: lists.except, redact });
   const changed = plan.captures.filter((c) => c.changed);
   const metaTexts = new Map(changed.map((c) => [c.slug, remaskedMetaText(c, v.date ?? "YYYY-MM-DD")]));
 
@@ -402,11 +505,12 @@ export function main(argv, { log = console.log, error = console.error, redact = 
     lineMap.set(c.metaName, changedLines(c.metaText, metaTexts.get(c.slug)));
   }
   const cited = citedChanges({ root, dir, changed: lineMap });
+  const pins = stalePins({ root, dir, changed, metaTexts: new Map(changed.map((c) => [c.metaName, metaTexts.get(c.slug)])) });
   const where = relative(root, dir).split("\\").join("/") || ".";
   log(`remask-captures: ${v.apply ? "apply" : "dry run"} over ${where} (${plural(plan.captures.length, "capture")})`);
 
   if (!v.apply) {
-    for (const line of summarize(plan, "would change", cited, "would change")) log(line);
+    for (const line of summarize(plan, "would change", cited, "would change", pins)) log(line);
     return changed.length ? 3 : 0;
   }
   for (const w of writes) writeAtomic(join(dir, w.name), w.bytes);
@@ -421,7 +525,7 @@ export function main(argv, { log = console.log, error = console.error, redact = 
       .join("\n");
     writeAtomic(path, Buffer.from(text));
   }
-  for (const line of summarize(plan, "changed", cited, "changed")) log(line);
+  for (const line of summarize(plan, "changed", cited, "changed", pins)) log(line);
   return 0;
 }
 

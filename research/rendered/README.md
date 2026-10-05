@@ -82,10 +82,12 @@ the second and third of those. To move one:
    and a person's address is personal information (ruling R3,
    `research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md`). The masking runs when a capture is
    written, and the one-time re-mask of 5.10.2026 (`node scripts/remask-captures.mjs --apply`) masked the
-   captures stored before it in place, frozen copies included, and rewrote each one's meta (`sha256`,
-   `byteLength`, `redacted`, and `remasked: { on, addresses, fold }` saying why these bytes differ from the
-   fetch) and `FROZEN.sha256`; git history keeps every earlier byte. An address whose @ is itself encoded
-   (`%40`, a script escape, Cloudflare's email protection) is not found.
+   captures stored before it in place, frozen copies included, with a capture's files no meta path names (the
+   earlier fetch beside a failed one, a text extracted by hand beside a PDF), and rewrote each one's meta
+   (`redacted`, `remasked: { on, addresses, fold }` saying why these bytes differ from the fetch, and `sha256`
+   and `byteLength` where the body changed and they were its hash and size) and `FROZEN.sha256`; git history
+   keeps every earlier byte. An address whose @ is itself encoded (`%40`, a script escape, Cloudflare's email
+   protection) is not found.
 3. **Answer the specific question the research file asked**, not a question the page happens to
    answer. Each entry in `urls.txt` carries the sentence that put it there, quoted from the file
    that wants it.

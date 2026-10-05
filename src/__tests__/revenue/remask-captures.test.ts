@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
@@ -403,15 +403,222 @@ describe("--apply", () => {
   });
 });
 
+describe("review fixes (tick 49): unclaimed files, stale pins, --except, the documented refusals", () => {
+  const commit = (f: Fixture, message: string) => {
+    f.g("add", "-A");
+    f.g("commit", "-q", "-m", message);
+  };
+  const w = (f: Fixture, name: string, bytes: Buffer | string) => writeFileSync(join(f.dir, name), bytes);
+
+  it("masks a capture's files that no meta path names (an earlier fetch beside a failed one, a hand extraction), leaving sha256 and byteLength", () => {
+    const f = fixture({ git: false });
+    // A failed fetch: the meta names no body and no text, and the earlier fetch's html and text still sit beside it.
+    const OLD_HTML = `<html>\n<p>Reports: ${GOV}</p>\n</html>\n`;
+    const OLD_TEXT = `Reports\n${GOV}\nend\n`;
+    const old = buildMeta({
+      url: "https://site.test/old",
+      slug: "old",
+      fetchedAt: "2026-09-28T13:15:46.900Z",
+      status: 503,
+      contentType: "text/html; charset=utf-8",
+      error: "HTTP 503 Service Unavailable",
+      previousMeta: { sha256: sha(OLD_HTML) },
+    });
+    w(f, "old.html", OLD_HTML);
+    w(f, "old.txt", OLD_TEXT);
+    w(f, "old.meta.json", metaText(old));
+    // Binary files no meta names: a .pdf and a .bin are left as they are, whatever they hold.
+    const OLD_PDF = Buffer.concat([Buffer.from(`%PDF-1.4\n/Author (${GOV})\n`), Buffer.from([0, 255])]);
+    const OLD_BIN = Buffer.concat([Buffer.from([0, 1, 2]), Buffer.from(`var a="${GOV}";\n`)]);
+    w(f, "old.pdf", OLD_PDF);
+    w(f, "old.bin", OLD_BIN);
+    // A PDF whose meta has no textPath, and a text extracted by hand beside it.
+    const scanText = `Guidance\nWrite to ${ORG}\n`;
+    w(f, "scan.pdf", PDF);
+    w(f, "scan.txt", scanText);
+    w(f, "scan.meta.json", metaText(metaFor("scan", PDF, "application/pdf", "pdf", false)));
+    // urls.txt is no capture: an address in it is not this script's to mask.
+    w(f, "urls.txt", `# fixture list, questions to ${FREE}\nhttps://site.test/page\tpage\n`);
+    for (const a of [["init", "-q"], ["add", "-A"], ["commit", "-q", "-m", "fixtures"]]) f.g(...a);
+    const before = snapshot(f.dir);
+
+    const dry = run(["--dry-run", ...rendered(f), "--only", "old", "scan"]);
+    expect(dry.code, dry.text).toBe(3);
+    // In freeze-capture's CAPTURE_EXTS order.
+    expect(dry.text).toMatch(/^ {2}old: other \+1 \(old\.txt\), other \+1 \(old\.html\)$/m);
+    expect(dry.text).toMatch(/^ {2}scan: body unchanged, other \+1 \(scan\.txt\)$/m);
+    expect(dry.text).toContain("would change: 2 captures, 3 files (1 .html, 2 .txt); 3 addresses masked");
+    expect(dry.text).toContain("files no meta path names, masked as well: 3 (3 addresses)");
+    // The failed fetch's meta keeps previousSha256, the hash of the html as it was: a pin the re-mask makes stale.
+    expect(dry.text).toMatch(/^ {4}research\/rendered\/old\.meta\.json:\d+ → old sha256 of research\/rendered\/old\.html$/m);
+    expect(snapshot(f.dir)).toEqual(before);
+
+    const { code, text } = run(["--apply", "--date", "2026-10-05", ...rendered(f)]);
+    expect(code, text).toBe(0);
+    expect(readFileSync(join(f.dir, "old.html"), "utf8")).toBe(OLD_HTML.replace(GOV, "[redacted:email]@agency.gov"));
+    expect(readFileSync(join(f.dir, "old.txt"), "utf8")).toBe(OLD_TEXT.replace(GOV, "[redacted:email]@agency.gov"));
+    expect(readFileSync(join(f.dir, "scan.txt"), "utf8")).toBe(scanText.replace(ORG, "[redacted:email]@physics.uni.edu"));
+    expect(unchanged({ ...f, files: before }, ["scan.pdf", "urls.txt", "old.pdf", "old.bin"])).toEqual([]);
+    const oldMeta = meta(f, "old");
+    expect([oldMeta.sha256, oldMeta.byteLength, oldMeta.previousSha256]).toEqual([null, 0, sha(OLD_HTML)]);
+    expect([oldMeta.redacted, oldMeta.remasked]).toEqual([2, { on: "2026-10-05", addresses: 2, fold: FOLD }]);
+    const scanMeta = meta(f, "scan");
+    expect([scanMeta.sha256, scanMeta.byteLength, scanMeta.redacted, scanMeta.remasked.addresses]).toEqual([sha(PDF), PDF.length, 1, 1]);
+    const { redacted: _r, remasked: _m, ...oldRest } = oldMeta;
+    expect(oldRest).toEqual(old);
+    commit(f, "remasked");
+    expect(run(["--dry-run", ...rendered(f)]).code).toBe(0);
+  });
+
+  it("lists the hash and byte-count pins the rewrite makes stale, outside the captures and logs/", () => {
+    const f = fixture();
+    const apiOld = sha(f.files.get("api.json") as Buffer);
+    const quietSha = sha(QUIET_HTML);
+    mkdirSync(join(f.root, "logs"), { recursive: true });
+    writeFileSync(join(f.root, "logs/2026-09-30-old.md"), `history: api.json was ${apiOld.slice(0, 12)}\n`);
+    writeFileSync(
+      join(f.root, "research/measurements/pins.md"),
+      [
+        "# Pins",
+        `The api capture, sha256 \`${apiOld.slice(0, 8)}…\`.`,
+        `\`page.html\`: ${Buffer.byteLength(HTML)} bytes, one page.`,
+        `An unrelated ${apiOld.slice(0, 7)} (too short) and the quiet copy's ${quietSha.slice(0, 12)} (unchanged).`,
+        `A longer hex that only starts the same way: ${apiOld.slice(0, 8)}0123456789.`,
+        "",
+      ].join("\n"),
+    );
+    const { code, text } = run(["--dry-run", ...rendered(f)]);
+    expect(code, text).toBe(3);
+    expect(text).toContain("pins that go stale: 2");
+    expect(text).toMatch(/^ {4}research\/measurements\/pins\.md:2 → old sha256 of research\/rendered\/api\.json$/m);
+    expect(text).toMatch(/^ {4}research\/measurements\/pins\.md:3 → old byte count of research\/rendered\/page\.html$/m);
+    expect(text).not.toContain("logs/");
+    expect(text).not.toContain("pins.md:4");
+    expect(text).not.toContain("pins.md:5");
+  });
+
+  it("leaves out the --except captures, refuses an unknown one, and counts a slug given twice once", () => {
+    const f = fixture();
+    expect(run(["--dry-run", ...rendered(f), "--only", "api", "api"]).text).toContain("would change: 1 capture, 1 file (1 .json); 2 addresses masked");
+    expect(run(["--dry-run", ...rendered(f), "--except", "no-such-capture"]).code).toBe(1);
+    const dry = run(["--dry-run", ...rendered(f), "--except", "page-2026-09-28", "doc"]);
+    expect(dry.code, dry.text).toBe(3);
+    expect(dry.text).toContain("left out by --except: 2 captures (doc, page-2026-09-28)");
+    expect(dry.text).toContain("would change: 3 captures, 4 files (1 .html, 1 .txt, 2 .json); 7 addresses masked");
+    expect(run(["--dry-run", ...rendered(f), "--only", "api", "--except", "api"]).code).toBe(0);
+
+    const { code, text } = run(["--apply", "--date", "2026-10-05", ...rendered(f), "--except", "page-2026-09-28"]);
+    expect(code, text).toBe(0);
+    expect(unchanged(f, ["page-2026-09-28.html", "page-2026-09-28.txt", "page-2026-09-28.meta.json", MANIFEST])).toEqual([]);
+    expect(readFileSync(join(f.dir, "page.html"), "utf8")).not.toContain(FREE);
+  });
+
+  it("refuses a meta it would rewrite that is not written as render-watch writes one (four spaces), writing nothing", () => {
+    const f = fixture();
+    w(f, "api.meta.json", `${JSON.stringify(meta(f, "api"), null, 4)}\n`);
+    w(f, "quiet.meta.json", `${JSON.stringify(meta(f, "quiet"), null, 4)}\n`);
+    commit(f, "four spaces");
+    const was = snapshot(f.dir);
+    for (const argv of [["--dry-run"], ["--apply", "--date", "2026-10-05"]]) {
+      const { code, text } = run([...argv, ...rendered(f)]);
+      expect(code).toBe(1);
+      expect(text).toContain("api.meta.json is not written as render-watch writes a meta");
+      // A capture with nothing to mask is not rewritten, so its meta's indentation is not this script's business.
+      expect(text).not.toContain("quiet.meta.json");
+    }
+    expect(snapshot(f.dir)).toEqual(was);
+  });
+
+  it("masks a file named by both bodyPath and textPath once, as the body", () => {
+    const f = fixture();
+    const PLAIN = `A plain page\nmail ${FREE} here\n`;
+    w(f, "plain.txt", PLAIN);
+    w(f, "plain.meta.json", metaText(metaFor("plain", Buffer.from(PLAIN), "text/plain; charset=utf-8", "txt", true)));
+    commit(f, "a text/plain capture");
+    expect(meta(f, "plain").bodyPath).toBe(meta(f, "plain").textPath);
+    const dry = run(["--dry-run", ...rendered(f), "--only", "plain"]);
+    expect(dry.text).toMatch(/^ {2}plain: body \+1 \(plain\.txt\)$/m);
+    expect(dry.text).toContain("would change: 1 capture, 1 file (1 .txt); 1 address masked");
+    expect(run(["--apply", "--date", "2026-10-05", ...rendered(f), "--only", "plain"]).code).toBe(0);
+    const m = meta(f, "plain");
+    expect([m.redacted, m.remasked.addresses]).toEqual([1, 1]);
+    expect(m.sha256).toBe(sha(readFileSync(join(f.dir, "plain.txt"))));
+    expect(readFileSync(join(f.dir, "plain.txt"), "utf8")).toBe(PLAIN.replace(FREE, "[redacted:email]@gmail.com"));
+  });
+
+  it("refuses a frozen copy's file that FROZEN.sha256 does not record", () => {
+    const f = fixture();
+    const kept = (f.files.get(MANIFEST) as Buffer).toString("utf8").split("\n").filter((l) => !l.endsWith("  page-2026-09-28.txt"));
+    w(f, MANIFEST, kept.join("\n"));
+    commit(f, "a frozen file unrecorded");
+    const was = snapshot(f.dir);
+    for (const argv of [["--dry-run"], ["--apply", "--date", "2026-10-05"]]) {
+      const { code, text } = run([...argv, ...rendered(f)]);
+      expect(code).toBe(1);
+      expect(text).toContain("page-2026-09-28.txt is a frozen copy's file that FROZEN.sha256 does not record");
+    }
+    expect(snapshot(f.dir)).toEqual(was);
+  });
+
+  it("checks a citation written without an extension against the .txt and the .html", () => {
+    const f = fixture();
+    writeFileSync(join(f.root, "research/measurements/bare.md"), "The page, research/rendered/page-2026-09-28 line 5.\n");
+    const { text } = run(["--dry-run", ...rendered(f)]);
+    // Line 5 of the text is its last line, unchanged; line 5 of the html holds the lab's address.
+    expect(text).toContain("research/rendered/page-2026-09-28.html:5 → cited by research/measurements/bare.md:1");
+    expect(text).not.toContain("page-2026-09-28.txt:5 →");
+  });
+
+  it("re-masks a re-masked capture in place: remasked replaced where it stood, redacted grown again", () => {
+    const f = fixture();
+    expect(run(["--apply", "--date", "2026-10-05", ...rendered(f)]).code).toBe(0);
+    // A new address in doc.txt (the PDF's text), on a line that had none.
+    w(f, "doc.txt", readFileSync(join(f.dir, "doc.txt"), "utf8").replace("Page 2", `Page 2 ${LIST}`));
+    commit(f, "remasked, then a new address");
+    expect(run(["--apply", "--date", "2026-10-06", ...rendered(f), "--only", "doc"]).code).toBe(0);
+    const m = meta(f, "doc");
+    expect([m.redacted, m.remasked]).toEqual([2, { on: "2026-10-06", addresses: 1, fold: FOLD }]);
+    const keys = Object.keys(m);
+    expect(keys.slice(keys.indexOf("truncated"), keys.indexOf("truncated") + 4)).toEqual(["truncated", "redacted", "remasked", "error"]);
+  });
+
+  it("counts a secret-shaped string in redacted but not in remasked.addresses", () => {
+    const f = fixture();
+    const key = ["sk", "live", "0123456789abcdefXYZ"].join("_");
+    const S = `Secrets page\nkey ${key}\nmail ${FREE}\n`;
+    w(f, "sec.txt", S);
+    w(f, "sec.meta.json", metaText(metaFor("sec", Buffer.from(S), "text/plain", "txt", true)));
+    commit(f, "a secret in an old capture");
+    const dry = run(["--dry-run", ...rendered(f), "--only", "sec"]);
+    expect(dry.text).toContain("1 address masked");
+    expect(dry.text).toContain("secret-shaped strings masked as well: 1");
+    expect(run(["--apply", "--date", "2026-10-05", ...rendered(f), "--only", "sec"]).code).toBe(0);
+    const m = meta(f, "sec");
+    expect([m.redacted, m.remasked.addresses]).toEqual([2, 1]);
+    expect(readFileSync(join(f.dir, "sec.txt"), "utf8")).not.toContain(key);
+  });
+});
+
 describe("the real research/rendered, dry run", () => {
   it("runs, writes nothing, and masks no asset name", () => {
     const status = () => spawnSync("git", ["status", "--porcelain", "--untracked-files=all", "--", "research/rendered"], { encoding: "utf8" }).stdout;
+    // git status alone would not see a write to a file that is already modified: every file's size and mtime too.
+    const stamps = () => readdirSync("research/rendered").map((name) => {
+      const st = statSync(join("research/rendered", name));
+      return `${name} ${st.size} ${st.mtimeMs}`;
+    });
+    // Not asserted empty: the main thread runs the suite after --apply and before its commit, when these files are
+    // legitimately modified; "writes nothing" is that the state after equals the state before.
     const was = status();
+    const wasStamps = stamps();
     expect(existsSync("research/rendered/FROZEN.sha256")).toBe(true);
     const { code, text } = run(["--dry-run"]);
     expect([0, 3], text.slice(-2000)).toContain(code);
     expect(status()).toBe(was);
+    expect(stamps()).toEqual(wasStamps);
     expect(text).toContain("asset names masked: 0");
+    expect(text).toMatch(/^ {2}files no meta path names, masked as well: \d+ \(\d+ address(es)?\)$/m);
+    expect(text).toMatch(/^ {2}pins that go stale: \d+ /m);
     expect(text).not.toMatch(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/);
   }, 300_000);
 });
