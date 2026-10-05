@@ -569,7 +569,7 @@ describe("review fixes (tick 49): unclaimed files, stale pins, --except, the doc
     expect(text).not.toContain("page-2026-09-28.txt:5 →");
   });
 
-  it("re-masks a re-masked capture in place: remasked replaced where it stood, redacted grown again", () => {
+  it("re-masks a re-masked capture in place: one remasked where it stood, its addresses accumulated, redacted grown again", () => {
     const f = fixture();
     expect(run(["--apply", "--date", "2026-10-05", ...rendered(f)]).code).toBe(0);
     // A new address in doc.txt (the PDF's text), on a line that had none.
@@ -577,7 +577,8 @@ describe("review fixes (tick 49): unclaimed files, stale pins, --except, the doc
     commit(f, "remasked, then a new address");
     expect(run(["--apply", "--date", "2026-10-06", ...rendered(f), "--only", "doc"]).code).toBe(0);
     const m = meta(f, "doc");
-    expect([m.redacted, m.remasked]).toEqual([2, { on: "2026-10-06", addresses: 1, fold: FOLD }]);
+    // 1 address on the first run, 1 now: the block keeps the sum and takes the new date.
+    expect([m.redacted, m.remasked]).toEqual([2, { on: "2026-10-06", addresses: 2, fold: FOLD }]);
     const keys = Object.keys(m);
     expect(keys.slice(keys.indexOf("truncated"), keys.indexOf("truncated") + 4)).toEqual(["truncated", "redacted", "remasked", "error"]);
   });
@@ -596,6 +597,112 @@ describe("review fixes (tick 49): unclaimed files, stale pins, --except, the doc
     const m = meta(f, "sec");
     expect([m.redacted, m.remasked.addresses]).toEqual([2, 1]);
     expect(readFileSync(join(f.dir, "sec.txt"), "utf8")).not.toContain(key);
+  });
+});
+
+describe("tick 50: the encoded forms on captures re-masked on 5.10, and remasked accumulated", () => {
+  const commit = (f: Fixture, message: string) => {
+    f.g("add", "-A");
+    f.g("commit", "-q", "-m", message);
+  };
+  const w = (f: Fixture, name: string, bytes: Buffer | string) => writeFileSync(join(f.dir, name), bytes);
+  // Built at run time like every address here: one with its @ as %40, one as Cloudflare's hex (key, then XOR).
+  const PCT = ["%", "40"].join("");
+  const ENC = ["sam.person", "gmail.com"].join(PCT); // free-mail provider
+  const cf = (address: string, key = 0x42) =>
+    [key, ...Buffer.from(address, "utf8").map((b) => b ^ key)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  const CF = cf(at("press", "agency.gov")); // government
+  const encode = (html: string) =>
+    html
+      .replace("<h1>Contact</h1>", `<h1>Contact <a href="/r?u=${ENC}">us</a></h1>`)
+      .replace("<p>or the lab,", `<p><span class="__cf_email__" data-cfemail="${CF}">[email&#160;protected]</span> or the lab,`);
+
+  it("counts them by domain kind in a dry run, then re-masks: remasked keeps one block, its addresses the sum, on the new date", () => {
+    const f = fixture();
+    expect(run(["--apply", "--date", "2026-10-05", ...rendered(f)]).code).toBe(0);
+    // A capture and its frozen copy as the 5.10 run left them, with the encoded forms it could not see; FROZEN.sha256
+    // records the frozen copy's bytes (it held them before the fold, and the re-mask kept its line in step).
+    // Each meta's sha256 and byteLength are of its stored body, as render-watch and freeze-capture write them.
+    for (const slug of ["page", "page-2026-09-28"]) {
+      const body = Buffer.from(encode(readFileSync(join(f.dir, `${slug}.html`), "utf8")));
+      w(f, `${slug}.html`, body);
+      w(f, `${slug}.meta.json`, metaText({ ...meta(f, slug), sha256: sha(body), byteLength: body.length }));
+    }
+    let recorded = readFileSync(join(f.dir, MANIFEST), "utf8");
+    for (const name of ["page-2026-09-28.html", "page-2026-09-28.meta.json"]) {
+      recorded = recorded.replace(new RegExp(`^[0-9a-f]{64}(  ${name.replaceAll(".", "\\.")})$`, "m"), `${sha(readFileSync(join(f.dir, name)))}$1`);
+    }
+    w(f, MANIFEST, recorded);
+    commit(f, "the encoded forms the 5.10 run left");
+    expect(checkManifest(f.dir)).toEqual([]);
+    const before = snapshot(f.dir);
+
+    const dry = run(["--dry-run", ...rendered(f)]);
+    expect(dry.code).toBe(3);
+    expect(dry.text).toContain("would change: 2 captures, 2 files (2 .html); 4 addresses masked");
+    expect(dry.text).toContain("by domain kind: free-mail provider 2, organisation or university 0, mailing-list host 0, government 2, placeholder 0");
+    expect(dry.text).toMatch(/^ {2}page: body \+2 \(page\.html\), text unchanged$/m);
+    expect(dry.text).toContain("frozen copies among them: 1 capture (1 file;");
+    expect(dry.text).not.toMatch(/[A-Za-z0-9._%+-]+(?:@|%40)[A-Za-z0-9.-]+\.[a-z]{2,}/);
+    expect(dry.text).not.toContain("sam.person");
+    expect(dry.text).not.toContain(CF);
+    expect(snapshot(f.dir)).toEqual(before);
+
+    expect(run(["--apply", "--date", "2026-10-06", ...rendered(f)]).code).toBe(0);
+    const html = readFileSync(join(f.dir, "page.html"), "utf8");
+    expect(html).toContain(`<a href="/r?u=[redacted:email]${PCT}gmail.com">`);
+    expect(html).toContain('data-cfemail="[redacted:email]@agency.gov"');
+    expect(html).not.toContain("sam.person");
+    expect(html).not.toContain(CF);
+    for (const slug of ["page", "page-2026-09-28"]) {
+      const m = meta(f, slug);
+      // 4 addresses on 5.10 (2 in the body, 2 in the text), 2 more now: one remasked block, on the new date.
+      expect([m.redacted, m.remasked], slug).toEqual([6, { on: "2026-10-06", addresses: 6, fold: FOLD }]);
+      expect(m.sha256, slug).toBe(sha(readFileSync(join(f.dir, `${slug}.html`))));
+      expect(m.byteLength, slug).toBe(readFileSync(join(f.dir, `${slug}.html`)).length);
+      const keys = Object.keys(m);
+      expect(keys.filter((k) => k === "remasked").length).toBe(1);
+      expect(keys.slice(keys.indexOf("truncated"), keys.indexOf("truncated") + 4)).toEqual(["truncated", "redacted", "remasked", "error"]);
+    }
+    expect(Object.keys(meta(f, "page-2026-09-28")).at(-1)).toBe("frozen");
+    // FROZEN.sha256: the frozen copy's html and meta lines move to the new bytes; every other line stays.
+    expect(checkManifest(f.dir)).toEqual([]);
+    const oldLines = (before.get(MANIFEST) as Buffer).toString("utf8").split("\n");
+    const newLines = readFileSync(join(f.dir, MANIFEST), "utf8").split("\n");
+    expect(newLines.filter((l, i) => l !== oldLines[i]).map((l) => l.slice(66))).toEqual(["page-2026-09-28.html", "page-2026-09-28.meta.json"]);
+    // A third run changes nothing.
+    commit(f, "re-masked the encoded forms");
+    expect(run(["--dry-run", ...rendered(f)]).code).toBe(0);
+  });
+
+  it("counts a mask whose @ is a script escape under its domain's kind, never as a mask with no domain (review fix)", () => {
+    const f = fixture();
+    const esc = `<html><body>\n<script>var a = "${["press", "agency.gov"].join("\\u0040")}", b = '${["desk", "agency.gov"].join("\\x40")}';</script>\n</body></html>\n`;
+    w(f, "esc.html", esc);
+    w(f, "esc.meta.json", metaText(metaFor("esc", Buffer.from(esc), "text/html", "html", false)));
+    commit(f, "script escapes");
+    const { code, text } = run(["--dry-run", ...rendered(f), "--only", "esc"]);
+    expect(code).toBe(3);
+    expect(text).toContain("would change: 1 capture, 1 file (1 .html); 2 addresses masked");
+    expect(text).toContain("by domain kind: free-mail provider 0, organisation or university 0, mailing-list host 0, government 2, placeholder 0");
+    expect(text).not.toContain("no domain kept");
+    expect(text).not.toMatch(/press|desk/);
+  });
+
+  it("counts a Cloudflare value that is not one address in addresses, and says it kept no domain", () => {
+    const f = fixture();
+    const odd = `<html><body>\n<span data-cfemail="${CF}0">x</span>\n</body></html>\n`;
+    w(f, "odd.html", odd);
+    w(f, "odd.meta.json", metaText(metaFor("odd", Buffer.from(odd), "text/html", "html", false)));
+    commit(f, "an odd hex");
+    const { code, text } = run(["--dry-run", ...rendered(f), "--only", "odd"]);
+    expect(code).toBe(3);
+    expect(text).toContain("would change: 1 capture, 1 file (1 .html); 1 address masked");
+    expect(text).toContain("  no domain kept (a Cloudflare value that is not one address): 1");
+    expect(text).toContain("by domain kind: free-mail provider 0, organisation or university 0, mailing-list host 0, government 0, placeholder 0");
+    expect(run(["--apply", "--date", "2026-10-06", ...rendered(f), "--only", "odd"]).code).toBe(0);
+    expect(readFileSync(join(f.dir, "odd.html"), "utf8")).toBe(odd.replace(`${CF}0`, "[redacted:email]"));
+    expect(meta(f, "odd").remasked).toEqual({ on: "2026-10-06", addresses: 1, fold: FOLD });
   });
 });
 
@@ -619,6 +726,7 @@ describe("the real research/rendered, dry run", () => {
     expect(text).toContain("asset names masked: 0");
     expect(text).toMatch(/^ {2}files no meta path names, masked as well: \d+ \(\d+ address(es)?\)$/m);
     expect(text).toMatch(/^ {2}pins that go stale: \d+ /m);
-    expect(text).not.toMatch(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/);
+    // No address in any form the mask reads: a plain @, %40 or a script escape.
+    expect(text).not.toMatch(/[A-Za-z0-9._%+-]+(?:@|%40|\\u0040|\\x40)[A-Za-z0-9.-]+\.[a-z]{2,}/i);
   }, 300_000);
 });
