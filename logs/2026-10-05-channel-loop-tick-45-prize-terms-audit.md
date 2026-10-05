@@ -260,3 +260,47 @@
 - כתיבת הבדיקה: כ-20%.
 - הרצות הבדיקות, verify ו-mutate: כ-10%.
 - שליפות, ה-clone וה-grep: כ-5%.
+
+## תיקוני הבודק (5.10, סבב 45)
+
+### 1. מה המשתמש ביקש
+בודק עוין (Opus) מצא שישה פגמים בשני ה-commits של החלת הפסיקות (7befaa6 ו-000c5c5). ה-main thread ביקש ממני, בתפקיד מתקן (Opus), לתקן את כולם בדיוק כפי שהבודק ניסח, בדיקה קודם היכן שיש בדיקה. בלי push, בלי stash ובלי לגעת ב-CHECKPOINT, CHANNEL_LOOP, FABLE_QUEUE, MISSION, CLAUDE.md ובקובצי ai-allowed-events.
+
+### 2. הפעולות המרכזיות שביצעתי
+- **פגם 1 (mozilladatacollective.com).** ההערה ייחסה למאמת סיבה שגויה: לא חיפוש קוד ב-GitHub. ברשומה המאומתת כתוב "Not exhaustive-negative: the platform operator's terms very likely exist, but no GitHub file cites them." ההערה מצטטת את זה עכשיו, אומרת שלפי R1 התווית נשענת על החיפוש המתועד, שלא מצא כלום, ומסמנת את קיום התנאים של DrivenData כהסקה ("(inference)").
+- **פגם 2 (פסקת Verdicts בהערת הביקורת, שורה 7).** ההגדרה של exhaustive-negative היא עכשיו זו של R1: מ-5.10 הרשומה מראה חיפוש בכל מאגרי ה-declarations של Open Terms Archive (הרשימה המלאה של הארגון), ב-tosdr/tosdr-snapshots, בנוכחות של האתר ב-GitHub וב-research/ ו-docs/ של הריפו. "the verified record claims the label" נמחק, ומחלקת ההערה הפשוטה ריקה אחרי R1.
+- **פגם 3.** בשלוש ההערות (health-data-hub.fr, ijcai.org, mozilladatacollective.com) הצירוף "all 17 declarations repos of the organisation's listing" הוחלף ב-"17 of the organisation's 18; template-declarations (a template, only Open Terms Archive.json) checked 5.10 at 3332fbe: no match". גם הערת הקוד בבדיקה תוקנה. לא שלפתי מחדש: הקריאה של הבודק רשומה בהנחיה.
+- **פגם 4 (health-data-hub.fr).** במקום "the eight repositories ... read" ההערה אומרת עכשיו: חיפוש מאגרים `'"health-data-hub.fr" in:readme'`, 8 תוצאות, ומתוכן נקראו ה-README של שישה (boas-explorer, AllergenChipChallenge, datahub-healthdcat-ap-exporter, meetup-hdh-22--2024, OMOP_HDH ו-depot_git).
+- **פגם 5.** הבדיקה משווה עכשיו את סעיף הפסיקות, שורה בשורה מהכותרת ועד הסעיף הבא, לטקסט ששמור בבדיקה (`RULINGS_SECTION`).
+- **פגם 6.** הבדיקה מחשבת את מספר ה-URLs והאתרים של כל קבוצת רינדור מה-fixture, מהפסיקות ומשורות ה-robots- הפעילות ב-`urls.txt`. היא משווה כל קבוצה לכותרת שלה ולרשימת האתרים שלה, ומוודאת ששורת ה-Total מחברת את אותן קבוצות באותו סדר. הספירה: 12/11, 40/9, 29/21, 19/3 ו-1/1, כמו אצל הבודק.
+
+### 3. קבצים/מערכות ששונו
+`research/channel-loop/terms-verdicts.json` (שלוש הערות), `research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md` (שורה 7), `src/__tests__/revenue/prize-terms-audit.test.ts`, והיומן הזה.
+
+### 4. החלטות והנחות משמעותיות
+- את הצירוף של פגם 3 שילבתי מילה במילה בתוך כל הערה. בגלל זה סדר המילים בפתיחה השתנה מעט, כדי שהמחרוזת תופיע שלמה.
+- הבדיקה של פגם 6 בודקת גם את הרשימה של כל קבוצה, לא רק את הכותרת. כך גם שינוי של מספר בודד ברשימה נתפס.
+- לפגמים 1-4 נוספה בדיקה אחת שנכשלה קודם על הנתונים הישנים.
+
+### 5. שגיאות וניסיונות שנכשלו
+- עצרתי ריצה ראשונה של verify.sh באמצעה כדי לתקן ניסוח של רשימה בהערה של health-data-hub, ואז הרצתי אותה שוב מההתחלה.
+
+### 6. בדיקות ופעולות ולידציה
+- לפני תיקון הנתונים: `prize-terms-audit.test.ts` החזיר exit 1 (בדיקה אחת מתוך 15 נכשלה). אחריו: exit 0.
+- vitest על חמשת הקבצים: exit 0, 113 בדיקות עברו. `urls-pause-comments.mjs --check`: exit 0. `scripts/verify.sh`: exit 0 (71 קבצים, 2,335 בדיקות עברו, אחת דולגה).
+- `mutate.mjs --plan`: exit 0, ארבע מוטציות וכולן נהרגו:
+
+| מזהה | המוטציה |
+|---|---|
+| C1 | ב-R2: "for terms- lines only" שונה ל-"for terms- and rules lines" |
+| C2 | "**Now: 12 URLs on 11 sites**" שונה ל-13 URLs |
+| F1 | ברשימה של קבוצת התנאים: `kaggle.com` 17 שונה ל-16 |
+| F2 | ב-health-data-hub.fr: "the READMEs of six read" שונה ל-eight |
+
+- grep לשם הבעלים בכל הקבצים שנגעתי בהם: 0. grep לכתובות דוא"ל בשורות שהוספתי: 0.
+
+### 7. עבודה ידנית שחזרה על עצמה וכדאי להפוך לאוטומטית
+- את קבוצות הרינדור מחשבת עכשיו הבדיקה. סקריפט שיכתוב את הסעיף עצמו (`scripts/prize-render-groups.mjs`) עדיין חסר.
+
+### 8. על מה בוזבזו אסימונים, לפי פעולה
+- קריאת ההערות, הרשומות המאומתות והבדיקה: כ-40%. כתיבת הבדיקה ותיקוני הנוסח: כ-35%. ריצות הבדיקות, verify ו-mutate (כולל ריצת verify שנעצרה): כ-25%.
