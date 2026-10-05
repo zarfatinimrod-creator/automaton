@@ -1,0 +1,386 @@
+Leaderboard — RoCo-Spring
+
+Leaderboard
+
+Rankings, Metrics & Submissions
+
+Matched public methods receive provisional RbS-Score ranks balancing clean Spring performance
+and the official additive RobustSpring proxy with equal weight.
+
+Current Standings
+
+RoCo-Spring Leaderboard
+
+Lower RbS-Scores rank higher. Search by team ID, team name, or method below.
+Submitted methods appear before teams that have not submitted yet.
+
+Refresh standings
+
+Last updated:
+Loading…
+
+Organizer-published live snapshot
+
+Refresh requests the latest registered-team roster and public Spring/RobustSpring results.
+Successful results are cached briefly to protect the benchmark service.
+
+Loading published standings…
+
+How team matching and pending results work
+
+The organizer-approved matcher uses an exact RoCo team ID first, then a unique normalized team-name
+substring. Private or unmatched benchmark entries remain pending instead of being assigned arbitrarily.
+The Team column uses the registered team name; Method Name omits the team ID and repeated team name.
+Entries without a method name receive a stable label such as Method 1 or Method 2 within their team.
+Each method links to its original Spring result, and multiple methods from the same team remain separate.
+Methods awaiting complete benchmark results show their available metrics but remain unranked.
+“Awaiting robustness results” means the clean evaluation is available, but the required
+robustness metrics have not been published by Spring. “No submission yet” means no matching
+evaluated method is currently visible. Choose “Submitted methods” to hide baseline references
+and teams without submissions, or use “All entries” to compare everything together.
+Automatic matches are provisional: ranked and award-eligible entries must use the same method,
+checkpoint, inference settings, and clean outputs in both uploads, subject to organizer verification.
+The public benchmark cannot prove that cross-upload identity. “Spring Submission Time” is the original
+Spring result time; a separate RobustSpring upload time is not exposed publicly.
+
+JavaScript is required to display the published standings.
+
+Metric
+
+RbS-Score
+
+Official 2026 scoring convention: the public RobustSpring tables report
+clean-to-corrupted prediction disagreement, &Delta;. For this challenge, the organizers define
+the additive proxy E R,proxy = E S + &Delta;. This operational proxy is used
+consistently for baselines and submissions; it is not presented as an exact corrupted-input
+ground-truth measurement.
+
+Each quantitative task will be ranked using the
+Robustness-balanced Spring Score (RbS-Score) .
+The score combines a method's accuracy on the clean Spring benchmark (S)
+with its additive RobustSpring proxy (R,proxy).
+Both components receive equal weight, and lower is better .
+
+RbS-Score t (m) =
+0.5 ·
+E S t (m) / B S t
++
+0.5 ·
+E R,proxy t (m) / B R,proxy t
+
+m: the evaluated method.
+
+t: the quantitative task, such as Optical Flow,
+Stereo Matching, or Scene Flow.
+
+E S t (m):
+the method's endpoint-error-style metric on the clean Spring data.
+
+E R,proxy t (m):
+the clean Spring error plus the matching RobustSpring prediction disagreement.
+
+B S t ,
+B R,proxy t :
+
+fixed task-specific medians from the qualifying Spring-team submissions below.
+
+Each clean baseline is the median of the published clean metrics. Each RobustSpring proxy
+baseline is the median of the per-method sums E S + &Delta;; it is not the
+sum of two independently rounded medians.
+
+Fixed 2026 Baselines
+
+Task
+
+Common Methods
+
+B S
+
+Median &Delta;
+
+B R,proxy
+
+Optical Flow · EPE
+
+8
+
+0.9925
+
+4.160
+
+6.030
+
+Stereo Matching · Abs
+
+4
+
+3.4545
+
+16.180
+
+18.4505
+
+Official tables:
+Optical Flow accuracy ,
+Optical Flow robustness ,
+Stereo Matching accuracy , and
+Stereo Matching robustness .
+
+Show every scalar baseline calculation
+Optical Flow
+
+Method
+
+E S
+
+&Delta;
+
+E S + &Delta;
+
+MS-RAFT+
+0.643
+3.620
+4.263
+
+FlowFormer
+0.723
+3.770
+4.493
+
+FlowNet2
+1.040
+7.010
+8.050
+
+RAFT
+1.476
+5.640
+7.116
+
+GMA
+0.914
+4.030
+4.944
+
+GMFlow
+0.945
+2.980
+3.925
+
+SPyNet
+4.162
+4.290
+8.452
+
+PWCNet
+2.288
+7.250
+9.538
+
+Stereo Matching · like-for-like Scene Flow/FlyingThings checkpoints
+
+Method
+
+E S
+
+&Delta;
+
+E S + &Delta;
+
+RAFT-Stereo
+3.025
+16.570
+19.595
+
+ACVNet
+1.516
+15.790
+17.306
+
+LEAStereo
+3.884
+21.900
+25.784
+
+GANet
+4.594
+12.110
+16.704
+
+Every listed method occurs in both benchmark papers, has finite values in both official
+views, and is marked “submitted by Spring team” by the benchmark. Additional task
+projections and checkpoint variants are not mixed into the paper-to-paper baseline set.
+
+Task-Specific Error Metrics
+
+The same task-specific clean metric is paired with its matching RobustSpring
+disagreement. The official additive convention is applied component by component.
+
+Optical Flow:
+mean endpoint error (EPE).
+
+Stereo Matching:
+mean absolute disparity error (Abs).
+
+Scene Flow:
+a balanced combination of the errors for reference-frame disparity
+d 1 , target-frame disparity
+d 2 , and Optical Flow. Each component is normalized
+by its own baseline error before the three components are averaged:
+
+RbS-Score SF (m) =
+0.5 ·
+[
+(
+Abs d1,S (m) / B d1,S
++
+Abs d2,S (m) / B d2,S
++
+EPE flow,S (m) / B flow,S
+) / 3
+]
++
+0.5 ·
+[
+(
+Abs d1,R,proxy (m) / B d1,R,proxy
++
+Abs d2,R,proxy (m) / B d2,R,proxy
++
+EPE flow,R,proxy (m) / B flow,R,proxy
+) / 3
+]
+
+Scene Flow Component
+
+B S
+
+Median &Delta;
+
+B R,proxy
+
+d 1 · Abs
+
+7.466
+
+17.005
+
+24.471
+
+d 2 · Abs
+
+7.5935
+
+0.215
+
+7.8085
+
+Flow · EPE
+
+2.527
+
+4.210
+
+6.737
+
+The Scene Flow medians use the two common paper methods, M-FUSE (K) and RAFT-3D (K).
+All three clean components come from each method's public Scene Flow result page, matching
+the convention used to score a participant submission. Each component is paired with the
+disagreement in the same public robustness row. See the official
+Scene Flow accuracy table ,
+Scene Flow robustness table and the
+RobustSpring paper .
+
+Show every Scene Flow component calculation
+
+Method
+
+Clean d 1
+
+Clean d 2
+
+Clean Flow
+
+&Delta;d 1
+
+&Delta;d 2
+
+&Delta;Flow
+
+Proxy d 1
+
+Proxy d 2
+
+Proxy Flow
+
+M-FUSE (K)
+7.890
+8.076
+2.526
+21.900
+0.290
+3.390
+29.790
+8.366
+5.916
+
+RAFT-3D (K)
+7.042
+7.111
+2.528
+12.110
+0.140
+5.030
+19.152
+7.251
+7.558
+
+A score of 1.0 indicates
+that a method matches them on average. Scores below 1.0 will indicate better
+normalized performance, while scores above 1.0 will indicate worse normalized
+performance.
+
+The Cross-Task score is the arithmetic mean of a team's Optical Flow,
+Stereo Matching, and Scene Flow RbS-Scores. It is published only after the team has a
+valid result in all three quantitative tasks. When a team has several methods in one
+task, the most recently submitted complete method is used for that task's Cross-Task
+component; the task leaderboard continues to show every retained method separately.
+
+Tie-Breaking
+
+If two methods obtain the same RbS-Score, ties are resolved in the
+following order:
+
+Lower normalized RobustSpring term
+
+Lower normalized Spring term
+
+Lower organizer-issued numeric team ID
+
+Lower immutable numeric Spring result ID when the same team still has an exact tie
+
+Submissions
+
+Submission Workflow
+
+Generate predictions for the selected task
+
+Package archive in the required format
+
+Validate archive locally using the Starter Kit
+
+Submit to the benchmark server using your unique team ID
+
+Check leaderboard for results
+
+Papers
+
+Share Your Challenge Work
+
+Track scope, NeurIPS 2026 formatting, page limits, review policy, team identification,
+and reproducibility requirements are collected in the Call for Papers.
+
+Read the Call for Papers
+
+OpenReview
+Submission

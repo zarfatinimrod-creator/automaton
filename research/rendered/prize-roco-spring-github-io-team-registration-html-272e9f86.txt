@@ -1,0 +1,232 @@
+Team Registration & Account — RoCo-Spring
+
+Team Account
+
+Register or Manage Your Team
+
+Create one RoCo-Spring team account, then return here to review or update your registration.
+
+Secure team workspace
+
+Team Registration and Account
+
+Everything your team needs to enter, update, and stay ready for
+RoCo-Spring.
+
+Regional access notice: Registration and sign-in rely on Google services.
+Registration uses Google's official
+www.recaptcha.net endpoint for regions where www.google.com is
+unavailable, and browser privacy extensions must allow this endpoint. If Google services
+remain inaccessible in your region, use a trusted VPN where permitted, then reload this
+page before registering or signing in.
+
+JavaScript is required to securely register or access a team account.
+
+Loading secure team services…
+
+Register a new team
+
+Sign in to an existing team
+
+Register a team for the RoCo-Spring challenge. The person completing this registration
+must be one of the team members listed below. At least one competition track and one team
+member are required.
+
+3 quick sections
+No fixed member limit
+1 secure team account
+
+01 Team
+information
+
+Team name *
+
+Primary contact/login email *
+
+This address is the login username and
+must match a team member below.
+
+02 Competition tracks
+*
+
+Select one or more tracks.
+
+Optical
+Flow Estimate motion between image frames
+
+Stereo
+Matching Recover depth from stereo image pairs
+
+Scene
+Flow Model 3D motion through time
+
+Exploration
+Track Explore ideas beyond the core tracks
+
+03 Team
+members
+
+Team member 1 is required. Members 2 and 3 are optional, and you can add more
+teammates as needed. Fully complete each member you use.
+
+Member fields
+3 shown · add as needed
+
++ Add Team Member
+
+I confirm that the person submitting this registration is one of the team
+members listed above, and I understand that the team name, team ID, and
+selected tracks will appear on the public leaderboard. Member names and
+contact details remain private.
+
+Register team →
+
+Welcome back
+
+Your Team Workspace Is Ready
+
+Sign in to review your registration, keep your roster current, and confirm your
+organizer record is synchronized.
+
+✓ Review registration details
+
+✓ Update tracks and members
+
+✓ Check organizer record sync
+
+Team Account Sign-In
+
+Use the primary contact email and your current Firebase Authentication password.
+
+Login email
+
+Password
+
+Sign in →
+Forgot
+password?
+
+Check your spam or junk folder. The team-registration
+email contains your temporary password and sign-in instructions.
+
+Security Step Required
+
+Choose a New Password
+
+Sign
+out
+
+Before team data can be opened, replace the temporary password. After the change, you will be
+signed out and must sign in again with the new password.
+
+New password
+
+Confirm new password
+
+Use 12–128 characters.
+
+Change password and sign out
+
+Team Dashboard
+
+Your RoCo-Spring Team
+
+Sign out
+
+Team ID
+
+—
+
+Team name
+
+—
+
+Primary contact/login email
+
+—
+
+Created
+
+—
+
+Last updated
+
+—
+
+Revision
+
+—
+
+Selected Tracks
+
+Organizer Record Sync
+
+Checking synchronization status…
+
+Team Members
+
+Name
+
+Email
+
+Affiliation
+
+Edit team details
+
+Edit Team Details
+
+Team ID and the primary login email cannot be changed here.
+
+Cancel
+editing
+
+01 Team
+information
+
+Team name
+
+Primary contact/login email
+
+To change the account's primary login email,
+contact roco-spring-org@googlegroups.com .
+
+02 Competition
+tracks
+
+Optical
+Flow Estimate motion between image frames
+
+Stereo
+Matching Recover depth from stereo image pairs
+
+Scene
+Flow Model 3D motion through time
+
+Exploration
+Track Explore ideas beyond the core tracks
+
+03 Team members
+
+Keep the primary contact in the member list. Add as many members as needed and fully
+complete each member you use.
+
+Member fields
+3 shown · add as needed
+
++ Add Team Member
+
+Save team details →
+
+Change Password
+
+For an ordinary password change, confirm your current password first.
+
+Current password
+
+New password
+
+Confirm new password
+
+The new password must contain 12–128 characters.
+
+Change password

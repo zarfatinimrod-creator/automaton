@@ -1,0 +1,19 @@
+{
+  "url": "https://roco-spring.github.io/call-for-papers.html",
+  "slug": "prize-roco-spring-github-io-call-for-papers-html-94b72fa8",
+  "fetchedAt": "2026-10-05T13:33:08.001Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 9134,
+  "sha256": "9445a888a11220f5c76a24568efb9d20d0830d9f5ef902922725f4336b9b52ed",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/prize-roco-spring-github-io-call-for-papers-html-94b72fa8.html",
+  "textPath": "research/rendered/prize-roco-spring-github-io-call-for-papers-html-94b72fa8.txt",
+  "robots": "none",
+  "robotsUrl": "https://roco-spring.github.io/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

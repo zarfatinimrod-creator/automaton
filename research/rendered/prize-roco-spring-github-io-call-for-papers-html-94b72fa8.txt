@@ -1,0 +1,114 @@
+Call for Papers — RoCo-Spring
+
+Call for Papers
+
+Robust Correspondence Under Realistic Visual Corruptions
+
+We invite concise workshop papers on robust Optical Flow, Stereo Matching,
+Scene Flow, and rigorous exploration of robustness in dense correspondence.
+
+OpenReview
+Submission
+
+Download NeurIPS 2026 Template
+
+Four Tracks
+
+What We Invite
+
+Quantitative
+Optical Flow
+
+Methods that estimate dense 2D motion between consecutive frames and remain accurate
+under realistic visual corruptions.
+
+Quantitative
+Stereo Matching
+
+Methods that estimate dense disparity from rectified stereo pairs robustly across
+clean and corrupted imagery.
+
+Quantitative
+Scene Flow
+
+Methods that estimate dense 3D motion from stereo video while preserving geometry
+and temporal accuracy under corruptions.
+
+Research
+Exploration Track
+
+Focused, reproducible studies of failure modes, evaluation, uncertainty,
+adaptation, temporal consistency, or robustness trade-offs.
+
+Submission Requirements
+
+Format and Review
+
+Every quantitative or Exploration Track entry must be accompanied by a workshop paper.
+
+Challenge Teams: Identify Your Entry
+
+Include your exact registered team number and team name
+in the paper abstract—for example, RoCo-XX · Example Team .
+
+Format: Use the official
+NeurIPS 2026 paper template .
+Select \usepackage[sglblindworkshop]{neurips_2026} and set
+\workshoptitle{RoCo-Spring: The Robust Correspondence Challenge} .
+
+Length: The main paper must be 4–6 pages. References and an optional
+appendix may follow and do not count toward the 4–6-page main-paper limit.
+
+Review: Submissions are single-blind; author identities remain visible to
+reviewers.
+
+Content: Quantitative papers should report the method, data, compute,
+results, ablations, and limitations. Exploration papers should present a focused question,
+code, evidence, and reproduction instructions.
+
+Acceptance is based on technical soundness, clarity, reproducibility, and relevance to robust
+dense correspondence—not leaderboard rank alone.
+
+Camera-Ready
+
+Reproducibility Package
+
+With the camera-ready paper, submit code and concise reproduction instructions that include:
+
+A declaration listing every training, pretraining, fine-tuning, and validation dataset.
+
+Runnable training and evaluation scripts.
+
+GPU type and count, peak memory, wall-clock time, and other compute requirements.
+
+A README with a pinned environment via pyproject.toml or explicit conda packages
+and versions.
+
+For the camera-ready version, add the template's final option. Award eligibility
+requires an accepted paper and a complete reproducibility package.
+
+Key Dates
+
+Paper Timeline
+
+Date
+
+Milestone
+
+September 25, 2026 NEW
+
+Workshop paper submission deadline
+
+September 30, 2026
+
+Final quantitative benchmark submission deadline
+
+October 06, 2026
+
+Author notification
+
+October 15, 2026
+
+Camera-ready paper, code, and reproducibility package deadline
+
+Dates are tentative and subject to change.

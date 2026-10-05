@@ -1,0 +1,164 @@
+Tasks & Data — RoCo-Spring
+
+Tasks & Data
+
+What to Solve and What Data to Use
+
+RoCo-Spring covers three quantitative correspondence tasks and one exploration
+track. They are evaluated on paired clean Spring and corrupted RobustSpring data.
+
+Tracks
+
+RoCo-Spring Tasks
+
+RoCo-Spring includes three quantitative dense correspondence tracks and
+one exploration track. The quantitative tracks evaluate methods on Optical
+Flow, Stereo Matching, and Scene Flow using paired clean and corrupted
+benchmark data. The exploration track rewards careful analysis of robustness
+behavior, failure modes, and evaluation methodology.
+
+Quantitative Tracks
+
+Optical Flow
+
+Estimate a dense 2D displacement field between consecutive frames,
+assigning each visible pixel a motion vector.
+
+Stereo Matching
+
+Estimate a dense disparity map from a rectified stereo image pair,
+assigning each pixel the horizontal offset to its corresponding point.
+
+Scene Flow
+
+Estimate dense 3D motion from stereo image sequences, combining
+per-pixel geometry and temporal motion into a single correspondence task.
+
+Exploration Track
+
+The exploration track is for rigorous studies that help explain robustness
+in dense correspondence. Submissions may analyze why current methods fail
+under corruptions, which design choices improve robustness, how different
+corruptions affect different model families, or whether robustness gains
+transfer across Optical Flow, Stereo Matching, and Scene Flow.
+
+Strong exploration submissions should pose a clear scientific question,
+use a careful experimental protocol, provide reproducible evidence, and
+offer insights that are useful for future robust dense correspondence research.
+
+Recommended exploration resource
+FlowBench
+
+Paper & benchmark
+
+FlowBench is a useful starting point for exploration-track studies of optical-flow
+reliability and generalization. Its benchmark provides a broad, reproducible view of
+model behavior across clean data, adversarial perturbations, and common corruptions,
+making it valuable for selecting methods, forming hypotheses, and designing robust
+comparisons.
+
+57 model checkpoints
+3 benchmark datasets
+9 adversarial attacks
+23 common corruptions
+
+Participants may build on FlowBench's study design or use its benchmark to investigate
+failure modes, reliability trade-offs, and whether conclusions generalize across model
+families and evaluation conditions.
+
+If you use the FlowBench study, analyses, or benchmark, please cite:
+
+Copy
+BibTeX
+
+@article{
+agnihotri2025flowbench,
+title={FlowBench: Benchmarking Optical Flow Estimation Methods for Reliability and Generalization},
+author={Shashank Agnihotri and Julian Yuya Caspary and Luca Schwarz and Xinyan Gao and Jenny Schmalfuss and Andres Bruhn and Margret Keuper},
+journal={Transactions on Machine Learning Research},
+issn={2835-8856},
+year={2025},
+url={https://openreview.net/forum?id=Kh4bj6YDNm},
+note={}
+}
+
+Datasets
+
+Spring and RobustSpring
+
+We use two datasets for RoCo-Spring: Spring provides clean high-resolution
+stereo video and dense ground truth for all three correspondence tasks;
+RobustSpring applies realistic corruptions to the same data for robustness
+evaluation. You can find links to the papers, benchmark, and datasets below.
+
+RobustSpring applies corruptions to the same scenes, cameras, and labels as
+Spring. This paired clean / corrupted design measures robustness without
+changing scene content, camera setup, annotation protocol, or benchmark
+procedure. Performance drops can therefore be attributed to corruption sensitivity
+rather than unrelated dataset differences.
+
+Spring
+
+Spring provides high-resolution stereo video with left and right images at
+1920x1080 px, together with dense scene-flow ground truth at 4x
+super-resolution. It includes bidirectional disparities for stereo and depth,
+disparity changes for Scene Flow, and forward/backward Optical Flow for both
+left and right views. This makes Spring a unified high-detail benchmark for
+Optical Flow, Stereo Matching, and Scene Flow.
+
+Paper
+Benchmark
+Dataset
+
+If you use the Spring dataset, please cite:
+
+Copy
+BibTeX
+
+@inproceedings{mehl2023spring,
+title={Spring: A High-Resolution High-Detail Dataset and Benchmark for Scene Flow, Optical Flow and Stereo},
+author={Mehl, Lukas and Schmalfuss, Jenny and Jahedi, Azin and Nalivayko, Yaroslava and Bruhn, Andr{\'e}s},
+booktitle={Proc. IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+pages={4981--4991},
+year={2023}
+}
+
+RobustSpring
+
+RobustSpring extends Spring into a robustness benchmark with 20 realistic
+image corruptions, including blur, color changes, noise, quality degradations,
+and weather effects. The corruptions are applied to stereo video data and are
+integrated consistently over time, across stereo views, and with depth where
+applicable, enabling controlled robustness evaluation for Optical Flow, Stereo Matching,
+and Scene Flow.
+
+Paper
+Benchmark
+Dataset
+
+If you use the RobustSpring dataset, please cite:
+
+Copy
+BibTeX
+
+@inproceedings{oei2026robustspring,
+title={RobustSpring: Benchmarking Robustness to Image Corruptions for Optical Flow, Scene Flow and Stereo},
+author={Oei, Victor and Schmalfuss, Jenny and Mehl, Lukas and Bartsch, Madlen and Agnihotri, Shashank and Keuper, Margret and Bulling, Andreas and Bruhn, Andres},
+booktitle={Proc. International Conference on Learning Representations (ICLR)},
+year={2026}
+}
+
+If you use both Spring and RobustSpring, please cite both corresponding
+works.
+
+Dataset Terms
+
+Participants must respect dataset licenses, benchmark terms, the
+NeurIPS
+Code
+of Conduct ,
+and the
+NeurIPS
+Code of Ethics .
+
+×

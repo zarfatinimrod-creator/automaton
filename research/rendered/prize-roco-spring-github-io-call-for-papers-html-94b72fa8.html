@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Call for Papers — RoCo-Spring</title>
+    <meta name="description"
+        content="Call for papers, submission tracks, format, and review information for RoCo-Spring at NeurIPS 2026.">
+    <link rel="stylesheet" href="assets/style.css?v=27fb6ae34894">
+    <script src="assets/site-layout.js" defer></script>
+</head>
+
+<body>
+    <canvas id="flow-canvas" aria-hidden="true"></canvas>
+
+    <header id="site-header"></header>
+
+    <main>
+        <section class="page-header section" id="call-for-papers">
+            <div class="eyebrow">Call for Papers</div>
+            <h1>Robust Correspondence Under Realistic Visual Corruptions</h1>
+            <p class="page-intro">
+                We invite concise workshop papers on robust Optical Flow, Stereo Matching,
+                Scene Flow, and rigorous exploration of robustness in dense correspondence.
+            </p>
+            <div class="call-for-papers-actions">
+                <a class="button openreview"
+                    href="https://openreview.net/group?id=NeurIPS.cc/2026/Workshop/RoCo-Spring"
+                    target="_blank" rel="noopener noreferrer">
+                    <span class="openreview-wordmark">OpenReview</span>
+                    <span>Submission</span>
+                </a>
+                <a class="button secondary"
+                    href="https://media.neurips.cc/Conferences/NeurIPS2026/Formatting_Instructions_For_NeurIPS_2026.zip"
+                    target="_blank" rel="noopener noreferrer">Download NeurIPS 2026 Template</a>
+            </div>
+        </section>
+
+        <section class="section" id="paper-tracks">
+            <div class="section-heading">
+                <div class="eyebrow">Four Tracks</div>
+                <h2>What We Invite</h2>
+            </div>
+
+            <div class="card-grid four cfp-track-grid">
+                <article class="track-card">
+                    <span class="track-card-badge">Quantitative</span>
+                    <h3>Optical Flow</h3>
+                    <p>
+                        Methods that estimate dense 2D motion between consecutive frames and remain accurate
+                        under realistic visual corruptions.
+                    </p>
+                </article>
+
+                <article class="track-card">
+                    <span class="track-card-badge">Quantitative</span>
+                    <h3>Stereo Matching</h3>
+                    <p>
+                        Methods that estimate dense disparity from rectified stereo pairs robustly across
+                        clean and corrupted imagery.
+                    </p>
+                </article>
+
+                <article class="track-card">
+                    <span class="track-card-badge">Quantitative</span>
+                    <h3>Scene Flow</h3>
+                    <p>
+                        Methods that estimate dense 3D motion from stereo video while preserving geometry
+                        and temporal accuracy under corruptions.
+                    </p>
+                </article>
+
+                <article class="track-card track-card--exploration">
+                    <span class="track-card-badge">Research</span>
+                    <h3>Exploration Track</h3>
+                    <p>
+                        Focused, reproducible studies of failure modes, evaluation, uncertainty,
+                        adaptation, temporal consistency, or robustness trade-offs.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section" id="submission-requirements">
+            <div class="section-heading">
+                <div class="eyebrow">Submission Requirements</div>
+                <h2>Format and Review</h2>
+            </div>
+
+            <div class="content-card">
+                <p>
+                    Every quantitative or Exploration Track entry must be accompanied by a workshop paper.
+                </p>
+
+                <div class="notice cfp-team-notice" role="note">
+                    <h3>Challenge Teams: Identify Your Entry</h3>
+                    <p>
+                        Include your exact registered <strong>team number</strong> and <strong>team name</strong>
+                        in the paper abstract—for example, <strong>RoCo-XX · Example Team</strong>.
+                    </p>
+                </div>
+
+                <ul class="feature-list cfp-requirements-list">
+                    <li>
+                        <strong>Format:</strong> Use the official
+                        <a href="https://media.neurips.cc/Conferences/NeurIPS2026/Formatting_Instructions_For_NeurIPS_2026.zip"
+                            target="_blank" rel="noopener noreferrer">NeurIPS 2026 paper template</a>.
+                        Select <code>\usepackage[sglblindworkshop]{neurips_2026}</code> and set
+                        <code>\workshoptitle{RoCo-Spring: The Robust Correspondence Challenge}</code>.
+                    </li>
+                    <li>
+                        <strong>Length:</strong> The main paper must be 4–6 pages. References and an optional
+                        appendix may follow and do not count toward the 4–6-page main-paper limit.
+                    </li>
+                    <li>
+                        <strong>Review:</strong> Submissions are single-blind; author identities remain visible to
+                        reviewers.
+                    </li>
+                    <li>
+                        <strong>Content:</strong> Quantitative papers should report the method, data, compute,
+                        results, ablations, and limitations. Exploration papers should present a focused question,
+                        code, evidence, and reproduction instructions.
+                    </li>
+                </ul>
+
+                <p>
+                    Acceptance is based on technical soundness, clarity, reproducibility, and relevance to robust
+                    dense correspondence—not leaderboard rank alone.
+                </p>
+            </div>
+        </section>
+
+        <section class="section" id="reproducibility">
+            <div class="section-heading">
+                <div class="eyebrow">Camera-Ready</div>
+                <h2>Reproducibility Package</h2>
+            </div>
+
+            <div class="content-card">
+                <p>
+                    With the camera-ready paper, submit code and concise reproduction instructions that include:
+                </p>
+                <ul class="feature-list">
+                    <li>A declaration listing every training, pretraining, fine-tuning, and validation dataset.</li>
+                    <li>Runnable training and evaluation scripts.</li>
+                    <li>GPU type and count, peak memory, wall-clock time, and other compute requirements.</li>
+                    <li>A README with a pinned environment via <code>pyproject.toml</code> or explicit conda packages
+                        and versions.</li>
+                </ul>
+                <p>
+                    For the camera-ready version, add the template's <code>final</code> option. Award eligibility
+                    requires an accepted paper and a complete reproducibility package.
+                </p>
+            </div>
+        </section>
+
+        <section class="section" id="paper-dates">
+            <div class="section-heading">
+                <div class="eyebrow">Key Dates</div>
+                <h2>Paper Timeline</h2>
+            </div>
+
+            <div class="table-wrapper content-card">
+                <table class="timeline-table cfp-deadline-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Milestone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="paper-submission-date">September 25, 2026 <span class="new-deadline-badge">NEW</span></td>
+                            <td>Workshop paper submission deadline</td>
+                        </tr>
+                        <tr>
+                            <td>September 30, 2026</td>
+                            <td>Final quantitative benchmark submission deadline</td>
+                        </tr>
+                        <tr>
+                            <td>October 06, 2026</td>
+                            <td>Author notification</td>
+                        </tr>
+                        <tr>
+                            <td>October 15, 2026</td>
+                            <td>Camera-ready paper, code, and reproducibility package deadline</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="tentative-note">Dates are tentative and subject to change.</p>
+        </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script src="assets/flow.js"></script>
+</body>
+
+</html>
