@@ -128,8 +128,8 @@ const changedLines = (before, after) => {
  * numbers), moved (its line count would change) }. count is every mask (addresses and secret-shaped strings);
  * addresses only the new `[redacted:email]@` masks.
  */
-export function maskFile(bytes, contentType) {
-  const masked = redactSecrets(bytes, contentType);
+export function maskFile(bytes, contentType, redact = redactSecrets) {
+  const masked = redact(bytes, contentType);
   if (masked.count === 0) return { bytes, count: 0, addresses: 0, domains: new Map(), lines: [], moved: false };
   const was = bytes.toString("latin1");
   const now = masked.bytes.toString("latin1");
@@ -180,7 +180,7 @@ export function remaskedMetaText(capture, on) {
  * frozen, metaName, metaText, meta, parts: [{ role, name, before, bytes, count, addresses, domains, lines, moved }],
  * changed, count, addresses }. problems are the refusals that hold for a dry run as for --apply.
  */
-export function planRemask({ dir, only = null }) {
+export function planRemask({ dir, only = null, redact = redactSecrets }) {
   const problems = [];
   const captures = [];
   const slugs = only?.length ? only : [...knownSlugs(dir)].sort();
@@ -212,7 +212,7 @@ export function planRemask({ dir, only = null }) {
         continue;
       }
       part.before = readFileSync(path);
-      Object.assign(part, maskFile(part.before, part.contentType));
+      Object.assign(part, maskFile(part.before, part.contentType, redact));
     }
     const count = parts.reduce((s, p) => s + p.count, 0);
     const capture = {
@@ -332,7 +332,8 @@ function summarize(plan, verb, cited, citedVerb) {
   return lines;
 }
 
-export function main(argv, { log = console.log, error = console.error } = {}) {
+/** The command line. io: { log, error }, and redact, the masker (redactSecrets; a test stands in a faulty one). */
+export function main(argv, { log = console.log, error = console.error, redact = redactSecrets } = {}) {
   const usage =
     "usage: node scripts/remask-captures.mjs [--dry-run] [--rendered <dir>] [--only <slug>...]\n" +
     "       node scripts/remask-captures.mjs --apply --date YYYY-MM-DD [--rendered <dir>] [--only <slug>...]";
@@ -369,7 +370,7 @@ export function main(argv, { log = console.log, error = console.error } = {}) {
     return 1;
   }
   const root = top.stdout.trim();
-  const plan = planRemask({ dir, only: v.only ? [...v.only, ...args.positionals] : null });
+  const plan = planRemask({ dir, only: v.only ? [...v.only, ...args.positionals] : null, redact });
   const changed = plan.captures.filter((c) => c.changed);
   const metaTexts = new Map(changed.map((c) => [c.slug, remaskedMetaText(c, v.date ?? "YYYY-MM-DD")]));
 

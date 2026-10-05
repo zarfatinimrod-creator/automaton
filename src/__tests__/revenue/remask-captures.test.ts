@@ -12,7 +12,7 @@ import {
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/remask-captures.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
-import { buildMeta } from "../../../scripts/render-watch.mjs";
+import { buildMeta, redactSecrets } from "../../../scripts/render-watch.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { checkManifest, frozenMeta, MANIFEST, readManifest } from "../../../scripts/freeze-capture.mjs";
 
@@ -180,6 +180,22 @@ describe("--dry-run", () => {
     // Never an address, and never a kept domain: kinds and counts only.
     expect(text).not.toMatch(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/);
     expect(text).not.toMatch(/gmail|uni\.edu|googlegroups|agency\.gov/);
+  });
+
+  it("counts a mask that took an asset name for an address, which is how a masker regression would show", () => {
+    const f = fixture();
+    // A faulty masker: redactSecrets, and then the retina image name masked as if it were an address.
+    const faulty = (bytes: Buffer, contentType: string) => {
+      const r = redactSecrets(bytes, contentType) as { bytes: Buffer; count: number };
+      const text = r.bytes ? r.bytes.toString("latin1") : "";
+      if (!r.bytes || !text.includes(ASSET)) return r;
+      return { bytes: Buffer.from(text.split(ASSET).join("[redacted:email]@2x.png"), "latin1"), count: r.count + text.split(ASSET).length - 1 };
+    };
+    const o = io();
+    expect(main(["--dry-run", ...rendered(f)], { ...o, redact: faulty })).toBe(3);
+    // page.html, quiet.html and their two frozen copies each carry the asset name once.
+    expect(o.out.join("\n")).toContain("asset names masked: 4");
+    expect(snapshot(f.dir)).toEqual(f.files);
   });
 
   it("reads only the --only captures", () => {
