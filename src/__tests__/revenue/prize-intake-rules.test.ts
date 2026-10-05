@@ -822,7 +822,7 @@ describe("readPrizeIntake — the report line carries the quarters", () => {
       " Rules pages (research/measurements/ai-allowed-events.md, graded by a reading session, never by the job): " +
         "2026-Q3 (current): 1 event, 0 graded, qualifying not counted (no row graded), 1 awaiting a reading; " +
         "2026-Q4 (next): 8 events, 0 graded, qualifying not counted (no row graded), 8 awaiting a reading. " +
-        "21 URLs await a render (research/measurements/ai-allowed-events.urls.txt, for render-watch's urls input). " +
+        "21 URLs await a render (research/measurements/ai-allowed-events.urls.txt; node scripts/prize-dispatch.mjs prints the lines whose site passes the terms gate, for render-watch's urls input). " +
         "Kill (two consecutive closed, fully graded quarters under 3 qualifying): not computable yet.",
     );
     expect(r.line).not.toMatch(/Partly built/);

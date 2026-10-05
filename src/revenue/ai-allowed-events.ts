@@ -675,7 +675,9 @@ function renderMarkdown(
   );
   out.push(
     "2. Read the capture. The list names no rules page as such; if the rules sit on a page the list does not give, its " +
-      "URL now appears in a capture and can be rendered in a later dispatch, cited to that capture. No URL is guessed.",
+      "URL now appears in a capture, or in the site's own source repository at a pinned commit (ruling R4, 5.10.2026, " +
+      "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md), and can be rendered in a later dispatch, cited to " +
+      "that capture or that commit. No URL is guessed.",
   );
   out.push(
     "3. Fill the last three cells. **AI clause**: the clause verbatim, with its capture pointer " +
@@ -906,7 +908,7 @@ export function describeAiAllowed(s: AiAllowedSummary): string {
   return (
     ` Rules pages (${AI_ALLOWED_TABLE_FILE}, graded by a reading session, never by the job): ` +
     `${s.quarters.map(describeQuarter).join("; ")}. ` +
-    `${plural(s.urlsAwaiting, "URL awaits", "URLs await")} a render (${AI_ALLOWED_URLS_FILE}, for render-watch's urls input)` +
+    `${plural(s.urlsAwaiting, "URL awaits", "URLs await")} a render (${AI_ALLOWED_URLS_FILE}; node scripts/prize-dispatch.mjs prints the lines whose site passes the terms gate, for render-watch's urls input)` +
     (s.urlsRefused ? `; ${plural(s.urlsRefused, "tiktok.com URL", "tiktok.com URLs")} refused` : "") +
     ". " +
     (s.keptOutsideWindow ? `${plural(s.keptOutsideWindow, "filled row is", "filled rows are")} kept outside the window. ` : "") +
