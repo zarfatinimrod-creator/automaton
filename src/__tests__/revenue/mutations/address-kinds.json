@@ -1,0 +1,153 @@
+[
+  {
+    "id": "AK-by-design-as-raw",
+    "file": "scripts/address-kinds.mjs",
+    "find": "    if (design) addByDesign(design);",
+    "replace": "    if (false) addByDesign(design);",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: every form the masker leaves by design is counted as raw (and a file of them exits 3)"
+  },
+  {
+    "id": "AK-print-local",
+    "file": "scripts/address-kinds.mjs",
+    "find": "    else addRaw(atForm(hit[2]), domainKind(hit[3]), localRole(hit[1]), taken);",
+    "replace": "    else { addRaw(atForm(hit[2]), domainKind(hit[3]), localRole(hit[1]), taken); console.log(hit[1]); }",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: the local part of a raw address is printed"
+  },
+  {
+    "id": "AK-miss-pct40",
+    "file": "scripts/address-kinds.mjs",
+    "find": "const AT = \"(?:@|%40|",
+    "replace": "const AT = \"(?:@|",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: an address whose @ is %40 is not counted under its form"
+  },
+  {
+    "id": "AK-miss-cloudflare",
+    "file": "scripts/address-kinds.mjs",
+    "find": "const CLOUDFLARE_AT = /data-cfemail=|email-protection#/gi;",
+    "replace": "const CLOUDFLARE_AT = /data-cfemail-never=|email-protection-never#/gi;",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: a Cloudflare email-protection value is not counted under its form"
+  },
+  {
+    "id": "AK-exit0-with-raw",
+    "file": "scripts/address-kinds.mjs",
+    "find": "  return total.raw.count ? 3 : 0;",
+    "replace": "  return 0;",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: a file holding a raw address exits 0, so a tick's check passes"
+  },
+  {
+    "id": "AK-wrong-kind",
+    "file": "scripts/address-kinds.mjs",
+    "find": "    else addRaw(atForm(hit[2]), domainKind(hit[3]), localRole(hit[1]), taken);",
+    "replace": "    else addRaw(atForm(hit[2]), domainKind(hit[1]), localRole(hit[1]), taken);",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: a raw address's kind is read from its local part, not its domain"
+  },
+  {
+    "id": "AK-userinfo-as-path",
+    "file": "scripts/address-kinds.mjs",
+    "find": "  if (USERINFO_BEFORE.test(ahead)) return \"URL userinfo\";\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: a URL userinfo (a password, a DSN key) is counted as a local part after /"
+  },
+  {
+    "id": "AK-escaped-handle",
+    "file": "scripts/address-kinds.mjs",
+    "find": "  if (!local) return \"forum handle\";\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: a handle after a script escape (\\\\u002F@name, \\\\u003e@name) is not a forum handle"
+  },
+  {
+    "id": "AK-binary-as-text",
+    "file": "scripts/address-kinds.mjs",
+    "find": "    const c = countText(bytes.toString(\"utf8\"), bytes, contentTypeOf(file));",
+    "replace": "    const c = countText(bytes.toString(\"utf8\"), bytes, \"text/plain\");",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: a PDF is read as text, so the masker is said to take an address it never rewrites"
+  },
+  {
+    "id": "AK-no-role",
+    "file": "scripts/address-kinds.mjs",
+    "find": "  return ROLES.has(base) ? \"role\" : \"other\";",
+    "replace": "  return \"other\";",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: a role address (support, info...) is counted as other"
+  },
+  {
+    "id": "AK-skip-masker-total",
+    "file": "scripts/address-kinds.mjs",
+    "find": "  if (extra > 0) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: an address spelt wholly in character references, which only the masker reads, is not counted"
+  },
+  {
+    "id": "AK-no-package",
+    "file": "scripts/address-kinds.mjs",
+    "find": "  for (const _ of text.matchAll(PACKAGE)) addByDesign(\"package@version\");\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 builder: package@version is not counted"
+  },
+  {
+    "id": "print-raw-address",
+    "file": "scripts/address-kinds.mjs",
+    "find": "    else addRaw(atForm(hit[2]), domainKind(hit[3]), localRole(hit[1]), taken);",
+    "replace": "    else { addRaw(atForm(hit[2]), domainKind(hit[3]), localRole(hit[1]), taken); console.log(hit[0]); }",
+    "test": [
+      "src/__tests__/revenue/address-kinds.test.ts",
+      "src/__tests__/revenue/render-dispatch.test.ts"
+    ],
+    "note": "tick 52 builder (moved from render-dispatch.json, tick 53): the address report prints the raw address it found"
+  },
+  {
+    "id": "F52-asset-as-address",
+    "file": "scripts/address-kinds.mjs",
+    "find": "  if (FILE_NAME.test(hit[3])) return \"asset name\";\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/address-kinds.test.ts",
+      "src/__tests__/revenue/render-dispatch.test.ts"
+    ],
+    "note": "tick 52 review RV-B3 (moved, tick 53): an asset name (<name>@2x.png) is counted as a raw address or as another form"
+  },
+  {
+    "id": "F52-ascii-report",
+    "file": "scripts/address-kinds.mjs",
+    "find": "const W = \"\\\\p{L}\\\\p{M}\\\\p{N}\";",
+    "replace": "const W = \"A-Za-z0-9\";",
+    "test": [
+      "src/__tests__/revenue/address-kinds.test.ts",
+      "src/__tests__/revenue/render-dispatch.test.ts"
+    ],
+    "note": "tick 52 review (moved, tick 53): an address with an accented local part is not counted"
+  },
+  {
+    "id": "F52-report-at-forms",
+    "file": "scripts/address-kinds.mjs",
+    "find": "|&#0*64;?|&#[xX]0*40;?|&commat;|\\uFF20|\\uFE6B)\";",
+    "replace": ")\";",
+    "test": [
+      "src/__tests__/revenue/address-kinds.test.ts",
+      "src/__tests__/revenue/render-dispatch.test.ts"
+    ],
+    "note": "tick 52 review (moved, tick 53): an @ written as a character reference or a look-alike is not counted"
+  },
+  {
+    "id": "F52-report-latin1",
+    "file": "scripts/address-kinds.mjs",
+    "find": "    const c = countText(bytes.toString(\"utf8\"), bytes, contentTypeOf(file));",
+    "replace": "    const c = countText(bytes.toString(\"latin1\"), bytes, contentTypeOf(file));",
+    "test": [
+      "src/__tests__/revenue/address-kinds.test.ts",
+      "src/__tests__/revenue/render-dispatch.test.ts"
+    ],
+    "note": "tick 52 fixer (moved, tick 53): a capture read as latin1 hides the addresses outside ASCII from the count"
+  }
+]

@@ -24,7 +24,7 @@ import { afterAll, describe, expect, it } from "vitest";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 /** What the script runs, copied into each scratch checkout (the script uses the repository it sits in). */
-const COPY = ["render-dispatch.sh", "render-watch.mjs", "queue-zero-test.mjs", "capture-check.mjs", "remask-captures.mjs", "freeze-capture.mjs"];
+const COPY = ["render-dispatch.sh", "render-watch.mjs", "queue-zero-test.mjs", "capture-check.mjs", "remask-captures.mjs", "freeze-capture.mjs", "address-kinds.mjs"];
 const REF = "loop-branch";
 
 const scratch = realpathSync(mkdtempSync(join(tmpdir(), "render-dispatch-test-")));
