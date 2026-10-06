@@ -171,7 +171,8 @@ it prints for a DRIFTED range, which it reads from git history.
 - `src/__tests__/revenue/frozen-citations.test.ts` fails when a decision-bearing file cites an active capture by
   line, names one where `LIVE_MENTIONS` does not say the live page is meant, cites a line past the end of a frozen
   copy, or when `FROZEN.sha256` and the copies on disk disagree. A frozen copy is a record:
-  `scripts/robots-verdict.mjs` skips frozen `robots-` copies and reads the live one.
+  `scripts/robots-verdict.mjs` skips frozen `robots-` copies and reads the live one; its `--recheck` compares the live one
+  with the frozen copy a verdict cites.
 
 ## Trimmed copies: what stays of a page whose terms bar copying
 
@@ -358,6 +359,23 @@ verdict), then queue the line. A line for a site with no verdict fails CI, and s
   only with a note opening `exhaustive-negative` and a source naming the script, so one set by hand fails CI. Dry run by default; `--apply` rewrites the one entry, citing the capture and the
   ruling. It never edits this list: un-pausing the site's lines afterwards is a separate, reviewed edit. A
   **refusal-type** NO_TERMS site (the terms page answered 403 or a bot challenge) is never eligible.
+- **The weekly re-check of NO_TERMS_ROBOTS_OK.** Each such source cites a dated frozen copy of the robots.txt it was set
+  on, which no render rewrites, so `node scripts/robots-verdict.mjs --recheck` compares every cited copy with the live
+  capture the weekly run keeps current. The 07:11 Tuesday tick runs it after it has read the weekly run's commit
+  (render-watch.yml, Tuesday 05:23 UTC) and before any dispatch: dry first, then `--apply` when a site changed.
+  `unchanged` (the live bytes are the copy's, or a 404 is still a 404): nothing to do. `unreachable` (no live capture, a
+  401/403/429, an HTML page, a 5xx): reported and left as it is; render-watch still reads that answer before it fetches
+  a page. `refresh` (changed, every queued path still allowed): the live capture is frozen as a new dated copy
+  (`FROZEN.sha256` following), the source cites it and the note gains a dated sentence. `revert` (a queued path is now
+  disallowed): the site is NO_TERMS again, so its lines stop passing `termsGate` at once, its probe stays on the weekly
+  watch, and no line of this list is edited. `error` (exit 1): a source that cites no frozen copy, a copy that does not
+  hold what it says, or a change with no queued page to judge; resolved before any dispatch. Exit 0 when something
+  changed, 3 when nothing did. After `--apply`: commit the new copies and the file, run
+  `node scripts/urls-pause-comments.mjs --fix` after a revert (a paused line naming the site's verdict names a stale
+  one), then `scripts/verify.sh`. The tests of ticks 45 to 57 read the verdicts as they stood before any re-check
+  (`beforeRechecks`, fixture `src/__tests__/revenue/fixtures/terms-verdicts-5c980e3-robots-ok.json`), so they stay green
+  for 16 of the 18 sites; a refresh or a revert of eurocontrol.int or agenthon.net, whose tick-57 records the tests and the
+  mutation plan hold by their exact text, still needs hand edits (the measured list is in the script's header).
 - **googlesource.com** left `TERMS_BARRED` for CONDITIONAL_MET: its one condition was robots.txt
   (`research/colony-sweep/scouts/risk-governance--automation-tos.md:106`), and its line (`sweep2-google-vrp-faq`) is
   active again. `google.com` stays barred: YouTube's terms bar the Help pages outright.

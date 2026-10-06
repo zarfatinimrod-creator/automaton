@@ -1,6 +1,8 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { decisionFiles, listedNames } from "../../../scripts/freeze-capture.mjs";
@@ -29,8 +31,12 @@ import {
 import { classifyCapture, readCapture } from "../../../scripts/capture-check.mjs";
 import {
   PAUSED_LINE,
+  beforeRechecks,
+  isRecheckOf,
   judgeSite,
+  parseRobotsSource,
   queuedPaths,
+  recheckSite,
   readableCapture,
   serializeVerdicts,
   // @ts-expect-error — plain ESM script, no type declarations by design
@@ -147,7 +153,24 @@ const FIXTURE = `src/__tests__/revenue/fixtures/ai-allowed-events-${PIN}.urls.tx
 const FIXTURE_SHA256 = "3b37fb001dc04e50c313f704ded1cddde8a405b27b72819a19a04eeb2c03986c";
 type Entry = { verdict: string; source: string; checked: string; note?: string; copying?: string };
 type Line = { url: string; slug: string; n: number };
-const verdicts = () => JSON.parse(readFileSync(VERDICTS, "utf8")).sites as Record<string, Entry>;
+/**
+ * Tick 58: scripts/robots-verdict.mjs --recheck, run by the 07:11 Tuesday tick on the weekly render, rewrites a
+ * NO_TERMS_ROBOTS_OK entry whose robots.txt changed: a refresh repoints its citation and adds a note sentence, a revert sets
+ * NO_TERMS. Every block below holds what ticks 45 to 57 left, so it reads the verdicts as they stood before any re-check
+ * (beforeRechecks): each of the 18 NO_TERMS_ROBOTS_OK entries put back from RECHECK_FIXTURE, as terms-verdicts.json held
+ * them at RECHECK_BASE (the last commit that wrote the file before --recheck existed), where the entry in the file is that
+ * entry after re-checks and nothing else (isRecheckOf). A hand edit or a new verdict is not put back, so the blocks still
+ * see it. With no re-check applied, as at RECHECK_BASE, the reconstruction is the file itself.
+ */
+const RECHECK_FIXTURE = "src/__tests__/revenue/fixtures/terms-verdicts-5c980e3-robots-ok.json";
+const RECHECK_FIXTURE_SHA256 = "c99abac8d8b2917a1fedf36e5959dc968fb385e56b830c4ebe64d1d62a48395d";
+const RECHECK_BASE = "5c980e3";
+const recheckFixture = () => JSON.parse(readFileSync(RECHECK_FIXTURE, "utf8")) as Record<string, Entry>;
+/** The sites object as it stood before any --recheck rewrite (the comment above). */
+const beforeRecheck = (sites: Record<string, Entry>): Record<string, Entry> => beforeRechecks(sites, recheckFixture());
+/** A parsed terms-verdicts.json's sites as these blocks read them: before any re-check. */
+const verdictsOf = (file: { sites: Record<string, Entry> }): Record<string, Entry> => beforeRecheck(file.sites);
+const verdicts = () => verdictsOf(JSON.parse(readFileSync(VERDICTS, "utf8")));
 const active = () => parseUrlList(readFileSync(URLS, "utf8")) as { url: string; slug: string }[];
 /**
  * A prize list's lines, read by hand (n is the 1-based line number): render-watch's parser refuses the list whole,
@@ -1621,6 +1644,11 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
  */
 describe("tick 54: the robots verdicts of 6.10", () => {
   const raw = () => readFileSync(VERDICTS, "utf8");
+  /** The parsed file with its sites as they stood before any --recheck rewrite (verdictsOf). */
+  const parsed = () => {
+    const file = JSON.parse(raw());
+    return { ...file, sites: verdictsOf(file) };
+  };
   const fixture = () => readFileSync(FIXTURE, "utf8");
   /** The frozen copy of the capture the script read for one of the four sites it declined. */
   const declinedCapture = (slug: string) => frozenCapture(`research/rendered/${slug}-${FROZEN_ON}.meta.json`);
@@ -1659,7 +1687,7 @@ describe("tick 54: the robots verdicts of 6.10", () => {
   it("rests each NO_TERMS_ROBOTS_OK verdict on the frozen copy of the robots.txt capture it read, exactly as the script writes it", () => {
     // The 17 as tick 54 left them: agenthon.net's was taken back in tick 55, and the 16 others are as they are.
     const v = tick54(verdicts());
-    const file = JSON.parse(raw());
+    const file = parsed();
     const then = tick45(v);
     const urlsTxt = readFileSync(URLS, "utf8");
     const kinds: Record<string, string[]> = { file: [], absent: [] };
@@ -1720,7 +1748,7 @@ describe("tick 54: the robots verdicts of 6.10", () => {
 
   it("leaves the four others NO_TERMS, each for a reason the frozen copy of its robots.txt capture shows", () => {
     const v = verdicts();
-    const file = JSON.parse(raw());
+    const file = parsed();
     for (const [site, { slug, why }] of Object.entries(ROBOTS_NOT_SET)) {
       expect(v[site].verdict, site).toBe("NO_TERMS");
       expect(isExhaustiveNegative(v[site]), site).toBe(true);
@@ -1771,7 +1799,7 @@ describe("tick 54: the robots verdicts of 6.10", () => {
   });
 
   it("is idempotent: run again on any list, the script changes nothing for any of the 21 sites", () => {
-    const file = JSON.parse(raw());
+    const file = parsed();
     // main() prints "no change: <why>" and exits 3 whenever judgeSite returns changed: false; it writes only on true.
     for (const urls of [fixture(), readFileSync(PRIZE_URLS, "utf8"), readFileSync(URLS, "utf8")]) {
       for (const site of ROBOTS_OK) {
@@ -3162,7 +3190,9 @@ describe("tick 55: the terms links found after the verdicts", () => {
     );
     // eurocontrol.int's probe: captured by the 12:05 weekly run of 6.10 (a robots.txt the site served). Tick 56 ran the
     // script on it dry only; since tick 57 the verdict rests on it, cited by its frozen copy, never by the live capture.
-    const euMeta = JSON.parse(readFileSync(`research/rendered/${EURO_PROBE.slug}.meta.json`, "utf8"));
+    // Read on that frozen copy (tick 58): the weekly render rewrites the live capture whenever the site's answer changes.
+    const euMeta = JSON.parse(readFileSync(`${EU_ROBOTS}.meta.json`, "utf8"));
+    expect(euMeta.frozen.from).toBe(`research/rendered/${EURO_PROBE.slug}.meta.json`);
     expect([euMeta.url, euMeta.status]).toEqual([EURO_PROBE.url, 200]);
     expect(euMeta.contentType).toMatch(/^text\/plain\b/);
     expect(readFileSync(VERDICTS, "utf8")).not.toContain(`research/rendered/${EURO_PROBE.slug}.`);
@@ -3663,7 +3693,8 @@ describe("tick 56: the second terms read (agenthon.net's Terms of Participation,
   it("refuses both sites' rules URLs; scripts/robots-verdict.mjs, run dry, would set eurocontrol.int and declines agenthon.net", () => {
     // Tick 56's state: eurocontrol.int's entry put back from the fixture (tick 57 applied the script: "tick 57" below).
     const v = tick56(verdicts());
-    const now = JSON.parse(readFileSync(VERDICTS, "utf8"));
+    const read = JSON.parse(readFileSync(VERDICTS, "utf8"));
+    const now = { ...read, sites: verdictsOf(read) };
     const file = { ...now, sites: v };
     for (const site of Object.keys(READ2)) {
       const why = site === "agenthon.net" ? pendingWhy(site) : negativeWhy(site);
@@ -3909,7 +3940,7 @@ describe("tick 57: eurocontrol.int's robots verdict (R1's repository grep ruled 
 
   it("sets NO_TERMS_ROBOTS_OK through scripts/robots-verdict.mjs, its source naming the frozen copy of the capture it read", () => {
     const file = JSON.parse(readFileSync(VERDICTS, "utf8"));
-    const v = file.sites as Record<string, Entry>;
+    const v = beforeRecheck(file.sites as Record<string, Entry>);
     const t56 = tick56(v);
     const e = v[SITE];
     expect([e.verdict, e.checked, e.copying]).toEqual(["NO_TERMS_ROBOTS_OK", ROBOTS_CHECKED, "unread"]);
@@ -3946,10 +3977,11 @@ describe("tick 57: eurocontrol.int's robots verdict (R1's repository grep ruled 
     expect(readFileSync(VERDICTS, "utf8")).not.toContain(`research/rendered/${EURO_PROBE.slug}.`);
     expect(readFileSync(URLS, "utf8")).not.toContain(cited.slug);
     // Run again on any list, the script changes nothing: the site is already set.
+    const set = { ...file, sites: v };
     for (const urls of [readFileSync(FIXTURE, "utf8"), readFileSync(PRIZE_URLS, "utf8"), readFileSync(URLS, "utf8")]) {
-      const out = judgeSite({ site: SITE, verdicts: file, urls, today: ROBOTS_CHECKED });
+      const out = judgeSite({ site: SITE, verdicts: set, urls, today: ROBOTS_CHECKED });
       expect([out.changed, out.why]).toEqual([false, `${SITE} is already NO_TERMS_ROBOTS_OK`]);
-      expect(out.verdicts).toBe(file);
+      expect(out.verdicts).toBe(set);
     }
     expect(serializeVerdicts(file)).toBe(readFileSync(VERDICTS, "utf8"));
   });
@@ -4016,6 +4048,14 @@ describe("tick 57: eurocontrol.int's robots verdict (R1's repository grep ruled 
     const open = audited().filter((e) => termsGate(e.url, e.slug, t57e).ok).length;
     const open56 = audited().filter((e) => termsGate(e.url, e.slug, tick56(v)).ok).length;
     const openLater = audited().filter((e) => termsGate(e.url, e.slug, v).ok).length;
+    // The prize page: "has not been fetched" until the tick-57 dispatch fetched it (render commit 23e17e7); read on 6.10, it
+    // is EUROCONTROL's landing page, not the rules, and the row was re-graded BLOCKED in tick 58, the rules host being
+    // ansperformance.eu (tick-58 fix of the clause). Its fetch, status, title line and the rules host's verdict are read here.
+    const prize = JSON.parse(readFileSync(`research/rendered/${PRIZE_LINE.slug}.meta.json`, "utf8"));
+    const prizeText = readFileSync(`research/rendered/${PRIZE_LINE.slug}.txt`, "utf8");
+    expect([prize.url, prize.status, prize.error, prize.fetchedAt.slice(0, 16)]).toEqual([PRIZE_LINE.url, 200, null, "2026-10-06T20:02"]);
+    expect(prizeText.split("\n")[0]).toBe("Air navigation services performance review | EUROCONTROL");
+    expect(prizeText.split("\n").length - 1).toBe(828);
     // Pinned whole, every count and capture fact computed (tick-57 review: three false edits of its unpinned prose, the page
     // "fetched", copying "allowed" and the group move reversed, got through a list of phrases).
     expect(para).toBe(
@@ -4028,7 +4068,10 @@ describe("tick 57: eurocontrol.int's robots verdict (R1's repository grep ruled 
         "The script wrote the live capture's path into the source, and the source was then repointed to the frozen copy, " +
         `\`${EU_ROBOTS}.txt\` (as ${meta.frozen!.commit} stored it: fetched ${meta.fetchedAt}, sha256 ${meta.sha256!.slice(0, 12)}, the live capture's bytes), exactly as the script's \`judgeSite\` writes it when the capture it reads is that copy, ` +
         "so the weekly run, which rewrites the live capture whenever its body changes, never moves what the verdict rests on. " +
-        "The rules URL passes `termsGate` now, and `scripts/prize-dispatch.mjs --skip-captured --why` lists the prize line as passing, open to dispatch; the page has not been fetched. " +
+        "The rules URL passes `termsGate` now, and `scripts/prize-dispatch.mjs --skip-captured --why` lists the prize line as passing, open to dispatch; " +
+        `the tick-57 dispatch fetched the page on 6.10 at ${prize.fetchedAt.slice(11, 16)} UTC (\`${PRIZE_LINE.slug}\`, fetched ${prize.fetchedAt}, status ${prize.status}), ` +
+        `and it was read on 6.10: EUROCONTROL's ${prizeText.split(" | ")[0]} landing page, not the rules, so the row was re-graded BLOCKED on 6.10 (tick 58), ` +
+        `its rules pages sitting on ansperformance.eu, which is ${v["ansperformance.eu"].verdict}. ` +
         "The two terms lines stay paused as read (`scripts/urls-pause-comments.mjs --fix` rewrote their comments' verdict word to NO_TERMS_ROBOTS_OK), the probe stays on the weekly watch, and ZERO-TESTS row 265 says VERDICT SET 6.10 (tick 57). " +
         `Of the audited sites, ${okNow.length} are NO_TERMS_ROBOTS_OK now (the ${ok56.length} of tick 55 and eurocontrol.int) and their ${clearedNow} rules URLs pass the gate, which admits ${open} of the 101 audited rules URLs (${open56} in ticks 55 and 56; since agenthon.net's robots verdict, later in tick 57, ${okLater.length} sites, ${clearedLater} rules URLs and ${openLater}, "Terms read, third round" below); ` +
         'in the render groups above eurocontrol.int moves from "Robots probe captured, robots verdict not yet run", empty since, to "Now, on robots.txt". ' +
@@ -4301,7 +4344,7 @@ describe("tick 57, third round: agenthon.net's Licensing Policy and Privacy Noti
 
   it("sets NO_TERMS_ROBOTS_OK through scripts/robots-verdict.mjs, its source naming the frozen copy of the 6.10 robots.txt capture", () => {
     const file = JSON.parse(readFileSync(VERDICTS, "utf8"));
-    const v = file.sites as Record<string, Entry>;
+    const v = beforeRecheck(file.sites as Record<string, Entry>);
     const e = v[SITE];
     expect([e.verdict, e.checked, e.copying]).toEqual(["NO_TERMS_ROBOTS_OK", ROBOTS_CHECKED, "unread"]);
     expect(Object.keys(e)).toEqual(["verdict", "source", "checked", "note", "copying"]);
@@ -4339,8 +4382,9 @@ describe("tick 57, third round: agenthon.net's Licensing Policy and Privacy Noti
     expect(readFileSync(VERDICTS, "utf8")).not.toContain(`research/rendered/${PROBE.slug}.`);
     expect(readFileSync(URLS, "utf8")).not.toContain(cited.slug);
     // Run again on any list, the script changes nothing.
+    const set = { ...file, sites: v };
     for (const urls of [readFileSync(FIXTURE, "utf8"), readFileSync(PRIZE_URLS, "utf8"), readFileSync(URLS, "utf8")]) {
-      const out = judgeSite({ site: SITE, verdicts: file, urls, today: ROBOTS_CHECKED });
+      const out = judgeSite({ site: SITE, verdicts: set, urls, today: ROBOTS_CHECKED });
       expect([out.changed, out.why]).toEqual([false, `${SITE} is already NO_TERMS_ROBOTS_OK`]);
     }
     expect(serializeVerdicts(file)).toBe(readFileSync(VERDICTS, "utf8"));
@@ -4566,5 +4610,86 @@ describe("tick 57, third round: agenthon.net's Licensing Policy and Privacy Noti
     // The raw bytes agree: every occurrence is the site's key or inside its entry.
     const count = (t: string) => (t.match(/agenthon/gi) ?? []).length;
     expect(count(readFileSync(VERDICTS, "utf8"))).toBe(1 + count(JSON.stringify(file.sites[SITE])));
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Tick 58: scripts/robots-verdict.mjs --recheck, and the verdicts these blocks read (verdicts(), beforeRecheck()).
+// ---------------------------------------------------------------------------------------------------------------------
+
+describe("tick 58: the blocks above read the verdicts as they stood before any --recheck rewrite", () => {
+  it("keeps the 18 NO_TERMS_ROBOTS_OK entries as a fixture, as terms-verdicts.json held them at 5c980e3", () => {
+    expect(createHash("sha256").update(readFileSync(RECHECK_FIXTURE)).digest("hex")).toBe(RECHECK_FIXTURE_SHA256);
+    const fixture = recheckFixture();
+    expect(Object.keys(fixture).sort()).toEqual(ROBOTS_OK_NOW);
+    for (const [site, e] of Object.entries(fixture)) {
+      expect([e.verdict, e.checked, e.copying], site).toEqual(["NO_TERMS_ROBOTS_OK", ROBOTS_CHECKED, "unread"]);
+      expect(isRobotsOkVerdict(e), site).toBe(true);
+      expect(parseRobotsSource(e.source), site).not.toBeNull();
+      expect(isRecheckOf(e, e), site).toBe(true);
+    }
+    // Where 5c980e3 is reachable, the fixture is byte for byte its NO_TERMS_ROBOTS_OK entries; a shallow checkout has the
+    // pinned sha256 only.
+    let base: string | null = null;
+    try {
+      base = execFileSync("git", ["show", `${RECHECK_BASE}:${VERDICTS}`], { stdio: ["ignore", "pipe", "ignore"], encoding: "utf8" });
+    } catch {
+      base = null;
+    }
+    if (base === null) return;
+    const then = JSON.parse(base).sites as Record<string, Entry>;
+    expect(Object.fromEntries(Object.entries(then).filter(([, e]) => e.verdict === "NO_TERMS_ROBOTS_OK"))).toEqual(fixture);
+  });
+
+  it("reads a refresh and a revert of two real entries back to the fixture's, so every reconstruction above is unchanged by them", () => {
+    // drivendata.org's robots.txt gains a rule no queued path matches (refresh); crunchdao.com's disallows its first queued
+    // rules page (revert): each re-checked by the script on a scratch directory holding its frozen copy and a changed live
+    // capture, as the weekly render would leave them.
+    const raw = JSON.parse(readFileSync(VERDICTS, "utf8")).sites as Record<string, Entry>;
+    const base = beforeRecheck(raw);
+    const urls = [URLS, PRIZE_URLS].map((file) => readFileSync(file, "utf8")).join("\n");
+    const recheck = (site: string, rule: string) => {
+      const dir = mkdtempSync(join(tmpdir(), "prize-terms-recheck-"));
+      try {
+        const cite = parseRobotsSource(base[site].source).cites[0];
+        for (const ext of ["meta.json", "txt"]) copyFileSync(`research/rendered/${cite.slug}.${ext}`, join(dir, `${cite.slug}.${ext}`));
+        const live = cite.slug.replace(/-2026-10-06$/, "");
+        const body = Buffer.from(`User-agent: MehudakRenderWatch\nUser-agent: *\n${rule}\n`);
+        // The live capture a weekly render would write for that robots.txt (whatever the committed live capture holds now).
+        const changed = {
+          url: cite.robotsUrl,
+          slug: live,
+          fetchedAt: "2026-10-13T05:23:00.000Z",
+          status: 200,
+          contentType: "text/plain",
+          byteLength: body.length,
+          sha256: createHash("sha256").update(body).digest("hex"),
+          truncated: false,
+          error: null,
+          bodyPath: `research/rendered/${live}.txt`,
+          textPath: null,
+        };
+        writeFileSync(join(dir, `${live}.txt`), body);
+        writeFileSync(join(dir, `${live}.meta.json`), `${JSON.stringify(changed, null, 2)}\n`);
+        return recheckSite({ site, entry: base[site], urls, urlsText: readFileSync(URLS, "utf8"), renderedDir: dir, today: "2026-10-13" });
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    };
+    const refresh = recheck("drivendata.org", "Disallow: /nothing-queued-here/");
+    const revert = recheck("crunchdao.com", "Disallow: /competitions/datacrunch-2");
+    expect([refresh.outcome, revert.outcome]).toEqual(["refresh", "revert"]);
+    expect([refresh.entry.verdict, revert.entry.verdict]).toEqual(["NO_TERMS_ROBOTS_OK", "NO_TERMS"]);
+    const after = { ...raw, "drivendata.org": refresh.entry, "crunchdao.com": revert.entry };
+    // Read back, the two are the fixture's entries again, and nothing else of the file moves: as verdicts() reads a file.
+    expect(beforeRecheck(after)).toEqual(base);
+    expect(verdictsOf({ sites: after })).toEqual(base);
+    // Unread, they change what the tick-45 and tick-54 reconstructions hold: what the reconstruction is for.
+    expect(tick45(after)).not.toEqual(tick45(base));
+    const ok = (sites: Record<string, Entry>) => Object.keys(sites).filter((s) => sites[s].verdict === "NO_TERMS_ROBOTS_OK");
+    expect(ok({ ...base, "drivendata.org": refresh.entry, "crunchdao.com": revert.entry })).toEqual(ok(base).filter((s) => s !== "crunchdao.com"));
+    // A hand edit of an entry is not a re-check: it is not put back, so the blocks above still see it.
+    const edited = { ...raw, "drivendata.org": { ...refresh.entry, copying: "allowed" } };
+    expect(beforeRecheck(edited)["drivendata.org"]).toEqual(edited["drivendata.org"]);
   });
 });
