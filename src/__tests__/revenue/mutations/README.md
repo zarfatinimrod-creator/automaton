@@ -14,7 +14,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `page-views.json` | `src/revenue/page-views.ts` (`evaluatePageViewGates`, the domain period: `RULING-2026-10-06-domain-clock` fold 5) | `page-views.test.ts`, `page-views-reader.test.ts` | tick 54 |
 | `prize-apply-reading.json` | `scripts/prize-apply-reading.mjs` | `prize-apply-reading.test.ts` | tick 52 |
 | `prize-dispatch.json` | `scripts/prize-dispatch.mjs`, `src/revenue/ai-allowed-events.ts` | `prize-dispatch.test.ts` | tick 47 |
-| `queue-zero-test.json` | `scripts/queue-zero-test.mjs` (the `--js --terms-shell` route, `termsGate`'s js flag) | `queue-zero-test.test.ts` (+ `render-dispatch` for T54-Q11) | tick 54 |
+| `queue-zero-test.json` | `scripts/queue-zero-test.mjs` (the `--js --terms-shell` route and its command line, `termsGate`'s js flag and URL pin) | `queue-zero-test.test.ts` (+ `render-dispatch` for T54-Q11, T54-F1, T54-R-I) | tick 54 |
 | `remask-captures.json` | `scripts/remask-captures.mjs` (+ `freeze-capture.mjs`'s `maskedMeta`) | `remask-captures.test.ts` | ticks 49, 50 |
 | `remask-run.json` | `scripts/remask-run.sh` | `remask-run.test.ts` | tick 53 |
 | `render-dispatch.json` | `scripts/render-dispatch.sh` | `render-dispatch.test.ts` | ticks 52, 54 |
@@ -64,9 +64,9 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
   | `page-views.json` | 5 | 23 (tick 54 builder, inside sim-tree.sh, alone; the two test files take about 2 s a run) |
   | `prize-dispatch.json` | 28 | 69 |
   | `render-watch.json` | 64 | 117 with the first 53 (tick 54's 9 UA entries alone: 52, in sim-tree.sh beside the next two; the two address-mask entries T54-M1, T54-M2 came from the base) |
-  | `queue-zero-test.json` | 16 | 108 (tick 54, alone in sim-tree.sh, after the route's in-place line; 133 the first time, beside `render-watch.json`'s and `render-dispatch.json`'s new entries) |
   | `freeze-capture.json` | 23 | 171 |
   | `loop-edit.json` | 46 | 188, 191 |
+  | `queue-zero-test.json` | 32 | 194 (tick 54 review fixer, in sim-tree.sh, alone; 169 with the first 31; the builder's 16: 108, and 133 beside `render-watch.json`'s and `render-dispatch.json`'s new entries) |
   | `address-kinds.json` | 22 | 198 (tick 53 fixer, beside the whole revenue suite; the builder's 17 entries: 156) |
   | `remask-run.json` | 23 | 210 (tick 53 fixer; the builder's 14 entries: 87, after a first run of 94 s left one survivor) |
   | `mutate.json` | 11 | 393 (243-249 with the first 6) |
