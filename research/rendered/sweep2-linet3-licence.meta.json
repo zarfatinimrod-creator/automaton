@@ -1,17 +1,19 @@
 {
   "url": "https://github.com/adam2314/linet3",
   "slug": "sweep2-linet3-licence",
-  "fetchedAt": "2026-09-29T11:26:35.462Z",
+  "fetchedAt": "2026-10-06T07:14:14.470Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 260006,
-  "sha256": "1f0f2135e375cd4bf4ea3aa0a7ebe51022597ac851fa06d1a2a1f3a69e23b09d",
+  "byteLength": 260701,
+  "sha256": "7a5167e0331d22d94d39e5a9bb42902c616fcbc9b3690fb66f070716c9a967d0",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/sweep2-linet3-licence.html",
   "textPath": "research/rendered/sweep2-linet3-licence.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://github.com/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "e0d21a994e7127df29678ffd5cd1a4f8f87e5a95714099166437edd371f71185",
+  "previousSha256": "1f0f2135e375cd4bf4ea3aa0a7ebe51022597ac851fa06d1a2a1f3a69e23b09d",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

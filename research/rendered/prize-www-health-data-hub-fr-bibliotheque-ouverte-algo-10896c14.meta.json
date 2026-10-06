@@ -1,0 +1,19 @@
+{
+  "url": "https://www.health-data-hub.fr/bibliotheque-ouverte-algorithmes-sante",
+  "slug": "prize-www-health-data-hub-fr-bibliotheque-ouverte-algo-10896c14",
+  "fetchedAt": "2026-10-06T08:46:55.402Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 100055,
+  "sha256": "bab5e9dc61651c5b090dbab3f79eef579f9a79bbd5634a819a666d1b7cb16984",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/prize-www-health-data-hub-fr-bibliotheque-ouverte-algo-10896c14.html",
+  "textPath": "research/rendered/prize-www-health-data-hub-fr-bibliotheque-ouverte-algo-10896c14.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://www.health-data-hub.fr/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

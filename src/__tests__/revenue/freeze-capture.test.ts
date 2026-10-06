@@ -91,7 +91,8 @@ describe("planFreeze / freezeCapture", () => {
       frozen: { on: "2026-09-30", from: "research/rendered/page.meta.json", commit: "abc1234", why: "because" },
     });
     expect(Object.keys(frozen).pop()).toBe("frozen");
-    // The shape the hand-frozen copies have, which products/il-biz-tools/tests/osek-zair-page.test.js pins.
+    // The shape the hand-frozen copies have (products/il-biz-tools/tests/osek-zair-page.test.js pinned nevo's until
+    // 6.10.2026, when that capture was marked [robots-bar] and left the product; this assertion pins it now).
     const nevo = JSON.parse(readFileSync("research/rendered/nevo-vat-law-2026-09-29.meta.json", "utf8"));
     expect(Object.keys(frozen.frozen)).toEqual(Object.keys(nevo.frozen));
     // The live capture is untouched, and a meta line keeps its number (status stays line 5).

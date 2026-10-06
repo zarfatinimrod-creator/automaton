@@ -1,0 +1,19 @@
+{
+  "url": "https://theemailgame.com/robots.txt",
+  "slug": "robots-theemailgame",
+  "fetchedAt": "2026-10-06T07:16:09.668Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 99393,
+  "sha256": "183164e3b081f746abf1f61706eb025e21cf3d309cff2680da0c8f965b014b9c",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/robots-theemailgame.html",
+  "textPath": "research/rendered/robots-theemailgame.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://theemailgame.com/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

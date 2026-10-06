@@ -1,0 +1,20 @@
+{
+  "url": "https://pasteurlabs.ai/tesseract-hackathon-2026/terms_and_conditions.txt",
+  "slug": "prize-pasteurlabs-ai-tesseract-hackathon-2026-terms-an-f42f8692",
+  "fetchedAt": "2026-10-06T09:26:29.678Z",
+  "status": 200,
+  "contentType": "text/plain; charset=UTF-8",
+  "byteLength": 6371,
+  "sha256": "17c37d342721abd8453a610568dadc4b9b60347fad3d5afe57cc0707d500c0db",
+  "truncated": false,
+  "redacted": 1,
+  "error": null,
+  "bodyPath": "research/rendered/prize-pasteurlabs-ai-tesseract-hackathon-2026-terms-an-f42f8692.txt",
+  "textPath": null,
+  "robots": "none",
+  "robotsUrl": "https://pasteurlabs.ai/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

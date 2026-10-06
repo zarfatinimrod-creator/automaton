@@ -1,0 +1,269 @@
+[
+  {
+    "id": "T54-Q1",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "if (graded?.kind !== \"js-shell\") {",
+    "replace": "if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q1: --terms-shell queues a plain capture capture-check does not grade js-shell (bot-challenge, short, ok, status)"
+  },
+  {
+    "id": "T54-Q2",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (rendered.length) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q2: once only dropped: a slug with a js capture, live or frozen, is queued again"
+  },
+  {
+    "id": "T54-Q3",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (jsLine) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q3: once only dropped: a slug with a js line in urls.txt, active or retired, is queued again"
+  },
+  {
+    "id": "T54-Q4",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (!SHELL_ROBOTS.has(meta?.robots)) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q4: robots check dropped: a capture robots.txt disallowed, could not read, or never read is queued"
+  },
+  {
+    "id": "T54-Q5",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (!slug.startsWith(\"terms-\")) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q5: --terms-shell accepts a slug that is not terms-"
+  },
+  {
+    "id": "T54-Q6",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "const mine = name === `${slug}.meta.json` || meta?.frozen?.from === from;",
+    "replace": "const mine = name === `${slug}.meta.json`;",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q6: a frozen copy of a js capture no longer counts as an earlier js capture"
+  },
+  {
+    "id": "T54-Q7",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "meta?.frozen?.from === from",
+    "nth": 1,
+    "replace": "true",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q7: any meta whose name starts <slug>- counts as the slug's js capture (terms-pending-rates for terms-pending)"
+  },
+  {
+    "id": "T54-Q8",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (meta?.url !== url) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q8: the plain capture may be of another URL than the one queued"
+  },
+  {
+    "id": "T54-Q9",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (verdict !== \"TERMS_PENDING\" && verdict !== \"NO_TERMS\") {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q9: a site whose terms are read (NOT_BARRED) gets the once-only render of its terms page"
+  },
+  {
+    "id": "T54-Q10",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (kind) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q10: a note of another kind (refusal-type: K1, no js attempt ever) is queued"
+  },
+  {
+    "id": "T54-Q11",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "if (js && String(slug).startsWith(\"terms-\") && isShellTermsVerdict(entry))",
+    "replace": "if (String(slug).startsWith(\"terms-\") && isShellTermsVerdict(entry))",
+    "test": [
+      "src/__tests__/revenue/queue-zero-test.test.ts",
+      "src/__tests__/revenue/render-dispatch.test.ts"
+    ],
+    "note": "tick 54 Q11: termsGate passes a K4 shell site's terms page as a plain line too"
+  },
+  {
+    "id": "T54-Q12",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "const gate = termsGate(url, slug ?? \"\", verdicts, { js: flag === \"js\", dir });",
+    "replace": "const gate = termsGate(url, slug ?? \"\", verdicts, { dir });",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q12: applyVerdicts ignores the line's js flag and pauses a K4 shell site's js terms line"
+  },
+  {
+    "id": "T54-Q13",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "return entry?.verdict === \"NO_TERMS\" && /^shell\\b/.test(String(entry?.note ?? \"\"));",
+    "replace": "return /^shell\\b/.test(String(entry?.note ?? \"\"));",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q13: isShellTermsVerdict takes any verdict whose note opens shell"
+  },
+  {
+    "id": "T54-Q14",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "(sha256 ${prefix}, fetched",
+    "replace": "(sha256 ${sha256}, fetched",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q14: the comment carries the whole sha256, not its prefix"
+  },
+  {
+    "id": "T54-Q15",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (verdict === \"NO_TERMS\" && !isShellTermsVerdict(entry)) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q15: a NO_TERMS site without the shell kind word is refused only by the gate, without saying fold 2 writes the word"
+  },
+  {
+    "id": "T54-Q16",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "out.splice(active ? own : own + 1, active ? 1 : 0, comment, line);",
+    "replace": "out.splice(own + 1, 0, comment, line);",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 Q16: the URL's active plain line is kept beside the js line (two lines share the slug)"
+  },
+  {
+    "id": "T54-F1",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "    if (plain === url) return { ok: true, site, verdict, termsShell: true };",
+    "replace": "    return { ok: true, site, verdict, termsShell: true };",
+    "test": [
+      "src/__tests__/revenue/queue-zero-test.test.ts",
+      "src/__tests__/revenue/render-dispatch.test.ts"
+    ],
+    "note": "tick 54 review fix 1: termsGate passes a K4 shell site's js terms- line on any URL of the site (the registered-mail rate as terms-rates)"
+  },
+  {
+    "id": "T54-F2",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (!/^[a-z0-9][a-z0-9._-]*$/.test(String(slug))) return null;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review fix 1: plainCaptureUrl reads a meta through a slug with a path in it"
+  },
+  {
+    "id": "T54-F3",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": ".find((j) => j.slug === slug || sameUrl(j.url, url));",
+    "replace": ".find((j) => j.slug === slug);",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review fix 2: a js line of the same URL under another slug, active or retired, no longer counts"
+  },
+  {
+    "id": "T54-F4",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "    return new URL(a).href === new URL(b).href;",
+    "replace": "    return a === b;",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review fix 2: the URL compared as written, not as parsed (PENDING.example)"
+  },
+  {
+    "id": "T54-F5",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "const sameUrlAs = url !== undefined && typeof meta?.url === \"string\" && sameUrl(meta.url, url);",
+    "replace": "const sameUrlAs = false;",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review fix 2: a js capture of the same URL under another slug, live or frozen, no longer counts"
+  },
+  {
+    "id": "T54-F6",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "const rendered = jsCapturesOf(slug, dir, { url });",
+    "replace": "const rendered = jsCapturesOf(slug, dir);",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review fix 2: the route asks for the slug's js captures only, not the URL's"
+  },
+  {
+    "id": "T54-F7",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (RENDERED_ONCE.test(String(entry?.note ?? \"\"))) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review fix 2: the note's \"shell: rendered once\" record is not read"
+  },
+  {
+    "id": "T54-F8",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "const RENDERED_ONCE = /\\bshell:\\s*rendered once\\b/i;",
+    "replace": "const RENDERED_ONCE = /^shell:\\s*rendered once\\b/i;",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review fix 2: the record counts only at the note's start (a TERMS_PENDING note keeps its own opening)"
+  },
+  {
+    "id": "T54-F9",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "const gate = termsGate(url, slug ?? \"\", verdicts, { js: flag === \"js\", dir });",
+    "replace": "const gate = termsGate(url, slug ?? \"\", verdicts, { js: flag === \"js\" });",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review fix 1: applyVerdicts reads the plain capture from research/rendered whatever dir it is given"
+  },
+  {
+    "id": "T54-F10",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "const gate = termsGate(url, slug, verdicts, { js: true, dir });",
+    "replace": "const gate = termsGate(url, slug, verdicts, { js: true });",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review fix 1: the route's own gate call reads the plain capture from research/rendered, not its dir"
+  },
+  {
+    "id": "T54-R-E",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "const OTHER_KIND = /^(refusal-type|exhaustive-negative|unanswered|deferred)\\b/;",
+    "replace": "const OTHER_KIND = /^(refusal-type|exhaustive-negative|deferred)\\b/;",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review R-E (survived the review): a K3 unanswered note no longer refused by kind"
+  },
+  {
+    "id": "T54-R-F",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "const OTHER_KIND = /^(refusal-type|exhaustive-negative|unanswered|deferred)\\b/;",
+    "replace": "const OTHER_KIND = /^(refusal-type|unanswered|deferred)\\b/;",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review R-F (survived the review): a K2 exhaustive-negative note no longer refused by kind"
+  },
+  {
+    "id": "T54-R-J",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "if (!values[\"dry-run\"]) writeFileSync(URLS, out.urls);",
+    "nth": 1,
+    "replace": "writeFileSync(URLS, out.urls);",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review R-J (survived the review): --terms-shell --dry-run writes urls.txt"
+  },
+  {
+    "id": "T54-R-K",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "if (!values.js) throw new Error(\"--terms-shell queues a js line",
+    "replace": "if (false) throw new Error(\"--terms-shell queues a js line",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review R-K (survived the review): --terms-shell accepted without --js"
+  },
+  {
+    "id": "T54-R-K2",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "if (values.terms !== undefined) throw new Error(\"--terms-shell and --terms are two routes",
+    "replace": "if (false) throw new Error(\"--terms-shell and --terms are two routes",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 54 review fix 4: --terms-shell accepted beside --terms"
+  },
+  {
+    "id": "T54-R-I",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "if (js && String(slug).startsWith(\"terms-\") && isShellTermsVerdict(entry))",
+    "replace": "if (js && isShellTermsVerdict(entry))",
+    "test": [
+      "src/__tests__/revenue/queue-zero-test.test.ts",
+      "src/__tests__/revenue/render-dispatch.test.ts"
+    ],
+    "note": "tick 54 review R-I: termsGate passes a js line of a shell site whatever its slug (a pre-verdict capture of another page names its own URL)"
+  }
+]

@@ -35,7 +35,7 @@ import {
 import { PRIZE_INTAKE_FILE, listedEventsFrom, readPrizeIntake, runPrizeIntake, summarisePrizeIntake } from "../../revenue/prize-intake.js";
 import { renderReport, tick } from "../../revenue/runner.js";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as render-watch.test.ts)
-import { parseUrlList } from "../../../scripts/render-watch.mjs";
+import { parseUrlList, termsBarred } from "../../../scripts/render-watch.mjs";
 
 const FIXTURES = resolve(dirname(fileURLToPath(import.meta.url)), "..", "fixtures");
 const FIXTURE_TEXT = readFileSync(join(FIXTURES, "mlcontests-competitions-trimmed.json"), "utf8");
@@ -155,9 +155,19 @@ describe("the first weekly run — a table for a session to fill, with nothing f
 
   it("writes the awaiting URLs in render-watch's urls syntax, every one verbatim from the list and the table", async () => {
     const { urls, md, state } = await run();
-    const entries = parseUrlList(urls) as { url: string; slug: string }[];
+    // render-watch's parser refuses a line on a TERMS_BARRED host by name, and scripts/prize-dispatch.mjs drops such a line
+    // before any dispatch. Since 6.10 (tick 54) zindi.africa is one (its terms bar storing the site's material,
+    // research/rendered/terms-zindi-2026-10-06.txt:68), and kaggle.com too (its terms, read on the once-only js render, bar
+    // crawling or scraping any page, research/rendered/terms-kaggle-2026-10-06-a3cb438.txt:77), so the syntax is checked
+    // on the other lines and the barred ones are named, in the file's order.
+    const lines = urls.split("\n");
+    const barred = lines.filter((l) => /^https?:\/\//.test(l) && termsBarred(new URL(l.split("\t")[0]).hostname));
+    expect(barred.map((l) => l.split("\t")[0])).toEqual([BIOHUB, ARC, ZINDI]);
+    const parsed = parseUrlList(lines.filter((l) => !barred.includes(l)).join("\n")) as { url: string; slug: string }[];
+    const entries = [...parsed, ...barred.map((l) => ({ url: l.split("\t")[0], slug: l.split("\t")[1] }))];
     // 9 event URLs + 12 other URLs the list gives (flagos 2, ansperformance 8, RealPDE 2); all distinct.
     expect(entries).toHaveLength(21);
+    expect(new Set(entries.map((e) => e.slug)).size).toBe(21);
     expect(state.aiAllowed.urlsAwaiting).toBe(21);
     expect(entries.map((e) => e.url)).toContain(ARC);
     for (const e of entries) {
@@ -184,7 +194,10 @@ describe("renderSlug and the tiktok.com refusal", () => {
     expect(a).toBe(renderSlug(ARC));
     expect(a).not.toBe(renderSlug(`${ARC}&x=1`));
     expect(a.length).toBeLessThanOrEqual(80);
-    expect(() => parseUrlList(`${ARC}\t${a}\n`)).not.toThrow();
+    // The slug is one render-watch accepts. ARC's own host is refused since 6.10 (tick 54: kaggle.com is in TERMS_BARRED),
+    // and for that reason only, so the slug is checked on a line whose host is not barred.
+    expect(() => parseUrlList(`https://example.org/rules\t${a}\n`)).not.toThrow();
+    expect(() => parseUrlList(`${ARC}\t${a}\n`)).toThrow(/is on kaggle\.com: Kaggle's terms bar/);
   });
 
   it("refuses tiktok.com and its subdomains, and nothing else", () => {

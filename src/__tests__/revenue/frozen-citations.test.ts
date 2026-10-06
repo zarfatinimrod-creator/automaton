@@ -62,6 +62,14 @@ const LIVE_MENTIONS: Record<string, string> = {
   "research/breadth/scouts/automation-marketplaces.json apify-store-accessibility": "a scout's output, naming the watched listing",
   "research/breadth/verify/verdicts.json apify-store-accessibility": "a verifier's output, naming the watched listing",
   "research/faceless-youtube/LICENCE-IGO-DECISION.md unesco-uis-databrowser-terms": "a urls.txt line the note proposed: the slug a render writes",
+  "research/channel-loop/RULING-2026-10-06-robots-and-terms.md robots-nevo": "the weekly probe the ruling keeps running, and its live meta (what the runner saw)",
+  // Tick 54 (6.10): adaptionlabs.ai's terms page served a nav-only shell and stays TERMS_PENDING and on the weekly watch; its
+  // note names the live meta of that shell, which the js route of decision 3 waits to render.
+  "research/channel-loop/terms-verdicts.json terms-adaptionlabs": "adaptionlabs.ai's note: the live nav-only shell the js route waits to render until the classifier names its kind",
+  // terms-kaggle and terms-israel-post were here (the ruling and the two notes named the live shells the once-only js route
+  // re-rendered). Both renders ran on 6.10 (a3cb438) and both js lines are retired, so neither slug is an active capture
+  // any more: kaggle.com's note cites the frozen copy of its render, and Israel Post's names the live 403 meta, which no
+  // render rewrites now.
   // The 4.10 row-18 ruling named amo-add-on-policies while urls.txt:331 was still active; its fold retired that line
   // (ruling §3 rule 1), so the slug is no longer an active capture and its entry here went with it.
 };

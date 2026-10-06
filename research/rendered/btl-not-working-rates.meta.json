@@ -1,23 +1,20 @@
 {
   "url": "https://www.btl.gov.il/Insurance/Rates/Pages/%D7%9E%D7%99%20%D7%A9%D7%90%D7%99%D7%A0%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D%20%D7%95%D7%91%D7%A2%D7%9C%D7%99%20%D7%94%D7%9B%D7%A0%D7%A1%D7%94%20%D7%A9%D7%9C%D7%90%20%D7%9E%D7%A2%D7%91%D7%95%D7%93%D7%94.aspx",
   "slug": "btl-not-working-rates",
-  "fetchedAt": "2026-09-29T11:27:43.652Z",
+  "fetchedAt": "2026-10-06T07:14:24.101Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 144894,
-  "sha256": "f2591660f40c2c589ed7649c6fee07b5c3d1a06d9882a4f61a258fefc3677ece",
+  "byteLength": 143317,
+  "sha256": "507b7097dd2e798582b9ecb3dbd547e55f6cdfe9c544952959f4148259b7c230",
   "truncated": false,
   "redacted": 1,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 1,
-    "fold": "12143ca"
-  },
   "error": null,
   "bodyPath": "research/rendered/btl-not-working-rates.html",
   "textPath": "research/rendered/btl-not-working-rates.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://www.btl.gov.il/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "460b2288c6fb6366464a8dbdcad25ca2ab25190d43151f56d194b38265ff2156",
+  "previousSha256": "f2591660f40c2c589ed7649c6fee07b5c3d1a06d9882a4f61a258fefc3677ece",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

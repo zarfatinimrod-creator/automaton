@@ -185,12 +185,12 @@ LovableBot
 Keep your Lovable project synced both ways
 App
 
-Linear Code
-Review code and manage pull requests
-App
-
 OpenCode
 Login to OpenCode through Github Copilot
+App
+
+Linear Code
+Review code and manage pull requests
 App
 
 CodeRabbit
@@ -216,10 +216,6 @@ CodeFactor
 App
 Automated code review for humans and AI
 
-Rewind Backups for GitHub
-App
-Automated GitHub backups so you can recover fast, stay compliant, and never lose a line of code
-
 Azure Pipelines
 App
 Continuously build, test, and deploy to any platform and cloud
@@ -228,33 +224,41 @@ Zenhub
 App
 Project management that's seamlessly integrated with GitHub’s data & interface, builds powerful insights & automates tasks
 
-Codecov | Code Coverage
-App
-Automatic test report merging for all CI and languages into a single code coverage report directly into your pull request
-
-Codacy
-App
-Codacy helps to build effortless code quality and security for developers
-
 Qlty Cloud
 App
 Code quality and coverage done right
+
+Codecov | Code Coverage
+App
+Automatic test report merging for all CI and languages into a single code coverage report directly into your pull request
 
 CircleCI
 App
 Ship trusted code with confidence. Fast feedback, flexible execution, and enterprise-grade security
 
+Rewind Backups for GitHub
+App
+Automated GitHub backups so you can recover fast, stay compliant, and never lose a line of code
+
+Codacy
+App
+Codacy helps to build effortless code quality and security for developers
+
 Zube
 App
 An Agile project management tool that seamlessly integrates with GitHub Issues
 
-PullRequest
+CodeScene
 App
-Expert On-Demand Code Review as a Service
+A software engineering intelligence tool tool to identify and prioritize technical debt and evaluate your efficiency
 
-Datree
+Waydev
 App
-YAML configs and K8s manifests validation tool
+AI-Powered Software Engineering Intelligence Platform
+
+TestQuality - Unified Test Management for GitHub
+App
+Test Plan Driven QA Test Management for GitHub
 
 DeepScan
 App
@@ -264,29 +268,25 @@ Slack + GitHub
 App
 Connect your code without leaving Slack
 
-Waydev
-App
-AI-Powered Software Engineering Intelligence Platform
-
 Octobox
 App
 Spend less time managing your GitHub notifications
+
+Datree
+App
+YAML configs and K8s manifests validation tool
+
+Pull Request Size
+App
+Apply size labels to Pull Requests based on the total lines of code changed
 
 Review Notebook App
 App
 Code Review & Collaboration for Jupyter Notebooks
 
-Atlassian
-App
-GitHub for Atlassian unifies data, automates workflows, and syncs development across GitHub, Jira, and your Atlassian apps
-
 Mergify
 App
 Pull requests automation service. Merge your pull requests faster with automatic merges and a merge queue
-
-Pull Request Size
-App
-Apply size labels to Pull Requests based on the total lines of code changed
 
 Footer
 

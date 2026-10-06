@@ -480,6 +480,21 @@ describe("redactSecrets — a captured page must never trip push protection", ()
   const githubSample = "ghp" + "_" + "a".repeat(36);
   const awsSample = "AKIA" + "IOSFODNN7EXAMPLE";
 
+  it("masks Mapbox tokens of every prefix (push protection refuses a public one too) and a Google API key (tick 54)", () => {
+    const mapboxSecret = ["sk", `eyJ${"a".repeat(24)}`, "b".repeat(32)].join(".");
+    const mapboxPublic = ["pk", `eyJ1Ijoi${"a".repeat(40)}`, "b".repeat(22)].join(".");
+    const googleKey = `AIza${"0".repeat(35)}`;
+    const r = redactSecrets(Buffer.from(`<script>t="${mapboxSecret}";u="${mapboxPublic}";k="${googleKey}"</script>`), "text/html");
+    const out = r.bytes.toString("utf8");
+    expect(out).not.toContain(mapboxSecret);
+    expect(out).not.toContain(mapboxPublic);
+    expect(out).not.toContain(googleKey);
+    expect(out).toBe(`<script>t="[redacted:mapbox-token]";u="[redacted:mapbox-token]";k="[redacted:google-api-key]"</script>`);
+    expect(r.count).toBe(3);
+    // Not a Mapbox token: a Slovak Wikipedia URL keeps its host.
+    expect(redactSecrets(Buffer.from("https://sk.wikipedia.org/wiki/abcdefghijklmnopqrstuvwxyz"), "text/plain").count).toBe(0);
+  });
+
   it("masks documented sample keys in text bodies and says how many it masked", () => {
     const html = Buffer.from(`<code>curl -u ${stripeSample}:</code><p>${githubSample}</p><i>${awsSample}</i>`);
     const r = redactSecrets(html, "text/html; charset=utf-8");

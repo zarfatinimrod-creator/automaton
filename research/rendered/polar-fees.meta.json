@@ -1,23 +1,20 @@
 {
   "url": "https://polar.sh/docs/merchant-of-record/fees",
   "slug": "polar-fees",
-  "fetchedAt": "2026-09-29T11:28:00.613Z",
+  "fetchedAt": "2026-10-06T07:14:29.701Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 411067,
-  "sha256": "ac14e5367953c0be49da5a3c4968f83641fae1ef61a29b12273d97457c837f28",
+  "byteLength": 414426,
+  "sha256": "9d6400158176b7ea7a0578ab5c71644f1ed28977514cd17dbe1b3330c865a2a2",
   "truncated": false,
   "redacted": 1,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 1,
-    "fold": "12143ca"
-  },
   "error": null,
   "bodyPath": "research/rendered/polar-fees.html",
   "textPath": "research/rendered/polar-fees.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://polar.sh/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "9d582c65e2dd2d9d23f9b9d0bc343e3acfcf6cd4ab2dde7b21a1b6acffe8f431",
+  "previousSha256": "ac14e5367953c0be49da5a3c4968f83641fae1ef61a29b12273d97457c837f28",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -10,7 +10,8 @@
  * render-watch.yml rewrites a capture in place whenever the page changed, so a cited line can silently come to say
  * something else. Two captures were frozen by hand for that reason (nevo-vat-law-2026-09-29 and
  * kokoro-82m-model-card-2026-09-29: their metas' "frozen" blocks say why, and
- * products/il-biz-tools/tests/osek-zair-page.test.js pins the shape). This does the same by script.
+ * src/__tests__/revenue/freeze-capture.test.ts pins the shape; osek-zair-page.test.js pinned nevo's until 6.10.2026, when
+ * that capture was marked [robots-bar] and left the product). This does the same by script.
  * (hexgrad-kokoro-voices-js-dfb907a is no frozen copy: a file fetched at a pinned commit, on no urls.txt line, with no
  * "frozen" block, so FROZEN.sha256 does not record it.)
  *

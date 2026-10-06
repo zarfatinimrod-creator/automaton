@@ -1,0 +1,127 @@
+TESSERACT HACKATHON TERMS AND CONDITIONS
+
+OVERVIEW
+
+Pasteur Labs, Inc. ("Host") is hosting a hackathon ("Hackathon") to encourage building differentiable research pipelines for the next generation of scientific computing. By registering and participating, you agree to these terms and conditions in full.
+
+ELIGIBILITY
+
+The Hackathon is open to individuals or teams of up to four (4) people worldwide, subject to the restrictions below:
+
+Participants must be at least 18 years of age, or have parental/guardian consent if under 18.
+
+Employees, contractors, and immediate family members of Host are not eligible to win prizes.
+
+The Hackathon is not open to residents of countries subject to U.S. embargoes or sanctions, including but not limited to: Cuba, Iran, North Korea, Russia, and the Crimea, Donetsk, and Luhansk regions.
+
+The Hackathon is void where prohibited by law.
+
+By entering into the Hackathon, you certify that you or each member of your team is eligible to participate.
+
+HOW TO ENTER
+
+To participate, you must:
+
+Complete the registration form.
+
+Accept these terms and conditions by checking the acceptance box during registration
+
+Submit your project according to the instructions and deadline provided at https://pasteurlabs.ai/tesseract-hackathon-2026
+
+One submission per person or team. Team members must be identified at registration.
+
+SUBMISSION REQUIREMENTS
+
+All submissions must:
+
+Be original work created during the Hackathon period
+
+Not infringe on any third-party intellectual property rights
+
+Use Tesseract (https://github.com/pasteurlabs/tesseract-core)
+
+Be provided as a public repository with readme or script for reproducibility
+
+Be licensed under the Apache License 2.0 (see "Open Source Licensing" section below)
+
+Include all required materials as specified in the submission form
+
+Meet any additional criteria specified in the Hackathon instructions
+
+Team leaders will be asked to post a link to their Hackathon project's GitHub repository on LinkedIn and tag Pasteur Labs & ISI as part of the submission process. By posting publicly and tagging us, you consent to Host engaging with your post, including resharing it on our social media channels.
+
+OPEN SOURCE LICENSING
+
+All submissions must be released under the Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0). This means:
+
+Your code will be publicly available and free to use, modify, and distribute
+
+This aligns with our existing open source project and community standards
+
+You retain copyright to your work, but grant broad permissions for its use
+
+By submitting, you confirm that all team members agree to license the submission under Apache 2.0.
+
+JUDGING AND PRIZES
+
+Cash Prize
+
+Winners will receive prizes as specified in https://pasteurlabs.ai/tesseract-hackathon-2026. For team submissions, the prize will be paid to one designated team member who is responsible for distributing it among the team.
+
+Important tax information:
+
+Prize winners are responsible for all applicable taxes on prize money
+
+U.S. winners will need to provide a W-9 form and will receive a 1099 tax form if the prize exceeds $600
+
+Non-U.S. winners will need to provide a W-8BEN form
+
+Winners must provide all required tax documentation within 30 days of notification or forfeit the prize
+
+INTELLECTUAL PROPERTY AND MARKETING RIGHTS
+
+You retain ownership of your intellectual property, subject to the terms of the Apache 2.0 license.
+
+By submitting, you grant Host a non-exclusive, worldwide, perpetual, royalty-free license to:
+
+Use, reproduce, modify, and display your submission, including any demo videos, presentations, or other materials you create that contain your name, voice, image, or likeness
+
+Incorporate winning submissions into our marketing and sales materials, website, social media, presentations, and other promotional activities
+
+Showcase your work in our open source ecosystem
+
+We will provide appropriate attribution when featuring your work
+
+These rights allow us to highlight great community contributions while respecting your ownership.
+
+GENERAL CONDITIONS
+
+Host reserves the right to disqualify any submission that violates these terms, uses prohibited techniques, or is otherwise inappropriate.
+
+Host is not responsible for technical issues, lost submissions, or delays outside our reasonable control.
+
+Decisions regarding winners and rule interpretations are final.
+
+Host may modify these terms at any time by posting updated terms; continued participation constitutes acceptance.
+
+These terms are governed by the laws of New York.
+
+DISCLAIMER OF WARRANTY; LIMITATION OF LIABILITY
+
+No Warranties: THE HACKATHON AND ALL PRIZES ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.‍
+
+Limitation of Liability: TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, PASTEUR LABS, INC., ITS AFFILIATES, SUBSIDIARIES, AND THEIR RESPECTIVE OFFICERS, DIRECTORS, EMPLOYEES, AND AGENTS (COLLECTIVELY, THE "PASTEUR LABS") WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM (I) A PARTICIPANT'S ACCESS TO OR USE OF OR INABILITY TO ACCESS OR USE THE HACKATHON; (II) ANY CONDUCT OR CONTENT OF ANY THIRD PARTY ON THE HACKATHON; (III) ANY CONTENT OBTAINED FROM THE HACKATHON; AND (IV) UNAUTHORIZED ACCESS, USE OR ALTERATION OF A PARTICIPANT'S TRANSMISSIONS OR CONTENT, WHETHER BASED ON WARRANTY, CONTRACT, TORT (INCLUDING NEGLIGENCE) OR ANY OTHER LEGAL THEORY, WHETHER OR NOT PASTEUR LABS HAVE BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGE, AND EVEN IF A REMEDY SET FORTH HEREIN IS FOUND TO HAVE FAILED OF ITS ESSENTIAL PURPOSE.
+
+INDEMNIFICATION
+
+Each participant agrees to indemnify, defend, and hold harmless Pasteur Labs from and against any and all liabilities, damages, losses, costs, and expenses incurred in connection with any third-party claim arising out of or related to:
+
+Participant's participation in the Hackathon;
+
+Participant's violation of these rules, terms, and conditions; or
+
+Any project or content that participant submits.
+
+QUESTIONS?
+
+Contact us at [redacted:email]@simulation.science with any questions about these terms and conditions.

@@ -471,6 +471,19 @@ describe("the colony tick — the KPI step reads, the gates read the rows", () =
     expect(result.blockers.join("\n")).toMatch(/page views il-biz-tools: instrument fault/);
   });
 
+  it("a domain clock with no reads by domain day 21 is reader_down, not an instrument fault (the deadline is D0's)", async () => {
+    // RULING-2026-10-06-domain-clock: the domain deploy is a new clock, not a new instrument, so no M-instrument
+    // deadline runs from it; with no read key the domain weeks are overdue, which is the reader down.
+    writeClock(clockFile, { "il-biz-tools": { d0: D0, d0Evidence: "test", domainDeployDay: "2027-01-04", domainEvidence: "test" } });
+    const result = await runTick("2027-01-25T12:00:00.000Z", {}, fakeFetch(() => ok()).fetchImpl);
+    const gate = result.pageViewGates.find((g) => g.lineId === "il-biz-tools");
+    expect(gate?.period).toBe("domain");
+    expect(gate?.verdict).toBe("reader_down");
+    const blockers = result.blockers.join("\n");
+    expect(blockers).toMatch(/page views il-biz-tools: reader down/);
+    expect(blockers).not.toMatch(/instrument fault/);
+  });
+
   it("a reader that stops after instrumentation is reader_down: a blocker by that name, never an instrument fault", async () => {
     writeClock(clockFile, { "il-biz-tools": { d0: D0, d0Evidence: "test" } });
     // Day 14: weeks 1-2 read on time — instrumented.

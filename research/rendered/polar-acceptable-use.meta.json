@@ -1,23 +1,20 @@
 {
   "url": "https://polar.sh/docs/merchant-of-record/acceptable-use/introduction",
   "slug": "polar-acceptable-use",
-  "fetchedAt": "2026-09-29T11:27:59.487Z",
+  "fetchedAt": "2026-10-06T07:14:28.594Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 370979,
-  "sha256": "9391359318fa3dfa77d7e14f964fef8d5c0df773822c41edf42808f82622bc40",
+  "byteLength": 374334,
+  "sha256": "9e0f15f1a4240be789f30b5622ae0f3be79520003edd06464a751faf0a905a23",
   "truncated": false,
   "redacted": 1,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 1,
-    "fold": "12143ca"
-  },
   "error": null,
   "bodyPath": "research/rendered/polar-acceptable-use.html",
   "textPath": "research/rendered/polar-acceptable-use.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://polar.sh/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "61262538f06882ceff034bf28f03e82168d60ff97b089b83796cff1047320f1e",
+  "previousSha256": "9391359318fa3dfa77d7e14f964fef8d5c0df773822c41edf42808f82622bc40",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -219,15 +219,90 @@ export const DELAY_MS = 1_000;
 export const ROBOTS_PRODUCT_TOKEN = "MehudakRenderWatch";
 
 /**
- * An identifying User-Agent: the product token, a version, and the brand's own URL, so a site can see
- * who is asking and say no to it by name in its robots.txt. Sent by both modes and by the robots.txt
- * fetch. It names the brand and nothing else — never a username, never the repository's URL
- * (MISSION.md:276-279; ruling 30.9 16(d) D2(v)). It replaced a copied Chrome string on 30.9: some pages
- * may now answer 403 where they rendered to a browser, and that 403 is the site's answer to an honest
- * crawler, recorded as such. Nothing is done to get past a block — no proxy, no retry storm, no cookie
- * games. A site that says no is recorded as saying no.
+ * The contact element of the User-Agent. It names only a surface the brand holds and that answers
+ * (research/channel-loop/RULING-2026-10-06-robots-and-terms.md 2(1), ruling 6.10 row 21 (b)), and today the brand
+ * holds none: il-biz-tools.netlify.app is a target, not a deployed site, and a *.netlify.app name the brand does
+ * not hold can come to point at a stranger. So it is empty, and the User-Agent says "contact pending" instead.
+ *
+ * It fills on the first of two events, and again on the second (decision 2(2)):
+ *   (i)  a brand site is live at a URL the loop controls: "live" means a deploy record written by the deploy
+ *        workflow into a committed file (not by hand) AND one render-watch capture of that URL with status 200
+ *        whose text carries the brand name (research/rendered/brand-<host>.meta.json; uaContactProblems checks
+ *        the capture's half) — then UA_CONTACT is "+<URL>";
+ *   (ii) step 8 is done, the brand mailbox: its address joins in Wikimedia's form, "+<URL>; <address>", or stands
+ *        alone if (i) has not happened. The address is the brand's, never a personal one.
+ * Each change bumps UA_VERSION (1.1, then 1.2), so a host's logs tell the strings apart. Never the repository's
+ * URL, never a username (MISSION.md:304-308): the test refuses both.
  */
-export const USER_AGENT = `${ROBOTS_PRODUCT_TOKEN}/1.0 (+https://il-biz-tools.netlify.app)`;
+export const UA_CONTACT = "";
+
+/** The version in the User-Agent: 1.0 while UA_CONTACT is empty; bumped on each change of UA_CONTACT (above). */
+export const UA_VERSION = "1.0";
+
+/**
+ * The User-Agent for a contact and a version: the product token, the version, and a parenthesis that states only
+ * true things — "robots.txt honoured; contact pending" with no contact, "<contact>; robots.txt honoured" with one
+ * (the contact first, in decision 2(2)'s "(+<URL>; …)" form).
+ */
+export function userAgentFor(contact = UA_CONTACT, version = UA_VERSION) {
+  const about = contact ? `${contact}; robots.txt honoured` : "robots.txt honoured; contact pending";
+  return `${ROBOTS_PRODUCT_TOKEN}/${version} (${about})`;
+}
+
+/**
+ * An identifying User-Agent: the product token, a version, and what the runner does, so a site can see who is
+ * asking and say no to it by name in its robots.txt (ROBOTS_PRODUCT_TOKEN, the refusal channel the runner
+ * honours). Sent by both modes and by the robots.txt fetch. It names the brand and nothing else — never a
+ * username, never the repository's URL (MISSION.md:276-279; ruling 30.9 16(d) D2(v)), and no URL at all until
+ * UA_CONTACT holds one (ruling 6.10 row 21 (b)). It replaced a copied Chrome string on 30.9: some pages may now
+ * answer 403 where they rendered to a browser, and that 403 is the site's answer to an honest crawler, recorded as
+ * such. Nothing is done to get past a block — no proxy, no retry storm, no cookie games. A site that says no is
+ * recorded as saying no.
+ */
+export const USER_AGENT = userAgentFor();
+
+/**
+ * Why `contact` may not stand in the User-Agent yet, per decision 2(2)(i): for every URL in it, a render-watch
+ * capture of that URL at <dir>/brand-<host>.meta.json whose meta records that URL's host, no error and status 200.
+ * Returns the reasons, [] when there are none — and for a contact with no URL (an empty one, or a mailbox alone).
+ * The deploy record, the other half of (i), is a committed file the deploy workflow writes; no such workflow exists
+ * yet, so it is for the person who fills UA_CONTACT to cite, and this checks the capture.
+ */
+export function uaContactProblems(contact = UA_CONTACT, dir = DEFAULT_OUT_DIR) {
+  const problems = [];
+  for (const raw of String(contact ?? "").match(/https?:\/\/[^\s;)]+/gi) ?? []) {
+    let host;
+    try {
+      host = new URL(raw).hostname.toLowerCase().replace(/\.+$/, "");
+    } catch {
+      problems.push(`${raw} is not a URL`);
+      continue;
+    }
+    const metaPath = join(dir, `brand-${host}.meta.json`);
+    if (!existsSync(metaPath)) {
+      problems.push(`${raw}: no capture at ${metaPath} (decision 2(2)(i): one render-watch capture of the URL with status 200)`);
+      continue;
+    }
+    let meta;
+    try {
+      meta = JSON.parse(readFileSync(metaPath, "utf8"));
+    } catch {
+      problems.push(`${raw}: ${metaPath} is not JSON`);
+      continue;
+    }
+    let captured = null;
+    try {
+      captured = new URL(meta?.url).hostname.toLowerCase().replace(/\.+$/, "");
+    } catch {
+      captured = null;
+    }
+    if (captured !== host) problems.push(`${raw}: ${metaPath} records ${JSON.stringify(meta?.url ?? null)}, not a URL on ${host}`);
+    else if (meta?.status !== 200 || meta?.error != null) {
+      problems.push(`${raw}: ${metaPath} has status ${meta?.status ?? "none"} and error ${JSON.stringify(meta?.error ?? null)}, not a 200`);
+    }
+  }
+  return problems;
+}
 
 /** Sent by both modes, so a js line asks for the same languages a plain GET does. */
 export const ACCEPT_LANGUAGE = "en-US,en;q=0.9,he;q=0.8";
@@ -454,6 +529,17 @@ export const TERMS_BARRED = [
   { domain: "wavedash.com", why: "Wavedash's terms bar \"any robot, spider, or other automatic device, process, or means to access the Website for any purpose\" (research/rendered/terms-wavedash.txt:118; terms audit round 3)" },
   // Round 4 (tick 23): Tipalti's website terms (row 224).
   { domain: "tipalti.com", why: "Tipalti's website terms: \"You may not download or save a copy of the Site or any portion thereof ... for any purpose, without Tipalti's prior written consent\" (research/rendered/terms-tipalti-website.txt:245; terms audit round 4)" },
+  // Tick 54 (6.10.2026): the prize-event sites' terms pages of the 6.10 weekly render, read on their frozen copies by an
+  // Opus reader and an adversarial Opus verifier, verdicts by the main thread (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md,
+  // "Terms read (6.10.2026, tick 54)"). devpost.com covers every *.devpost.com hackathon site and info.devpost.com.
+  { domain: "devpost.com", why: "Devpost's terms bar using \"manual or automated software, devices, scripts robots, or other means or processes to access, “scrape,” “crawl” or “spider” the Site, User Content ... or any related data or information\" (research/rendered/terms-devpost-2026-10-06.txt:159), and every hackathon site is a Hackathon Website of the Site (:129, :170, :185; terms read 6.10, tick 54)" },
+  { domain: "zindi.africa", why: "Zindi's terms: \"You must not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store or transmit any of the material on our Website\" (research/rendered/terms-zindi-2026-10-06.txt:68; terms read 6.10, tick 54)" },
+  { domain: "zindi.world", why: "The same Zindi Terms of Use: zindi.africa's terms page names zindi.world as its og:url (research/rendered/terms-zindi-2026-10-06.html:50) and its robots.txt was read there, so zindi.africa redirects to zindi.world [inference]; :68 bars reproducing, storing or transmitting the material (research/rendered/terms-zindi-2026-10-06.txt:68; terms read 6.10, tick 54)" },
+  // Tick 54, later (6.10.2026): kaggle.com's terms page, a JavaScript shell to the plain GET, rendered once in js mode
+  // under ruling 6.10 row 21 (c) 3(2) and read on its frozen copy by an Opus reader and an adversarial Opus verifier,
+  // verdict by the main thread (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md, "Shell terms pages rendered
+  // once (6.10.2026, tick 54)"). It covers www.kaggle.com and its competition pages.
+  { domain: "kaggle.com", why: "Kaggle's terms bar using or interacting with the Services in a manner that \"“Crawls,” “scrapes,” or “spiders” any page, data, or portion of or relating to the Services or Content (through use of manual or automated means)\" (research/rendered/terms-kaggle-2026-10-06-a3cb438.txt:77; the verifier found a narrower bulk-only reading of :77 arguable, so the bar does not rest on it alone), copying or publishing any Content not owned by you without its owner's prior consent (:87), and any use but \"your own internal, personal, non-commercial use\" (:70), each of these two sufficient alone; the terms page was rendered once in js mode under ruling 6.10 row 21 (c) 3(2) (terms read 6.10, tick 54)" },
 ];
 
 /** The TERMS_BARRED entry a host falls under (the domain or any subdomain; case and trailing dot ignored), or null. */
@@ -701,6 +787,15 @@ export const SECRET_PATTERNS = [
   { kind: "github-token", re: /\b(?:gh[pousr]_[0-9A-Za-z]{36,}|github_pat_[0-9A-Za-z_]{40,})\b/g },
   { kind: "aws-access-key-id", re: /\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/g },
   { kind: "slack-token", re: /\bxox[abprs]-[0-9A-Za-z-]{10,}\b/g },
+  // 6.10.2026 (tick 54): a 20-page prize-event dispatch was refused twice for a "Mapbox Secret Access Token"
+  // embedded in a forum page (run 37436768438, annotation). sk. is the secret prefix; pk. (public) and tk. are not masked.
+  // A Mapbox token is a JWT (payload {"u":…} → eyJ1Ijoi…). The fourth dispatch of 6.10 was refused for a
+  // PUBLIC token (pk.eyJ…, 93 characters, two dots; run 37437891860's shape annotation) under the same
+  // "Mapbox Secret Access Token" name, so every prefix is masked, over the whole run of token characters,
+  // whatever separators and padding the page carries. A capture never needs a working map key.
+  { kind: "mapbox-token", re: /\b(?:sk|pk|tk)\.eyJ[A-Za-z0-9_.+/=-]{20,}/g },
+  // Google API keys (AIza…) are on the same push-protection list and web pages embed them for maps and analytics.
+  { kind: "google-api-key", re: /\bAIza[0-9A-Za-z_-]{35}\b/g },
   { kind: "private-key", re: /-----BEGIN (?:[A-Z]+ )?PRIVATE KEY-----[\s\S]*?-----END (?:[A-Z]+ )?PRIVATE KEY-----/g },
 ];
 

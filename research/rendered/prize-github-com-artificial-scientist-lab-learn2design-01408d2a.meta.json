@@ -1,0 +1,20 @@
+{
+  "url": "https://github.com/artificial-scientist-lab/Learn2Design-2026",
+  "slug": "prize-github-com-artificial-scientist-lab-learn2design-01408d2a",
+  "fetchedAt": "2026-10-06T09:26:35.691Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 442007,
+  "sha256": "f949832f23a0e8f00f2fedfa733ad794b046316ea63af4b965ce83aa149533c3",
+  "truncated": false,
+  "redacted": 10,
+  "error": null,
+  "bodyPath": "research/rendered/prize-github-com-artificial-scientist-lab-learn2design-01408d2a.html",
+  "textPath": "research/rendered/prize-github-com-artificial-scientist-lab-learn2design-01408d2a.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://github.com/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

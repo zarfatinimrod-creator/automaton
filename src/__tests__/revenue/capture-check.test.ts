@@ -305,11 +305,16 @@ describe("classifyCapture on the real committed captures", () => {
   const real = (slug: string) => classifyCapture(readCapture(slug, RENDERED));
 
   it("terms-israel-post (tick 31: 200, 4,375 bytes, a React index.html) is a js-shell: an empty app root, with Radware's connector and reCAPTCHA v3 named, not a challenge page", () => {
-    const r = real("terms-israel-post");
+    // That capture is the frozen copy terms-israel-post-2026-09-30 since 6.10: the once-only js render of the live slug
+    // (a3cb438, ruling 6.10 row 21 (c) 3(3)) answered 403, which is a status, the site's refusal (tick 54).
+    const r = real("terms-israel-post-2026-09-30");
     expect(r.kind).toBe("js-shell");
     expect(r.evidence).toMatch(/empty app root/);
     expect(r.evidence).toMatch(/also Radware/);
     expect(r.evidence).toMatch(/also reCAPTCHA/);
+    const live = real("terms-israel-post");
+    expect(live.kind).toBe("status");
+    expect(live.evidence).toMatch(/status 403/);
   });
 
   it("irs-us-israel-treaty (the US-Israel tax treaty PDF) is ok on the hand text beside it, and says whose text it is", () => {
@@ -371,11 +376,12 @@ describe("capture-check CLI", () => {
   });
 
   it("prints one line per capture (slug, kind, evidence) and exits 3 when any is flagged", () => {
-    const r = cli(["terms-israel-post", "trolley-terms-of-service"]);
+    // The tick-31 shell, frozen as terms-israel-post-2026-09-30 (the live slug answered its js render 403 on 6.10).
+    const r = cli(["terms-israel-post-2026-09-30", "trolley-terms-of-service"]);
     expect(r.code).toBe(3);
     const lines = r.stdout.trim().split("\n");
     expect(lines).toHaveLength(2);
-    expect(lines[0]).toMatch(/^terms-israel-post\tjs-shell\t.+/);
+    expect(lines[0]).toMatch(/^terms-israel-post-2026-09-30\tjs-shell\t.+/);
     expect(lines[1]).toMatch(/^trolley-terms-of-service\tok\t.+/);
   });
 

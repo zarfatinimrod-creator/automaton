@@ -1,17 +1,19 @@
 {
   "url": "https://worksheets4kids.co.il",
   "slug": "worksheets4kids-home",
-  "fetchedAt": "2026-09-29T11:29:45.831Z",
+  "fetchedAt": "2026-10-06T07:14:39.603Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 115266,
-  "sha256": "0704497e326a4c4332eda18910141f927effbf42a4b1c88ab4670ad16c37b214",
+  "byteLength": 115363,
+  "sha256": "a1a72283db365514911721f99e8f3b05261142d2bb83c612aacc61e0c93ad24f",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/worksheets4kids-home.html",
   "textPath": "research/rendered/worksheets4kids-home.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://worksheets4kids.co.il/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "e883f6c3297905c81d85cde856f24eaca1003a86be76530e4b52222705b65970",
+  "previousSha256": "0704497e326a4c4332eda18910141f927effbf42a4b1c88ab4670ad16c37b214",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

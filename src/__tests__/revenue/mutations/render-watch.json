@@ -425,5 +425,120 @@
     "replace": "count += 0;",
     "test": "src/__tests__/revenue/render-watch.test.ts",
     "note": "tick 50 fixer F11: the passes' counts are discarded"
+  },
+  {
+    "id": "T54-U1",
+    "file": "scripts/render-watch.mjs",
+    "find": ": \"robots.txt honoured; contact pending\";",
+    "replace": ": \"robots.txt honoured\";",
+    "test": "src/__tests__/revenue/render-watch-robots.test.ts",
+    "note": "tick 54 U1: the contactless User-Agent drops \"contact pending\" (ruling 6.10 row 21 (b) 2(1))"
+  },
+  {
+    "id": "T54-U2",
+    "file": "scripts/render-watch.mjs",
+    "find": "const about = contact ? `${contact}; robots.txt honoured`",
+    "replace": "const about = contact ? `robots.txt honoured; ${contact}`",
+    "test": "src/__tests__/revenue/render-watch-robots.test.ts",
+    "note": "tick 54 U2: a filled UA_CONTACT goes after \"robots.txt honoured\" instead of first (decision 2(2), \"(+<URL>; …)\")"
+  },
+  {
+    "id": "T54-U3",
+    "file": "scripts/render-watch.mjs",
+    "find": "export const USER_AGENT = userAgentFor();",
+    "replace": "export const USER_AGENT = userAgentFor(\"+https://il-biz-tools.netlify.app\");",
+    "test": "src/__tests__/revenue/render-watch-robots.test.ts",
+    "note": "tick 54 U3: the User-Agent carries a URL the brand does not hold while UA_CONTACT is empty"
+  },
+  {
+    "id": "T54-U4",
+    "file": "scripts/render-watch.mjs",
+    "find": "export const UA_VERSION = \"1.0\";",
+    "replace": "export const UA_VERSION = \"1.1\";",
+    "test": "src/__tests__/revenue/render-watch-robots.test.ts",
+    "note": "tick 54 U4: the version moves while the contact has not changed"
+  },
+  {
+    "id": "T54-U5",
+    "file": "scripts/render-watch.mjs",
+    "find": "else if (meta?.status !== 200 || meta?.error != null) {",
+    "replace": "else if (meta?.error != null) {",
+    "test": "src/__tests__/revenue/render-watch-robots.test.ts",
+    "note": "tick 54 U5: uaContactProblems accepts a brand capture that did not answer 200"
+  },
+  {
+    "id": "T54-U6",
+    "file": "scripts/render-watch.mjs",
+    "find": "else if (meta?.status !== 200 || meta?.error != null) {",
+    "replace": "else if (meta?.status !== 200) {",
+    "test": "src/__tests__/revenue/render-watch-robots.test.ts",
+    "note": "tick 54 U6: uaContactProblems accepts a brand capture whose fetch recorded an error"
+  },
+  {
+    "id": "T54-U7",
+    "file": "scripts/render-watch.mjs",
+    "find": "if (captured !== host) problems.push(",
+    "replace": "if (false) problems.push(",
+    "test": "src/__tests__/revenue/render-watch-robots.test.ts",
+    "note": "tick 54 U7: uaContactProblems accepts a brand-<host> meta that records another host's URL"
+  },
+  {
+    "id": "T54-U8",
+    "file": "scripts/render-watch.mjs",
+    "find": "    if (!existsSync(metaPath)) {\n      problems.push(`${raw}: no capture at",
+    "replace": "    if (false) {\n      problems.push(`${raw}: no capture at",
+    "test": "src/__tests__/revenue/render-watch-robots.test.ts",
+    "note": "tick 54 U8: a URL contact with no brand-<host> capture is reported as unreadable JSON, not as no capture"
+  },
+  {
+    "id": "T54-U9",
+    "file": "scripts/render-watch.mjs",
+    "find": "for (const raw of String(contact ?? \"\").match(/https?:\\/\\/[^\\s;)]+/gi) ?? []) {",
+    "replace": "for (const raw of []) {",
+    "test": "src/__tests__/revenue/render-watch-robots.test.ts",
+    "note": "tick 54 U9: uaContactProblems checks no URL in the contact"
+  },
+  {
+    "id": "T54-M1",
+    "file": "scripts/render-watch.mjs",
+    "find": "{ kind: \"mapbox-token\", re: /\\b(?:sk|pk|tk)\\.eyJ[A-Za-z0-9_.+/=-]{20,}/g },",
+    "replace": "{ kind: \"mapbox-token\", re: /\\bsk\\.eyJ[A-Za-z0-9_.+/=-]{20,}/g },",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 54 M1: only sk. Mapbox tokens are masked (push protection refused a pk. one)"
+  },
+  {
+    "id": "T54-M2",
+    "file": "scripts/render-watch.mjs",
+    "find": "{ kind: \"google-api-key\", re: /\\bAIza[0-9A-Za-z_-]{35}\\b/g },",
+    "replace": "{ kind: \"google-api-key\", re: /\\bAIza[0-9A-Za-z_-]{36}\\b/g },",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 54 M2: the Google key pattern wants one character too many"
+  },
+  {
+    "id": "T54-TB1",
+    "file": "scripts/render-watch.mjs",
+    "find": "  { domain: \"kaggle.com\", why: \"Kaggle's terms bar",
+    "replace": "  // { domain: \"kaggle.com\", why: \"Kaggle's terms bar",
+    "test": [
+      "src/__tests__/revenue/render-watch-terms-barred.test.ts",
+      "src/__tests__/revenue/prize-terms-audit.test.ts"
+    ],
+    "note": "tick 54 review probe (b), kept by the tick-54 review fixer: kaggle.com's TERMS_BARRED entry is commented out, so the gate no longer names it for the 17 rules URLs"
+  },
+  {
+    "id": "T54-TB2",
+    "file": "scripts/render-watch.mjs",
+    "find": ":77; the verifier found a narrower bulk-only reading of :77 arguable, so the bar does not rest on it alone)",
+    "replace": ":77)",
+    "test": "src/__tests__/revenue/render-watch-terms-barred.test.ts",
+    "note": "tick 54 review fix: kaggle.com's why presents :77 flatly again, without the verifier's narrower-reading caveat"
+  },
+  {
+    "id": "T54-TB3",
+    "file": "scripts/render-watch.mjs",
+    "find": ", and any use but \\\"your own internal, personal, non-commercial use\\\" (:70), each of these two sufficient alone;",
+    "replace": ";",
+    "test": "src/__tests__/revenue/render-watch-terms-barred.test.ts",
+    "note": "tick 54 review fix: kaggle.com's why drops :70, the ground that with :87 bars the runner alone"
   }
 ]

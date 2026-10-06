@@ -136,7 +136,7 @@ describe("the terms audit's barred sites (29.9.2026)", () => {
 describe("terms-verdicts.json gates every active line (terms audit round 2)", () => {
   const verdicts = JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites as Record<string, { verdict: string; source: string }>;
   const VERDICTS = ["NOT_BARRED", "CONDITIONAL_MET", "TERMS_PENDING", "CONDITIONAL_UNMET", "BARRED", "NO_TERMS", "NO_TERMS_ROBOTS_OK"];
-  const entries = () => parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string }[];
+  const entries = () => parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string; js?: boolean }[];
 
   it("gives every site a known verdict and a source", () => {
     for (const [site, v] of Object.entries(verdicts)) {
@@ -145,27 +145,57 @@ describe("terms-verdicts.json gates every active line (terms audit round 2)", ()
     }
   });
 
+  type Entry = { verdict: string; source?: string; note?: string } | undefined;
+  /** The URL research/rendered/<slug>.meta.json names: the plain capture a K4 js terms line re-reads. */
+  const plainUrl = (slug: string) => {
+    const p = `research/rendered/${slug}.meta.json`;
+    return existsSync(p) ? (JSON.parse(readFileSync(p, "utf8")) as { url?: string }).url : undefined;
+  };
+  /**
+   * Whether an active line may stay active, by this file's own reading of the verdicts (not termsGate's code).
+   * Since 30.9 (ruling 16(d) D2(iv)-(v)): NO_TERMS_ROBOTS_OK allows a line too, as scripts/robots-verdict.mjs writes
+   * it (a note opening exhaustive-negative, a source naming the script), and a robots- probe of /robots.txt is
+   * allowed for a NO_TERMS site whose note opens exhaustive-negative. Not for a TERMS_PENDING site: unread terms,
+   * no fetch but the terms page.
+   */
+  const mayBeActive = (e: { url: string; slug: string; js?: boolean }, entry: Entry, metaUrl: (slug: string) => string | undefined = plainUrl) => {
+    const v = entry?.verdict;
+    const probe = e.slug.startsWith("robots-") && new URL(e.url).pathname === "/robots.txt";
+    const exhaustiveNote = /^exhaustive-negative\b/.test(entry?.note ?? "");
+    const exhaustive = v === "NO_TERMS" && exhaustiveNote;
+    const robotsOk = v === "NO_TERMS_ROBOTS_OK" && exhaustiveNote && (entry?.source ?? "").includes("scripts/robots-verdict.mjs");
+    // Since 6.10 (RULING-2026-10-06-robots-and-terms.md 3(2)): a NO_TERMS site whose note opens "shell" (K4) may have
+    // its terms page active as a js line, the once-only render queue-zero-test --js --terms-shell queues — only on the
+    // URL of the slug's own plain capture, never another page of the site under a terms- slug (3(3): "nothing else on
+    // it is fetched").
+    const shellJs =
+      v === "NO_TERMS" && /^shell\b/.test(entry?.note ?? "") && e.slug.startsWith("terms-") && e.js === true && metaUrl(e.slug) === e.url;
+    return (
+      v === "NOT_BARRED" ||
+      v === "CONDITIONAL_MET" ||
+      robotsOk ||
+      (v === "TERMS_PENDING" && e.slug.startsWith("terms-")) ||
+      (probe && exhaustive) ||
+      shellJs
+    );
+  };
+
   it("lets a line be active only on a site whose terms allow it, or as a pending site's own terms page", () => {
-    // Since 30.9 (ruling 16(d) D2(iv)-(v)): NO_TERMS_ROBOTS_OK allows a line too, as scripts/robots-verdict.mjs writes
-    // it (a note opening exhaustive-negative, a source naming the script), and a robots- probe of /robots.txt is
-    // allowed for a NO_TERMS site whose note opens exhaustive-negative. Not for a TERMS_PENDING site: unread terms,
-    // no fetch but the terms page.
-    const bad = entries().filter((e) => {
-      const entry = verdicts[siteOf(new URL(e.url).hostname.toLowerCase())] as { verdict: string; source?: string; note?: string } | undefined;
-      const v = entry?.verdict;
-      const probe = e.slug.startsWith("robots-") && new URL(e.url).pathname === "/robots.txt";
-      const exhaustiveNote = /^exhaustive-negative\b/.test(entry?.note ?? "");
-      const exhaustive = v === "NO_TERMS" && exhaustiveNote;
-      const robotsOk = v === "NO_TERMS_ROBOTS_OK" && exhaustiveNote && (entry?.source ?? "").includes("scripts/robots-verdict.mjs");
-      return !(
-        v === "NOT_BARRED" ||
-        v === "CONDITIONAL_MET" ||
-        robotsOk ||
-        (v === "TERMS_PENDING" && e.slug.startsWith("terms-")) ||
-        (probe && exhaustive)
-      );
-    });
+    const bad = entries().filter((e) => !mayBeActive(e, verdicts[siteOf(new URL(e.url).hostname.toLowerCase())] as Entry));
     expect(bad.map((e) => e.slug)).toEqual([]);
+  });
+
+  it("lets a K4 shell site's js terms- line stay active only on its plain capture's URL (ruling 6.10 row 21 (c) 3(3))", () => {
+    const shell: Entry = { verdict: "NO_TERMS", source: "test", note: "shell: a React shell" };
+    const metaUrl = (slug: string) => (slug === "terms-shell" ? "https://shell.example/legal" : undefined);
+    expect(mayBeActive({ url: "https://shell.example/legal", slug: "terms-shell", js: true }, shell, metaUrl)).toBe(true);
+    // The same line without the flag, another page under the terms page's slug or a new terms- slug, a slug with no
+    // plain capture, and a site whose note names another kind.
+    expect(mayBeActive({ url: "https://shell.example/legal", slug: "terms-shell" }, shell, metaUrl)).toBe(false);
+    expect(mayBeActive({ url: "https://shell.example/rates", slug: "terms-shell", js: true }, shell, metaUrl)).toBe(false);
+    expect(mayBeActive({ url: "https://shell.example/rates", slug: "terms-rates", js: true }, shell, metaUrl)).toBe(false);
+    expect(mayBeActive({ url: "https://shell.example/legal", slug: "terms-legal", js: true }, shell, metaUrl)).toBe(false);
+    expect(mayBeActive({ url: "https://shell.example/legal", slug: "terms-shell", js: true }, { ...shell, note: "refusal-type: 403" }, metaUrl)).toBe(false);
   });
 
   it("holds every NO_TERMS_ROBOTS_OK entry to what scripts/robots-verdict.mjs writes: an exhaustive-negative note, the script in its source", () => {
@@ -334,8 +364,9 @@ describe("PATH_LIMITS: posthog.com lines only under /docs/ or /tutorials/ (tick 
 
   it("leaves no active urls.txt line that the terms gate refuses", () => {
     const v = verdicts();
-    const entries = parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string }[];
-    expect(entries.filter((e) => !termsGate(e.url, e.slug, v).ok).map((e) => e.slug)).toEqual([]);
+    const entries = parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string; js?: boolean }[];
+    // The js flag is the line's: a K4 shell site's once-only js terms line passes only with it (ruling 6.10 row 21 (c)).
+    expect(entries.filter((e) => !termsGate(e.url, e.slug, v, { js: e.js === true }).ok).map((e) => e.slug)).toEqual([]);
   });
 
   it("pauses a path-limited line in its own words, not as terms unread", () => {
@@ -344,5 +375,164 @@ describe("PATH_LIMITS: posthog.com lines only under /docs/ or /tutorials/ (tick 
     expect(out.urls).toBe(
       "# paused (path limit): posthog.com — see PATH_LIMITS in scripts/queue-zero-test.mjs — https://posthog.com/pricing\tposthog-pricing\nhttps://posthog.com/docs/api/queries\tposthog-queries\n",
     );
+  });
+});
+
+/**
+ * Tick 54 (6.10.2026): the terms pages of the prize-event sites, read on their frozen copies (research/channel-loop/
+ * TERMS-AUDIT-2026-10-05-prize-events.md, "Terms read (6.10.2026, tick 54)"). Devpost's terms bar automated access and
+ * scraping of the Site and of User Content, which its hackathon sites are; Zindi's bar reproducing, storing or
+ * transmitting the site's material, and its terms page names zindi.world as its own address, so both hosts are barred.
+ */
+describe("the prize-event terms read of 6.10 (tick 54): devpost.com, zindi.africa, zindi.world", () => {
+  const BARRED_54: { domain: string; file: string; line: number; words: string }[] = [
+    {
+      domain: "devpost.com",
+      file: "research/rendered/terms-devpost-2026-10-06.txt",
+      line: 159,
+      words: "manual or automated software, devices, scripts robots, or other means or processes to access, “scrape,” “crawl” or “spider” the Site, User Content",
+    },
+    {
+      domain: "zindi.africa",
+      file: "research/rendered/terms-zindi-2026-10-06.txt",
+      line: 68,
+      words:
+        "You must not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store or transmit any of the material on our Website",
+    },
+    {
+      domain: "zindi.world",
+      file: "research/rendered/terms-zindi-2026-10-06.txt",
+      line: 68,
+      words: "store or transmit any of the material on our Website",
+    },
+  ];
+  const verdicts = () => JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites;
+
+  it("lists the three before kaggle.com, the last, each citing the frozen copy's line, whose words it quotes", () => {
+    const domains = (TERMS_BARRED as { domain: string }[]).map((b) => b.domain);
+    // kaggle.com joined after them the same day, on its terms page's once-only js render (the describe below).
+    expect(domains.slice(-4)).toEqual([...BARRED_54.map((b) => b.domain), "kaggle.com"]);
+    for (const { domain, file, line, words } of BARRED_54) {
+      const b = (TERMS_BARRED as { domain: string; why: string }[]).find((x) => x.domain === domain)!;
+      expect(b.why, domain).toContain(`${file}:${line}`);
+      expect(b.why, domain).toContain("terms read 6.10, tick 54");
+      // The frozen copy (never rewritten by the weekly run) holds the words at that line, and the entry quotes them.
+      expect(readFileSync(file, "utf8").split("\n")[line - 1], domain).toContain(words);
+      if (domain !== "zindi.world") expect(b.why, domain).toContain(words.split(", User Content")[0]);
+      expect(existsSync(file.replace(/\.txt$/, ".meta.json")), domain).toBe(true);
+    }
+    // zindi.world: the page's own og:url names it (the html line the entry cites), which is why it is barred with zindi.africa.
+    const zw = (TERMS_BARRED as { domain: string; why: string }[]).find((x) => x.domain === "zindi.world")!;
+    expect(zw.why).toContain("research/rendered/terms-zindi-2026-10-06.html:50");
+    expect(zw.why).toContain("[inference]");
+    expect(readFileSync("research/rendered/terms-zindi-2026-10-06.html", "utf8").split("\n")[49]).toContain('og:url" content="https://zindi.world/terms"');
+  });
+
+  it("bars every Devpost hackathon host and its terms host, both Zindi hosts, and nothing that only contains the names", () => {
+    for (const h of [
+      "devpost.com",
+      "info.devpost.com",
+      "qwencloud-hackathon.devpost.com",
+      "xprize.devpost.com",
+      "ADTC-2026.Devpost.com.",
+      "zindi.africa",
+      "www.zindi.africa",
+      "zindi.world",
+      "api.zindi.world",
+    ]) {
+      expect(termsBarred(h), h).not.toBeNull();
+    }
+    for (const h of ["notdevpost.com", "devpost.com.example.org", "zindi.africa.example.org", "zindiworld.com", "grand-challenge.org", "www.stanford.edu"]) {
+      expect(termsBarred(h), h).toBeNull();
+    }
+    expect(() => parseUrlList("https://xprize.devpost.com/rules\tdevpost-xprize\n")).toThrow(/devpost\.com.*terms/);
+    expect(() => parseUrlList("https://zindi.africa/competitions/x\tzindi-x\n")).toThrow(/zindi\.africa/);
+  });
+
+  it("agrees with the verdicts file, and leaves only the paused terms lines of the two sites in urls.txt", () => {
+    const v = verdicts();
+    expect(v["devpost.com"].verdict).toBe("BARRED");
+    expect(v["zindi.africa"].verdict).toBe("BARRED");
+    for (const site of ["devpost.com", "zindi.africa"]) {
+      expect(v[site].note, site).toContain("TERMS_BARRED in scripts/render-watch.mjs holds");
+      expect(v[site].copying, site).toBe("barred");
+    }
+    const text = readFileSync("research/rendered/urls.txt", "utf8");
+    const lines = text.split("\n").filter((l) => /(^|[/.])(devpost\.com|zindi\.africa|zindi\.world)\//.test(l.replace(/^# .* — /, "")));
+    expect(lines).toEqual([
+      "# paused (terms audit): devpost.com — see TERMS_BARRED in scripts/render-watch.mjs — https://info.devpost.com/legal/terms-of-service\tterms-devpost",
+      "# paused (terms audit): zindi.africa — see TERMS_BARRED in scripts/render-watch.mjs — https://zindi.africa/terms\tterms-zindi",
+    ]);
+    // The gate says so for any line on those hosts.
+    expect(termsGate("https://datahub.devpost.com/?ref=mlcontests", "x", v).why).toMatch(/^devpost\.com is in TERMS_BARRED: /);
+    expect(termsGate("https://zindi.world/competitions/x", "x", v).why).toMatch(/^zindi\.world is in TERMS_BARRED: /);
+  });
+});
+
+/**
+ * Tick 54, later (6.10.2026): kaggle.com's terms page was a JavaScript shell to the plain GET (kind K4), so ruling 6.10
+ * row 21 (c) 3(2) let it be rendered once in js mode; the render (a3cb438) came back as Kaggle's Terms of Use, frozen as
+ * research/rendered/terms-kaggle-2026-10-06-a3cb438 and read by an Opus reader and an adversarial Opus verifier. The main
+ * thread ruled kaggle.com BARRED on three grounds: crawling or scraping any page by manual or automated means (:77),
+ * copying or publishing Content without its owner's prior consent (:87), and internal, personal, non-commercial use only
+ * (:70). Its js terms line is retired, and every Kaggle page, the competition pages included, is refused.
+ */
+describe("the once-only js render of 6.10 (tick 54): kaggle.com", () => {
+  const FROZEN = "research/rendered/terms-kaggle-2026-10-06-a3cb438.txt";
+  const CLAUSES: { line: number; words: string }[] = [
+    { line: 77, words: "“Crawls,” “scrapes,” or “spiders” any page, data, or portion of or relating to the Services or Content (through use of manual or automated means)" },
+    { line: 87, words: "for any purpose any Content not owned by you, (i) without the prior consent of the owner of that Content" },
+    { line: 70, words: "your own internal, personal, non-commercial use" },
+  ];
+  const verdicts = () => JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites;
+  const entry = () => (TERMS_BARRED as { domain: string; why: string }[]).find((x) => x.domain === "kaggle.com")!;
+
+  it("lists kaggle.com last, citing the frozen copy of the js render at the line whose words it quotes", () => {
+    const domains = (TERMS_BARRED as { domain: string }[]).map((b) => b.domain);
+    expect(domains.at(-1)).toBe("kaggle.com");
+    const b = entry();
+    expect(b.why).toContain(`${FROZEN}:77`);
+    expect(b.why).toContain("(:87)");
+    // The verifier found :77 open to a narrower bulk-only reading, so the entry names the two grounds that bar alone
+    // (tick-54 review fix): :87 and :70, the latter quoted.
+    expect(b.why).toContain(`${FROZEN}:77; the verifier found a narrower bulk-only reading of :77 arguable, so the bar does not rest on it alone)`);
+    expect(b.why).toContain(`"${CLAUSES[2].words}" (:70), each of these two sufficient alone;`);
+    expect(b.why).toContain("rendered once in js mode under ruling 6.10 row 21 (c) 3(2)");
+    expect(b.why).toContain("terms read 6.10, tick 54");
+    const lines = readFileSync(FROZEN, "utf8").split("\n");
+    for (const { line, words } of CLAUSES) expect(lines[line - 1], `:${line}`).toContain(words);
+    expect(b.why).toContain(CLAUSES[0].words);
+    // A frozen copy: its meta names itself, the live capture it came from and the render's commit; js-rendered.
+    const meta = JSON.parse(readFileSync(FROZEN.replace(/\.txt$/, ".meta.json"), "utf8"));
+    expect([meta.slug, meta.frozen.from, meta.frozen.commit, meta.renderedWith, meta.status]).toEqual([
+      "terms-kaggle-2026-10-06-a3cb438",
+      "research/rendered/terms-kaggle.meta.json",
+      "a3cb438",
+      "chromium",
+      200,
+    ]);
+  });
+
+  it("bars www.kaggle.com and every other Kaggle host, plain or js, and nothing that only contains the name", () => {
+    for (const h of ["kaggle.com", "www.kaggle.com", "WWW.Kaggle.COM.", "storage.kaggle.com"]) expect(termsBarred(h), h).not.toBeNull();
+    for (const h of ["notkaggle.com", "kaggle.com.example.org", "kaggle.io"]) expect(termsBarred(h), h).toBeNull();
+    expect(() => parseUrlList("https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2?ref=mlcontests\tkaggle-arc\n")).toThrow(/kaggle\.com.*terms/);
+    expect(() => parseUrlList("https://www.kaggle.com/terms\tterms-kaggle\tjs\n")).toThrow(/terms-kaggle-2026-10-06-a3cb438\.txt:77/);
+  });
+
+  it("agrees with the verdicts file, and leaves only the retired js terms line of the site in urls.txt", () => {
+    const v = verdicts();
+    expect(v["kaggle.com"].verdict).toBe("BARRED");
+    expect(v["kaggle.com"].copying).toBe("barred");
+    expect(v["kaggle.com"].note).toMatch(/^BARRED on access and copying: /);
+    expect(v["kaggle.com"].note).toContain("TERMS_BARRED in scripts/render-watch.mjs holds kaggle.com since 6.10");
+    const text = readFileSync("research/rendered/urls.txt", "utf8");
+    const lines = text.split("\n").filter((l) => /(^|[/.])kaggle\.com\//.test(l.replace(/^# .* — /, "")));
+    expect(lines).toEqual([
+      "# retired (6.10.2026: rendered once in js mode under ruling 6.10 row 21 (c) 3(2); read, kaggle.com BARRED — see TERMS_BARRED in scripts/render-watch.mjs) — https://www.kaggle.com/terms\tterms-kaggle\tjs",
+    ]);
+    // The gate says so for any line on the site, its terms page in js mode included.
+    expect(termsGate("https://www.kaggle.com/competitions/build-arena-human-ai-colleberation-engineering-challenge?ref=mlcontests", "x", v).why).toMatch(/^kaggle\.com is in TERMS_BARRED: /);
+    expect(termsGate("https://www.kaggle.com/terms", "terms-kaggle", v, { js: true }).ok).toBe(false);
   });
 });

@@ -1,0 +1,20 @@
+# This site has a Markdown version that is more friendly to AI agents than the HTML version. Documentation at: https://www.alignmentforum.org/api/SKILL.md
+
+User-agent: *
+Disallow: /allPosts?*
+Disallow: /allPosts
+Disallow: /allposts
+Disallow: /allposts?*
+Disallow: /out?*
+Disallow: /graphiql
+Disallow: /debug
+Disallow: /admin
+Disallow: /compare
+Disallow: /emailToken
+Disallow: /*?commentId=*
+Disallow: /users/*/replies
+Disallow: /moderation
+Crawl-Delay: 3
+
+User-Agent: SemrushBot
+Disallow: /

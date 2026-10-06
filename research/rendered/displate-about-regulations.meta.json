@@ -1,23 +1,20 @@
 {
   "url": "https://displate.com/about-regulations",
   "slug": "displate-about-regulations",
-  "fetchedAt": "2026-09-29T11:30:37.588Z",
+  "fetchedAt": "2026-10-06T07:14:51.085Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 339377,
-  "sha256": "fb96a869322c594f5723511f09b68856076c38090ed133f4cb95716d12b019f6",
+  "byteLength": 348615,
+  "sha256": "129c5e8ba3569611bd5429006c65d573ec4813927feb64214d04d32e90fc7537",
   "truncated": false,
-  "redacted": 56,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 56,
-    "fold": "12143ca"
-  },
+  "redacted": 45,
   "error": null,
   "bodyPath": "research/rendered/displate-about-regulations.html",
   "textPath": "research/rendered/displate-about-regulations.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://displate.com/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "2d0e6ab1a2b1d691f2eac40f79f01b90c68227e0da2c175212332cc8a3ae9980",
+  "previousSha256": "fb96a869322c594f5723511f09b68856076c38090ed133f4cb95716d12b019f6",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -4,6 +4,8 @@ Introducing the Polar Startup Program
 
 Features
 
+Integrate
+
 Docs
 
 Blog
@@ -16,6 +18,7 @@ Get Started
 Toggle Sidebar
 
 Overview
+Integrate
 Documentation
 Pricing
 Blog
@@ -203,7 +206,7 @@ Features
 Usage Billing Subscriptions Seats Credits Trials Discounts Cost Insights Finance Merchant of Record
 
 Resources
-Why Polar Merchant of Record Pricing Downloads
+Integrate Why Polar Merchant of Record Pricing Downloads
 
 Company
 About Polar GitHub X / Twitter Brand Assets Legal Cookie Preferences

@@ -402,6 +402,46 @@ describe("evaluatePageViewGates — the ruling's gates on the weekly readings", 
       expect(evaluatePageViewGates("il-biz-tools", domain, dWeeks(3, 3), atDomain(15)).verdict).toBe("continue");
     });
 
+    it("M-instrument runs from D0 only: the domain deploy is a new clock, not a new instrument", () => {
+      // RULING-2026-10-06-domain-clock: no day-21 deadline runs from the domain deploy day, so uninstrumented and
+      // instrument_fault are never returned for the domain period; an unwritten domain week is reader_down once overdue.
+      const day5 = evaluatePageViewGates("il-biz-tools", domain, [], atDomain(5));
+      expect(day5.verdict).toBe("continue");
+      expect(day5.instrumented).toBe(false);
+      expect(day5.notes.join(" ")).not.toMatch(/M-instrument|instrument fault|restart the clock/);
+      // A continue with no rows says so: nothing is measured yet.
+      expect(day5.notes[0]).toMatch(/; 0 week\(s\) measured$/);
+      // Day 10: week 1 has been overdue since day 8¼ — a blocker by its name, not "no gate is read".
+      const day10 = evaluatePageViewGates("il-biz-tools", domain, [], atDomain(10));
+      expect(day10.verdict).toBe("reader_down");
+      expect(day10.notes[0]).toMatch(/week\(s\) 1 still have no reading/);
+      // Day 21: the netlify period's deadline day, and still only the reader down — nothing to restart.
+      const day21 = evaluatePageViewGates("il-biz-tools", domain, [], atDomain(21));
+      expect(day21.verdict).toBe("reader_down");
+      expect(day21.notes[0]).toMatch(/week\(s\) 1, 2 /);
+      expect(day21.notes.join(" ")).not.toMatch(/restart the clock/);
+      for (const r of [day5, day10, day21]) expect(["uninstrumented", "instrument_fault"]).not.toContain(r.verdict);
+      // The reader starts on day 25 and reads weeks 1-3 in one tick: measured, instrumented, no fault.
+      const day25 = new Date(DOMAIN_MS + 25 * DAY_MS).toISOString();
+      const late = [1, 2, 3].map((week) => ({ week, views: 5, writtenAt: day25 }));
+      const r = evaluatePageViewGates("il-biz-tools", domain, late, atDomain(25));
+      expect(r.verdict).toBe("continue");
+      expect(r.instrumented).toBe(true);
+      expect(r.notes.join(" ")).not.toMatch(/instrument fault|restart the clock/);
+      expect(r.notes[0]).toMatch(/; 3 week\(s\) measured$/);
+    });
+
+    it("a reader that starts late cannot hide a measured kill", () => {
+      // Weeks 1-3 written on domain day 25, weeks 4-8 on time, every one under 100: the pre-registered kill, whatever
+      // day its weeks were written (KILL-2: never softer than the criterion).
+      const day25 = new Date(DOMAIN_MS + 25 * DAY_MS).toISOString();
+      const weeksRead = dWeeks(10, 20, 30, 40, 50, 60, 70, 80).map((w) => (w.week <= 3 ? { ...w, writtenAt: day25 } : w));
+      const r = evaluatePageViewGates("il-biz-tools", domain, weeksRead, atDomain(60));
+      expect(r.verdict).toBe("kill");
+      expect(r.instrumented).toBe(true);
+      expect(r.notes[0]).toMatch(/weeks 1-8 after the domain deploy each under 100/);
+    });
+
     it("the netlify.app period never reaches the 8-week kill, however low the views", () => {
       expect(evaluatePageViewGates("pcn874", netlify, weeks(1, 1, 1, 1, 1, 1, 1, 1), at(56)).verdict).toBe("extend");
     });

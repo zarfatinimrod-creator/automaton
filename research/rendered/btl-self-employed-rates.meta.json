@@ -1,23 +1,20 @@
 {
   "url": "https://www.btl.gov.il/Insurance/National%20Insurance/type_list/Self_Employed/Pages/rates.aspx",
   "slug": "btl-self-employed-rates",
-  "fetchedAt": "2026-09-29T11:27:41.848Z",
+  "fetchedAt": "2026-10-06T07:14:22.136Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 153099,
-  "sha256": "1dfa857f2d34142965fc7c11bf504e854941abc91e6522ae8a3b6d4e725abf75",
+  "byteLength": 151347,
+  "sha256": "47a010779cf3e947157305d36044a326cd93e24dda0cca39d88d9191c703394a",
   "truncated": false,
   "redacted": 1,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 1,
-    "fold": "12143ca"
-  },
   "error": null,
   "bodyPath": "research/rendered/btl-self-employed-rates.html",
   "textPath": "research/rendered/btl-self-employed-rates.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://www.btl.gov.il/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "3d338431ba0f68db432ed5afaf00c4314ad0db2d32201c150a09e032bde63fad",
+  "previousSha256": "1dfa857f2d34142965fc7c11bf504e854941abc91e6522ae8a3b6d4e725abf75",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

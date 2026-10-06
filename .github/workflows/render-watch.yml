@@ -260,9 +260,34 @@ jobs:
           # Another job can legitimately land on this branch between our checkout and
           # our push. Rebase and retry rather than throwing away a capture.
           for attempt in 1 2 3; do
-            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+            if git push origin "HEAD:${GITHUB_REF_NAME}" 2> "${RUNNER_TEMP}/push.err"; then
+              cat "${RUNNER_TEMP}/push.err" >&2
               echo "Committed ${CHANGED} changed page(s) to ${GITHUB_REF_NAME}." >> "$GITHUB_STEP_SUMMARY"
               exit 0
+            fi
+            cat "${RUNNER_TEMP}/push.err" >&2
+            # GitHub push protection (GH013) refuses a commit that holds a secret-shaped string
+            # and names the kind and the file:line, never the value. A retry cannot help, and
+            # the job log is not readable through the API from the session (6.10.2026: a
+            # 20-page dispatch failed here and the cause stayed invisible), so those lines go
+            # out as annotations, which check-runs/<id>/annotations does serve.
+            if grep -q -E 'GH013|push protection|secret scanning' "${RUNNER_TEMP}/push.err"; then
+              grep -E 'GH013|—|location|path:|commit:|line' "${RUNNER_TEMP}/push.err" | head -20 \
+                | sed 's/[^[:print:]]//g' | while IFS= read -r line; do
+                echo "::error title=push protection::${line}"
+              done
+              # The shape of every token-like string in each named file, never its value: the first six
+              # characters, the length, the dot count and which separator classes occur, so the next
+              # SECRET_PATTERNS entry can be written without seeing the page (the session cannot fetch it).
+              grep -oE 'path: [^ :]+:[0-9]+' "${RUNNER_TEMP}/push.err" | sed 's/^path: //; s/:[0-9]*$//' | sort -u | while IFS= read -r f; do
+                [ -f "$f" ] || continue
+                grep -oE '.{0,2}\b(sk|pk|tk)\.[A-Za-z0-9_.+/=-]{20,}.{0,2}' "$f" | awk '{
+                  t=$0; sub(/^.{0,2}\b/, "", t); s=t; n=gsub(/\./, ".", s);
+                  printf "%s: before=[%s] %s… len=%d dots=%d eq=%d plus=%d slash=%d after=[%s]\n", FILENAME, substr($0,1,2), substr(t,1,6), length(t), n, (t ~ /=/), (t ~ /\+/), (t ~ /\//), substr($0,length($0)-1)
+                }' FILENAME="$f" | sort -u | head -12 | while IFS= read -r shape; do echo "::warning title=push protection shape::${shape}"; done
+              done
+              echo "Push refused by push protection; the annotations name the kind and the file:line." >> "$GITHUB_STEP_SUMMARY"
+              exit 1
             fi
             echo "Push rejected; rebasing and retrying (attempt ${attempt})."
             # `-X theirs` during a rebase keeps the commit being replayed — this run's

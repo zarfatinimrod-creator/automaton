@@ -1,0 +1,19 @@
+{
+  "url": "https://competitions.mozilladatacollective.com/robots.txt",
+  "slug": "robots-mozilladatacollective",
+  "fetchedAt": "2026-10-06T07:16:16.044Z",
+  "status": 200,
+  "contentType": "text/plain",
+  "byteLength": 27,
+  "sha256": "32403248dc764535c87140955fc9451f9ebc9702f3e298d1c24fe84e558a53a9",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/robots-mozilladatacollective.txt",
+  "textPath": null,
+  "robots": "allowed",
+  "robotsUrl": "https://competitions.mozilladatacollective.com/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

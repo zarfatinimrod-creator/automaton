@@ -1,0 +1,20 @@
+{
+  "url": "https://info.devpost.com/legal/terms-of-service",
+  "slug": "terms-devpost",
+  "fetchedAt": "2026-10-06T07:15:23.700Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 76987,
+  "sha256": "6dbf653750c2e0f872ba04d91f9b483b390c2583549dbcbd5e02e30c065a5196",
+  "truncated": false,
+  "redacted": 3,
+  "error": null,
+  "bodyPath": "research/rendered/terms-devpost.html",
+  "textPath": "research/rendered/terms-devpost.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://info.devpost.com/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

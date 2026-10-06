@@ -1,0 +1,597 @@
+Privacy and website terms of use | EUROCONTROL
+
+Skip to main content
+
+Supporting
+European
+Aviation
+
+Main navigation
+
+About us
+
+What we do
+
+We deliver
+
+Optimised operational performance
+
+Powered by the Network Manager
+
+Effective cost-recovery system
+
+Powered by the CRCO
+
+Civil-military cooperation in aviation
+
+Powered by the Civil-Military Cooperation Division and the Network Manager
+
+Cross-border air navigation services
+
+Powered by the Maastricht Upper Area Control Centre
+
+Innovation, research and simulation
+
+Powered by the EUROCONTROL Innovation Hub
+
+Training
+
+Powered by the ALC
+
+We contribute to
+
+Air navigation services performance review
+
+Airports
+
+Airspace design and utilisation
+
+Artificial intelligence
+
+Aviation sustainability
+
+Communications, navigation and surveillance
+
+Customised support to stakeholders
+
+Cybersecurity
+
+Digitalisation and information management
+
+Disruption and crisis management
+
+Forecasting
+
+Master plan, architecture and monitoring
+
+Network operations
+
+Network operations planning
+
+Network performance
+
+Safety
+
+Simulations and validation
+
+Space and higher airspace operations
+
+Standardisation
+
+Unmanned aircraft systems
+
+Key applications
+
+NOP
+
+Your gateway to interact with EUROCONTROL's Network manager Operations Centre
+
+Access
+
+Aviation Intelligence Portal
+
+Our online air navigation services performance data portal
+
+Access
+
+Live traffic
+
+Real-time European air traffic situation map.
+
+Access
+
+Discover what we do
+
+Newsroom
+
+Events
+
+Library
+
+We offer
+
+Our data
+
+Procurement
+
+Careers
+
+Work with us
+
+Traineeship programme
+
+Secondment opportunities
+
+Become an ATCO
+
+Search
+
+Trending
+
+ASTERIX
+NOP
+FEAST Info
+Learning Zone
+How to find us
+
+Close
+
+Secondary navigation
+
+Search
+
+Privacy and website terms of use
+
+Activities
+
+About us
+
+EUROCONTROL protects your personal data in accordance with the EUROCONTROL Regulation on Personal Data Protection (PDF) adopted by the Permanent Commission on 20 March 2024. This established the Data Protection Supervisory Board (DPSB) to monitor and enforce EUROCONTROL’s compliance with its data protection regulation.
+
+Learn more about the DPSB
+
+1. What is EUROCONTROL’s website? Why do we collect, store and process your data on EUROCONTROL's website?
+
+The EUROCONTROL website offers an insight into news, topics and activities of the organisation to a wide range of people interested in European air traffic management (ATM). It also displays EUROCONTROL’s project or programme sites which are of interest to the European ATM community.
+
+2. What data do we collect, store and process about you?
+
+Some of the services offered on our website require the processing of your personal data. Below we give you an overview of the ways this website processes your personal data including the use of cookies and social media. The personal data we collect is divided into the following subsets:
+
+Browsing data
+
+We are committed to ensuring that your privacy is protected.
+
+The only information gathered during general browsing is from standard server logs and analytical tools. These include your IP (Internet Protocol) address, domain name, browser type, operating system, and information such as the website that referred you to us, the files you download, the pages you visit, and the dates/times of those visits.
+
+Additionally, personal information may be collected in case of registration, subscription to one of our online services or products or events, or contact request (see section “Data Privacy”).
+
+The information gathered during general browsing of the “eurocontrol.int” domain is used to analyse trends and usage of the EUROCONTROL website and to improve the usability and usefulness of the site. It is not connected with any personal information.
+
+Cookies
+
+EUROCONTROL uses traffic log cookies and third party analytical cookies to analyse data about webpage traffic and improve our website according to customer needs. EUROCONTROL only uses this information for statistical analysis purposes and then the data is removed from the system.
+
+You can choose to accept or decline certain cookies, and withdraw your consent at any time in section 6 of this page. This may prevent you from taking full advantage of the website.
+
+Required functional cookies
+
+The following cookies are necessary for EUROCONTROL and to allow you to fully use the eurocontrol.int website:
+
+cookie_agreed: this cookie is needed to see if we may store cookies on your device;
+
+has_js: this cookie checks if you have JavaScript enabled; and
+
+PHPSESSID: this cookie keeps track of your current session.
+
+Analytics cookies
+
+_pk_id (Store time: 13 months), _pk_ref (Store time: 6 months),
+
+_pk_ses, _pk_cvar, _pk_hsr (Store time: 30 minutes): Matomo cookies;
+
+ARRAffinity: this cookie is needed to load the NSV map on the homepage (Store time: end of session).
+
+EUROCONTROL uses Matomo and web analytics tools to analyse website traffic and thus allowing us to better understand how people use the site and to improve our website and user's experience. Matomo sets cookies on your device. However, EUROCONTROL only uses this information for statistical analysis purposes. A cookie in no way gives us access to your computer or any information about you, other than the data you choose to share with us.
+
+Analytics cookies track visitors' information such as: IP address (which is masked), location, time of the visit, URL of the page viewed, downloads performed, links that were followed, browser language and version, etc. This information is being used to prepare aggregated, anonymous statistics reports of visitor activity.
+
+Social media cookies
+
+YouTube: Some videos available on the EUROCONTROL website are embedded from EUROCONTROL corporate YouTube channel. YouTube’s privacy-enhanced mode is enabled: This means that YouTube will not set cookies for a user who views a web page that contains a privacy-enhanced YouTube embed video player, but does not click on the video to begin playback. Moreover, the application of the privacy-enhanced mode implies that YouTube will not store personally identifiable cookie information for playbacks of embedded videos. More info available on YouTube’s embedding videos information page .
+
+In addition, our website pages display social media buttons and use some embedded components from those services. These include Twitter/X, Facebook, Flickr, LinkedIn, Instagram. Please note that each social media channel has its own policy on the way they process your personal data when you access their sites.
+
+3. Who is your data disclosed to? Who has access to your data?
+
+Access to your personal data is provided to EUROCONTROL staff and contractors and responsible for delivering our service to you and to authorised staff according to the "need to know" principle. Such staff abide by statutory, and when required, additional confidentiality agreements (see further section 7).
+
+What are your rights under the EUROCONTROL Data Protection Regulation?
+
+You have the right to access, rectify, complete and update your data option by contacting [email protected] . Access, rectification, completion or updating of your data may be subject to the presentation of an ID document (ID card issued by a EUROCONTROL Member State or passport). You have the right to request additional information about the handling of your personal data by contacting [email protected] .
+
+What do we do to avoid misuse of or unauthorised access to data concerning you?
+
+Except for biometric data, which is not stored, other personal data are encrypted on RFID badges and stored in servers hosted in secure premises, protected by physical and logical security measures.
+
+Only the system administrator specifically appointed by the controller for this purpose is able to grant, alter or annul the access rights of any persons. Records of persons having access to the system are kept at all times.
+
+As for the biometric data, an algorithm converts the minutia points into a binary code. An application then encrypts the binary code on your badge. Neither the biometric reader, nor the access control database, nor the enrolment device nor the badge keeps records of biometric data.
+
+What safeguards do we apply when we transfer your data to third parties?
+
+In the framework of a criminal or security investigation, upon duly justified request, EUROCONTROL may transfer data to law enforcement agencies from the host nation or other EUROCONTROL Member States. The transfer of data would occur only with the EUROCONTROL Director General's approval. Transferred data would be either encrypted (electronic transmission) or protected (paper transmission).
+
+Who can you contact if you have questions or want to make a complaint?
+
+For any queries related to your personal data, please contact [email protected] , which is the entity responsible for the processing of the personal data concerning you.
+
+Complaints can be addressed to EUROCONTROL's Data Protection Officer.
+
+4. How long is your data kept?
+
+Required functional cookies:
+
+cookie_agreed are stored for 6 months;
+
+has_js and PHPSESSID are stored till the end of your session and then deleted
+
+Analytic data: 1000 days
+
+5. What are your rights under the EUROCONTROL Data Protection Regulation?
+
+You have the right to access, rectify, complete and update your data ) by contacting [email protected] . You have the right to object to the use of your personal data in some circumstances. You may also delete your personal information. You have the right to request additional information about the handling of your personal data by contacting [email protected] .
+
+6. How can you withdraw consent you have given to EUROCONTROL?
+
+If you have provided your consent to the processing of personal data through analytic cookies, you have the right to withdraw consent at any time. For more information, go to the bottom of the page to find your data controller for one or all our materials.
+
+Control the cookies on this website
+
+Currently you have given for optional cookies.
+
+7. What do we do to avoid misuse or unauthorised access to data concerning you?
+
+In order to protect your personal data EUROCONTROL has put in place appropriate technical and organisational measures; these measures are designed to prevent unauthorised access, modification or disclosure and protect the data against accidental or unauthorised destruction.
+
+EUROCONTROL applies industry standards and best practices in cyber security, including the Center for Internet Security’s (CIS) Critical Security Controls. These standards provide us with a comprehensive framework for establishing, implementing, and maintaining information security management systems in order to protect our networks and systems against security threats.
+
+Staff and contractors handling your data are bound by confidentiality obligations.
+
+8. What safeguards do we apply when we transfer your data to third parties?
+
+Your personal data is only given to a very limited set of contractors for the performance of their tasks (see section 3 above). Contracts with our contractors contain appropriate confidentiality obligations.
+
+9. Who can you contact if you have questions or want to make a complaint?
+
+For any queries related to your personal data on the website, please contact: [email protected] which is the entity/team responsible for the processing of the personal data concerning you.
+
+If you have questions or need guidance on personal data protection matters, you can contact EUROCONTROL’s Data Protection Officer (DPO) .
+
+If you have a complaint, first try to resolve the matter with EUROCONTROL’s Data Protection Officer. If you are not satisfied with the response of the DPO, you can lodge a complaint with the Data Protection Supervisory Board .
+
+For any queries relating to subscription data, please consult the table below to find the data controllers responsible. If you cannot find your data processor, contact SRM admin support . For more information regarding how we collect, store and manage your personal data through registrations and subscriptions, please check the SRM privacy statement on the protection of personal data .
+
+Publication
+
+Contacts
+
+Aviation Trends
+
+Contact
+
+European Aviation Overview
+
+Contact
+
+Raising the aviation bar (Podcasts)
+
+Contact
+
+Data Snapshot
+
+Contact
+
+Think Papers
+
+Contact
+
+Aviation Sustainability Briefing
+
+Contact
+
+ETS Updates
+
+Contact
+
+European Regulatory Updates
+
+Contact
+
+Innovation Hub Updates
+
+Contact
+
+LSSIP newsletter
+
+Contact
+
+SESAR PJ19 / PJ20
+
+Contact
+
+Special flash info
+
+Contact
+
+EATMA newsletter
+
+Contact
+
+ERNIP Monitoring report
+
+Contact
+
+Skyway magazine
+
+Contact
+
+Hindsight magazine
+
+Contact
+
+ACAS bulletin
+
+Contact
+
+All-causes delay report
+
+Contact
+
+Network operations reports
+
+Contact
+
+ALC Newsletter and Weekly Updates
+
+Contact
+
+NM ATFM Daily briefing
+
+Contact
+
+Digitalisation and information newsletter
+
+Contact
+
+Website Privacy Policy
+
+1. EUROCONTROL Website
+
+2. What data
+
+> Browsing data
+
+> Cookies
+
+3. Data disclosure
+
+4. Data duration
+
+5. Your rights
+
+6. Withdrawing consent
+
+7. Avoiding misuse
+
+8. Safeguards
+
+9. Contact
+
+Back to top
+
+Contact us
+
+&times;
+
+You must have JavaScript enabled to use this form.
+
+First name
+
+Last name
+
+Email
+
+Email
+
+Confirm email
+
+Your question
+
+I agree that my data can be processed in accordance with EUROCONTROL's privacy and data protection policy .
+
+EUROCONTROL respects your personal data
+
+At EUROCONTROL, we manage your personal data responsibly, meaning we only use it for the pur-pose defined in the privacy statement. EUROCONTROL will never share your personal data to third parties. Read our full full privacy and data protection policy (PDF) to learn more.
+
+Leave this field blank
+
+Social Footer
+
+Follow our Director General on LinkedIn
+
+Tertiary navigation
+
+Locations
+
+Contacts
+
+Brand
+
+Privacy
+
+Disclaimers
+
+Fraud warning
+
+OneSky Online
+
+© EUROCONTROL
+
+Close navigation
+
+Search
+
+Trending
+
+ASTERIX
+NOP
+FEAST Info
+Learning Zone
+How to find us
+
+Main navigation (mobile)
+
+About us
+
+What we do
+
+We deliver
+
+Optimised operational performance
+
+Powered by the Network Manager
+
+Effective cost-recovery system
+
+Powered by the CRCO
+
+Civil-military cooperation in aviation
+
+Powered by the Civil-Military Cooperation Division and the Network Manager
+
+Cross-border air navigation services
+
+Powered by the Maastricht Upper Area Control Centre
+
+Innovation, research and simulation
+
+Powered by the EUROCONTROL Innovation Hub
+
+Training
+
+Powered by the ALC
+
+We contribute to
+
+Air navigation services performance review
+
+Airports
+
+Airspace design and utilisation
+
+Artificial intelligence
+
+Aviation sustainability
+
+Communications, navigation and surveillance
+
+Customised support to stakeholders
+
+Cybersecurity
+
+Digitalisation and information management
+
+Disruption and crisis management
+
+Forecasting
+
+Master plan, architecture and monitoring
+
+Network operations
+
+Network operations planning
+
+Network performance
+
+Safety
+
+Simulations and validation
+
+Space and higher airspace operations
+
+Standardisation
+
+Unmanned aircraft systems
+
+Key applications
+
+NOP
+
+Your gateway to interact with EUROCONTROL's Network manager Operations Centre
+
+Access
+
+Aviation Intelligence Portal
+
+Our online air navigation services performance data portal
+
+Access
+
+Live traffic
+
+Real-time European air traffic situation map.
+
+Access
+
+Discover what we do
+
+Newsroom
+
+Events
+
+Library
+
+We offer
+
+Our data
+
+Procurement
+
+Careers
+
+Work with us
+
+Traineeship programme
+
+Secondment opportunities
+
+Become an ATCO
+
+Secondary navigation (mobile)
+
+Search
+
+Tertiary navigation (mobile)
+
+Locations
+
+Contacts
+
+Brand
+
+Privacy
+
+Disclaimers
+
+Fraud warning
+
+OneSky Online
+
+Was this page helpful?
+
+Yes No &times;
+
+Contact us
+
+&times;

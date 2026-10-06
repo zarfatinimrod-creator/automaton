@@ -1,23 +1,20 @@
 {
   "url": "https://www.btl.gov.il/Insurance/National%20Insurance/Pages/%D7%9E%D7%99%20%D7%A4%D7%98%D7%95%D7%A8%20%D7%9E%D7%AA%D7%A9%D7%9C%D7%95%D7%9D%20%D7%93%D7%9E%D7%99%20%D7%91%D7%99%D7%98%D7%95%D7%97%20%D7%9C%D7%90%D7%95%D7%9E%D7%99.aspx",
   "slug": "btl-who-is-exempt",
-  "fetchedAt": "2026-09-29T11:28:05.928Z",
+  "fetchedAt": "2026-10-06T07:14:31.970Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 149384,
-  "sha256": "15f09f56b31c60b98382cc3406452ae3d5913d8518c27d93ff23105f14f8d758",
+  "byteLength": 147690,
+  "sha256": "65ca9d0b026cf17f5baa7a4ca3b475be0a5a36cf210fd2a67ff4125db3502920",
   "truncated": false,
   "redacted": 1,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 1,
-    "fold": "12143ca"
-  },
   "error": null,
   "bodyPath": "research/rendered/btl-who-is-exempt.html",
   "textPath": "research/rendered/btl-who-is-exempt.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://www.btl.gov.il/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "79905d2c4ee06abe7e0f89520bbe8962406a6b6079af95d92c0962cc2137a703",
+  "previousSha256": "15f09f56b31c60b98382cc3406452ae3d5913d8518c27d93ff23105f14f8d758",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

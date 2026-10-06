@@ -1,0 +1,19 @@
+{
+  "url": "https://flagos.io/robots.txt",
+  "slug": "robots-flagos",
+  "fetchedAt": "2026-10-06T07:15:39.349Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 2018,
+  "sha256": "2c778aeba9e97f3f75bae77054920d4898699fe52bf686bda60576f75ccde41e",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/robots-flagos.html",
+  "textPath": "research/rendered/robots-flagos.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://flagos.io/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

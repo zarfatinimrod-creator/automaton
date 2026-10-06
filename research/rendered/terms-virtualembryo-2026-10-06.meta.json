@@ -1,0 +1,26 @@
+{
+  "url": "https://virtualembryo.ai/challenge/terms",
+  "slug": "terms-virtualembryo-2026-10-06",
+  "fetchedAt": "2026-10-06T07:15:32.158Z",
+  "status": 200,
+  "contentType": "text/html;charset=utf-8",
+  "byteLength": 134581,
+  "sha256": "dabafba6432ca104969d3c2c40543b9a1bffe0ed618d15bf703c5ff12afcea3b",
+  "truncated": false,
+  "redacted": 4,
+  "error": null,
+  "bodyPath": "research/rendered/terms-virtualembryo-2026-10-06.html",
+  "textPath": "research/rendered/terms-virtualembryo-2026-10-06.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://virtualembryo.ai/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-06",
+    "from": "research/rendered/terms-virtualembryo.meta.json",
+    "commit": "5f4853a",
+    "why": "A dated copy of the render-watch capture of terms-virtualembryo as commit 5f4853a stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keep pointing at the lines the terms reading of 6.10 (tick 54: one Opus reader, one adversarial Opus verifier, the main thread's verdict) rests on. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-virtualembryo stays on the weekly watch (its site is NOT_BARRED)."
+  }
+}

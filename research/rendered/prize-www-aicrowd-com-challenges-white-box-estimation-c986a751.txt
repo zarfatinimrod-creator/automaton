@@ -1,0 +1,139 @@
+AIcrowd | ARC White-Box Estimation Challenge 2026 | Challenges
+
+Loading
+
+AIcrowd
+
+Challenges
+
+Organize a challenge
+FAQ
+Contact
+
+Follow us on
+
+Log In
+
+Sign Up
+
+Challenges
+
+Organize a challenge
+FAQ
+Contact
+
+Log In
+Sign Up
+
+Share
+
+Overview
+
+Leaderboard
+
+Discussion
+
+Insights
+
+Resources
+
+Submissions
+
+Rules
+
+More
+
+Participate
+
+Create a team for this challenge
+
+&times;
+
+Team Name
+
+A team name may only contain basic letters, numbers, and any of
+-_.{}[]
+
+Cancel
+
+ARC White-Box Estimation Challenge 2026
+
+Given the weights of a randomly initialized ReLU MLP, can you estimate its expected per-neuron activations more accurately than running the network on a comparable number of sampled inputs? The ARC White-Box Estimation Challenge (WhestBench), organized by the Alignment Research Center in partnership with AIcrowd , is a contest in compute-efficient white-box estimation.
+
+Participants build an estimator : executable code that reads a network’s weights and returns per-neuron post-ReLU activation means within a fixed analytical compute budget, metered by flopscope . Submissions are scored on mean squared error against a high-budget Monte Carlo reference, and the contest is set up so that algorithm design — not hardware or implementation tricks — decides the outcome. Any compliant method is allowed: white-box, black-box sampling, or a hybrid. The leaderboard decides.
+
+White-box methods for trained networks are the eventual goal. WhestBench begins with randomly initialized networks, a tractable setting in which to develop the algorithmic toolkit that mechanistic estimation — and the safety questions motivating it — will eventually need.
+
+Where the current details live
+
+This summary carries no dates, budgets, prize amounts, or scoring parameters. Those change between rounds, and each is published in exactly one authoritative place:
+
+Timeline, deadlines, eligibility, prizes, and every other binding term — the Official Rules . In the event of any inconsistency, the Rules govern.
+
+Estimator contract, the current round’s MLP shape and FLOP budget, code restrictions, packaging and submission — the starter kit .
+
+Announcements, clarifications, and questions — the challenge forum . Bugs go to GitHub Issues .
+
+Private or administrative matters — [redacted:email]@aicrowd.com .
+
+Background reading: the ARC announcement post , the WhestBench Explorer , and the companion paper — Wilson Wu, Victor Lecomte, Michael Winer, George Robinson, Jacob Hilton, and Paul Christiano, “Estimating the expected output of wide random MLPs more efficiently than sampling” ( arXiv:2605.05179 ).
+
+&times;
+
+The challenge got you curious?
+
+Sign up to solve the problem
+
+Continue with Google
+
+Continue with Github
+
+Sign Up with Email
+
+Already Have an Account? Log In
+
+Cookies help us deliver our services. By using our services, you agree to our use of cookies.
+
+Accept
+
+AIcrowd
+
+Platform
+
+Challenges
+
+AIcrowd Research
+
+Organize a Challenge
+
+FAQ
+
+Connect
+
+Blog
+
+Forums
+
+Contact
+
+GitLab
+
+Twitter
+
+Discord
+
+Legal
+
+Cookie consent
+
+Terms of Use
+
+Participation Terms
+
+Privacy
+
+Community Guidelines
+
+AI & Ethics
+
+© 2026 AIcrowd. All rights reserved.

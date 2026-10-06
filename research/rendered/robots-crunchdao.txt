@@ -1,0 +1,30 @@
+User-agent: *
+Allow: /
+
+# Auth & onboarding
+Disallow: /login
+Disallow: /signup
+Disallow: /confirm-new-email
+Disallow: /confirm-email
+Disallow: /complete-profile
+Disallow: /oauth
+Disallow: /onboard/*
+
+# Private user pages
+Disallow: /account/*
+Disallow: /dashboard
+
+# Admin
+Disallow: /admin/*
+Disallow: /competitions/*/admin/*
+
+# OG image routes (not pages)
+Disallow: /og/*
+
+# API proxy
+Disallow: /api/*
+
+# Technical
+Disallow: /maintenance
+
+Sitemap: https://hub.crunchdao.com/sitemap.xml
