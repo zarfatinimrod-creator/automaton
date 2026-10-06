@@ -40,6 +40,34 @@ const lineOf = (slug: string, ext: string, n: number) => readFileSync(`${RENDERE
 const read = (file: string) => readFileSync(file, "utf8");
 
 /**
+ * Tick 54 (6.10.2026): the robots.txt captures of the 6.10 weekly render that scripts/robots-verdict.mjs read for the 21
+ * prize-event NO_TERMS sites (17 set to NO_TERMS_ROBOTS_OK, four declined), and nevo's, which it read again. The script
+ * names the live capture it read (it never reads a frozen copy) in each NO_TERMS_ROBOTS_OK source it writes, with its
+ * fetchedAt and sha256, and the audit note's robots table names every capture it read with the same values. Named,
+ * never by line; prize-terms-audit.test.ts fails when one of them no longer matches the values that cite it.
+ */
+const ROBOTS_SET = [
+  "robots-agenthon",
+  "robots-aicrowd",
+  "robots-alignmentforum",
+  "robots-bcamlc",
+  "robots-crunchdao",
+  "robots-drivendata",
+  "robots-geminixprize",
+  "robots-health-data-hub",
+  "robots-ijcai-2026",
+  "robots-k12-ai-infrastructure",
+  "robots-learn2design2026",
+  "robots-microblink",
+  "robots-pasteurlabs",
+  "robots-solafune",
+  "robots-sophelio",
+  "robots-thinkonward",
+  "robots-wundernn",
+];
+const ROBOTS_READ = [...ROBOTS_SET, "robots-flagos", "robots-mozilladatacollective", "robots-situatedevals", "robots-theemailgame", "robots-nevo"];
+
+/**
  * Where a decision note names an ACTIVE capture on purpose, without a line: the live page, not what was read. Each
  * entry is "<file> <slug>" and says why. Any other name of an active capture in a note (md or json) fails below: a
  * section that names the live capture and cites its lines in a form the scanner cannot place (bare :N lines after a
@@ -64,6 +92,18 @@ const LIVE_MENTIONS: Record<string, string> = {
   "research/faceless-youtube/LICENCE-IGO-DECISION.md unesco-uis-databrowser-terms": "a urls.txt line the note proposed: the slug a render writes",
   // The 4.10 row-18 ruling named amo-add-on-policies while urls.txt:331 was still active; its fold retired that line
   // (ruling §3 rule 1), so the slug is no longer an active capture and its entry here went with it.
+  ...Object.fromEntries(
+    ROBOTS_SET.map((slug) => [
+      `research/channel-loop/terms-verdicts.json ${slug}`,
+      "the robots.txt capture scripts/robots-verdict.mjs read for a NO_TERMS_ROBOTS_OK source, with its fetchedAt and sha256 (tick 54)",
+    ]),
+  ),
+  ...Object.fromEntries(
+    ROBOTS_READ.map((slug) => [
+      `research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md ${slug}`,
+      "the robots verdicts table: the capture the script read, with its status, fetchedAt and sha256 (tick 54)",
+    ]),
+  ),
 };
 
 /**
