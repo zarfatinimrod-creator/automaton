@@ -1,23 +1,20 @@
 {
   "url": "https://lomdiml.co.il/%d7%aa%d7%a7%d7%a0%d7%95%d7%9f-%d7%90%d7%aa%d7%a8/",
   "slug": "terms-lomdiml",
-  "fetchedAt": "2026-09-29T14:02:53.067Z",
+  "fetchedAt": "2026-10-06T07:15:08.845Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
   "byteLength": 123717,
-  "sha256": "224a65f9e014bf39bf6580effa942ee13048d8d9a5d659cb6c920e9540e723d9",
+  "sha256": "cacee41c84ab94a3e32eb8a941263f89c779d5f4f970081b50cfc82cc7678530",
   "truncated": false,
-  "redacted": 9,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 9,
-    "fold": "12143ca"
-  },
+  "redacted": 6,
   "error": null,
   "bodyPath": "research/rendered/terms-lomdiml.html",
   "textPath": "research/rendered/terms-lomdiml.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://lomdiml.co.il/robots.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "224a65f9e014bf39bf6580effa942ee13048d8d9a5d659cb6c920e9540e723d9",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

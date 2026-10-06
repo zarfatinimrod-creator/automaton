@@ -1,23 +1,20 @@
 {
   "url": "https://polar.sh/legal/acceptable-use-policy",
   "slug": "terms-polar-aup",
-  "fetchedAt": "2026-09-29T14:02:59.443Z",
+  "fetchedAt": "2026-10-06T07:15:09.955Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 128612,
-  "sha256": "fd3d0d30d8c2da63503cf20fde39f32e2ee278a0235a55fd5a1720c0a955479e",
+  "byteLength": 129438,
+  "sha256": "2248d161dc34b5880e218e705dda4df5823d8f11660dfb9a15a68b21579f3172",
   "truncated": false,
   "redacted": 1,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 1,
-    "fold": "12143ca"
-  },
   "error": null,
   "bodyPath": "research/rendered/terms-polar-aup.html",
   "textPath": "research/rendered/terms-polar-aup.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://polar.sh/robots.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "fd3d0d30d8c2da63503cf20fde39f32e2ee278a0235a55fd5a1720c0a955479e",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

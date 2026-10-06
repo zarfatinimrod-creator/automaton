@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /accounts/
+Disallow: /competitions/search/
+Disallow: /*/leaderboard_partial
+Disallow: /*/leaderboard_partial/

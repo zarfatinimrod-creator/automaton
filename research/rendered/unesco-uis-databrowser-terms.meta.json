@@ -1,23 +1,20 @@
 {
   "url": "https://databrowser.uis.unesco.org/terms-and-conditions",
   "slug": "unesco-uis-databrowser-terms",
-  "fetchedAt": "2026-09-29T11:27:28.280Z",
+  "fetchedAt": "2026-10-06T07:14:19.158Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 40291,
-  "sha256": "a8163958c1cc5efe306d0c8439e1a288e7a7e208200b77433aa6427fbe1a4917",
+  "sha256": "8ab4cc91fe16550c3f26db16ea2bb86b8b2eb960659362c454caf847aed96c2b",
   "truncated": false,
-  "redacted": 10,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 10,
-    "fold": "12143ca"
-  },
+  "redacted": 8,
   "error": null,
   "bodyPath": "research/rendered/unesco-uis-databrowser-terms.html",
   "textPath": "research/rendered/unesco-uis-databrowser-terms.txt",
+  "robots": "none",
+  "robotsUrl": "https://databrowser.uis.unesco.org/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "4e9e4c0f4193fa6a4d70f5e28f94ec6cda0495a1b7c0baed0ccc3b4d871d3608",
+  "previousSha256": "a8163958c1cc5efe306d0c8439e1a288e7a7e208200b77433aa6427fbe1a4917",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

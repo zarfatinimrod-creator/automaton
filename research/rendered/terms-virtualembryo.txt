@@ -1,0 +1,110 @@
+Terms of Use · Virtual Embryo Challenge
+
+Virtual Embryo
+
+Virtual Embryo Challenge Annual competition
+Overview Competition
+Leaderboard Timeline Prizes
+FAQ
+Submit Sections
+
+Virtual Embryo Challenge™ 2026
+Website Terms of Use
+Effective 10 August 2026
+By accessing or using the Virtual Embryo Challenge website, submission portal, leaderboard, discussion forum, datasets, or related services (collectively, the “Services”), you agree to these Terms. If you do not agree, please do not use the Services.
+1. Purpose
+The Services support The Virtual Embryo Challenge, including participant registration, dataset distribution, submissions, evaluation, leaderboards, documentation, tutorials, and community discussions.
+Participation in the competition is also subject to the Virtual Embryo Challenge Official Rules, which form part of these Terms.
+
+2. Eligibility and Accounts
+You must:
+Provide accurate registration information.
+Keep your account credentials secure.
+Use only one account unless explicitly authorized.
+Be responsible for all activities under your account.
+
+If participating on behalf of an organization, you confirm that you are authorized to bind that organization to these Terms.
+
+3. Competition Submissions
+By submitting predictions, code, reports, or other materials through the Services, you:
+Confirm that you own or have permission to submit them.
+Grant the organizers a worldwide, non-exclusive, royalty-free license to use, evaluate, reproduce, and display your submissions solely for administering the competition, validating results, publishing leaderboards, scientific reporting, and promoting the Challenge.
+Retain ownership of your intellectual property unless otherwise stated in the Official Rules.
+
+4. Community Content
+If you post comments, questions, or other materials on discussion forums or community features, you grant the organizers permission to display and use that content in connection with operating the Challenge.
+Please do not post unlawful, offensive, abusive, or confidential information.
+
+5. Acceptable Use
+You agree not to:
+Share or sell your account.
+Submit fraudulent or plagiarized work.
+Attempt to manipulate the leaderboard or evaluation system.
+Reverse engineer, disrupt, or attack the Services.
+Upload malicious software or harmful content.
+Violate applicable laws or the Official Rules.
+Misuse released datasets or participant information.
+
+Violation of these Terms may result in suspension, disqualification, or account termination.
+
+6. Evaluation and Enforcement
+The organizers may audit submissions, verify compliance with the Official Rules, investigate suspected misconduct, and remove or disqualify submissions that violate these Terms or compromise the integrity of the competition.
+
+7. Intellectual Property
+All website content, datasets, documentation, software, graphics, logos, and trademarks remain the property of the organizers or their licensors unless otherwise stated.
+Participants may use released competition materials only for purposes permitted by the Challenge.
+
+8. Privacy
+Personal information will be handled in accordance with the Challenge Privacy Policy.
+
+9. Disclaimer
+The Services are provided "as is" without warranties of any kind. We do not guarantee uninterrupted operation, accuracy, availability, or fitness for any particular purpose. This is a self-hosted competition rather than a managed platform, and the Challenge Rules set out what the Organisers will do when the service is degraded, and what remedies are available to a team affected by it.
+
+10. Limitation of Liability
+To the maximum extent permitted by law, the organizers and affiliated institutions shall not be liable for any indirect, incidental, consequential, or special damages arising from participation in the Challenge or use of the Services.
+
+11. Changes
+We may update these Terms, the Services, or the competition procedures at any time. Continued use of the Services after changes become effective constitutes acceptance of the revised Terms.
+
+12. Governing Law
+These Terms are governed by the laws of the State of California, without regard to conflict-of-law principles.
+
+13. Contact
+Questions regarding the Challenge or these Terms may be directed to the Virtual Embryo Challenge Organizing Committee.
+Email: [email protected]
+Website: https://virtualembryo.ai
+
+14. Research Use and Scientific Integrity
+Participants agree that:
+Competition datasets are provided for research and educational purposes. Any use, reuse, publication, presentation, or redistribution of the data outside the Challenge must appropriately acknowledge the Virtual Embryo Challenge and credit Dr. Neil Chi’s group at the University of California, San Diego (UCSD), which generated the dataset. As the dataset has not yet been published, any use of the data in a publication or public presentation must receive prior approval from Dr. Neil Chi and the data-generating team. Any publication using the dataset must also appropriately credit Dr. Qingquan Zhang and Dr. Neil Chi.
+Attempts to recover hidden test labels, exploit evaluation infrastructure, or otherwise circumvent fair evaluation are prohibited.
+Receiving a prize is conditional on supplying a written description of how the method works, and on agreeing to its publication. Code is not required to be published; the Organisers may ask to see it privately to verify a result. The deadlines and the detail are in the Challenge Rules, section 15; this clause exists so that the condition is stated in both documents rather than in one.
+The organizers may publish aggregate benchmark results, leaderboards, and technical summaries describing submitted methods while respecting participants’ intellectual property as described in the Official Rules.
+
+See also the Challenge Rules , which govern the competition itself and are accepted separately.
+
+Virtual Embryo Challenge
+Join us in modelling how a single cell becomes an organism.
+
+Overview
+Tasks
+Data
+Evaluation
+Reference rows
+
+Community resources
+Leaderboard
+Timeline
+Prizes
+Community award
+Publish with us
+FAQ
+Submit
+
+Contact
+Back to the atlas
+Challenge Rules
+Terms of Use
+
+© 2026 Qiu Lab, Stanford University. All rights reserved. Virtual Embryo Challenge is a NeurIPS 2026 competition.
+Rules | Terms

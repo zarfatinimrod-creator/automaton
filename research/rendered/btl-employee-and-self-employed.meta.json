@@ -1,23 +1,20 @@
 {
   "url": "https://www.btl.gov.il/Insurance/National%20Insurance/type_list/%D7%A2%D7%95%D7%91%D7%93%20%D7%A9%D7%9B%D7%99%D7%A8%20%D7%95%D7%92%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%20%D7%A2%D7%A6%D7%9E%D7%90%D7%99/Pages/default.aspx",
   "slug": "btl-employee-and-self-employed",
-  "fetchedAt": "2026-09-29T11:27:46.583Z",
+  "fetchedAt": "2026-10-06T07:14:26.131Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 131948,
-  "sha256": "60e651854167685fb1fa8be78b52d83190c9f525b109413bb381f33d889a83db",
+  "byteLength": 129966,
+  "sha256": "96b03e81ff102237a7b67b027136e17a66b3eb7fed3a031170f0ee23aff929fb",
   "truncated": false,
   "redacted": 1,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 1,
-    "fold": "12143ca"
-  },
   "error": null,
   "bodyPath": "research/rendered/btl-employee-and-self-employed.html",
   "textPath": "research/rendered/btl-employee-and-self-employed.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://www.btl.gov.il/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "6651bf61e4305ea6672fda77f1471064e69f5b20c32f0bd1edbc362a5028fd90",
+  "previousSha256": "60e651854167685fb1fa8be78b52d83190c9f525b109413bb381f33d889a83db",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

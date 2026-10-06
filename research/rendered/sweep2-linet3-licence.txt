@@ -275,12 +275,14 @@ Linet accounting application
 Resources
 Readme
 Activity
+
 Stars
 16 stars
 Watchers
 13 watching
 Forks
 18 forks
+
 Report repository
 
 Releases

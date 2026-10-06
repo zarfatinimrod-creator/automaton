@@ -1,0 +1,19 @@
+{
+  "url": "https://www.stanford.edu/site/terms/",
+  "slug": "terms-stanford",
+  "fetchedAt": "2026-10-06T07:15:29.403Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 351829,
+  "sha256": "48c4c45e134be29e58d0f24dc8b8659f3d46457ada7fe323d3aa93a1ec305186",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-stanford.html",
+  "textPath": "research/rendered/terms-stanford.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://www.stanford.edu/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

@@ -1,23 +1,20 @@
 {
   "url": "https://polar.sh/docs/merchant-of-record/supported-countries",
   "slug": "polar-supported-countries",
-  "fetchedAt": "2026-09-29T11:27:55.727Z",
+  "fetchedAt": "2026-10-06T07:14:27.383Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 391052,
-  "sha256": "3cc26ab76e9d545760562bd3bac87718aa4f06b5867f8a115adc7a31bc2d0a75",
+  "byteLength": 394404,
+  "sha256": "09519e4bdcaeb480bc1bb08af089191c396221efce8ef9efcfc9be25ef066a43",
   "truncated": false,
   "redacted": 1,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 1,
-    "fold": "12143ca"
-  },
   "error": null,
   "bodyPath": "research/rendered/polar-supported-countries.html",
   "textPath": "research/rendered/polar-supported-countries.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://polar.sh/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "ce5182ae9e660b761b3f5fe7416820a56dd723d973a432f5f7de0504124c64ad",
+  "previousSha256": "3cc26ab76e9d545760562bd3bac87718aa4f06b5867f8a115adc7a31bc2d0a75",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

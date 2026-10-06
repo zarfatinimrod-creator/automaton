@@ -1,23 +1,20 @@
 {
   "url": "https://github.com/GameDistribution/GD-HTML5/wiki/SDK-Implementation/",
   "slug": "gamedistribution-sdk-implementation",
-  "fetchedAt": "2026-09-29T11:30:00.433Z",
+  "fetchedAt": "2026-10-06T07:14:43.905Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 245038,
-  "sha256": "62129700bfda968379d89f1e51ab118e78dd6666f401954be6054431f93bdc2b",
+  "byteLength": 245322,
+  "sha256": "bd614817ffc4ff1cff9901e4a97013da0a2924594a8e9c5878b4c2ac5bf764d6",
   "truncated": false,
   "redacted": 2,
-  "remasked": {
-    "on": "2026-10-05",
-    "addresses": 2,
-    "fold": "12143ca"
-  },
   "error": null,
   "bodyPath": "research/rendered/gamedistribution-sdk-implementation.html",
   "textPath": "research/rendered/gamedistribution-sdk-implementation.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://github.com/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "7432d1d14cb5f59dea830842d9434fd8c53b4b36397e26bb74dc5cf673cfac82",
+  "previousSha256": "62129700bfda968379d89f1e51ab118e78dd6666f401954be6054431f93bdc2b",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

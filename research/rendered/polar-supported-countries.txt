@@ -71,6 +71,8 @@ Model Context Protocol (MCP)
 
 SDKs
 
+CLI
+
 Framework Adapters
 
 Framework Guides
@@ -90,8 +92,6 @@ Supported countries
 Acceptable Use
 
 Account reviews
-
-Migrate Away
 
 llms-full.txt
 
