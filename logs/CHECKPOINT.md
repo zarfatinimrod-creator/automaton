@@ -1,10 +1,18 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-10-06 ~05:50 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-10-06 ~11:00 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
 > **❓ פתוח לבעלים (30.9, ~21:25 UTC):** הבעלים שלחו קישור לסרטון YouTube (`nWt3CbE96LA`) עם "תלמד מזה". אין דרך מכונה לקרוא אותו: youtube.com חסום בשער התנאים שלנו (BARRED, ביקורת 29.9; הכרעת 30.9 16(d)), והמכולה חסומה ממילא; חיפוש ברשת לפי המזהה לא מחזיר דבר. נתבקשה הדבקה של התמלול (YouTube → "הצג תמלול") או של הכותרת ומה ללמוד ממנו. כשהטקסט יגיע: אותו תהליך כמו מחקר הטיקטוק של 28.9 (`research/tiktok/08-sales-marketing-lessons.md`), על Opus, ותוצאה ב-`research/owner-videos/`.
+
+## ▶ 6.10, ~11:00 UTC — **סבב 54 (טיק 07:11, ישיבת Fable): שני פסקים, שישה קיפולי Opus, 29 עמודי אירועי-פרס ו-9 עמודי תנאים נקראו, השורה המזכה הראשונה**
+
+**מה נעשה:** ההרצה השבועית לא נורתה (cron 05:23) ושוגרה ביד (`5f4853a`, 67 עמודים). **ישיבת Fable:** שורה 21 → `research/channel-loop/RULING-2026-10-06-robots-and-terms.md` (robots.txt Disallow הוא מחסום; צילומי nevo `[robots-bar]`; תקרת 2026 של osek-zair יצאה מהמוצר; UA בלי קשר; חמישה סוגי אתרים שתנאיהם לא נקראו ורינדור js חד-פעמי לעמוד תנאים שהוא shell; עותקים של אתרים שאוסרים העתקה יוצאים מהעץ — `trim-capture.mjs` בתור); שורה 22 → `RULING-2026-10-06-domain-clock.md` ((B): פריסת הדומיין שעון ולא מכשיר). **קיפולים שמוזגו:** `6a0239d` page-views, `227b3cb` 17 פסקי robots על עותקים קפואים, `2242cbf` osek-zair 2026, `5a3ee24` UA + `--js --terms-shell`, `d0a369a` תשעת עמודי התנאים (devpost, zindi BARRED; grand-challenge, stanford CONDITIONAL_UNMET; virtualembryo NOT_BARRED; eurocontrol, opensky NO_TERMS; kaggle, adaptionlabs `shell:`) + שדה `copying` לכל אתר. **אירועי-פרס:** 20 שורות שנפתחו ע"י פסקי robots נרנדרו (אחרי ארבע דחיות push protection על טוקן Mapbox — מסכות ו-annotations נוספו) ונקראו; 6 עמודי כללים מקושרים נרנדרו ונקראו: **הראשונה שמזכה — Infer Fusion Reactor Magnetic Geometry (sophelio.io, Q4): "AI coding assistants may be used for any part of an entry" (`…rules-716c921c.txt:103`)**. טבלה: 14 מדורגות (13 לא, 1 כן), 13 BLOCKED, 1 NONE, 39 ממתינות. עמודי התנאים של kaggle ודואר ישראל נרנדרו פעם אחת ב-js: תנאי Kaggle נרנדרו (167 שורות) ונקראו — **BARRED** (:77 איסור crawl/scrape של כל עמוד; :87 איסור העתקה/פרסום ללא הסכמת הבעלים; :70 שימוש אישי לא-מסחרי בלבד) → kaggle.com ב-TERMS_BARRED, 17 השורות ו-build-arena נשארות סגורות; דואר ישראל ענה 403 ל-js → refusal-type; שתי שורות ה-js נפרשו. FABLE_QUEUE: 21, 22 DONE; 27 חדשה (תקרת 2026 של osek-patur).
+
+**בתהליך / הצעד הבא (סבב 55, 13:11):** (a) קריאת שני עמודי התנאים המרונדרים אם לא נקראו (Kaggle פותח 17 שורות + build-arena); פסקים, פרישת שורות ה-js; אם Kaggle מתיר — הפצה וקריאה; (b) agenthon.net ו-eurocontrol.int חזרה ל-TERMS_PENDING (קישורי תנאים נמצאו בצילומים; בלי robots-verdict עד הקריאה); (c) קיפול 9 של פסק 21 (`trim-capture.mjs`) או `robots-verdict --recheck`. §9 של CHANNEL_LOOP מחזיק את התור המלא (פריטי סבב 54: 10).
+
+**שאלות לבעלים:** ללא שינוי (5 פתוחות מ-30.9; ראה את הפסקה למעלה). לדר ₪0.
 
 ## ▶ 6.10, ~05:50 UTC — **סבב 53 (המשך, מ-04:25): שני הסקריפטים של סבב 52 רצו על אמת (WorldNav נלכד, נקרא ודורג BLOCKED); `address-kinds.mjs` ו-`remask-run.sh` (§9 52(1)) מוזגו.**
 
