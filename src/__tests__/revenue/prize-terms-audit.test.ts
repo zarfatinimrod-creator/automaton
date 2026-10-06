@@ -27,7 +27,6 @@ import {
   PAUSED_LINE,
   judgeSite,
   queuedPaths,
-  readRobotsCapture,
   readableCapture,
   serializeVerdicts,
   // @ts-expect-error — plain ESM script, no type declarations by design
@@ -347,8 +346,10 @@ const BEFORE = "; NO_TERMS before: ";
 const TICK45_SOURCES_SHA256 = "8883d8aa97ad830158d48142f8a85ce35ad331a107afded91992ea1424e553ef";
 /**
  * The verdicts as tick 45 left them: each NO_TERMS_ROBOTS_OK entry read back to the NO_TERMS entry the script rewrote
- * (the source after "; NO_TERMS before: ", checked 2026-10-05 as every audited entry was, and the note it kept); every
- * other entry as it is.
+ * (the source after "; NO_TERMS before: ", and the note it kept); every other entry as it is. The script replaced
+ * `checked`, so a NO_TERMS_ROBOTS_OK entry no longer holds tick 45's date: tick45() puts back 2026-10-05, the date every
+ * audited entry carried at 5f4853a, as a constant, not a reading. A test that asserts tick 45's `checked` reads it from an
+ * entry the script did not touch.
  */
 const tick45 = (v: Record<string, Entry>): Record<string, Entry> =>
   Object.fromEntries(
@@ -377,9 +378,62 @@ const citedCapture = (source: string): Cited | null => {
 };
 /** The rules URLs of one site in the fixture, in file order. */
 const rulesOf = (site: string) => audited().filter((e) => siteOfUrl(e.url) === site);
-type Capture = { slug: string; meta: Record<string, unknown> & { url: string; fetchedAt: string; status: number | null; contentType: string | null; sha256: string | null; bodyPath: string | null; error: string | null }; body: string | null };
-/** The committed robots- capture of one robots.txt URL, as scripts/robots-verdict.mjs reads it (never a frozen copy). */
-const captureOf = (robotsUrl: string) => readRobotsCapture(robotsUrl) as Capture | null;
+type Capture = {
+  slug: string;
+  meta: Record<string, unknown> & {
+    url: string;
+    slug: string;
+    fetchedAt: string;
+    status: number | null;
+    contentType: string | null;
+    sha256: string | null;
+    byteLength: number;
+    bodyPath: string | null;
+    error: string | null;
+    frozen?: { on: string; from: string; commit: string | null; why: string };
+  };
+  body: string | null;
+};
+/**
+ * The robots.txt captures the script read on 6.10, as their dated frozen copies (scripts/freeze-capture.mjs, at the tick-54
+ * review): the 21 of the 6.10 weekly render, each "<live slug>-2026-10-06" as commit 5f4853a stored it, and nevo's of 30.9,
+ * "robots-nevo-2026-09-30" as commit e839268 stored it (frozen at tick 38). The script read the live captures (it never
+ * reads a frozen copy); every source and every table row names the frozen copy, which no urls.txt line names, so the weekly
+ * render, which rewrites a live capture whenever its body changes, never moves what these tests hold.
+ */
+const FROZEN_ON = "2026-10-06";
+const RENDER_COMMIT = "5f4853a";
+const NEVO_FROZEN = { slug: "robots-nevo-2026-09-30", live: "robots-nevo", commit: "e839268" };
+/** The frozen copy a source or a table row names by one of its files (<slug>.txt, .html or .meta.json), read as the script reads a capture. */
+const frozenCapture = (path: string): Capture => {
+  const m = path.match(/^research\/rendered\/(robots-[a-z0-9.-]+?)\.(?:txt|html|meta\.json)$/);
+  expect(m, path).not.toBeNull();
+  const slug = m![1];
+  const meta = JSON.parse(readFileSync(`research/rendered/${slug}.meta.json`, "utf8")) as Capture["meta"];
+  return { slug, meta, body: meta.bodyPath ? readFileSync(meta.bodyPath, "utf8") : null };
+};
+/**
+ * A frozen copy of the live capture <live> as <commit> stored it: its meta names itself and where it came from, and the body
+ * is the bytes its sha256 and byteLength are of (FROZEN.sha256 holds every file; frozen-citations.test.ts checks that).
+ */
+const expectFrozenCopy = (cap: Capture, live: string, commit: string, label: string) => {
+  expect(cap.meta.slug, label).toBe(cap.slug);
+  expect(cap.meta.frozen?.from, label).toBe(`research/rendered/${live}.meta.json`);
+  expect(cap.meta.frozen?.commit, label).toBe(commit);
+  if (cap.meta.bodyPath !== null) {
+    expect(cap.meta.bodyPath, label).toMatch(new RegExp(`^research/rendered/${cap.slug.replace(/\./g, "\\.")}\\.(txt|html)$`));
+    const bytes = readFileSync(cap.meta.bodyPath);
+    expect(createHash("sha256").update(bytes).digest("hex"), label).toBe(cap.meta.sha256);
+    expect(bytes.length, label).toBe(cap.meta.byteLength);
+  }
+};
+/** judgeSite's readCapture, given one frozen copy: that copy for its own robots.txt URL, nothing for any other. */
+const readerOf = (cap: Capture) => (url: string) => (url === cap.meta.url ? cap : null);
+/** "Eleven", "six": the number words the audit note's prose uses. */
+const NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen"];
+const numberWord = (w: string) => NUMBER_WORDS.indexOf(w.toLowerCase());
+/** How the audit note's robots table quotes the rule that decided a path ("no rule matches" when none did). */
+const quoteRule = (rule: { allow: boolean; pattern: string } | null) => (rule ? `\`${rule.allow ? "Allow" : "Disallow"}: ${rule.pattern}\`` : "no rule matches");
 
 describe("tick 45: the prize-event sites' terms verdicts", () => {
   it("audits the list as it stood at 548be52, kept byte for byte as a fixture", () => {
@@ -404,15 +458,18 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     for (const [site, verdict] of Object.entries(AUDITED)) {
       // As tick 45 judged it...
       expect(then[site]?.verdict, site).toBe(verdict);
-      expect(then[site].checked, site).toBe("2026-10-05");
       expect(then[site].source, site).toContain("TERMS-AUDIT-2026-10-05-prize-events.md");
-      // ...and as it is: unchanged, or (6.10, tick 54) a NO_TERMS site scripts/robots-verdict.mjs set NO_TERMS_ROBOTS_OK,
-      // whose source still ends in the tick-45 one ("tick 54" below holds the rest).
-      if (v[site].verdict === "NO_TERMS_ROBOTS_OK") {
+      // ...and as it is: unchanged (checked still tick 45's date), or (6.10, tick 54) one of the 17 NO_TERMS sites
+      // scripts/robots-verdict.mjs set NO_TERMS_ROBOTS_OK, whose source still ends in the tick-45 one and whose `checked`
+      // is the script's date ("tick 54" below holds the rest). tick45()'s `checked` for those 17 is a constant, so it is
+      // not asserted here.
+      if (ROBOTS_OK.includes(site)) {
         expect(verdict, site).toBe("NO_TERMS");
+        expect(v[site].verdict, site).toBe("NO_TERMS_ROBOTS_OK");
         expect(v[site].checked, site).toBe(ROBOTS_CHECKED);
         expect(v[site].source.endsWith(`${BEFORE}${then[site].source}`), site).toBe(true);
       } else {
+        expect(then[site], site).toBe(v[site]);
         expect(v[site].verdict, site).toBe(verdict);
         expect(v[site].checked, site).toBe("2026-10-05");
       }
@@ -589,7 +646,7 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     }
     for (const site of RULED_EXHAUSTIVE) {
       expect(then[site].verdict, site).toBe("NO_TERMS");
-      expect(["NO_TERMS", "NO_TERMS_ROBOTS_OK"], site).toContain(v[site].verdict);
+      expect(v[site].verdict, site).toBe(ROBOTS_OK.includes(site) ? "NO_TERMS_ROBOTS_OK" : "NO_TERMS");
       expect(v[site].note!.endsWith("(ruling R1, 5.10, TERMS-AUDIT-2026-10-05-prize-events.md)"), site).toBe(true);
       expect(v[site].note, site).not.toMatch(/until (that|the main thread's) ruling|is paused, not fetched/);
     }
@@ -810,11 +867,18 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
  * for the queued paths. The 6.10 weekly render (5f4853a) captured all 21 probes; the script, run for each with --urls
  * research/measurements/ai-allowed-events.urls.txt, set 17 and declined four. Each verdict is re-derived here by the
  * script's own judgeSite from the NO_TERMS entry tick 45 left, the fixture's rules paths (the live list's URLs for these
- * sites were the fixture's on 6.10) and the committed captures, in process: no network, no child process.
+ * sites were the fixture's on 6.10) and the dated frozen copy of each capture it read (FROZEN_ON), in process: no network,
+ * no child process, and nothing the weekly render rewrites.
  */
 describe("tick 54: the robots verdicts of 6.10", () => {
   const raw = () => readFileSync(VERDICTS, "utf8");
   const fixture = () => readFileSync(FIXTURE, "utf8");
+  /** The frozen copy of the capture the script read for one of the four sites it declined. */
+  const declinedCapture = (slug: string) => frozenCapture(`research/rendered/${slug}-${FROZEN_ON}.meta.json`);
+  const section = () => {
+    const audit = readFileSync(AUDIT, "utf8");
+    return audit.slice(audit.indexOf("## Robots verdicts (6.10.2026, tick 54)"));
+  };
 
   it("sets exactly these 17 of the 21 NO_TERMS sites to NO_TERMS_ROBOTS_OK, and keeps terms-verdicts.json's exact format", () => {
     const v = verdicts();
@@ -831,10 +895,11 @@ describe("tick 54: the robots verdicts of 6.10", () => {
     expect(createHash("sha256").update(text).digest("hex")).toBe(TICK45_SOURCES_SHA256);
   });
 
-  it("rests each NO_TERMS_ROBOTS_OK verdict on the committed robots.txt capture its source names, exactly as the script writes it", () => {
+  it("rests each NO_TERMS_ROBOTS_OK verdict on the frozen copy of the robots.txt capture it read, exactly as the script writes it", () => {
     const v = verdicts();
     const file = JSON.parse(raw());
     const then = tick45(v);
+    const urlsTxt = readFileSync(URLS, "utf8");
     const kinds: Record<string, string[]> = { file: [], absent: [] };
     for (const site of ROBOTS_OK) {
       const e = v[site];
@@ -850,19 +915,23 @@ describe("tick 54: the robots verdicts of 6.10", () => {
       const rules = rulesOf(site);
       expect(cited!.n, site).toBe(rules.length);
       for (const r of rules) expect(robotsTxtUrl(r.url), r.url).toBe(cited!.url);
-      const capture = captureOf(cited!.url);
-      expect(capture?.slug, site).toBe(cited!.slug);
-      const { meta, body } = capture!;
+      // The source names the dated frozen copy of the 6.10 render's capture (5f4853a), which no urls.txt line names, so
+      // the weekly render never rewrites it.
+      expect(cited!.slug, site).toMatch(new RegExp(`^robots-[a-z0-9.-]+-${FROZEN_ON}$`));
+      expect(urlsTxt, site).not.toContain(cited!.slug);
+      const capture = frozenCapture(cited!.path);
+      expect(capture.slug, site).toBe(cited!.slug);
+      expectFrozenCopy(capture, cited!.slug.slice(0, -(FROZEN_ON.length + 1)), RENDER_COMMIT, site);
+      const { meta, body } = capture;
       expect(meta.url, site).toBe(cited!.url);
       expect(meta.fetchedAt, site).toBe(cited!.fetchedAt);
       expect(existsSync(cited!.path), cited!.path).toBe(true);
       if (cited!.kind === "file") {
         // A robots.txt the site served (2xx text/plain, not markup), stored at the .txt the source names, whose bytes the
-        // meta's sha256 is of; the source carries its first 12 hex digits.
+        // meta's sha256 is of (expectFrozenCopy); the source carries its first 12 hex digits.
         expect(meta.bodyPath, site).toBe(cited!.path);
         expect(readableCapture(meta, body), site).toEqual({ kind: "file" });
         expect(meta.sha256!.slice(0, 12), site).toBe(cited!.sha12);
-        expect(createHash("sha256").update(readFileSync(cited!.path)).digest("hex"), site).toBe(meta.sha256);
       } else {
         // A 404 (or 410): the site has no robots.txt, so no rules (RFC 9309 §2.3.1.3). render-watch stored no body, so
         // the source names the .meta.json and carries no sha256.
@@ -871,10 +940,12 @@ describe("tick 54: the robots verdicts of 6.10", () => {
         expect(meta.sha256, site).toBeNull();
         expect(readableCapture(meta, body), site).toEqual({ kind: "absent" });
       }
-      // Set by the script, not by hand: given the NO_TERMS entry tick 45 left, the fixture and the committed captures,
+      // Set by the script, not by hand: given the NO_TERMS entry tick 45 left, the fixture and the capture it read,
       // judgeSite allows every rules path and writes these four fields as they stand (the fields it writes; a field a
-      // later fold adds to every entry is not its to write).
-      const out = judgeSite({ site, verdicts: { ...file, sites: then }, urls: fixture(), today: ROBOTS_CHECKED });
+      // later fold adds to every entry is not its to write). The script read the live capture and wrote its path; the
+      // review moved the source to the frozen copy (the same bytes, URL, fetchedAt and sha256), and judgeSite reading
+      // that copy writes the source exactly as it stands, so the path is the only thing the review changed.
+      const out = judgeSite({ site, verdicts: { ...file, sites: then }, urls: fixture(), readCapture: readerOf(capture), today: ROBOTS_CHECKED });
       expect(out.changed, site).toBe(true);
       expect(out.checked.map((c: { url: string; allowed: boolean }) => [c.url, c.allowed]), site).toEqual(rules.map((r) => [r.url, true]));
       const written = ({ verdict, source, checked, note }: Entry) => ({ verdict, source, checked, note });
@@ -884,7 +955,7 @@ describe("tick 54: the robots verdicts of 6.10", () => {
     expect(kinds.file).toHaveLength(11);
   });
 
-  it("leaves the four others NO_TERMS, each for a reason its own robots.txt capture shows", () => {
+  it("leaves the four others NO_TERMS, each for a reason the frozen copy of its robots.txt capture shows", () => {
     const v = verdicts();
     const file = JSON.parse(raw());
     for (const [site, { slug, why }] of Object.entries(ROBOTS_NOT_SET)) {
@@ -894,14 +965,15 @@ describe("tick 54: the robots verdicts of 6.10", () => {
       const rules = rulesOf(site);
       const robotsUrl = robotsTxtUrl(rules[0].url);
       for (const r of rules) expect(robotsTxtUrl(r.url), r.url).toBe(robotsUrl);
-      const capture = captureOf(robotsUrl);
-      expect(capture?.slug, site).toBe(slug);
-      const { meta, body } = capture!;
+      const capture = declinedCapture(slug);
+      expectFrozenCopy(capture, slug, RENDER_COMMIT, site);
+      const { meta, body } = capture;
+      expect(meta.url, site).toBe(robotsUrl);
       if (why === "html") {
         // /robots.txt answered 200 with an HTML page: not a robots.txt the site served (ruling D2(iv): the site's answer).
         expect(meta.status, site).toBe(200);
         expect(meta.contentType, site).toMatch(/^text\/html\b/);
-        expect(meta.bodyPath, site).toBe(`research/rendered/${slug}.html`);
+        expect(meta.bodyPath, site).toBe(`research/rendered/${slug}-${FROZEN_ON}.html`);
         expect(body, site).toMatch(/^\s*<!DOCTYPE html>/i);
         expect(readableCapture(meta, body), site).toEqual({ kind: "refused", why: `a 200 answered ${meta.contentType}, not text/plain` });
       } else if (why === "unreachable") {
@@ -918,12 +990,12 @@ describe("tick 54: the robots verdicts of 6.10", () => {
         for (const r of rules) expect(robotsDecision(own, r.url), r.url).toEqual({ allowed: false, rule: { allow: false, pattern: "/" } });
       }
       // The script, run again on the same inputs, still declines, for that reason, and returns the file untouched.
-      const out = judgeSite({ site, verdicts: file, urls: fixture(), today: ROBOTS_CHECKED });
+      const out = judgeSite({ site, verdicts: file, urls: fixture(), readCapture: readerOf(capture), today: ROBOTS_CHECKED });
       expect(out.changed, site).toBe(false);
       expect(out.verdicts, site).toBe(file);
       expect(out.why, site).toMatch(
         why === "html"
-          ? new RegExp(`^the robots\\.txt capture of https://${new URL(robotsUrl).hostname.replace(/\./g, "\\.")} \\(research/rendered/${slug}\\.meta\\.json\\) is not a robots\\.txt the site served: a 200 answered text/html`)
+          ? new RegExp(`^the robots\\.txt capture of https://${new URL(robotsUrl).hostname.replace(/\./g, "\\.")} \\(research/rendered/${slug}-${FROZEN_ON}\\.meta\\.json\\) is not a robots\\.txt the site served: a 200 answered text/html`)
           : why === "unreachable"
             ? /is not a read file \(status none, error "TypeError: fetch failed"\): RFC 9309 §2\.3\.1\.4 reads that as complete disallow$/
             : /^robots\.txt disallows 4 queued path\(s\) for MehudakRenderWatch: /,
@@ -945,23 +1017,25 @@ describe("tick 54: the robots verdicts of 6.10", () => {
         expect(out.verdicts, site).toBe(file);
         expect(out.why, site).toBe(`${site} is already NO_TERMS_ROBOTS_OK`);
       }
-    }
-    for (const site of Object.keys(ROBOTS_NOT_SET)) {
-      const out = judgeSite({ site, verdicts: file, urls: fixture(), today: ROBOTS_CHECKED });
-      expect(out.changed, site).toBe(false);
-      expect(out.verdicts, site).toBe(file);
+      // The four, on the frozen copy of what the script read: declined on every list (on the fixture and the live list
+      // for the reason above; on urls.txt, which queues only their probes, for having no page to judge).
+      for (const [site, { slug }] of Object.entries(ROBOTS_NOT_SET)) {
+        const out = judgeSite({ site, verdicts: file, urls, readCapture: readerOf(declinedCapture(slug)), today: ROBOTS_CHECKED });
+        expect(out.changed, site).toBe(false);
+        expect(out.verdicts, site).toBe(file);
+      }
     }
   });
 
-  it("records every robots verdict in the audit note's last section, with the values the captures hold", () => {
+  it("records every robots verdict in the audit note's last section, with the values the frozen copies hold", () => {
     const audit = readFileSync(AUDIT, "utf8");
     const heads = audit.split("\n").filter((l) => l.startsWith("## "));
     expect(heads.slice(-2)).toEqual(["## Every URL the agents fetched", "## Robots verdicts (6.10.2026, tick 54)"]);
-    const section = audit.slice(audit.indexOf("## Robots verdicts (6.10.2026, tick 54)"));
-    expect(section).toContain("node scripts/robots-verdict.mjs <site> --urls research/measurements/ai-allowed-events.urls.txt");
-    expect(section).toContain("ruling 30.9 16(d) D2(iv)-(v)");
+    const text = section();
+    expect(text).toContain("node scripts/robots-verdict.mjs <site> --urls research/measurements/ai-allowed-events.urls.txt");
+    expect(text).toContain("ruling 30.9 16(d) D2(iv)-(v)");
     const v = verdicts();
-    const rows = section.split("\n").filter((l) => /^\| `[a-z0-9.-]+` \|/.test(l));
+    const rows = text.split("\n").filter((l) => /^\| `[a-z0-9.-]+` \|/.test(l));
     const sites = [...ROBOTS_OK, ...Object.keys(ROBOTS_NOT_SET)].sort();
     expect(rows.map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual([...sites, "nevo.co.il"]);
     for (const row of rows) {
@@ -973,30 +1047,83 @@ describe("tick 54: the robots verdicts of 6.10", () => {
       const nevo = site === "nevo.co.il";
       const list = nevo ? readFileSync(URLS, "utf8") : fixture();
       const pages = queuedPaths(list, site).filter((p: { url: string; slug: string }) => !isRobotsProbe(p.url, p.slug));
-      const { slug, meta, body } = captureOf(robotsTxtUrl(pages[0].url))!;
-      // The file named is the one the capture stored, or its meta when it stored none.
-      expect(path, site).toBe(meta.bodyPath ?? `research/rendered/${slug}.meta.json`);
+      // The file named is a frozen copy's: the 6.10 render's capture (5f4853a), or for nevo the 30.9 one (e839268), the
+      // copy the 6.10 row-21 ruling cites. Never the live capture, which the weekly render rewrites.
       expect(existsSync(path), path).toBe(true);
+      const capture = frozenCapture(path);
+      const live = nevo ? NEVO_FROZEN.live : capture.slug.slice(0, -(FROZEN_ON.length + 1));
+      expect(capture.slug, site).toBe(nevo ? NEVO_FROZEN.slug : `${live}-${FROZEN_ON}`);
+      expectFrozenCopy(capture, live, nevo ? NEVO_FROZEN.commit : RENDER_COMMIT, site);
+      const { slug, meta, body } = capture;
+      for (const p of pages) expect(robotsTxtUrl(p.url), p.url).toBe(meta.url);
+      // The file named is the one the copy stored, or its meta when it stored none.
+      expect(path, site).toBe(meta.bodyPath ?? `research/rendered/${slug}.meta.json`);
       expect(status, site).toBe(meta.status === null ? "none" : String(meta.status));
       expect(contentType ?? null, site).toBe(meta.contentType);
       expect(fetchedAt, site).toBe(meta.fetchedAt);
       expect(sha12, site).toBe(meta.sha256 ? meta.sha256.slice(0, 12) : "none");
       expect(Number(n), site).toBe(pages.length);
       expect(verdict, site).toBe(v[site].verdict);
-      // The answer, by what the capture is and what its rules say of the queued paths.
+      // The answer, word for word, by what the capture is and what its rules say of the queued paths: the rule quoted in
+      // brackets is the one that decided every path of the site.
       const kind = readableCapture(meta, body).kind;
       if (kind === "file") {
         const own = robotsRulesFor(parseRobotsTxt(body));
-        const allowed = pages.filter((p: { url: string }) => robotsDecision(own, p.url).allowed).length;
-        expect(answer, site).toMatch(new RegExp(allowed === pages.length ? `^${n} of ${n} allowed ` : `^${pages.length - allowed} of ${n} disallowed `));
+        const decisions = pages.map((p: { url: string }) => robotsDecision(own, p.url) as { allowed: boolean; rule: { allow: boolean; pattern: string } | null });
+        const quoted = [...new Set(decisions.map((d) => quoteRule(d.rule)))];
+        expect(quoted, site).toHaveLength(1);
+        const allowed = decisions.filter((d) => d.allowed).length;
+        expect(answer, site).toBe(allowed === pages.length ? `${n} of ${n} allowed (${quoted[0]})` : `${pages.length - allowed} of ${n} disallowed (${quoted[0]})`);
       } else if (kind === "absent") {
         expect(answer, site).toBe(`no robots.txt (${meta.status}): no rules, RFC 9309 §2.3.1.3; ${n} of ${n} allowed`);
       } else if (kind === "refused") {
-        expect(answer, site).toMatch(/^not a robots\.txt: a 200 that answered /);
+        expect(answer, site).toBe(`not a robots.txt: a 200 that answered \`${meta.contentType}\` (ruling D2(iv): the site's answer)`);
       } else {
-        expect(answer, site).toMatch(/^no answer \(fetch failed\): complete disallow, RFC 9309 §2\.3\.1\.4$/);
+        expect(answer, site).toBe("no answer (fetch failed): complete disallow, RFC 9309 §2.3.1.4");
       }
       expect(verdict === "NO_TERMS_ROBOTS_OK", site).toBe(ROBOTS_OK.includes(site));
     }
+  });
+
+  it("states the counts and sizes in the section's prose as the verdicts and the frozen copies hold them", () => {
+    const text = section();
+    const v = verdicts();
+    const kinds = ROBOTS_OK.map((site) => citedCapture(v[site].source)!.kind);
+    // "Eleven of the 17 served a robots.txt (...) and six answered 404": the two kinds of source.
+    const served = text.match(/^(\w+) of the (\d+) served a robots\.txt \(k12-ai-infrastructure\.org's is an empty file, so no rule at all\) and (\w+) answered 404,/m);
+    expect(served).not.toBeNull();
+    expect([numberWord(served![1]), Number(served![2]), numberWord(served![3])]).toEqual([
+      kinds.filter((k) => k === "file").length,
+      ROBOTS_OK.length,
+      kinds.filter((k) => k === "absent").length,
+    ]);
+    // k12-ai-infrastructure.org's robots.txt is an empty file: no rule at all.
+    const k12 = frozenCapture(citedCapture(v["k12-ai-infrastructure.org"].source)!.path);
+    expect(k12.body).toBe("");
+    expect(robotsRulesFor(parseRobotsTxt(k12.body))).toEqual([]);
+    // "The 17 sites' 20 rules URLs pass termsGate now".
+    const rulesUrls = audited().filter((e) => ROBOTS_OK.includes(siteOfUrl(e.url)));
+    expect(text).toContain(`The ${ROBOTS_OK.length} sites' ${rulesUrls.length} rules URLs pass \`termsGate\` now`);
+    for (const e of rulesUrls) expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(true);
+    // flagos.io and theemailgame.com: an HTML page each, of the sizes the copies stored.
+    const html = text.match(/flagos\.io and theemailgame\.com: \/robots\.txt answered 200 with an HTML page \(`text\/html`, (\d+) and (\d+) bytes\)/);
+    expect(html).not.toBeNull();
+    const bytes = (slug: string) => readFileSync(declinedCapture(slug).meta.bodyPath!).length;
+    expect([Number(html![1]), Number(html![2])]).toEqual([bytes("robots-flagos"), bytes("robots-theemailgame")]);
+    // mozilladatacollective.com: `User-agent: *` then `Disallow: /`, and nothing else, in so many bytes.
+    const mdc = text.match(/mozilladatacollective\.com: its robots\.txt is `User-agent: \*` then `Disallow: \/` \((\d+) bytes\)/);
+    expect(mdc).not.toBeNull();
+    const mdcCapture = declinedCapture("robots-mozilladatacollective");
+    expect(Number(mdc![1])).toBe(bytes("robots-mozilladatacollective"));
+    expect(mdcCapture.body!.split("\n").filter((l) => l.trim() !== "")).toEqual(["User-agent: *", "Disallow: /"]);
+    // nevo: the ten 29.9 captures are [robots-bar] under the 6.10 row-21 ruling, which the note cites by file, and the
+    // product cite it names is the frozen nevo VAT law copy; it does not claim the product reads nevo from a mirror.
+    expect(text).toContain("The ten nevo captures of 29.9 are `[robots-bar]` under ruling 6.10 row 21 (a) (`research/channel-loop/RULING-2026-10-06-robots-and-terms.md`, decision 1");
+    const ruling = readFileSync("research/channel-loop/RULING-2026-10-06-robots-and-terms.md", "utf8");
+    expect(ruling).toContain("**The ten nevo captures**");
+    expect(ruling).toContain("marked **`[robots-bar]`**");
+    expect(ruling).toContain("5. **Every nevo cite leaves the product:**");
+    expect(existsSync("research/rendered/nevo-vat-law-2026-09-29.txt")).toBe(true);
+    expect(text).not.toContain("lawsofisrael mirror");
   });
 });
