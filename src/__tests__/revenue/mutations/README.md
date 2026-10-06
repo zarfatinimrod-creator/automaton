@@ -10,8 +10,10 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `freeze-capture.json` | `scripts/freeze-capture.mjs` | `freeze-capture.test.ts` (+ `remask-captures`, `frozen-citations`) | ticks 38, 50 |
 | `loop-edit.json` | `scripts/loop-edit.mjs` | `loop-edit.test.ts` | tick 43 |
 | `mutate.json` | `scripts/mutate.mjs` (`--check`) | `mutate.test.ts` | tick 51 |
+| `prize-apply-reading.json` | `scripts/prize-apply-reading.mjs` | `prize-apply-reading.test.ts` | tick 52 |
 | `prize-dispatch.json` | `scripts/prize-dispatch.mjs`, `src/revenue/ai-allowed-events.ts` | `prize-dispatch.test.ts` | tick 47 |
 | `remask-captures.json` | `scripts/remask-captures.mjs` (+ `freeze-capture.mjs`'s `maskedMeta`) | `remask-captures.test.ts` | ticks 49, 50 |
+| `render-dispatch.json` | `scripts/render-dispatch.sh` | `render-dispatch.test.ts` | tick 52 |
 | `render-watch.json` | `scripts/render-watch.mjs` (the address mask) | `render-watch.test.ts` | ticks 48, 50 |
 | `sim-tree.json` | `scripts/sim-tree.sh` | `sim-tree.test.ts` | tick 51 |
 

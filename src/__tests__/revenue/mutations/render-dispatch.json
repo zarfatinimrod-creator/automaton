@@ -1,0 +1,114 @@
+[
+  {
+    "id": "skip-parser",
+    "file": "scripts/render-dispatch.sh",
+    "find": "[ \"$rc\" -eq 0 ] || die 1 \"[1/7] render-watch's parser refuses the lines",
+    "replace": "true || die 1 \"[1/7] render-watch's parser refuses the lines",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: a line render-watch's parser refuses (a duplicate slug, an unknown flag) is dispatched"
+  },
+  {
+    "id": "dispatch-barred",
+    "file": "scripts/render-dispatch.sh",
+    "find": "  if (!gate.ok) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: a line whose site the terms gate refuses is dispatched"
+  },
+  {
+    "id": "hand-built-json",
+    "file": "scripts/render-dispatch.sh",
+    "find": "python3 -I -c 'import json, sys\nwith open(sys.argv[2], encoding=\"utf-8\", newline=\"\") as f:\n    urls = f.read()\njson.dump({\"ref\": sys.argv[1], \"inputs\": {\"urls\": urls}}, sys.stdout)' \"$ref\" \"$lines_file\" > \"$body\" || rc=$?",
+    "replace": "printf '{\"ref\": \"%s\", \"inputs\": {\"urls\": \"%s\"}}' \"$ref\" \"$(cat \"$lines_file\")\" > \"$body\" || rc=$?",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: the body is built by hand, so a tab, a newline or a quote breaks the JSON"
+  },
+  {
+    "id": "ff-dirty",
+    "file": "scripts/render-dispatch.sh",
+    "find": "if [ -n \"$(git -C \"$ROOT\" status --porcelain --untracked-files=no)\" ]; then",
+    "replace": "if false; then",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: a checkout with uncommitted changes is fast-forwarded"
+  },
+  {
+    "id": "ignore-conclusion",
+    "file": "scripts/render-dispatch.sh",
+    "find": "[ \"$conclusion\" = success ] || die 1",
+    "replace": "true || die 1",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: a run that failed is fetched and checked as if it succeeded"
+  },
+  {
+    "id": "print-raw-address",
+    "file": "scripts/render-dispatch.sh",
+    "find": "      raw.set(kind, (raw.get(kind) ?? 0) + 1);",
+    "replace": "      raw.set(kind, (raw.get(kind) ?? 0) + 1);\n      console.log(hit[0]);",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: the address report prints the raw address it found"
+  },
+  {
+    "id": "allow-empty-file",
+    "file": "scripts/render-dispatch.sh",
+    "find": "[ \"$urls_lines\" -gt 0 ] || die 1",
+    "replace": "true || die 1",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: an empty lines file is dispatched, and render-watch then fetches the whole weekly list"
+  },
+  {
+    "id": "no-wait-goes-on",
+    "file": "scripts/render-dispatch.sh",
+    "find": "  exit 0\nfi\nlog \"[4/7] wait for run",
+    "replace": "fi\nlog \"[4/7] wait for run",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: --no-wait still waits, fetches and merges"
+  },
+  {
+    "id": "any-ref-run",
+    "file": "scripts/render-dispatch.sh",
+    "find": "    if run.get(\"head_branch\") == ref and when(run.get(\"created_at\", \"\")) >= since:",
+    "replace": "    if when(run.get(\"created_at\", \"\")) >= since:",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: a run on another branch is taken for this dispatch's run"
+  },
+  {
+    "id": "older-run",
+    "file": "scripts/render-dispatch.sh",
+    "find": "    if run.get(\"head_branch\") == ref and when(run.get(\"created_at\", \"\")) >= since:",
+    "replace": "    if run.get(\"head_branch\") == ref:",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: a run created before the dispatch is taken for this dispatch's run"
+  },
+  {
+    "id": "merge-other-branch",
+    "file": "scripts/render-dispatch.sh",
+    "find": "if [ \"$branch\" != \"$ref\" ]; then",
+    "replace": "if false; then",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: a checkout on another branch gets origin/<ref> merged into it"
+  },
+  {
+    "id": "drop-capture-check-exit",
+    "file": "scripts/render-dispatch.sh",
+    "find": "  0 | 3) exit \"$cc\" ;;",
+    "replace": "  0 | 3) exit 0 ;;",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: a flagged capture (capture-check 3) ends in exit 0"
+  },
+  {
+    "id": "ignore-dispatch-failure",
+    "file": "scripts/render-dispatch.sh",
+    "find": "[ \"$rc\" -eq 0 ] || die 1 \"[2/7] the dispatch failed",
+    "replace": "true || die 1 \"[2/7] the dispatch failed",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: a failed dispatch goes on to look for a run"
+  },
+  {
+    "id": "slugless-line",
+    "file": "scripts/render-dispatch.sh",
+    "find": "  if (!slug) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 52 builder: a line with no slug is dispatched (render-watch would invent one the reading cannot cite)"
+  }
+]

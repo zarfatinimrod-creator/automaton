@@ -33,8 +33,10 @@ describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
       "freeze-capture.json",
       "loop-edit.json",
       "mutate.json",
+      "prize-apply-reading.json",
       "prize-dispatch.json",
       "remask-captures.json",
+      "render-dispatch.json",
       "render-watch.json",
       "sim-tree.json",
     ]) {
