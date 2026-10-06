@@ -51,16 +51,19 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
   (CI included): a refactor that moves a find text fails it until the plan follows the code. `--allow-dirty` because
   the question there is whether each plan still fits the code on disk, also while a script is being edited.
 - A full run (every mutation, the baseline before and after) is for a build's review; the build log records the
-  counts and the time. Measured in tick 51 (one full run each, seconds; two numbers where the plan ran twice):
+  counts and the time. Measured in ticks 51 and 52 (one full run each, seconds; two numbers where the plan ran twice;
+  tick 52's three inside sim-tree.sh, two of them at once):
 
   | Plan | Entries | Full run |
   | --- | --- | --- |
   | `prize-dispatch.json` | 28 | 69 |
   | `render-watch.json` | 53 | 117 |
   | `freeze-capture.json` | 23 | 171 |
+  | `render-dispatch.json` | 14 | 184 |
   | `loop-edit.json` | 46 | 188, 191 |
-  | `sim-tree.json` | 24 | 349 (182-184 with the first 14) |
+  | `prize-apply-reading.json` | 21 | 208 |
   | `mutate.json` | 11 | 393 (243-249 with the first 6) |
+  | `sim-tree.json` | 28 | 501 (349 with the first 24, 182-184 with the first 14) |
   | `remask-captures.json` | 45 | 523 |
   | `capture-check.json` | 42 | 785, 827 (its test file alone takes about 18 s) |
 
