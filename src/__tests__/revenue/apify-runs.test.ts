@@ -254,9 +254,11 @@ describe("summariseRuns — strangers versus us, which is the whole point", () =
  * refuter (research/owner-docs-audit/JUDGEMENT.md, PUBLISH.md:53/55) ruled the count must come from there.
  */
 describe("summariseActorStats — stranger users from the Actor object", () => {
-  // The real shape, rendered from Apify's own Store API (research/rendered/apify-store-accessibility.json).
-  const rendered = JSON.parse(readFileSync("research/rendered/apify-store-accessibility.json", "utf8"));
-  const actor = rendered.data.items[0];
+  // The real shape, read from Apify's own Store API response (research/rendered/apify-store-accessibility.json, sha256
+  // 7243b4274b6d… in its meta): the Actor object's stats keys as the first item held them. Only the keys and the three
+  // numbers are kept here: apify.com's terms bar copying (copying "barred", ruling 6.10 row 21 (d)), so that body leaves
+  // the public tree (scripts/trim-capture.mjs) and a test cannot read it there.
+  const actor = { stats: { totalUsers30Days: 4, totalUsers: 19, publicActorRunStats30Days: { ABORTED: 0, FAILED: 0, SUCCEEDED: 46, "TIMED-OUT": 0, TOTAL: 46 } } };
 
   it("reads totalUsers30Days and the public 30-day run total from the rendered shape", () => {
     const s = summariseActorStats(actor, { ownRunInWindow: false });

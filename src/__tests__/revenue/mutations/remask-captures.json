@@ -50,10 +50,10 @@
   {
     "id": "M7",
     "file": "scripts/remask-captures.mjs",
-    "find": "if (bodyName) parts.push({ role: \"body\", name: bodyName, contentType: meta.contentType });",
-    "replace": "if (bodyName) parts.push({ role: \"body\", name: bodyName, contentType: \"text/plain\" });",
+    "find": "if (bodyName && !bodyLeft) parts.push({ role: \"body\", name: bodyName, contentType: meta.contentType });",
+    "replace": "if (bodyName && !bodyLeft) parts.push({ role: \"body\", name: bodyName, contentType: \"text/plain\" });",
     "test": "src/__tests__/revenue/remask-captures.test.ts",
-    "note": "tick 49 M7: a binary body (a PDF) is masked as text"
+    "note": "tick 49 M7: a binary body (a PDF) is masked as text (find follows the tick-56 bodyLeft condition)"
   },
   {
     "id": "M8",
@@ -358,5 +358,13 @@
     "replace": "(?:@|%40)((?:[A-Za-z0-9-]+\\.)+",
     "test": "src/__tests__/revenue/remask-captures.test.ts",
     "note": "tick 50 fixer (reviewer R5): a mask written with a script escape (u0040, x40) is counted with no domain kind"
+  },
+  {
+    "id": "T56-R1",
+    "file": "scripts/remask-captures.mjs",
+    "find": "    if (bodyName && !bodyLeft) parts.push(",
+    "replace": "    if (bodyName) parts.push(",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a body a trimmed meta says left the tree is a missing file, and the re-mask refuses the store"
   }
 ]

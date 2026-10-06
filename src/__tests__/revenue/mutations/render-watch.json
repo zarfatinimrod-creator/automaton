@@ -540,5 +540,192 @@
     "replace": ";",
     "test": "src/__tests__/revenue/render-watch-terms-barred.test.ts",
     "note": "tick 54 review fix: kaggle.com's why drops :70, the ground that with :87 bars the runner alone"
+  },
+  {
+    "id": "T56-RW1",
+    "file": "scripts/render-watch.mjs",
+    "find": "if (copying && result.bytes) return storeBarredCapture(",
+    "replace": "if (false && copying && result.bytes) return storeBarredCapture(",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: a copying-barred site's page lands in the tree in full (decision 4(3))"
+  },
+  {
+    "id": "T56-RW2",
+    "file": "scripts/render-watch.mjs",
+    "find": "const hits = (barred ?? []).filter((site) => host === site || host.endsWith(`.${site}`));",
+    "replace": "const hits = (barred ?? []).filter((site) => host === site);",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: a subdomain of a copying-barred site (www.btl.gov.il) is not barred"
+  },
+  {
+    "id": "T56-RW3",
+    "file": "scripts/render-watch.mjs",
+    "find": "return hits.sort((a, b) => b.length - a.length)[0] ?? null;",
+    "replace": "return hits.sort((a, b) => a.length - b.length)[0] ?? null;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: the shortest matching site wins instead of the longest"
+  },
+  {
+    "id": "T56-RW4",
+    "file": "scripts/render-watch.mjs",
+    "find": "return \"\\n\".repeat(String(text).split(\"\\n\").length - 1);",
+    "replace": "return \"\\n\".repeat(String(text).split(\"\\n\").length);",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: the emptied .txt has one line more than the page's"
+  },
+  {
+    "id": "T56-RW5",
+    "file": "scripts/render-watch.mjs",
+    "find": "    rmSync(join(outDir, `${entry.slug}.${ext}`), { force: true });",
+    "replace": "    void ext;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: an older full body of the slug stays in the tree when the page changes"
+  },
+  {
+    "id": "T56-RW6",
+    "file": "scripts/render-watch.mjs",
+    "find": "  if (!bytesChanged) return { meta: { ...meta({ fetchedAt: previousMeta.fetchedAt ?? now() }), changed: false }, bytesChanged, barred: true };",
+    "replace": "  if (false) return { meta: { ...meta({ fetchedAt: previousMeta.fetchedAt ?? now() }), changed: false }, bytesChanged, barred: true };",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: an unchanged barred page is written again every run (quiet history)"
+  },
+  {
+    "id": "T56-RW7",
+    "file": "scripts/render-watch.mjs",
+    "find": "${barredCount > 0 ? `barred=${barredCount}\\n` : \"\"}",
+    "replace": "${barredCount > 9 ? `barred=${barredCount}\\n` : \"\"}",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: the workflow is not told of the barred pages, so the upload step does not run"
+  },
+  {
+    "id": "T56-RW8",
+    "file": "scripts/render-watch.mjs",
+    "find": "      barredCount += counts.barred;",
+    "replace": "      barredCount += 0;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: barred pages are not counted"
+  },
+  {
+    "id": "T56-RW9",
+    "file": "scripts/render-watch.mjs",
+    "find": "  if (!parsed?.sites || typeof parsed.sites !== \"object\") throw",
+    "replace": "  if (false) throw",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: a verdicts file with no sites reads as no barred site instead of stopping the run"
+  },
+  {
+    "id": "T56-RW10",
+    "file": "scripts/render-watch.mjs",
+    "find": ".filter((site) => sites[site]?.copying === \"barred\")",
+    "replace": ".filter((site) => sites[site]?.copying !== \"unread\")",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: a site with no copying field (or allowed) is taken as barred"
+  },
+  {
+    "id": "T56-RW11",
+    "file": "scripts/render-watch.mjs",
+    "find": "lineCount: lines(body), keptLines: [], inTree: false },",
+    "replace": "lineCount: lines(body), keptLines: [], inTree: true },",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: the route's block says the body is in the tree"
+  },
+  {
+    "id": "T56-RW12",
+    "file": "scripts/render-watch.mjs",
+    "find": "  if (text) writeFileSync(join(outDir, `${entry.slug}.txt`), emptiedLines(text.toString(\"utf8\")));",
+    "replace": "  if (text) writeFileSync(join(outDir, `${entry.slug}.txt`), text);",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: the full text of a barred page is committed"
+  },
+  {
+    "id": "T56-RW13",
+    "file": "scripts/render-watch.mjs",
+    "find": "  const barredSites = deps.copyingBarred ?? readCopyingBarred(deps.verdictsPath ?? DEFAULT_VERDICTS);",
+    "replace": "  const barredSites = deps.copyingBarred ?? [];",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 build: main never reads the copying field, so no page is ever routed (and a broken verdicts file does not stop the run)"
+  },
+  {
+    "id": "T56-RW14",
+    "file": "scripts/render-watch.mjs",
+    "find": "if (!result.bytes && previousMeta?.trimmed) meta.trimmed = previousMeta.trimmed;",
+    "replace": "if (false) meta.trimmed = previousMeta.trimmed;",
+    "test": [
+      "src/__tests__/revenue/render-watch.test.ts",
+      "src/__tests__/revenue/trim-capture.test.ts"
+    ],
+    "note": "tick 56 review fixer: a failed fetch erases a trimmed capture's block (review finding 1)"
+  },
+  {
+    "id": "T56-RW15",
+    "file": "scripts/render-watch.mjs",
+    "find": "if (copyingNext && !copyingBarredSite(hostOf(entry.url), copyingBarred)) return refused(",
+    "replace": "if (false) return refused(",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 review fixer: a plain redirect into a copying-barred site is followed and its page stored in full (review finding 2)"
+  },
+  {
+    "id": "T56-RW16",
+    "file": "scripts/render-watch.mjs",
+    "find": "if (copyingNext && !copyingBarredSite(hostOf(entry.url), copyingBarred)) return refused(",
+    "replace": "if (copyingNext) return refused(",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 review fixer: a redirect inside a copying-barred site (the route's own case) is refused"
+  },
+  {
+    "id": "T56-RW17",
+    "file": "scripts/render-watch.mjs",
+    "find": "if (site) return failed({ status, contentType, error: copyingRedirectError(site, host, { browser: true }) });",
+    "replace": "if (false) return failed({ status, contentType, error: copyingRedirectError(site, host, { browser: true }) });",
+    "test": "src/__tests__/revenue/render-watch-js.test.ts",
+    "note": "tick 56 review fixer: a js page whose main frame went on to a copying-barred site is stored in full (review finding 2)"
+  },
+  {
+    "id": "T56-RW18",
+    "file": "scripts/render-watch.mjs",
+    "find": "    if (!copyingBarredSite(hostOf(entry.url), copyingBarred)) {\n      for (const url of",
+    "replace": "    if (true) {\n      for (const url of",
+    "test": "src/__tests__/revenue/render-watch-js.test.ts",
+    "note": "tick 56 review fixer: a js page listed on a copying-barred site is refused instead of going to the route"
+  },
+  {
+    "id": "T56-RW19",
+    "file": "scripts/render-watch.mjs",
+    "find": "for (const url of [...mainFrameUrls, ...redirectChainUrls(response)]) {",
+    "replace": "for (const url of [...mainFrameUrls]) {",
+    "test": "src/__tests__/revenue/render-watch-js.test.ts",
+    "note": "tick 56 review fixer: a server redirect chain into a copying-barred site is not looked at"
+  },
+  {
+    "id": "T56-RW20",
+    "file": "scripts/render-watch.mjs",
+    "find": "for (const url of [...mainFrameUrls, ...redirectChainUrls(response)]) {",
+    "replace": "for (const url of [...redirectChainUrls(response)]) {",
+    "test": "src/__tests__/revenue/render-watch-js.test.ts",
+    "note": "tick 56 review fixer: a move the page's own script makes to a copying-barred site is not looked at"
+  },
+  {
+    "id": "T56-RW21",
+    "file": "scripts/render-watch.mjs",
+    "find": "const result = await renderWithBrowser(entry, { browser, timeoutMs, maxBytes, robots, copyingBarred });",
+    "replace": "const result = await renderWithBrowser(entry, { browser, timeoutMs, maxBytes, robots });",
+    "test": "src/__tests__/revenue/render-watch-js.test.ts",
+    "note": "tick 56 review fixer: jsRenderer does not hand the copying-barred sites to the browser"
+  },
+  {
+    "id": "T56-RW22",
+    "file": "scripts/render-watch.mjs",
+    "find": "result = await fetchOne(entry, { fetchImpl, robots, copyingBarred: barredSites });",
+    "replace": "result = await fetchOne(entry, { fetchImpl, robots });",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 56 review fixer: a plain line's fetch is not given the copying-barred sites"
+  },
+  {
+    "id": "T56-RW23",
+    "file": "scripts/render-watch.mjs",
+    "find": "jsRenderer({ launchBrowser: deps.launchBrowser ?? launchChromium, robots, copyingBarred: barredSites });",
+    "replace": "jsRenderer({ launchBrowser: deps.launchBrowser ?? launchChromium, robots });",
+    "test": "src/__tests__/revenue/render-watch-js.test.ts",
+    "note": "tick 56 review fixer: main does not hand the copying-barred sites to the js renderer"
   }
 ]

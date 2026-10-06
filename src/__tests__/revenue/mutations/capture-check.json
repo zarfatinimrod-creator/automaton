@@ -334,5 +334,29 @@
     "replace": "|~]/g",
     "test": "src/__tests__/revenue/capture-check.test.ts",
     "note": "tick 35 fixer F5b: $ (math) and @ (a mention) are not escaped in a cell"
+  },
+  {
+    "id": "T56-CC1",
+    "file": "scripts/capture-check.mjs",
+    "find": "return t.captureCheck ? { kind: t.captureCheck, evidence:",
+    "replace": "return t.captureCheck ? { kind: \"short\", evidence:",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a trimmed capture loses the kind capture-check gave it whole"
+  },
+  {
+    "id": "T56-CC2",
+    "file": "scripts/capture-check.mjs",
+    "find": ": { kind: \"trimmed\", evidence: where };",
+    "replace": ": { kind: \"ok\", evidence: where };",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a capture the artifact route stored (no kind from before) reads as ok"
+  },
+  {
+    "id": "T56-CC3",
+    "file": "scripts/capture-check.mjs",
+    "find": "    if (!existsSync(file) && trimmedAway) return null;",
+    "replace": "    if (false) return null;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a trimmed capture whose body left the tree is unreadable"
   }
 ]

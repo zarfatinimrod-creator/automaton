@@ -1,11 +1,20 @@
 import { execFile } from "node:child_process";
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { parse } from "yaml";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as apify-runs.mjs)
 import {
+  ARTIFACT_RETENTION_DAYS,
   buildMeta,
+  copyingBarredSite,
+  copyingBarredSites,
+  copyingRedirectError,
+  COPYING_RULING,
+  emptiedLines,
+  fetchOne,
+  readCopyingBarred,
   decodeEntities,
   describePdfTextError,
   extensionFor,
@@ -1974,5 +1983,324 @@ describe("main — a PDF", () => {
 
     expect(stdout.text()).toMatch(/text\s+ex-terms-pdf\s+PDF bytes unchanged/);
     expect(JSON.parse(readFileSync(join(out, "ex-terms-pdf.meta.json"), "utf8")).fetchedAt).toBe(T0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// A copying-barred site's page: the artifact route (RULING-2026-10-06-robots-and-terms.md decision 4(3), ruling 6.10
+// row 21 (d)). The body never lands in the tree: the artifact directory gets it, its full text and its plain meta; the
+// tree gets the meta with a trimmed block naming the artifact and, for a page with a text, an emptied .txt of the same
+// line count.
+// ---------------------------------------------------------------------------
+
+describe("the copying-barred sites, from terms-verdicts.json's copying field", () => {
+  it("reads the barred sites of the real file, and matches a site or any subdomain of it, the longest first", () => {
+    const barred = readCopyingBarred();
+    expect(barred).toEqual(expect.arrayContaining(["apify.com", "btl.gov.il", "devpost.com", "indiebook.co.il", "kaggle.com", "worksheets4kids.co.il"]));
+    expect(barred).not.toContain("virtualembryo.ai"); // copying: allowed
+    expect(copyingBarredSite("www.btl.gov.il", barred)).toBe("btl.gov.il");
+    expect(copyingBarredSite("WWW.BTL.GOV.IL.", barred)).toBe("btl.gov.il");
+    expect(copyingBarredSite("api.apify.com", barred)).toBe("apify.com");
+    expect(copyingBarredSite("notbtl.gov.il", barred)).toBeNull();
+    expect(copyingBarredSite("btl.gov.il.example.org", barred)).toBeNull();
+    expect(copyingBarredSite("a.b.example", ["b.example", "a.b.example"])).toBe("a.b.example");
+    expect(copyingBarredSites({ x: { copying: "barred" }, y: { copying: "unread" }, z: {} })).toEqual(["x"]);
+  });
+
+  it("throws when the verdicts file cannot be read, so the run stops before any fetch", async () => {
+    const dir = tmpOut();
+    expect(() => readCopyingBarred(join(dir, "missing.json"))).toThrow(/cannot read the copying field/);
+    writeFileSync(join(dir, "v.json"), '{"nope":1}');
+    expect(() => readCopyingBarred(join(dir, "v.json"))).toThrow(/no "sites"/);
+    const fetched: string[] = [];
+    vi.stubGlobal("fetch", async (url: string) => {
+      fetched.push(String(url));
+      return new Response("x", { status: 200, headers: { "content-type": "text/plain" } });
+    });
+    try {
+      await expect(main(["--list", writeList(dir, "https://example.test/a\tex-a"), "--out", dir], {}, { verdictsPath: join(dir, "missing.json") })).rejects.toThrow(/cannot read the copying field/);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+    expect(fetched).toEqual([]);
+  });
+
+  it("empties every line and keeps the count", () => {
+    expect(emptiedLines("a\nb\nc\n")).toBe("\n\n\n");
+    expect(emptiedLines("a")).toBe("");
+    expect(emptiedLines("a\nb\nc\n").split("\n")).toHaveLength(4);
+  });
+});
+
+describe("storeCapture and main — a copying-barred site's page goes to the artifact, not the tree", () => {
+  const ENTRY = { url: "https://www.barred.test/terms", slug: "bar-terms", lineNumber: 1 };
+  // An address in the page (built, not written: no address is written into this repository), masked as on any route.
+  const html = `<html><body><h1>Terms</h1><p>One.</p><p>Two.</p><p>Write to ${["someone", "barred.test"].join("@")}.</p></body></html>`;
+  const T0 = "2026-10-06T05:00:00.000Z";
+  const T1 = "2026-10-13T05:00:00.000Z";
+  const result = (body: string, contentType = "text/html; charset=utf-8") => ({ status: 200, contentType, bytes: Buffer.from(body), truncated: false, error: null, robots: "allowed", robotsUrl: "https://www.barred.test/robots.txt" });
+  const ARTIFACT = { name: "render-watch-barred-77-1", run: "77" };
+  const store = (out: string, art: string, body = html, now = T0, contentType?: string) =>
+    storeCapture(ENTRY, result(body, contentType), { outDir: out, now: () => now, copying: "barred.test", artifactDir: art, artifact: ARTIFACT });
+
+  it("writes the body, its full text and the plain meta to the artifact, and to the tree the meta with a trimmed block and an emptied .txt", async () => {
+    const out = tmpOut();
+    const art = tmpOut();
+    const { meta, barred } = await store(out, art);
+    expect(barred).toBe(true);
+    expect(readdirSync(out).sort()).toEqual(["bar-terms.meta.json", "bar-terms.txt"]);
+    expect(readdirSync(art).sort()).toEqual(["bar-terms.html", "bar-terms.meta.json", "bar-terms.txt"]);
+    // The artifact holds the page as the plain route would have stored it: masked, hashed, extracted.
+    const body = readFileSync(join(art, "bar-terms.html"));
+    expect(body.toString("utf8")).toContain("[redacted:email]@barred.test");
+    const full = readFileSync(join(art, "bar-terms.txt"), "utf8");
+    expect(full).toBe("Terms\nOne.\nTwo.\nWrite to [redacted:email]@barred.test.\n");
+    const plain = JSON.parse(readFileSync(join(art, "bar-terms.meta.json"), "utf8"));
+    expect(plain.trimmed).toBeUndefined();
+    expect(plain).toMatchObject({ sha256: sha256(body), byteLength: body.length, bodyPath: "research/rendered/bar-terms.html", textPath: "research/rendered/bar-terms.txt", redacted: 1, changed: true });
+    // The tree: the same meta, its sha256 the verification hash, and the trimmed block naming the artifact.
+    const raw = readFileSync(join(out, "bar-terms.meta.json"), "utf8");
+    const tree = JSON.parse(raw);
+    expect(raw).toBe(`${JSON.stringify(tree, null, 2)}\n`);
+    const { trimmed, ...rest } = tree;
+    expect(rest).toEqual(plain);
+    expect(meta).toEqual(tree);
+    expect(trimmed).toEqual({
+      on: "2026-10-06",
+      ruling: COPYING_RULING,
+      site: "barred.test",
+      copying: "barred",
+      keptLines: [],
+      context: 2,
+      fullSha256: sha256(Buffer.from(full)),
+      fullByteLength: Buffer.byteLength(full),
+      lineCount: 5,
+      body: { path: "research/rendered/bar-terms.html", sha256: sha256(body), byteLength: body.length, lineCount: 1, keptLines: [], inTree: false },
+      cited: [],
+      captureCheck: null,
+      fullBytesIn: `workflow artifact render-watch-barred-77-1 (run 77): bar-terms.meta.json, bar-terms.html, bar-terms.txt, kept ${ARTIFACT_RETENTION_DAYS} days; never in the tree or in git history`,
+      history: "The full bytes were never committed: they are in the workflow artifact named above until it expires.",
+      artifact: { name: "render-watch-barred-77-1", run: "77", retentionDays: 90, files: ["bar-terms.meta.json", "bar-terms.html", "bar-terms.txt"] },
+    });
+    // The text in the tree: the same number of lines, none of the page.
+    expect(readFileSync(join(out, "bar-terms.txt"), "utf8")).toBe("\n\n\n\n");
+  });
+
+  it("writes nothing at all when the same bytes come back, in the tree or the artifact", async () => {
+    const out = tmpOut();
+    const art = tmpOut();
+    await store(out, art);
+    const before = [snapshot(out), snapshot(art)];
+    const again = await store(out, art, html, T1);
+    expect(again.meta.changed).toBe(false);
+    expect(again.meta.fetchedAt).toBe(T0);
+    expect([snapshot(out), snapshot(art)]).toEqual(before);
+  });
+
+  it("takes an older full copy of the slug out of the tree when the page changes", async () => {
+    const out = tmpOut();
+    const art = tmpOut();
+    // As the plain route stored it before the copying field existed.
+    await storeCapture(ENTRY, result(html), { outDir: out, now: () => T0 });
+    expect(readdirSync(out).sort()).toEqual(["bar-terms.html", "bar-terms.meta.json", "bar-terms.txt"]);
+    const { meta } = await store(out, art, html.replace("Two.", "Two and a half."), T1);
+    expect(meta.changed).toBe(true);
+    expect(meta.firstFetch).toBe(false);
+    expect(readdirSync(out).sort()).toEqual(["bar-terms.meta.json", "bar-terms.txt"]);
+    expect(readFileSync(join(out, "bar-terms.txt"), "utf8")).toBe("\n\n\n\n");
+    expect(readFileSync(join(art, "bar-terms.html"), "utf8")).toContain("Two and a half.");
+  });
+
+  it("keeps a JSON body out of the tree too, with no text at all", async () => {
+    const out = tmpOut();
+    const art = tmpOut();
+    await store(out, art, '{"items":[{"name":"x"}]}', T0, "application/json");
+    expect(readdirSync(out)).toEqual(["bar-terms.meta.json"]);
+    expect(readdirSync(art).sort()).toEqual(["bar-terms.json", "bar-terms.meta.json"]);
+    const tree = JSON.parse(readFileSync(join(out, "bar-terms.meta.json"), "utf8"));
+    expect(tree.textPath).toBeNull();
+    expect(tree.trimmed).toMatchObject({ fullSha256: null, lineCount: null, body: { path: "research/rendered/bar-terms.json", inTree: false }, artifact: { files: ["bar-terms.meta.json", "bar-terms.json"] } });
+  });
+
+  it("extracts a PDF's text from the artifact's copy, and never writes the PDF to the tree", async () => {
+    const out = tmpOut();
+    const art = tmpOut();
+    const seen: string[] = [];
+    const { meta } = await storeCapture(ENTRY, result("%PDF-1.4 x", "application/pdf"), {
+      outDir: out,
+      now: () => T0,
+      copying: "barred.test",
+      artifactDir: art,
+      artifact: ARTIFACT,
+      extractPdfText: async (path: string) => {
+        seen.push(path);
+        return "page one\npage two\n";
+      },
+    });
+    expect(seen).toEqual([join(art, "bar-terms.pdf")]);
+    expect(readdirSync(out).sort()).toEqual(["bar-terms.meta.json", "bar-terms.txt"]);
+    expect(readFileSync(join(out, "bar-terms.txt"), "utf8")).toBe("\n\n");
+    expect(readFileSync(join(art, "bar-terms.txt"), "utf8")).toBe("page one\npage two\n");
+    expect(meta.textPath).toBe("research/rendered/bar-terms.txt");
+  });
+
+  it("keeps the trimmed block through a failed fetch (a non-2xx, a timeout: no bytes), and a later success writes a fresh one", async () => {
+    const out = tmpOut();
+    const art = tmpOut();
+    await store(out, art);
+    const routed = JSON.parse(readFileSync(join(out, "bar-terms.meta.json"), "utf8"));
+    const txt = readFileSync(join(out, "bar-terms.txt"));
+    const artifact = snapshot(art);
+    const failure = (error: string, status: number | null) => ({ status, contentType: status ? "text/html" : null, bytes: null, truncated: false, error });
+    // The site still barred, then (a verdict changed) no longer: a failed fetch writes no file either way, so the block stays.
+    for (const [copying, error, status] of [
+      ["barred.test", "HTTP 503 Service Unavailable", 503],
+      [null, "timeout after 30000ms (AbortError: This operation was aborted)", null],
+    ] as const) {
+      const { meta } = await storeCapture(ENTRY, failure(error, status), { outDir: out, now: () => T1, copying, artifactDir: art, artifact: ARTIFACT });
+      expect(meta.changed, error).toBe(true);
+      const tree = JSON.parse(readFileSync(join(out, "bar-terms.meta.json"), "utf8"));
+      expect(tree, error).toMatchObject({ error, status, sha256: null, bodyPath: null });
+      expect(tree.trimmed, error).toEqual(routed.trimmed);
+      expect(Object.keys(tree).at(-1)).toBe("trimmed");
+      expect(readdirSync(out).sort()).toEqual(["bar-terms.meta.json", "bar-terms.txt"]);
+      expect(readFileSync(join(out, "bar-terms.txt"))).toEqual(txt);
+      expect(snapshot(art)).toEqual(artifact);
+    }
+    // The page back: the route stores it again, with a block of its own.
+    const back = await store(out, art, html, "2026-10-20T05:00:00.000Z");
+    expect(back.meta.changed).toBe(true);
+    expect(back.meta.trimmed).toMatchObject({ on: "2026-10-20", fullSha256: routed.trimmed.fullSha256, body: { sha256: routed.trimmed.body.sha256 } });
+    // A plain page's failed fetch gains no block.
+    const plainOut = tmpOut();
+    await storeCapture(ENTRY, result(html), { outDir: plainOut, now: () => T0 });
+    await storeCapture(ENTRY, failure("HTTP 503", 503), { outDir: plainOut, now: () => T1 });
+    expect(JSON.parse(readFileSync(join(plainOut, "bar-terms.meta.json"), "utf8")).trimmed).toBeUndefined();
+  });
+
+  it("stores a failed fetch of a barred site as any failed fetch: a meta, and nothing in the artifact", async () => {
+    const out = tmpOut();
+    const art = tmpOut();
+    await storeCapture(ENTRY, { status: 403, contentType: "text/html", bytes: null, truncated: false, error: "HTTP 403" }, { outDir: out, now: () => T0, copying: "barred.test", artifactDir: art, artifact: ARTIFACT });
+    expect(readdirSync(out)).toEqual(["bar-terms.meta.json"]);
+    expect(readdirSync(art)).toEqual([]);
+    expect(JSON.parse(readFileSync(join(out, "bar-terms.meta.json"), "utf8")).trimmed).toBeUndefined();
+  });
+
+  it("fetchOne: a redirect from a URL not on a copying-barred site to one that is is refused before it is requested; one inside a barred site is followed", async () => {
+    const calls: string[] = [];
+    const fetchImpl = async (url: string) => {
+      calls.push(url);
+      if (url === "https://go.open.test/x") return new Response(null, { status: 301, headers: { location: "https://WWW.Barred.test/terms" } });
+      if (url === "https://barred.test/old") return new Response(null, { status: 302, headers: { location: "/terms" } });
+      return new Response(html, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+    };
+    const into = await fetchOne({ url: "https://go.open.test/x", slug: "redir-page", lineNumber: 1 }, { fetchImpl, copyingBarred: ["barred.test"] });
+    expect(into).toEqual({ status: 301, contentType: null, bytes: null, truncated: false, error: copyingRedirectError("barred.test", "www.barred.test") });
+    expect(into.error).toBe(
+      "redirected to barred.test (www.barred.test), whose terms bar copying (ruling 6.10 row 21 (d)); not followed: list that page by its own URL, so the copying-barred route keeps it out of the tree",
+    );
+    expect(calls).toEqual(["https://go.open.test/x"]);
+    // Within the barred site: followed (the route takes the page by its listed URL).
+    calls.length = 0;
+    const within = await fetchOne({ url: "https://barred.test/old", slug: "bar-old", lineNumber: 1 }, { fetchImpl, copyingBarred: ["barred.test"] });
+    expect(within.bytes?.toString("utf8")).toBe(html);
+    expect(calls).toEqual(["https://barred.test/old", "https://barred.test/terms"]);
+    // No barred list (the default): followed, as before.
+    const none = await fetchOne({ url: "https://go.open.test/x", slug: "redir-page", lineNumber: 1 }, { fetchImpl });
+    expect(none.bytes?.toString("utf8")).toBe(html);
+  });
+
+  it("main: a page redirected into a copying-barred site lands nowhere in full: a failure meta in the tree, nothing in the artifact", async () => {
+    const out = tmpOut();
+    const art = join(tmpOut(), "barred");
+    const fetched: string[] = [];
+    vi.stubGlobal("fetch", async (url: string) => {
+      fetched.push(String(url));
+      if (new URL(String(url)).pathname === "/robots.txt") return new Response(null, { status: 404 });
+      if (String(url) === "https://go.open.test/x") return new Response(null, { status: 301, headers: { location: "https://www.barred.test/terms" } });
+      return new Response(html, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+    });
+    const stdout = captureStdout();
+    try {
+      const list = writeList(out, "https://go.open.test/x\tredir-page");
+      expect(await main(["--list", list, "--out", out], { RENDER_WATCH_ARTIFACT_DIR: art }, { copyingBarred: ["barred.test"], delayMs: 0 })).toBe(0);
+    } finally {
+      stdout.restore();
+      vi.unstubAllGlobals();
+    }
+    expect(readdirSync(out).sort()).toEqual(["redir-page.meta.json", "urls.txt"]);
+    expect(existsSync(art) ? readdirSync(art) : []).toEqual([]);
+    const meta = JSON.parse(readFileSync(join(out, "redir-page.meta.json"), "utf8"));
+    expect(meta).toMatchObject({ url: "https://go.open.test/x", status: 301, sha256: null, bodyPath: null, error: copyingRedirectError("barred.test", "www.barred.test") });
+    expect(fetched).not.toContain("https://www.barred.test/terms");
+  });
+
+  it("main: a barred site's page goes to RENDER_WATCH_ARTIFACT_DIR under RENDER_WATCH_ARTIFACT_NAME and the run's id, beside an ordinary page stored as always, and barred=1 goes to the workflow", async () => {
+    const out = tmpOut();
+    const art = join(tmpOut(), "barred");
+    const outputs = join(tmpOut(), "out.txt");
+    writeFileSync(outputs, "");
+    vi.stubGlobal("fetch", async () => new Response(html, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } }));
+    const stdout = captureStdout();
+    try {
+      const list = writeList(out, "https://www.barred.test/terms\tbar-terms\nhttps://open.test/terms\topen-terms");
+      const env = { RENDER_WATCH_ARTIFACT_DIR: art, RENDER_WATCH_ARTIFACT_NAME: "render-watch-barred-9-2", GITHUB_RUN_ID: "9", GITHUB_OUTPUT: outputs };
+      expect(await main(["--list", list, "--out", out], env, { copyingBarred: ["barred.test"], delayMs: 0 })).toBe(0);
+    } finally {
+      stdout.restore();
+      vi.unstubAllGlobals();
+    }
+    expect(readdirSync(out).sort()).toEqual(["bar-terms.meta.json", "bar-terms.txt", "open-terms.html", "open-terms.meta.json", "open-terms.txt", "urls.txt"]);
+    expect(readdirSync(art).sort()).toEqual(["bar-terms.html", "bar-terms.meta.json", "bar-terms.txt"]);
+    const tree = JSON.parse(readFileSync(join(out, "bar-terms.meta.json"), "utf8"));
+    expect(tree.trimmed.artifact).toEqual({ name: "render-watch-barred-9-2", run: "9", retentionDays: 90, files: ["bar-terms.meta.json", "bar-terms.html", "bar-terms.txt"] });
+    expect(JSON.parse(readFileSync(join(out, "open-terms.meta.json"), "utf8")).trimmed).toBeUndefined();
+    expect(readFileSync(outputs, "utf8")).toBe("js_skipped=0\nbarred=1\n");
+    expect(stdout.text()).toMatch(/new\s+bar-terms .*\[copying barred: barred\.test; body to the artifact render-watch-barred-9-2, meta and emptied text to the tree\]/);
+    expect(stdout.text()).toMatch(/1 page\(s\) of copying-barred sites kept out of the tree/);
+    expect(existsSync(join(out, "bar-terms.html"))).toBe(false);
+  });
+});
+
+describe(".github/workflows/render-watch.yml — the copying-barred bodies as a workflow artifact (decision 4(3))", () => {
+  const wf = parse(readFileSync(".github/workflows/render-watch.yml", "utf8")) as { jobs: { render: { steps: Array<Record<string, any>> } } };
+  const steps = wf.jobs.render.steps;
+  const named = (prefix: string) => {
+    const s = steps.find((x) => String(x.name ?? "").startsWith(prefix));
+    if (!s) throw new Error(`no step "${prefix}"`);
+    return s;
+  };
+  const fetchStep = named("Fetch the pages");
+  const upload = named("Keep the bodies of copying-barred pages out of the tree");
+  const commit = named("Commit the fetched pages");
+
+  it("points the fetch step at an artifact directory outside the checkout, named by the run", () => {
+    expect(fetchStep.env.RENDER_WATCH_ARTIFACT_DIR).toBe("${{ runner.temp }}/render-watch-barred");
+    expect(fetchStep.env.RENDER_WATCH_ARTIFACT_NAME).toBe("render-watch-barred-${{ github.run_id }}-${{ github.run_attempt }}");
+  });
+
+  it("uploads that directory, only when the fetch reports barred pages, kept 90 days, and before the commit with no continue-on-error", () => {
+    expect(upload.uses).toBe("actions/upload-artifact@v4");
+    expect(upload.if).toBe("steps.fetch.outputs.barred != '' && steps.fetch.outputs.barred != '0'");
+    expect(upload.with).toEqual({
+      name: fetchStep.env.RENDER_WATCH_ARTIFACT_NAME,
+      path: `${fetchStep.env.RENDER_WATCH_ARTIFACT_DIR}/`,
+      "retention-days": ARTIFACT_RETENTION_DAYS,
+      "if-no-files-found": "error",
+    });
+    expect(upload["continue-on-error"]).toBeUndefined();
+    expect(steps.indexOf(upload)).toBe(steps.indexOf(fetchStep) + 1);
+    expect(steps.indexOf(upload)).toBeLessThan(steps.indexOf(commit));
+    expect(JSON.stringify(upload)).not.toMatch(/github\.token|secrets\./);
+  });
+
+  it("refuses to commit a copying-barred body that ever landed in the tree, before staging", () => {
+    const run = String(commit.run);
+    const guard = run.indexOf('for f in "${RUNNER_TEMP}"/render-watch-barred/*; do');
+    expect(guard).toBeGreaterThan(-1);
+    expect(guard).toBeLessThan(run.indexOf("git add research/rendered/"));
+    expect(run).toMatch(/case "\$name" in \*\.meta\.json\|\*\.txt\) continue ;; esac/);
+    expect(run).toMatch(/if \[ -e "research\/rendered\/\$\{name\}" \]; then[\s\S]*?exit 1/);
   });
 });
