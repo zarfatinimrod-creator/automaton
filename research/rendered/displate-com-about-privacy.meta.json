@@ -1,11 +1,11 @@
 {
   "url": "https://displate.com/about-privacy",
   "slug": "displate-com-about-privacy",
-  "fetchedAt": "2026-10-06T07:14:52.340Z",
+  "fetchedAt": "2026-10-06T12:06:20.509Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 176453,
-  "sha256": "c5cad33fb71a5287810564db1f4f2b6e30c03bf78c241f11601e937a7b000d8a",
+  "byteLength": 176048,
+  "sha256": "3ef02745dcb08ac1490ed1849fbbb2c30b2441abcf08531d1dc92633b69b6a7a",
   "truncated": false,
   "redacted": 6,
   "error": null,
@@ -15,6 +15,6 @@
   "robotsUrl": "https://displate.com/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "72b8bfb31516540c07ccacaaea5abe84fb58e116b35b3e917d0978427b0ba6b4",
+  "previousSha256": "c5cad33fb71a5287810564db1f4f2b6e30c03bf78c241f11601e937a7b000d8a",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

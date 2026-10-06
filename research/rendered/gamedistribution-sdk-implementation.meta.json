@@ -1,11 +1,11 @@
 {
   "url": "https://github.com/GameDistribution/GD-HTML5/wiki/SDK-Implementation/",
   "slug": "gamedistribution-sdk-implementation",
-  "fetchedAt": "2026-10-06T07:14:43.905Z",
+  "fetchedAt": "2026-10-06T12:06:12.214Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 245322,
-  "sha256": "bd614817ffc4ff1cff9901e4a97013da0a2924594a8e9c5878b4c2ac5bf764d6",
+  "sha256": "52c3fad787d5f8afb91eef76ea3a8a88bc0d8bcee2be538156589d2f725eae4e",
   "truncated": false,
   "redacted": 2,
   "error": null,
@@ -15,6 +15,6 @@
   "robotsUrl": "https://github.com/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "62129700bfda968379d89f1e51ab118e78dd6666f401954be6054431f93bdc2b",
+  "previousSha256": "bd614817ffc4ff1cff9901e4a97013da0a2924594a8e9c5878b4c2ac5bf764d6",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

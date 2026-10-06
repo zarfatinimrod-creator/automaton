@@ -1,11 +1,11 @@
 {
   "url": "https://www.btl.gov.il/About/Pages/%d7%aa%d7%a0%d7%90%d7%99%20%d7%a9%d7%99%d7%9e%d7%95%d7%a9.aspx",
   "slug": "terms-btl",
-  "fetchedAt": "2026-10-06T07:15:03.626Z",
+  "fetchedAt": "2026-10-06T12:06:29.416Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 153446,
-  "sha256": "e79940c0fcdd2be57871d96c96222fead16b2e626e7fc4c3eab0461c69f7cf50",
+  "byteLength": 139407,
+  "sha256": "0d39580e3974c622c3eda98bc7f1e0416759e8a0bb0400fb24b434087d06ad49",
   "truncated": false,
   "redacted": 1,
   "error": null,
@@ -15,6 +15,6 @@
   "robotsUrl": "https://www.btl.gov.il/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "edd6980fd5fc53eef76ea5ebfa85c03d0cc3647a80763ac4bd81d8ab443a4abc",
+  "previousSha256": "e79940c0fcdd2be57871d96c96222fead16b2e626e7fc4c3eab0461c69f7cf50",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

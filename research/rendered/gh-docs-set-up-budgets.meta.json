@@ -1,11 +1,11 @@
 {
   "url": "https://docs.github.com/en/billing/how-tos/set-up-budgets",
   "slug": "gh-docs-set-up-budgets",
-  "fetchedAt": "2026-10-06T07:15:14.944Z",
+  "fetchedAt": "2026-10-06T12:06:39.843Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 222707,
-  "sha256": "8ca761979e0c4859ff8c6bd8bbe25e1b3766fed59e3abf1fd9a0ce774040fe2d",
+  "sha256": "5271ac1676a0820f72b8591afd3fa27c8c7f4e36a5d762e51a962cbaba9435ec",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/gh-docs-set-up-budgets.html",
@@ -14,6 +14,6 @@
   "robotsUrl": "https://docs.github.com/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "cefb4fccd9b6ab543aec32377955abc5fb6a7674e49728bb87acc6cd6a091fee",
+  "previousSha256": "8ca761979e0c4859ff8c6bd8bbe25e1b3766fed59e3abf1fd9a0ce774040fe2d",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

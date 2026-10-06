@@ -208,21 +208,9 @@ Recently added
 
 More items
 
-Imgbot
-App
-A GitHub app that optimizes your images
-
-CodeFactor
-App
-Automated code review for humans and AI
-
 Azure Pipelines
 App
 Continuously build, test, and deploy to any platform and cloud
-
-Zenhub
-App
-Project management that's seamlessly integrated with GitHub’s data & interface, builds powerful insights & automates tasks
 
 Qlty Cloud
 App
@@ -240,6 +228,18 @@ Rewind Backups for GitHub
 App
 Automated GitHub backups so you can recover fast, stay compliant, and never lose a line of code
 
+Imgbot
+App
+A GitHub app that optimizes your images
+
+CodeFactor
+App
+Automated code review for humans and AI
+
+Zenhub
+App
+Project management that's seamlessly integrated with GitHub’s data & interface, builds powerful insights & automates tasks
+
 Codacy
 App
 Codacy helps to build effortless code quality and security for developers
@@ -247,18 +247,6 @@ Codacy helps to build effortless code quality and security for developers
 Zube
 App
 An Agile project management tool that seamlessly integrates with GitHub Issues
-
-CodeScene
-App
-A software engineering intelligence tool tool to identify and prioritize technical debt and evaluate your efficiency
-
-Waydev
-App
-AI-Powered Software Engineering Intelligence Platform
-
-TestQuality - Unified Test Management for GitHub
-App
-Test Plan Driven QA Test Management for GitHub
 
 DeepScan
 App
@@ -287,6 +275,18 @@ Code Review & Collaboration for Jupyter Notebooks
 Mergify
 App
 Pull requests automation service. Merge your pull requests faster with automatic merges and a merge queue
+
+Ranger
+App
+A sidekick for repository maintainers
+
+Atlassian
+App
+GitHub for Atlassian unifies data, automates workflows, and syncs development across GitHub, Jira, and your Atlassian apps
+
+GuardRails
+App
+GuardRails provides continuous security feedback for modern development teams
 
 Footer
 

@@ -1,11 +1,11 @@
 {
   "url": "https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md",
   "slug": "kokoro-82m-model-card",
-  "fetchedAt": "2026-10-06T07:14:17.049Z",
+  "fetchedAt": "2026-10-06T12:05:47.425Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 122753,
-  "sha256": "dbc6b740673491c2b9978a28156386f629d5ff6a27569ba9c911849f3f3e26f6",
+  "sha256": "f69cc7d6cab27ce6e55dfa05d7c29acebef9a1c9f32a6a5f50047ece4f77c4d4",
   "truncated": false,
   "redacted": 1,
   "error": null,
@@ -15,6 +15,6 @@
   "robotsUrl": "https://huggingface.co/robots.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "6b67cb055fb2ff9908d6ac52ceffa188d5858b1c373bda5d8dc6fef65fd94ec1",
+  "previousSha256": "dbc6b740673491c2b9978a28156386f629d5ff6a27569ba9c911849f3f3e26f6",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }
