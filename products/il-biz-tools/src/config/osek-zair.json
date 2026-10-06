@@ -1,6 +1,6 @@
 {
   "verified": true,
-  "about": "The income-tax track 'בעל עסק זעיר' (Income Tax Ordinance chapter 8, sections 87ב-87ז, amendment 265), for osek-zair.html. Every figure the page shows is here with the capture it was read in: a text capture by file and line (quote = a substring of that line range after bidi marks are turned into spaces and whitespace collapsed), or the gazette - an image-only PDF - by printed page, with the quote transcribed from the page image in the dated read named in `check` (the record carries each quote verbatim). Only tax years whose cap a text read here states are in `years`: 2024 and 2025 from the gazette, 2026 from nevo's consolidated text of the VAT law (documents.vatLaw - a publisher's consolidation current to its own stamp date, not the official gazette; the page says so). The 2026 cap is the one figure here not read in a primary text: osek-zair-unverified.json lets a value out only when a rendered primary text states it, and the workflow of 29.9.2026 accepted nevo's consolidation in place of one, as a recorded exception (logs/2026-09-29-osek-zair-2026.md); years.2026.toVerify names the primary check still owed. The nevo capture cited is a dated copy (research/rendered/nevo-vat-law-2026-09-29.*) that render-watch never rewrites. A year no text read states (2027 on) is in neither `years` nor `pendingYears`, and compareTracks refuses it.",
+  "about": "The income-tax track 'בעל עסק זעיר' (Income Tax Ordinance chapter 8, sections 87ב-87ז, amendment 265), for osek-zair.html. Every figure the page shows is here with the capture it was read in: a text capture by file and line (quote = a substring of that line range after bidi marks are turned into spaces and whitespace collapsed), or the gazette - an image-only PDF - by printed page, with the quote transcribed from the page image in the dated read named in `check` (the record carries each quote verbatim). Only tax years whose cap a primary text states are in `years`: 2024 and 2025, from the gazette. 2026 is in `pendingYears`: the page offers it as not computed and says, from the gazette alone, that the amount is indexed for the first time on 1 January 2026; its unverified amount lives in osek-zair-unverified.json, which no page loads and the build never ships. From 29.9 to 6.10.2026 the page computed 2026 from a capture accepted in place of a primary text as a recorded exception; on 6.10.2026 that capture was marked [robots-bar] (research/channel-loop/RULING-2026-10-06-robots-and-terms.md, decision 1), so it is no product input, every cite to it left this file, and a second exception is not the loop's to grant (decision 1(6)); check.vatLaw keeps the history of that read. A year no text read states (2027 on) is in neither `years` nor `pendingYears`, and compareTracks refuses it.",
   "documents": {
     "gazette": {
       "he": "ספר החוקים 3045",
@@ -60,25 +60,15 @@
       "textLayer": true,
       "idLines": [13, 16],
       "grade": "draft regulations of the Ministry of Finance under Income Tax Ordinance 87ז(א), as circulated (a draft, not an enacted text), third-party copy on capitax.co.il; whether they were enacted has not been read"
-    },
-    "vatLaw": {
-      "he": "חוק מס ערך מוסף, נוסח משולב של אתר נבו, נכון ליום 13-07-2026",
-      "url": "https://www.nevo.co.il/law_html/law01/271_001.htm",
-      "capture": "research/rendered/nevo-vat-law-2026-09-29.txt",
-      "meta": "research/rendered/nevo-vat-law-2026-09-29.meta.json",
-      "sha256": "ec477ce90ae6d82062ce6502654988ae17b7824a50c8c34b130510874319d93a",
-      "textLayer": true,
-      "idLines": [1, 3],
-      "grade": "consolidated text (נוסח משולב) of the VAT law as the legal publisher Nevo keeps it, 'נוסח עדכני נכון ליום: 13-07-2026' by its own stamp (capture line 3); not the official text in Reshumot. Rendered by the render-watch runner on 29.9.2026 and read at the lines cited on the same day (check.vatLaw). The capture cited is a dated, byte-identical copy of that render (its .meta.json says so under `frozen`); its slug is not in research/rendered/urls.txt, so the weekly render never rewrites it, while the live slug nevo-vat-law stays watched"
     }
   },
-  "sourceLine": ["gazette", "report", "vatLaw"],
+  "sourceLine": ["gazette", "report"],
   "check": {
     "on": "2026-09-29",
     "how": "read",
     "record": "logs/2026-09-29-osek-zair-check.md",
     "earlier": { "on": "2026-09-28", "record": "research/tiktok/08-reads/tt2-render-check.md" },
-    "vatLaw": { "on": "2026-09-29", "record": "logs/2026-09-29-osek-zair-2026.md", "note": "nevo's consolidated VAT law (research/rendered/nevo-vat-law-2026-09-29.txt, the dated copy of the capture of 29.9.2026) was read at line 3 (the stamp 13-07-2026), line 7 (section 1), line 93 (the עוסק פטור definition: 122,833) and line 1637 (section 126(א): indexed every 1 January). 2026 moved from pendingYears to years on that read, with nevo accepted in place of a primary text (years.2026). After review the same day: the whole capture was searched for \"עוסק זעיר\", which is at lines 89 (the definition, \"(נמחקה)\"), 610 and 782 (headings over sections 42 and 57, each \"(בוטל)\" at lines 611 and 783) and nowhere else; facts.vatSense cites those lines. Nothing else in the capture was read for this page: in particular not the definition of מחזור עסקאות (facts.turnover says so)." },
+    "vatLaw": { "on": "2026-09-29", "record": "logs/2026-09-29-osek-zair-2026.md", "note": "nevo's consolidated VAT law (research/rendered/nevo-vat-law-2026-09-29.txt, the dated copy of the capture of 29.9.2026) was read at line 3 (the stamp 13-07-2026), line 7 (section 1), line 93 (the עוסק פטור definition: 122,833) and line 1637 (section 126(א): indexed every 1 January). 2026 moved from pendingYears to years on that read, with nevo accepted in place of a primary text (years.2026). After review the same day: the whole capture was searched for \"עוסק זעיר\", which is at lines 89 (the definition, \"(נמחקה)\"), 610 and 782 (headings over sections 42 and 57, each \"(בוטל)\" at lines 611 and 783) and nowhere else; facts.vatSense cites those lines. Nothing else in the capture was read for this page: in particular not the definition of מחזור עסקאות (facts.turnover says so). Read 29.9.2026; marked [robots-bar] 6.10.2026 (research/channel-loop/RULING-2026-10-06-robots-and-terms.md, decision 1); no longer cited." },
     "review": { "on": "2026-09-29", "record": "logs/2026-09-29-osek-zair-review-fixes.md", "note": "After two reviews, gazette pages 171-173 were rendered again from the stored PDF and read against the transcription in `record` for every quote added (87ג(א) to 131, 87ד(ב), 87ד(ג), 87ה(ב) with its last clause, 87ז(א)) and for the page bounds in documents.gazette.recordPages; the draft regulations and report lines 11 and 548-553 were read in their text captures." },
     "note": "On 29.9.2026 the gazette's three pages were rendered from the stored PDF to images (PyMuPDF, 220 dpi) and read; the report, letter and regulations were read in their text captures at the lines cited. The record holds every gazette quote verbatim. The reader's read of 28.9.2026 (tt2-render-check.md §2) is the earlier record; this is the second, independent one."
   },
@@ -86,15 +76,20 @@
   "yearOfExitRate": 0.3,
   "years": {
     "2024": { "cap": 120000 },
-    "2025": { "cap": 120000 },
-    "2026": {
-      "cap": 122833,
-      "grade": "nevo's consolidated text of the VAT law (documents.vatLaw), current to its stamp 13-07-2026: a legal publisher's consolidation, not a primary text. Accepted on 29.9.2026 in place of the primary text that osek-zair-unverified.json's rule asks for; an exception, recorded in logs/2026-09-29-osek-zair-2026.md (section 4). The page says what the text is (facts.cap2026).",
-      "toVerify": "Render a primary text that states the 2026 עוסק פטור amount - the notice in Reshumot of the 1.1.2026 CPI adjustment under VAT law section 126(א), a gov.il page of the Tax Authority, or a Tax Authority circular - cite its capture line in facts.cap and facts.cap2026 beside the nevo cite, and then delete `grade` and `toVerify` here. If it states another amount, the cap changes to it and the nevo cite goes."
-    }
+    "2025": { "cap": 120000 }
   },
   "defaultYear": "2025",
-  "pendingYears": {},
+  "pendingYears": {
+    "2026": {
+      "he": "לשנת המס 2026 הכלי לא מחשב. הסכום שבהגדרת \"עוסק פטור\" מותאם למדד לראשונה ב-1 בינואר 2026, והכלי יחשב לשנת המס 2026 אחרי שנקרא מקור ראשוני שמציין את הסכום המעודכן. שר האוצר רשאי גם לשנות בצו את שיעור הניכוי (סעיף 87ז(ב) לפקודה); צו כזה לא קראנו.",
+      "unverifiedValueIn": "src/config/osek-zair-unverified.json",
+      "cite": [
+        { "doc": "gazette", "page": 173, "label": "חוק ההתייעלות הכלכלית, סעיף 37(ב)", "quote": "37. … (ב) … על אף האמור בסעיף 126 לחוק מס ערך מוסף, הסכום שנקבע בסעיף 1 בהגדרה \"עוסק פטור\" כנוסחו בסימן זה, יותאם לראשונה ביום י\"ב בטבת התשפ\"ו (1 בינואר 2026) לעומת המדד שפורסם לאחרונה לפני יום א' בטבת התשפ\"ה (1 בינואר 2025)" },
+        { "doc": "gazette", "page": 173, "section": "87ז", "label": "פקודת מס הכנסה, סעיף 87ז(ב)", "quote": "(ב) שר האוצר, באישור ועדת הכספים של הכנסת, רשאי … לשנות בצו את השיעור הקבוע בסעיף 87ד(א) ו־(ג)." },
+        { "doc": "report", "lines": [11, 11], "quote": "התיקון לחוק אושר במסגרת חוק ההתייעלות הכלכלית" }
+      ]
+    }
+  },
   "facts": {
     "rate": {
       "he": "במסלול בעל עסק זעיר מנכים מההכנסה מהעסק או ממשלח היד סכום השווה ל-30% ממחזור העסקאות באותה שנה, במקום ההוצאות בפועל.",
@@ -104,24 +99,12 @@
       ]
     },
     "cap": {
-      "he": "מחזור העסקאות הכולל ממשלח היד ומכל העסקים בשנת המס אינו עולה על הסכום שבהגדרת \"עוסק פטור\" בחוק מס ערך מוסף: 120,000 ₪ בשנות המס 2024 ו-2025, ו-122,833 ₪ בשנת המס 2026.",
+      "he": "מחזור העסקאות הכולל ממשלח היד ומכל העסקים בשנת המס אינו עולה על הסכום שבהגדרת \"עוסק פטור\" בחוק מס ערך מוסף: 120,000 ₪ בשנות המס 2024 ו-2025.",
       "cite": [
         { "doc": "gazette", "page": 171, "label": "פקודת מס הכנסה, סעיף 87ב", "quote": "87ב. בפרק זה – … (1) מחזור העסקאות הכולל הנובע ממשלח ידו ומכל עסקיו בשנת המס אינו עולה על הסכום הקבוע בהגדרה \"עוסק פטור\" שבסעיף 1 לחוק מס ערך מוסף;" },
         { "doc": "gazette", "page": 173, "label": "חוק ההתייעלות הכלכלית, סעיפים 35 ו-37(ב)", "quote": "35. בחוק מס ערך מוסף, התשל\"ו–1975, בסעיף 1, בהגדרה \"עוסק פטור\", במקום הסכום הנקוב בה יבוא \"120,000 שקלים חדשים\". … 37. … (ב) תחילתו של סעיף 1 לחוק מס ערך מוסף, כנוסחו בסימן זה, ביום כ' בטבת התשפ\"ד (1 בינואר 2024)" },
         { "doc": "report", "lines": [34, 35], "quote": "נכון לשנים 2024 ו ,2025- מחזור העסקאות הוא 120 אלף" },
         { "doc": "report", "lines": [27, 28], "quote": "(עוסק פטור או עוסק מורשה שמחזור הכנסותיו לא עולה על ,)₪ 120,000" },
-        { "doc": "report", "lines": [11, 11], "quote": "התיקון לחוק אושר במסגרת חוק ההתייעלות הכלכלית" },
-        { "doc": "vatLaw", "lines": [3, 93], "label": "סעיף 1, הגדרת \"עוסק פטור\"", "quote": "נוסח עדכני נכון ליום: 13-07-2026 … 1. בחוק זה – … \" עוסק פטור \" – עוסק שמחזור העסקאות שלו בכל עסקיו אינו עולה על 122,833 שקלים חדשים לשנה או על סכום גבוה יותר שקבע שר האוצר;" }
-      ]
-    },
-    "cap2026": {
-      "he": "את הסכום לשנת המס 2026 קראנו בחוק מס ערך מוסף כפי שהוא מופיע באתר נבו: נוסח משולב שמפרסם אתר נבו, ולפי האתר הוא נוסח עדכני נכון ליום 13-07-2026. זה לא הפרסום הרשמי ברשומות. לפי החוק, הסכום שבהגדרת \"עוסק פטור\" מותאם למדד ב-1 בינואר של כל שנה, ולראשונה ב-1 בינואר 2026, ושר האוצר רשאי לקבוע סכום גבוה יותר; קביעה כזו לא קראנו. שר האוצר רשאי גם לשנות בצו את שיעור הניכוי (סעיף 87ז(ב) לפקודה); צו כזה לא קראנו.",
-      "cite": [
-        { "doc": "vatLaw", "lines": [3, 93], "label": "סעיף 1, הגדרת \"עוסק פטור\"", "quote": "נוסח עדכני נכון ליום: 13-07-2026 … 1. בחוק זה – … \" עוסק פטור \" – עוסק שמחזור העסקאות שלו בכל עסקיו אינו עולה על 122,833 שקלים חדשים לשנה או על סכום גבוה יותר שקבע שר האוצר;" },
-        { "doc": "vatLaw", "lines": [1637, 1637], "label": "סעיף 126(א)", "quote": "126. (א) הסכומים שנקבעו בסעיף 1, בהגדרה \"עוסק פטור\" ובסעיף 35 או לפיהם יותאמו ב-1 בינואר של כל שנה לעליית מדד המחירים לצרכן" },
-        { "doc": "gazette", "page": 173, "label": "חוק ההתייעלות הכלכלית, סעיף 37(ב)", "quote": "37. … (ב) … על אף האמור בסעיף 126 לחוק מס ערך מוסף, הסכום שנקבע בסעיף 1 בהגדרה \"עוסק פטור\" כנוסחו בסימן זה, יותאם לראשונה ביום י\"ב בטבת התשפ\"ו (1 בינואר 2026) לעומת המדד שפורסם לאחרונה לפני יום א' בטבת התשפ\"ה (1 בינואר 2025)" },
-        { "doc": "gazette", "page": 173, "section": "87ז", "label": "פקודת מס הכנסה, סעיף 87ז(ב)", "quote": "(ב) שר האוצר, באישור ועדת הכספים של הכנסת, רשאי … לשנות בצו את השיעור הקבוע בסעיף 87ד(א) ו־(ג)." },
-        { "doc": "report", "lines": [34, 35], "quote": "משנת ,2026 תוצמד תקרה זו למדד המחירים לצרכן" },
         { "doc": "report", "lines": [11, 11], "quote": "התיקון לחוק אושר במסגרת חוק ההתייעלות הכלכלית" }
       ]
     },
@@ -152,7 +135,7 @@
       ]
     },
     "turnover": {
-      "he": "מחזור העסקאות הוא מחזור עסקאות של עוסק כהגדרתו בחוק מס ערך מוסף, מכל העסקים וממשלח היד. מחוק מס ערך מוסף, בנוסח שבאתר נבו, קראנו רק את השורות שהדף הזה מצטט, ואת ההגדרה של מחזור עסקאות לא קראנו, ולכן הכלי לא אומר מה נכלל בה, למשל אם לכלול מע״מ. שר האוצר רשאי לקבוע בתקנות סוגי עסקאות, הכנסות או מכירות שיתווספו למחזור העסקאות או שיוחרגו ממנו.",
+      "he": "מחזור העסקאות הוא מחזור עסקאות של עוסק כהגדרתו בחוק מס ערך מוסף, מכל העסקים וממשלח היד. את ההגדרה בחוק מס ערך מוסף עצמו לא קראנו, ולכן הכלי לא אומר מה נכלל בה, למשל אם לכלול מע״מ. שר האוצר רשאי לקבוע בתקנות סוגי עסקאות, הכנסות או מכירות שיתווספו למחזור העסקאות או שיוחרגו ממנו.",
       "cite": [
         { "doc": "gazette", "page": 171, "section": "87ב", "label": "פקודת מס הכנסה, סעיף 87ב", "quote": "(1) מחזור העסקאות הכולל הנובע ממשלח ידו ומכל עסקיו בשנת המס … \"מחזור עסקאות\" – מחזור עסקאות של עוסק, כהגדרתו בחוק מס ערך מוסף." },
         { "doc": "gazette", "page": 173, "section": "87ז", "label": "פקודת מס הכנסה, סעיף 87ז(א)", "quote": "(א) שר האוצר, באישור ועדת הכספים של הכנסת, רשאי לקבוע בתקנות סוגי עסקאות, הכנסות או מכירות שיוספו או יוחרגו ממחזור העסקאות, בדרך כלל או לסוגי נישומים, והכול בתנאים שקבע." }
@@ -240,14 +223,6 @@
       "cite": [
         { "doc": "gazette", "page": 171, "label": "פקודת מס הכנסה, פרק שמיני", "quote": "\"פרק שמיני: בעל עסק זעיר" },
         { "doc": "report", "lines": [27, 27], "quote": "בעל עסק זעיר\" (עוסק פטור או עוסק מורשה" }
-      ]
-    },
-    "vatSense": {
-      "he": "בחוק מס ערך מוסף, בנוסח המשולב שמפרסם אתר נבו, הצירוף \"עוסק זעיר\" מופיע רק בשלושה מקומות: בהגדרה שלו בסעיף 1, שמסומנת \"(נמחקה)\", ובכותרות של סעיפים 42 ו-57, ששניהם מסומנים \"(בוטל)\". כלומר, בנוסח הזה אין לצירוף הגדרה בחוק, והוא אינו המסלול שבדף הזה. בתקנות שמכוח החוק הדף הזה לא בודק אם הצירוף מופיע.",
-      "cite": [
-        { "doc": "vatLaw", "lines": [7, 89], "label": "סעיף 1", "quote": "1. בחוק זה – … \"עוסק זעיר\" – (נמחקה)" },
-        { "doc": "vatLaw", "lines": [610, 611], "label": "סעיף 42", "quote": "הגבלה לגבי ניכויים של עוסק זעיר 42. (בוטל)" },
-        { "doc": "vatLaw", "lines": [782, 783], "label": "סעיף 57", "quote": "רישום עוסק זעיר כעוסק מורשה 57. (בוטל)" }
       ]
     }
   },
