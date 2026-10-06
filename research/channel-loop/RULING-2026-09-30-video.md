@@ -30,6 +30,7 @@ take the company down (`:44-45`); KILL-4 (`research/channel-loop/BOARD-LOOP.md:6
    with the law; **(ii) a decision not to do something.** It may **not** be re-fetched, may not be an input to a product, a
    listing, content, a ranking or a line's growth, and may not be quoted in anything public.
 2. A capture marked `[no-terms]` (the 10 nevo law pages) is **unrestricted**: there was no bar to fetch against.
+   Vacated as to nevo 6.10 (`RULING-2026-10-06-robots-and-terms.md` 1): a robots.txt `Disallow` is a bar; the ten nevo captures are `[robots-bar]`, D1(1).
 3. **For row 17, mechanically:** every Gumroad-rendered fact in `research/measurements/refund-law-il.md` and
    `osek-patur-documents.md` (the refund window, the receipt, the support address, currency, fees, the API page, the terms
    themselves) stands at rendered grade `[against-bar]`, because each is a compliance question about selling Pro on

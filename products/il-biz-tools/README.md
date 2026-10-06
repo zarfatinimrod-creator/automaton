@@ -371,7 +371,9 @@ report prints, per week read, what was counted for each line and what was not co
 other paths). Weeks run seven days from the clock's anchor day in `state/colony/page-view-clock.json` (D0, then the
 domain deploy day), and a week is read 6 hours after it ends. The same tick evaluates the gates on those rows:
 nothing before two consecutive weekly writes; no two *written* by D0+21 is an instrument fault (fixed, clock
-restarted, never a fail - a week read late does not undo it); the D0+56 read is made once week 8 is read: under 5
+restarted, never a fail - a week read late does not undo it) - a netlify-period gate: the domain deploy starts the kill
+clock, not a new instrument, so no day-21 deadline runs from the domain deploy day
+(`RULING-2026-10-06-domain-clock.md`); the D0+56 read is made once week 8 is read: under 5
 page views over weeks 1-8 → pause, 100 a week or more over weeks 5-8 → pass, between → one extension to D0+112,
 read the same way over weeks 9-16, and between again → pause, as under 5, re-entering at the domain deploy
 (`RULING-2026-09-30-documents.md` (c)); and "under 100 a week for 8 consecutive weeks" → kill, on the clock that starts

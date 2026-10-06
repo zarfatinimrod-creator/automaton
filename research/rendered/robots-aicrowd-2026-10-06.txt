@@ -1,0 +1,41 @@
+# AIcrowd robots policy (2026-06-18) — shed crawler load off the legacy box.
+
+# No-SEO-value scrapers / LLM-training crawlers: stay off entirely.
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: Amazonbot
+User-agent: PetalBot
+User-agent: SemrushBot
+User-agent: AhrefsBot
+User-agent: DotBot
+User-agent: MJ12bot
+Disallow: /
+
+# All other crawlers (incl. Googlebot, Bingbot): no paths are Disallowed here. Just a
+# Crawl-delay.
+#
+# /participants was Disallowed here on 2026-06-18 to shed crawler load off the legacy EC2
+# box. That box is off, and the Disallow became actively harmful: it blocks CRAWLING, not
+# INDEXING, so ~100k SEO-spam profiles stayed in Google's index and Googlebot could never
+# see that they now 404. Re-allowed 2026-08-18 alongside the quarantine gate so those pages
+# get recrawled and dropped. Crawl-delay stays.
+User-agent: *
+Crawl-delay: 10
+
+# NO REMOVED PATH MAY EVER BE Disallow-ED HERE.
+#
+# The Blitz / Notebooks / Reputation removal programme retires URLs by answering
+# 410 Gone (design spec §5; the inventory is the routes.rb block above
+# `root 'landing_page#index'`). Disallow blocks CRAWLING, not INDEXING — so a
+# Disallow on a retired path means Googlebot never fetches it, never sees the 410,
+# and the stale entry sits in the index indefinitely. This site has already paid
+# for that lesson once: /participants was Disallowed on 2026-06-18 and ~100k
+# SEO-spam profiles stayed indexed until it was re-allowed on 2026-08-18 (see the
+# comment above).
+#
+# The 410s need to be crawled to work. Leave them crawlable.
+#
+# Note Crawl-delay above is ignored by Googlebot but honoured by Bingbot, so Bing
+# drains the retired URLs more slowly. That is expected, not a fault.

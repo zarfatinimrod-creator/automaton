@@ -1,0 +1,29 @@
+{
+  "url": "https://www.drivendata.org/robots.txt",
+  "slug": "robots-drivendata-2026-10-06",
+  "fetchedAt": "2026-10-06T07:15:47.309Z",
+  "status": 200,
+  "contentType": "text/plain",
+  "byteLength": 134,
+  "sha256": "dc660bb87584d451350f410f76b4e20b849e08d61ded3f5919b6c59d18b9e817",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/robots-drivendata-2026-10-06.txt",
+  "textPath": null,
+  "robots": "allowed",
+  "robotsUrl": "https://www.drivendata.org/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-06",
+    "from": "research/rendered/robots-drivendata.meta.json",
+    "commit": "5f4853a",
+    "why": "A dated copy of the render-watch capture of robots-drivendata as commit 5f4853a stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keep pointing at the robots.txt answer on which scripts/robots-verdict.mjs set NO_TERMS_ROBOTS_OK on 6.10 (tick 54). Frozen with --allow-flagged (frozen.flagged): the answer itself is the claim (a robots.txt file is short by nature; a 404, an HTML page or no answer is what the host said). The slug is not in urls.txt, so render-watch never rewrites these files; the live slug robots-drivendata stays on the weekly watch.",
+    "flagged": {
+      "kind": "short",
+      "evidence": "133 characters of text (the body itself), fewer than 1000"
+    }
+  }
+}

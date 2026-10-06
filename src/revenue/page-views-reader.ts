@@ -28,7 +28,7 @@
  *
  * A row is dated by when it was WRITTEN (the tick's time), and says which week it covers in its unit. M-instrument
  * ("two consecutive weekly writes by D0+21") is judged on the write time, so a late backfill cannot pass for an
- * instrument that worked on time.
+ * instrument that worked on time (netlify period only; the domain clock has no instrument deadline).
  */
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";

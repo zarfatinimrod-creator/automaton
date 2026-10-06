@@ -1,0 +1,29 @@
+{
+  "url": "https://pasteurlabs.ai/robots.txt",
+  "slug": "robots-pasteurlabs-2026-10-06",
+  "fetchedAt": "2026-10-06T07:15:54.325Z",
+  "status": 404,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 0,
+  "sha256": null,
+  "truncated": false,
+  "error": "HTTP 404",
+  "bodyPath": null,
+  "textPath": null,
+  "robots": "none",
+  "robotsUrl": "https://pasteurlabs.ai/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-06",
+    "from": "research/rendered/robots-pasteurlabs.meta.json",
+    "commit": "5f4853a",
+    "why": "A dated copy of the render-watch capture of robots-pasteurlabs as commit 5f4853a stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keep pointing at the robots.txt answer on which scripts/robots-verdict.mjs set NO_TERMS_ROBOTS_OK on 6.10 (tick 54). Frozen with --allow-flagged (frozen.flagged): the answer itself is the claim (a robots.txt file is short by nature; a 404, an HTML page or no answer is what the host said). The slug is not in urls.txt, so render-watch never rewrites these files; the live slug robots-pasteurlabs stays on the weekly watch.",
+    "flagged": {
+      "kind": "status",
+      "evidence": "status 404: the server answered 404 (not found); error \"HTTP 404\""
+    }
+  }
+}
