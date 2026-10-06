@@ -1,0 +1,34 @@
+[
+  {
+    "id": "T54-R1-drop-other-fields",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "  const next = orderEntry({\n    ...entry,\n",
+    "replace": "  const next = orderEntry({\n",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 54: judgeSite rebuilds the entry from the fields it sets, so NO_TERMS_ROBOTS_OK drops copying (and the note)"
+  },
+  {
+    "id": "T54-R2-copying-before-note",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "export const ENTRY_FIELDS = [\"verdict\", \"source\", \"checked\", \"note\", \"copying\"];",
+    "replace": "export const ENTRY_FIELDS = [\"verdict\", \"source\", \"checked\", \"copying\", \"note\"];",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 54: copying moves before note, so the committed file no longer has the one exact format"
+  },
+  {
+    "id": "T54-R3-serialize-unordered",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "  return JSON.stringify({ ...verdicts, sites: ordered }, null, 1);",
+    "replace": "  return JSON.stringify(verdicts, null, 1);",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 54: serializeVerdicts writes each entry in whatever order a writer built it"
+  },
+  {
+    "id": "T54-R4-drop-unlisted-fields",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "  for (const [k, v] of Object.entries(entry)) if (!Object.hasOwn(out, k)) out[k] = v;",
+    "replace": "  // a field outside ENTRY_FIELDS is dropped",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 54: orderEntry drops a field it does not list, so a later fold's field is lost on the next write"
+  }
+]

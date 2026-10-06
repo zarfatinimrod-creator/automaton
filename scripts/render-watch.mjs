@@ -454,6 +454,12 @@ export const TERMS_BARRED = [
   { domain: "wavedash.com", why: "Wavedash's terms bar \"any robot, spider, or other automatic device, process, or means to access the Website for any purpose\" (research/rendered/terms-wavedash.txt:118; terms audit round 3)" },
   // Round 4 (tick 23): Tipalti's website terms (row 224).
   { domain: "tipalti.com", why: "Tipalti's website terms: \"You may not download or save a copy of the Site or any portion thereof ... for any purpose, without Tipalti's prior written consent\" (research/rendered/terms-tipalti-website.txt:245; terms audit round 4)" },
+  // Tick 54 (6.10.2026): the prize-event sites' terms pages of the 6.10 weekly render, read on their frozen copies by an
+  // Opus reader and an adversarial Opus verifier, verdicts by the main thread (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md,
+  // "Terms read (6.10.2026, tick 54)"). devpost.com covers every *.devpost.com hackathon site and info.devpost.com.
+  { domain: "devpost.com", why: "Devpost's terms bar using \"manual or automated software, devices, scripts robots, or other means or processes to access, “scrape,” “crawl” or “spider” the Site, User Content ... or any related data or information\" (research/rendered/terms-devpost-2026-10-06.txt:159), and every hackathon site is a Hackathon Website of the Site (:129, :170, :185; terms read 6.10, tick 54)" },
+  { domain: "zindi.africa", why: "Zindi's terms: \"You must not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store or transmit any of the material on our Website\" (research/rendered/terms-zindi-2026-10-06.txt:68; terms read 6.10, tick 54)" },
+  { domain: "zindi.world", why: "The same Zindi Terms of Use: zindi.africa's terms page names zindi.world as its og:url (research/rendered/terms-zindi-2026-10-06.html:50) and its robots.txt was read there, so zindi.africa redirects to zindi.world [inference]; :68 bars reproducing, storing or transmitting the material (research/rendered/terms-zindi-2026-10-06.txt:68; terms read 6.10, tick 54)" },
 ];
 
 /** The TERMS_BARRED entry a host falls under (the domain or any subdomain; case and trailing dot ignored), or null. */

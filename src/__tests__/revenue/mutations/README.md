@@ -18,6 +18,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `remask-run.json` | `scripts/remask-run.sh` | `remask-run.test.ts` | tick 53 |
 | `render-dispatch.json` | `scripts/render-dispatch.sh` | `render-dispatch.test.ts` | tick 52 |
 | `render-watch.json` | `scripts/render-watch.mjs` (the address mask) | `render-watch.test.ts` | ticks 48, 50 |
+| `robots-verdict.json` | `scripts/robots-verdict.mjs` (`judgeSite` keeps every field it does not set; `serializeVerdicts`' one field order, copying after note) | `robots-verdict.test.ts` | tick 54 |
 | `sim-tree.json` | `scripts/sim-tree.sh` | `sim-tree.test.ts` | ticks 51, 52 |
 
 ## An entry

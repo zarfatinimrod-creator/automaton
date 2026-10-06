@@ -35,7 +35,7 @@ import {
 import { PRIZE_INTAKE_FILE, listedEventsFrom, readPrizeIntake, runPrizeIntake, summarisePrizeIntake } from "../../revenue/prize-intake.js";
 import { renderReport, tick } from "../../revenue/runner.js";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as render-watch.test.ts)
-import { parseUrlList } from "../../../scripts/render-watch.mjs";
+import { parseUrlList, termsBarred } from "../../../scripts/render-watch.mjs";
 
 const FIXTURES = resolve(dirname(fileURLToPath(import.meta.url)), "..", "fixtures");
 const FIXTURE_TEXT = readFileSync(join(FIXTURES, "mlcontests-competitions-trimmed.json"), "utf8");
@@ -155,9 +155,17 @@ describe("the first weekly run — a table for a session to fill, with nothing f
 
   it("writes the awaiting URLs in render-watch's urls syntax, every one verbatim from the list and the table", async () => {
     const { urls, md, state } = await run();
-    const entries = parseUrlList(urls) as { url: string; slug: string }[];
+    // render-watch's parser refuses a line on a TERMS_BARRED host by name, and scripts/prize-dispatch.mjs drops such a line
+    // before any dispatch. Since 6.10 (tick 54) zindi.africa is one (its terms bar storing the site's material,
+    // research/rendered/terms-zindi-2026-10-06.txt:68), so the syntax is checked on the other lines and the barred one is named.
+    const lines = urls.split("\n");
+    const barred = lines.filter((l) => /^https?:\/\//.test(l) && termsBarred(new URL(l.split("\t")[0]).hostname));
+    expect(barred.map((l) => l.split("\t")[0])).toEqual([ZINDI]);
+    const parsed = parseUrlList(lines.filter((l) => !barred.includes(l)).join("\n")) as { url: string; slug: string }[];
+    const entries = [...parsed, ...barred.map((l) => ({ url: l.split("\t")[0], slug: l.split("\t")[1] }))];
     // 9 event URLs + 12 other URLs the list gives (flagos 2, ansperformance 8, RealPDE 2); all distinct.
     expect(entries).toHaveLength(21);
+    expect(new Set(entries.map((e) => e.slug)).size).toBe(21);
     expect(state.aiAllowed.urlsAwaiting).toBe(21);
     expect(entries.map((e) => e.url)).toContain(ARC);
     for (const e of entries) {

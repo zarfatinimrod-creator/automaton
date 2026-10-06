@@ -346,3 +346,93 @@ describe("PATH_LIMITS: posthog.com lines only under /docs/ or /tutorials/ (tick 
     );
   });
 });
+
+/**
+ * Tick 54 (6.10.2026): the terms pages of the prize-event sites, read on their frozen copies (research/channel-loop/
+ * TERMS-AUDIT-2026-10-05-prize-events.md, "Terms read (6.10.2026, tick 54)"). Devpost's terms bar automated access and
+ * scraping of the Site and of User Content, which its hackathon sites are; Zindi's bar reproducing, storing or
+ * transmitting the site's material, and its terms page names zindi.world as its own address, so both hosts are barred.
+ */
+describe("the prize-event terms read of 6.10 (tick 54): devpost.com, zindi.africa, zindi.world", () => {
+  const BARRED_54: { domain: string; file: string; line: number; words: string }[] = [
+    {
+      domain: "devpost.com",
+      file: "research/rendered/terms-devpost-2026-10-06.txt",
+      line: 159,
+      words: "manual or automated software, devices, scripts robots, or other means or processes to access, “scrape,” “crawl” or “spider” the Site, User Content",
+    },
+    {
+      domain: "zindi.africa",
+      file: "research/rendered/terms-zindi-2026-10-06.txt",
+      line: 68,
+      words:
+        "You must not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store or transmit any of the material on our Website",
+    },
+    {
+      domain: "zindi.world",
+      file: "research/rendered/terms-zindi-2026-10-06.txt",
+      line: 68,
+      words: "store or transmit any of the material on our Website",
+    },
+  ];
+  const verdicts = () => JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites;
+
+  it("lists the three last, each citing the frozen copy's line, whose words it quotes", () => {
+    const domains = (TERMS_BARRED as { domain: string }[]).map((b) => b.domain);
+    expect(domains.slice(-3)).toEqual(BARRED_54.map((b) => b.domain));
+    for (const { domain, file, line, words } of BARRED_54) {
+      const b = (TERMS_BARRED as { domain: string; why: string }[]).find((x) => x.domain === domain)!;
+      expect(b.why, domain).toContain(`${file}:${line}`);
+      expect(b.why, domain).toContain("terms read 6.10, tick 54");
+      // The frozen copy (never rewritten by the weekly run) holds the words at that line, and the entry quotes them.
+      expect(readFileSync(file, "utf8").split("\n")[line - 1], domain).toContain(words);
+      if (domain !== "zindi.world") expect(b.why, domain).toContain(words.split(", User Content")[0]);
+      expect(existsSync(file.replace(/\.txt$/, ".meta.json")), domain).toBe(true);
+    }
+    // zindi.world: the page's own og:url names it (the html line the entry cites), which is why it is barred with zindi.africa.
+    const zw = (TERMS_BARRED as { domain: string; why: string }[]).find((x) => x.domain === "zindi.world")!;
+    expect(zw.why).toContain("research/rendered/terms-zindi-2026-10-06.html:50");
+    expect(zw.why).toContain("[inference]");
+    expect(readFileSync("research/rendered/terms-zindi-2026-10-06.html", "utf8").split("\n")[49]).toContain('og:url" content="https://zindi.world/terms"');
+  });
+
+  it("bars every Devpost hackathon host and its terms host, both Zindi hosts, and nothing that only contains the names", () => {
+    for (const h of [
+      "devpost.com",
+      "info.devpost.com",
+      "qwencloud-hackathon.devpost.com",
+      "xprize.devpost.com",
+      "ADTC-2026.Devpost.com.",
+      "zindi.africa",
+      "www.zindi.africa",
+      "zindi.world",
+      "api.zindi.world",
+    ]) {
+      expect(termsBarred(h), h).not.toBeNull();
+    }
+    for (const h of ["notdevpost.com", "devpost.com.example.org", "zindi.africa.example.org", "zindiworld.com", "grand-challenge.org", "www.stanford.edu"]) {
+      expect(termsBarred(h), h).toBeNull();
+    }
+    expect(() => parseUrlList("https://xprize.devpost.com/rules\tdevpost-xprize\n")).toThrow(/devpost\.com.*terms/);
+    expect(() => parseUrlList("https://zindi.africa/competitions/x\tzindi-x\n")).toThrow(/zindi\.africa/);
+  });
+
+  it("agrees with the verdicts file, and leaves only the paused terms lines of the two sites in urls.txt", () => {
+    const v = verdicts();
+    expect(v["devpost.com"].verdict).toBe("BARRED");
+    expect(v["zindi.africa"].verdict).toBe("BARRED");
+    for (const site of ["devpost.com", "zindi.africa"]) {
+      expect(v[site].note, site).toContain("TERMS_BARRED in scripts/render-watch.mjs holds");
+      expect(v[site].copying, site).toBe("barred");
+    }
+    const text = readFileSync("research/rendered/urls.txt", "utf8");
+    const lines = text.split("\n").filter((l) => /(^|[/.])(devpost\.com|zindi\.africa|zindi\.world)\//.test(l.replace(/^# .* — /, "")));
+    expect(lines).toEqual([
+      "# paused (terms audit): devpost.com — see TERMS_BARRED in scripts/render-watch.mjs — https://info.devpost.com/legal/terms-of-service\tterms-devpost",
+      "# paused (terms audit): zindi.africa — see TERMS_BARRED in scripts/render-watch.mjs — https://zindi.africa/terms\tterms-zindi",
+    ]);
+    // The gate says so for any line on those hosts.
+    expect(termsGate("https://datahub.devpost.com/?ref=mlcontests", "x", v).why).toMatch(/^devpost\.com is in TERMS_BARRED: /);
+    expect(termsGate("https://zindi.world/competitions/x", "x", v).why).toMatch(/^zindi\.world is in TERMS_BARRED: /);
+  });
+});

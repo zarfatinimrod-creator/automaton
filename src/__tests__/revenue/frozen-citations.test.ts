@@ -64,6 +64,10 @@ const LIVE_MENTIONS: Record<string, string> = {
   "research/faceless-youtube/LICENCE-IGO-DECISION.md unesco-uis-databrowser-terms": "a urls.txt line the note proposed: the slug a render writes",
   "research/channel-loop/RULING-2026-10-06-robots-and-terms.md robots-nevo": "the weekly probe the ruling keeps running, and its live meta (what the runner saw)",
   "research/channel-loop/RULING-2026-10-06-robots-and-terms.md terms-kaggle": "the live shell capture the once-only js route (decision 3) re-renders",
+  // Tick 54 (6.10): the two terms pages that served shells stay TERMS_PENDING and on the weekly watch; each note names the
+  // live meta of its 6.10 shell, which the js route of decision 3 renders again (kaggle) or waits to (adaptionlabs).
+  "research/channel-loop/terms-verdicts.json terms-kaggle": "kaggle.com's note: the live shell capture the once-only js route (decision 3) re-renders",
+  "research/channel-loop/terms-verdicts.json terms-adaptionlabs": "adaptionlabs.ai's note: the live nav-only shell the js route waits to render until the classifier names its kind",
   // The 4.10 row-18 ruling named amo-add-on-policies while urls.txt:331 was still active; its fold retired that line
   // (ruling §3 rule 1), so the slug is no longer an active capture and its entry here went with it.
 };
