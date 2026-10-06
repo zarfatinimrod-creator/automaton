@@ -7,7 +7,7 @@ fetch, no git command of any kind, no edit outside this file; the main thread fo
 `claude/new-session-j071dx` during the sitting with `sed -n`, `grep -n` or `cat -n`, and the line quoted is the one seen.
 One command was run against the store: `node scripts/capture-check.mjs --all` (read-only; it writes nothing).
 
-**Read.** `MISSION.md` in full; `logs/FABLE_QUEUE.md:45` (row 21, the whole row); `research/rendered/robots-nevo.txt:1-148`
+**Read.** `MISSION.md` in full; `logs/FABLE_QUEUE.md:45` (row 21, the whole row); `research/rendered/robots-nevo-2026-09-30.txt:1-148`
 and `robots-nevo.meta.json`, `robots-nevo-2026-09-30.meta.json`; `research/channel-loop/RULING-2026-09-30-video.md:1-150`
 (header, 16(d) D1-D3), `:294-383` (folds, open items); `products/il-biz-tools/src/config/osek-zair.json:1-127`, `:248-250`
 and its `vatLaw`/`nevo` lines; `osek-zair-unverified.json` in full (11 lines); `osek-patur.json:3`, `:11`;
@@ -56,7 +56,7 @@ D1(1) … and osek-zair's 2026 year loses its source until a permitted text of t
 
 **Facts read.**
 - nevo's robots.txt, rendered 30.9 10:25Z (`robots-nevo.meta.json` `fetchedAt`; `robots: "allowed"`, the file itself):
-  `User-agent: *` / `Disallow: /` (`robots-nevo.txt:146-147`); a block headed `# Comprehensive AI Crawler Block` (`:69`) naming
+  `User-agent: *` / `Disallow: /` (`robots-nevo-2026-09-30.txt:146-147`); a block headed `# Comprehensive AI Crawler Block` (`:69`) naming
   `anthropic-ai` (`:77-78`), `Claude-Web` (`:92-93`), `ClaudeBot` (`:95-96`), `GPTBot` (`:116-117`) and others, each
   `Disallow: /`; only `Googlebot` (`:1`) and `Bingbot` (`:35`) get `Allow: /law_html/law01/` and `Allow: /law_html/law00/`
   (`:30-33`, `:64-67`), and even they are refused `/law_html/law10/` (`:28`, `:62`). Rendered.
