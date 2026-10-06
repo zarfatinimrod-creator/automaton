@@ -240,5 +240,13 @@
     "replace": "    void a;",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 56 build: a trimmed copy is never the version it was trimmed from (its block makes the metas differ), so --cited would freeze it again in full"
+  },
+  {
+    "id": "T56-F6",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "(meta.trimmed.fullBytesIn == null || /^commit [0-9a-f]+\\b/.test(String(meta.trimmed.fullBytesIn))",
+    "replace": "(true",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: freeze-capture tells a route capture to be frozen from a commit that does not exist (review finding 3)"
   }
 ]

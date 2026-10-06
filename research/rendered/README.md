@@ -193,22 +193,31 @@ not `allowed`, and only `barred` is trimmed). What stays of such a capture, live
 whether to rewrite public history is the owner's decision, with the §6 public/private one. A page of such a site that the
 weekly run fetches after the route below never lands here in full at all: its body, full text and plain meta go to a
 workflow artifact (`render-watch-barred-<run id>-<attempt>`, kept 90 days; `fullBytesIn` and `trimmed.artifact` name it),
-and the tree gets the meta and an emptied `.txt`. To read one: download the run's artifact (Actions, the run, Artifacts),
-read the page there, and write the quotation and its line into the research file, which is how a read becomes a finding
-anyway. (On a public repository a signed-in GitHub user with read access can download a run's artifacts: the artifact
-keeps the body out of the tree and out of history for 90 days, it is not private by itself.)
+and the tree gets the meta and an emptied `.txt`. **Such a capture cannot be cited by line:** the tree never holds a line
+of it, its full bytes are in no commit, and `freeze-capture.mjs` refuses to freeze a trimmed capture, so a citation of one
+of its lines points at an empty line for good (`trim-capture.mjs` refuses that capture, alone). What its weekly line gives
+is change detection by hash (`sha256`, and the block's hashes); a reading of it is quoted in the research file with the
+URL, `fetchedAt` and `sha256`, without a line of the capture. On a public repository a signed-in GitHub user with read
+access can download a run's artifacts, so the artifact is not private by itself: the ruling's amendment 1 (6.10) has the
+next build stop uploading it, after which the block says the body was not retained. A page reached from a URL that is
+not on a copying-barred site, by a redirect (or a js page's move) to one that is, is not stored at all: list it by its own
+URL.
 
 - `node scripts/trim-capture.mjs [<slug>...]` is a dry run: per capture of a copying-barred site, the site and its field,
   the cited lines found and in which files, the lines kept and the bytes removed, then the totals and what was not
-  reached (allowed, unread, no verdict entry). It never prints a capture's text. `--apply` writes. Exit 0 would trim /
-  trimmed, 3 nothing to do (a second run over a trimmed store), 1 a refusal with nothing written: a barred site's entry
-  with no `copying` field, a named capture of an unread site or of one with no entry, a binary body cited by line, a
-  capture with uncommitted changes, a trimmed capture cited later at a line its trim emptied. The citations are
-  freeze-capture's scanner's, every form, plus every bare `:N`, "line N" and `html:N` on a decision-file line that names
-  a capture no active line names (the scanner gives some of those to another name on the line; the trim keeps them
-  rather than blank a line a note reads). A range that covers more than half its file is kept and printed as `wide`.
+  reached (allowed, unread, no verdict entry), and per kept file the bytes of its text kept and their share. It never
+  prints a capture's text. `--apply` writes. Exit 0 would trim / trimmed, 3 nothing to do (a second run over a trimmed
+  store), 1 a refusal with nothing written (a barred site's entry with no `copying` field, a named capture of an unread
+  site or of one with no entry, a binary body cited by line, a capture with uncommitted changes), 4 a capture refused
+  alone with the rest of the run done: a trimmed capture cited later at a line its trim emptied, with the remedy for
+  where its full bytes are (a commit: freeze from it and trim the copy; the route: quote without a line). The citations
+  are freeze-capture's scanner's, every form, plus every bare `:N`, "line N" and `html:N` on a decision-file line that
+  names a capture no active line names (the scanner gives some of those to another name on the line; the trim keeps
+  them rather than blank a line a note reads). A cited range longer than 20 lines is printed as `wide` with the line
+  that cites it: the ruling's amendment 1 (5)(iii) holds that it is not a quotation and keeps nothing, a rule the next
+  build adds; this pass keeps it, the amendment's stated interim.
 - `freeze-capture.mjs` refuses to freeze a trimmed capture (freeze the full one from the commit `fullBytesIn` names,
-  then trim the copy); `checkManifest` (the frozen-citations guard) holds a trimmed frozen copy to its block; `--cited`
+  then trim the copy; a capture the route stored has no such commit); `checkManifest` (the frozen-citations guard) holds a trimmed frozen copy to its block; `--cited`
   takes a trimmed copy for the version whose full hashes its block records. `capture-check.mjs` reads a trimmed capture
   (its body is not a missing file) and reports the kind it had whole, or `trimmed` for one the artifact route stored.
   `remask-captures.mjs` does not look for a body the block says left.

@@ -95,7 +95,9 @@
  *     PDF with no text) and whether anything changed
  *   - a non-2xx response or a network error is RECORDED IN THE META FILE and
  *     never thrown; the run still exits 0. Its meta has no sha256 and no bodyPath;
- *     after a PDF capture it keeps that capture's text state (above)
+ *     after a PDF capture it keeps that capture's text state (above), and after a
+ *     trimmed capture (below) its `trimmed` block: a failed fetch writes no file, so
+ *     the tree still holds what the block describes
  *   - the process exits non-zero only when the script itself is broken: a
  *     malformed URL list, a duplicate slug, an unwritable output directory, or a
  *     terms-verdicts.json it cannot read (below)
@@ -108,9 +110,10 @@
  *     RENDER_WATCH_ARTIFACT_NAME: `render-watch-barred-<run id>-<attempt>`), and the tree
  *     gets the meta (sha256 and every usual field) with a `trimmed` block in
  *     scripts/trim-capture.mjs's shape that names the artifact, and, for a page with a text,
- *     a .txt of the same line count with every line emptied (a fresh capture has no
- *     cited line; a reader fetches the artifact, reads, and writes the quotation and its
- *     line into the research file, research/rendered/README.md "Trimmed copies"). An older
+ *     a .txt of the same line count with every line emptied. No line of such a capture can
+ *     be cited by line: the tree never holds one and its full bytes are in no commit
+ *     (research/rendered/README.md "Trimmed copies"; the ruling's amendment 1 makes the
+ *     weekly line of such a site change detection by hash). An older
  *     full body of the slug is removed from the tree, and so is its old text when the meta
  *     claimed it. A page that did not change writes nothing, as always: a full copy stored
  *     before this route stays until scripts/trim-capture.mjs trims it. The route covers
@@ -121,7 +124,12 @@
  *     signed-in user with read access can download a run's artifacts, which on a public
  *     repository is any signed-in user. The route keeps the body out of the tree and out
  *     of git history, for 90 days; it does not by itself make the artifact private.
- *     The count goes to the workflow as `barred` (it decides whether the upload step runs)
+ *     The count goes to the workflow as `barred` (it decides whether the upload step runs).
+ *     The site is the listed URL's: a redirect from a URL that is not on a copying-barred
+ *     site to one that is is not followed (a plain line; refused at the hop, as a
+ *     TERMS_BARRED hop is), and a js page whose main frame went on to one is not stored,
+ *     so no page of such a site lands in full by way of another site's URL. List that
+ *     page by its own URL and the route above takes it
  *
  * BODY SIZE IS CAPPED AT 5 MB (MAX_BYTES below). The cap is applied while the
  * body streams in, so a larger page is never fully downloaded; what is stored is
@@ -633,6 +641,18 @@ export function copyingBarredSite(hostname, barred) {
     .replace(/\.+$/, "");
   const hits = (barred ?? []).filter((site) => host === site || host.endsWith(`.${site}`));
   return hits.sort((a, b) => b.length - a.length)[0] ?? null;
+}
+
+/**
+ * Why a page reached from a listed URL that is not on a copying-barred site, by a redirect (or, in js mode, the main
+ * frame's move) to one that is, is not stored: the route decides by the listed URL, so such a page would land in full.
+ */
+export function copyingRedirectError(site, host, { browser = false } = {}) {
+  const name = String(host).toLowerCase();
+  return (
+    `${browser ? "the browser went on" : "redirected"} to ${site} (${name}), whose terms bar copying (ruling 6.10 row 21 (d)); ` +
+    `${browser ? "not stored" : "not followed"}: list that page by its own URL, so the copying-barred route keeps it out of the tree`
+  );
 }
 
 /** A text with every line emptied: the same number of "\n"-separated lines, nothing of the page. */
@@ -1622,7 +1642,7 @@ export function robotsChecker({ fetchImpl, timeoutMs = TIMEOUT_MS, maxBytes = RO
  */
 export async function fetchOne(
   entry,
-  { fetchImpl = fetch, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES, robots = null } = {},
+  { fetchImpl = fetch, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES, robots = null, copyingBarred = [] } = {},
 ) {
   let decision = null;
   const withRobots = (result) =>
@@ -1674,6 +1694,9 @@ export async function fetchOne(
       if (barredNext) {
         return refused(`redirected to ${barredNext.domain} (${next.hostname.toLowerCase()}), whose terms bar automated access; not followed`);
       }
+      // A copying-barred site reached from a URL that is not on one: the route decides by the listed URL (header comment).
+      const copyingNext = copyingBarredSite(next.hostname, copyingBarred);
+      if (copyingNext && !copyingBarredSite(hostOf(entry.url), copyingBarred)) return refused(copyingRedirectError(copyingNext, next.hostname));
       if (redirects >= MAX_REDIRECTS) return refused(`more than ${MAX_REDIRECTS} redirects; not followed`);
       if (robots) {
         // After the refusals above: a barred host is never asked, not even for its robots.txt.
@@ -1868,7 +1891,7 @@ async function withinBudget(promise, ms) {
  */
 export async function renderWithBrowser(
   entry,
-  { browser, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES, now = Date.now, robots = null } = {},
+  { browser, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES, now = Date.now, robots = null, copyingBarred = [] } = {},
 ) {
   const failed = (fields) => ({
     status: null,
@@ -1983,6 +2006,15 @@ export async function renderWithBrowser(
     // The page's own script may have moved it to tiktok.com, or to a barred host, while the network settled.
     if (tiktokNavigation !== null) return refusedTikTok();
     if (barredNavigation !== null) return refusedBarred();
+    // A copying-barred site the main frame went on to from a listed URL that is not on one: the route decides by the
+    // listed URL, so the page is not stored at all (the header comment). The browser followed it; nothing is kept.
+    if (!copyingBarredSite(hostOf(entry.url), copyingBarred)) {
+      for (const url of [...mainFrameUrls, ...redirectChainUrls(response)]) {
+        const host = hostOf(url);
+        const site = host === null ? null : copyingBarredSite(host, copyingBarred);
+        if (site) return failed({ status, contentType, error: copyingRedirectError(site, host, { browser: true }) });
+      }
+    }
 
     // Every other http(s) URL the main frame went to is held to its host's robots.txt, as a plain GET's hops are.
     // A move the page's own script made went through route() above, and one robots.txt refused was never sent. A
@@ -2142,6 +2174,7 @@ export function jsRenderer({
   timeoutMs = TIMEOUT_MS,
   maxBytes = MAX_BYTES,
   robots = null,
+  copyingBarred = [],
 } = {}) {
   let browser = null;
   let launchError = null;
@@ -2159,7 +2192,7 @@ export function jsRenderer({
       }
       if (!launchError && disconnected()) launchError = BROWSER_DISCONNECTED;
       if (launchError) return { skipped: launchError };
-      const result = await renderWithBrowser(entry, { browser, timeoutMs, maxBytes, robots });
+      const result = await renderWithBrowser(entry, { browser, timeoutMs, maxBytes, robots, copyingBarred });
       // Died during this line: skip it too rather than record the crash as the site's error.
       if (result.error && disconnected()) {
         launchError = BROWSER_DISCONNECTED;
@@ -2379,6 +2412,10 @@ export async function storeCapture(
   // An extraction always has a text to write, even when nothing in the meta moved: the meta
   // claimed a <slug>.txt that had been deleted, or the stored .pdf had been replaced by hand.
   if (pdfText !== null) meta.changed = true;
+  // A failed fetch writes no file, so a trimmed capture's files are still what its block describes (ruling 6.10 row
+  // 21 (d)): the block stays, with the full hashes and where the full bytes are. Dropped, the next trim-capture run
+  // would take the emptied text for the full one and record its hash as the verification hash.
+  if (!result.bytes && previousMeta?.trimmed) meta.trimmed = previousMeta.trimmed;
 
   if (!meta.changed) return { meta, bytesChanged };
 
@@ -2545,7 +2582,7 @@ async function captureEntry(entry, { js, robots, fetchImpl, outDir, deps, summar
     // listed URL, above, says the listed URL's.
     if (result.robots === undefined) result = { ...result, robots: decision.robots, robotsUrl: decision.robotsUrl };
   } else {
-    result = await fetchOne(entry, { fetchImpl, robots });
+    result = await fetchOne(entry, { fetchImpl, robots, copyingBarred: barredSites });
   }
 
   // A copying-barred site's page goes to the artifact, not the tree (decision 4(3); the header comment).
@@ -2639,7 +2676,7 @@ export async function main(argv = process.argv.slice(2), env = process.env, deps
   // One robots.txt fetch per host for the whole run, shared by every mode (ruling 30.9 16(d) D2(v)).
   const robots = robotsChecker({ fetchImpl });
   // Launched on the first js line, if there is one; a plain list never loads playwright-core.
-  const js = jsRenderer({ launchBrowser: deps.launchBrowser ?? launchChromium, robots });
+  const js = jsRenderer({ launchBrowser: deps.launchBrowser ?? launchChromium, robots, copyingBarred: barredSites });
 
   try {
     for (const [index, entry] of entries.entries()) {

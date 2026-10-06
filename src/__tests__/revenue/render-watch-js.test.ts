@@ -22,6 +22,7 @@ const {
   bodyChanged,
   browserContextOptions,
   chromiumLaunchOptions,
+  copyingRedirectError,
   fetchOne,
   isTikTokHost,
   launchChromium,
@@ -1344,5 +1345,57 @@ describe(".github/workflows/render-watch.yml — the browser only when a js line
     const readme = readFileSync(join(ROOT, "research", "rendered", "README.md"), "utf8");
     expect(readme).toMatch(/## The js flag: a JavaScript-capable render/);
     expect(readme).toMatch(/scripts\/queue-zero-test\.mjs --js --terms/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// A copying-barred site reached from a listed URL that is not on one (ruling 6.10 row 21 (d), decision 4(3)): the
+// route decides by the listed URL, so such a page is not stored at all (the browser followed it; nothing is kept).
+// ---------------------------------------------------------------------------
+
+describe("renderWithBrowser and main — a js page that went on to a copying-barred site is not stored", () => {
+  const BARRED = ["barred.test"];
+  const refusal = (host: string) => copyingRedirectError("barred.test", host, { browser: true });
+
+  it("refuses a server redirect into the barred site, and a move the page's script makes while the network settles", async () => {
+    const redirected = fakeBrowser({ [ENTRY.url]: { html: RENDERED, responseUrl: "https://www.barred.test/terms", redirectedFrom: [ENTRY.url] } });
+    expect(await renderWithBrowser(ENTRY, { browser: redirected.browser, copyingBarred: BARRED })).toEqual({
+      status: 200,
+      contentType: "text/html; charset=utf-8",
+      bytes: null,
+      truncated: false,
+      error: refusal("www.barred.test"),
+      renderedWith: "chromium",
+      networkIdle: null,
+    });
+    expect(refusal("www.barred.test")).toBe(
+      "the browser went on to barred.test (www.barred.test), whose terms bar copying (ruling 6.10 row 21 (d)); not stored: list that page by its own URL, so the copying-barred route keeps it out of the tree",
+    );
+    const moved = fakeBrowser({ [ENTRY.url]: { html: RENDERED, navigatesDuringIdle: "https://sub.barred.test/x" } });
+    expect(await renderWithBrowser(ENTRY, { browser: moved.browser, copyingBarred: BARRED })).toMatchObject({ bytes: null, error: refusal("sub.barred.test") });
+  });
+
+  it("stores the page when the listed URL is on the barred site itself (the route takes it), or when no barred list is given", async () => {
+    const own = { ...ENTRY, url: "https://barred.test/old" };
+    const within = fakeBrowser({ [own.url]: { html: RENDERED, responseUrl: "https://www.barred.test/terms", redirectedFrom: [own.url] } });
+    expect(await renderWithBrowser(own, { browser: within.browser, copyingBarred: BARRED })).toMatchObject({ error: null, bytes: Buffer.from(RENDERED) });
+    const plain = fakeBrowser({ [ENTRY.url]: { html: RENDERED, responseUrl: "https://www.barred.test/terms", redirectedFrom: [ENTRY.url] } });
+    expect(await renderWithBrowser(ENTRY, { browser: plain.browser })).toMatchObject({ error: null, bytes: Buffer.from(RENDERED) });
+  });
+
+  it("main hands the run's copying-barred sites to the browser: the tree gets a failure meta, and no body or text", async () => {
+    const out = tmpOut();
+    const stdout = captureStdout();
+    stubNoRobots();
+    try {
+      const fake = fakeBrowser({ [ENTRY.url]: { html: RENDERED, responseUrl: "https://www.barred.test/terms", redirectedFrom: [ENTRY.url] } });
+      const list = writeList(out, [`${ENTRY.url}\t${ENTRY.slug}\tjs`]);
+      expect(await main(["--list", list, "--out", out], {}, { launchBrowser: fake.launchBrowser, copyingBarred: BARRED, delayMs: 0 })).toBe(0);
+    } finally {
+      stdout.restore();
+      vi.unstubAllGlobals();
+    }
+    expect(readdirSync(out).sort()).toEqual([`${ENTRY.slug}.meta.json`, "urls.txt"]);
+    expect(JSON.parse(readFileSync(join(out, `${ENTRY.slug}.meta.json`), "utf8"))).toMatchObject({ url: ENTRY.url, sha256: null, bodyPath: null, error: refusal("www.barred.test") });
   });
 });

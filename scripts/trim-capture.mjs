@@ -27,10 +27,12 @@
  * `<slug>.json:62192`; 12 bodies on 6.10) is kept the way the .txt is (same line count, the cited lines and their context
  * only), because the ruling also says the trim "refuses to blank a cited line"; the remainder is a quotation of a few
  * lines with the source named, which decision 4(4) reads as permitted. A binary body (.pdf, .bin) cited by line is a
- * refusal. Bytes removed are the full files' bytes minus what stays. A cited range longer than half its file is kept
- * (the ruling keeps every cited line) and printed as "wide": on 6.10 one, `indiebook.md:108`'s "txt in full (body
- * :29-269)", which names what was read rather than quoting it and keeps 245 of indiebook-terms.txt's 298 lines; whether
- * such a range is a citation is the decider's, not this script's.
+ * refusal. Bytes removed are the full files' bytes minus what stays; the dry run gives, per kept file, the bytes kept
+ * of its text (newlines not counted) and the share. A cited range longer than WIDE_LINES (20) lines is printed as
+ * "wide" with the line that cites it: the ruling's amendment 1 (5)(iii) holds that such a range "is a statement that
+ * the text was read ... not a quotation" and keeps nothing, and leaves that rule to the next build: this pass keeps it,
+ * the amendment's stated interim (on 6.10, `indiebook.md:108`'s "txt in full (body :29-269)", 245 of
+ * indiebook-terms.txt's 298 lines).
  *
  * WHICH LINES ARE CITED. freeze-capture.mjs's own scanner (findCitations over decisionFiles: research/** notes and JSON,
  * docs/, product READMEs, licences, configs and release reports; not logs/, not code), every form it reads, of every
@@ -66,12 +68,17 @@
  * Refused (exit 1, nothing written, for the whole run): a capture of a barred site whose verdict entry has no copying
  * field; a named capture as above; a trim that would blank a cited line (checked line by line after trimming); a binary
  * body cited by line; a capture whose files have uncommitted changes (the block names the commit that holds the full
- * bytes); a trimmed capture cited by the scanner at a line its trim emptied, or whose files no longer match its block;
- * a meta that is not JSON or names no url. A reference the scanner gives a capture past the end of its file, or to a
+ * bytes); a trimmed capture whose files no longer match its block; a meta that is not JSON or names no url.
+ * Refused for that capture alone (exit 4, the rest of the run goes on and, with --apply, is written): a capture already
+ * trimmed that the scanner cites at a line its trim emptied. This script never writes a trimmed capture again, so
+ * holding the other captures back would protect nothing. The remedy it prints depends on where the full bytes are: a
+ * commit (freeze the capture from it and trim that copy), or nowhere in git (render-watch's route: no line of such a
+ * capture can come back to the tree, so the citation is quoted without a line of it, or dropped). A reference the
+ * scanner gives a capture past the end of its file, or to a
  * file of it that is not in the tree, blanks nothing (it reads as another file's line: "The TikTok note ... (`:724`)"
  * after indiebook-terms.txt, which has 297 lines): it is printed as a note, not kept and not refused.
  * Exit 0: a dry run that would trim, or --apply that trimmed; 3: nothing to do (every capture of a barred site already
- * trimmed, or holding nothing); 1: a usage error or a refusal.
+ * trimmed, or holding nothing); 4: a capture refused alone (above), the rest done; 1: a usage error or a refusal.
  *
  * src/__tests__/revenue/trim-capture.test.ts runs it on fixture stores; research/rendered/README.md ("Trimmed copies")
  * says how a reader gets the full bytes back.
@@ -109,6 +116,8 @@ export const VERDICTS_REL = "research/channel-loop/terms-verdicts.json";
 export const RULING = "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))";
 /** Lines kept either side of a cited line. */
 export const CONTEXT = 2;
+/** A cited range longer than this is "wide": not a quotation (the ruling's amendment 1 (5)(iii)); said, kept this pass. */
+export const WIDE_LINES = 20;
 /** Bodies that are text and can keep a cited line in place; the others are binary. */
 export const TEXT_BODIES = new Set(["html", "json", "xml"]);
 export const HISTORY =
@@ -226,7 +235,7 @@ export function historyOf(root, slug) {
   if (status.stdout.trim()) {
     throw new Error(`${slug} has uncommitted changes (${status.stdout.trim().split("\n").join("; ")}): commit it first, so the trimmed block names the commit that holds the full bytes`);
   }
-  return git(["log", "-1", "--format=%h", "--", ...rels]).stdout.trim() || null;
+  return git(["log", "-1", "--format=%H", "--", ...rels]).stdout.trim() || null;
 }
 
 /**
@@ -251,10 +260,13 @@ const fmt = (n) => n.toLocaleString("en-US");
 const rangesText = (rs) => rs.map(([a, b]) => (a === b ? `${a}` : `${a}-${b}`)).join(", ");
 
 /**
- * Plan one capture of a barred site: { slug, state, writes, removes, meta, ... } where state is "trim", "already" or
- * "nothing". Throws an Error saying why on every refusal. files: diskFiles of the capture; cites: its citationsOf list.
+ * Plan one capture of a barred site: { slug, state, writes, removes, meta, ... } where state is "trim", "already",
+ * "nothing" or "refused" (a trimmed capture cited at a line its trim emptied: refused alone, `why` says why and what to
+ * do). Throws an Error saying why on every refusal of the run. files: diskFiles of the capture; cites: its citationsOf list.
+ * trimText is trimLines; a test hands in a faulty one to show that the guard against blanking a cited line holds even
+ * when the trim itself is wrong (with trimLines and keptRanges it never fires: they keep every cited line by construction).
  */
-export function planCapture({ slug, dir, files, cites, site, on, commit, captureCheck = null }) {
+export function planCapture({ slug, dir, files, cites, site, on, commit, captureCheck = null, trimText = trimLines }) {
   const metaText = files.get("meta.json").toString("utf8");
   const meta = JSON.parse(metaText);
   const body = [...files.keys()].find((ext) => ext !== "meta.json" && ext !== "txt") ?? null;
@@ -278,13 +290,22 @@ export function planCapture({ slug, dir, files, cites, site, on, commit, capture
     };
     // A reference past the end of the file (or to a file the capture never had) blanked nothing, as on the first run.
     const stray = (c) => c.ext !== "meta.json" && (linesOf(c.ext) == null || c.range[1] > linesOf(c.ext));
+    // Where the full bytes are: a commit (this script's trim; null in a store outside git), or nowhere in git
+    // (render-watch's route stored the capture: "never in the tree or in git history").
+    plan.committed = t.fullBytesIn == null || /^commit [0-9a-f]+\b/.test(String(t.fullBytesIn));
+    plan.remedy = plan.committed
+      ? `freeze the capture from the commit that holds the full bytes (${t.fullBytesIn ?? "git history"}) and trim that copy`
+      : `its full bytes were never committed (${t.fullBytesIn}), so no line of it can come back to the tree and no copy of it can be frozen: ` +
+        "quote it in the research file without a line of this capture (its URL, fetchedAt and sha256 name the version), or drop the citation";
     const blanked = resolved.filter((c) => c.how === "cited" && !stray(c) && !inside(c));
     if (blanked.length) {
+      // This capture alone: it is never written again here, so the rest of the run is not held back by it.
       const c = blanked[0];
-      throw new Error(
+      plan.state = "refused";
+      plan.why =
         `${slug} is trimmed (${t.on}) and ${c.by} cites ${c.ext}:${rangesText([c.range])}, which the trim emptied (${blanked.length} such citation(s)): ` +
-          `freeze the capture from the commit that holds the full bytes (${t.fullBytesIn ?? "git history"}) and trim that copy, or cite a kept line`,
-      );
+        `${plan.remedy}${plan.committed ? ", or cite a kept line" : ""}`;
+      return plan;
     }
     plan.state = "already";
     plan.late = resolved.filter((c) => c.how !== "cited" && !stray(c) && !inside(c));
@@ -324,7 +345,8 @@ export function planCapture({ slug, dir, files, cites, site, on, commit, capture
     const cited = byExt(ext).filter((c) => c.range[0] <= n);
     if (!isText && cited.length && !TEXT_BODIES.has(ext)) throw new Error(`${cited[0].by} cites ${slug}.${ext}:${rangesText([cited[0].range])}, a binary body: it cannot be kept by line`);
     const kept = keptRanges(cited.map((c) => c.range), n);
-    plan.kept[ext] = { kept, lines: n, cited };
+    // The text's bytes, newlines not counted (a trimmed file keeps every newline): of the full file, and kept.
+    plan.kept[ext] = { kept, lines: n, cited, textBytes: bytes.length - (n - 1), keptBytes: 0 };
     const record = { sha256: sha256(bytes), byteLength: bytes.length, lineCount: n, keptLines: kept };
     if (isText) {
       Object.assign(trimmed, { keptLines: kept, fullSha256: record.sha256, fullByteLength: record.byteLength, lineCount: n });
@@ -332,7 +354,7 @@ export function planCapture({ slug, dir, files, cites, site, on, commit, capture
       trimmed.body = { path: `${RENDERED_REL}/${slug}.${ext}`, ...record, inTree: kept.length > 0 };
     }
     if (isText || kept.length) {
-      const out = Buffer.from(trimLines(bytes.toString("utf8"), kept), "utf8");
+      const out = Buffer.from(trimText(bytes.toString("utf8"), kept), "utf8");
       if (lineCountOf(out) !== n) throw new Error(`${slug}.${ext}: the trimmed text would not keep its ${n} lines`);
       // Refuses to blank a cited line (4(5)): every cited line reads in the trimmed text as it did in the full one.
       const before = bytes.toString("utf8").split("\n");
@@ -341,6 +363,7 @@ export function planCapture({ slug, dir, files, cites, site, on, commit, capture
       if (lost) throw new Error(`${slug}.${ext}: the trim would blank ${lost.ext}:${rangesText([lost.range])}, which ${lost.by} cites`);
       plan.writes.push({ ext, path: join(dir, `${slug}.${ext}`), bytes: out });
       plan.removed += bytes.length - out.length;
+      plan.kept[ext].keptBytes = out.length - (n - 1);
     } else {
       plan.removes.push({ ext, path: join(dir, `${slug}.${ext}`) });
       plan.removed += bytes.length;
@@ -454,8 +477,14 @@ export function trimStore({ root = REPO_ROOT, slugs: named = [], apply = false, 
   }
 
   const manifest = existsSync(join(dir, MANIFEST)) ? manifestSlugs(readManifest(dir)) : new Set();
-  const totals = { trim: 0, frozen: 0, live: 0, already: 0, nothing: 0, bodiesRemoved: 0, bodiesKept: 0, bodyBytes: 0, texts: 0, bytes: 0, recorded: 0, citations: 0 };
+  const totals = { trim: 0, frozen: 0, live: 0, already: 0, nothing: 0, refused: 0, bodiesRemoved: 0, bodiesKept: 0, bodyBytes: 0, texts: 0, bytes: 0, recorded: 0, citations: 0, textBytes: 0, keptBytes: 0 };
+  const share = (kept, all) => `${fmt(kept)} of ${fmt(all)} bytes, ${all ? ((100 * kept) / all).toFixed(1) : "0.0"}%`;
   for (const p of plans) {
+    if (p.state === "refused") {
+      totals.refused += 1;
+      log(`REFUSED ${p.slug} (this capture alone; nothing of it is written, the run goes on): ${p.why}`);
+      continue;
+    }
     if (p.state === "nothing") {
       totals.nothing += 1;
       log(`nothing to trim: ${p.slug} (${p.site}): ${p.why}`);
@@ -464,7 +493,7 @@ export function trimStore({ root = REPO_ROOT, slugs: named = [], apply = false, 
     if (p.state === "already") {
       totals.already += 1;
       log(`already trimmed: ${p.slug} (${p.site}, ${p.meta.trimmed.on})`);
-      for (const c of p.late) log(`  note: ${c.by} names ${p.slug} beside ${c.ext}:${rangesText([c.range])}, which the trim emptied; if that is this capture's line, freeze the capture from ${p.meta.trimmed.fullBytesIn ?? "git history"} and trim the copy`);
+      for (const c of p.late) log(`  note: ${c.by} names ${p.slug} beside ${c.ext}:${rangesText([c.range])}, which the trim emptied; if that is this capture's line, ${p.remedy}`);
       continue;
     }
     totals.trim += 1;
@@ -476,7 +505,7 @@ export function trimStore({ root = REPO_ROOT, slugs: named = [], apply = false, 
       const key = `${c.ext}:${rangesText([c.range])}`;
       byRange.set(key, [...(byRange.get(key) ?? []), `${c.by}${c.how === "cited" ? "" : " (on its line)"}`]);
     }
-    totals.citations += p.cites.length;
+    totals.citations += byRange.size;
     for (const c of p.stray) log(`  note: ${c.by} gives ${p.slug} ${c.ext}:${rangesText([c.range])}, which it does not have (${c.ext === "txt" || p.kept[c.ext] ? "past the end" : "no such file"}): another file's line, nothing to keep`);
     if (!byRange.size) log("  cited: no line (nothing kept but the line count)");
     for (const [key, by] of [...byRange].sort()) log(`  cited ${key} by ${[...new Set(by)].join(", ")}`);
@@ -490,10 +519,21 @@ export function trimStore({ root = REPO_ROOT, slugs: named = [], apply = false, 
       } else {
         if (ext === "txt") totals.texts += 1;
         else totals.bodiesKept += 1;
-        log(`  ${ext}: keep ${k.kept.length ? rangesText(k.kept) : "no line"} (${fmt(keptN)} of ${fmt(k.lines)} lines)`);
-        // Said, not decided: a range that names what was read ("txt in full (body :29-269)") keeps most of the page.
-        for (const c of k.cited.filter((x) => x.how === "cited" && x.range[1] - x.range[0] + 1 > k.lines / 2)) {
-          log(`  wide: ${ext}:${rangesText([c.range])} (${c.by}) is more than half the file; kept, as the ruling keeps every cited line`);
+        totals.textBytes += k.textBytes;
+        totals.keptBytes += k.keptBytes;
+        log(`  ${ext}: keep ${k.kept.length ? rangesText(k.kept) : "no line"} (${fmt(keptN)} of ${fmt(k.lines)} lines; ${share(k.keptBytes, k.textBytes)})`);
+        // Said, not decided here: a range that names what was read ("txt in full (body :29-269)") keeps most of the page.
+        // Once per citing line and range: the scanner's reading first, a range found again "on its line" not repeated.
+        const wide = new Map();
+        for (const c of k.cited.filter((x) => x.range[1] - x.range[0] + 1 > WIDE_LINES)) {
+          const key = `${c.by} ${rangesText([c.range])}`;
+          if (!wide.has(key) || c.how === "cited") wide.set(key, c);
+        }
+        for (const c of wide.values()) {
+          log(
+            `  wide: ${ext}:${rangesText([c.range])} (${c.by}${c.how === "cited" ? "" : ", on its line"}) is longer than ${WIDE_LINES} lines: ` +
+              "kept in this pass, the stated interim of RULING-2026-10-06-robots-and-terms.md amendment 1 (5)(iii), whose rule (such a range is not a quotation and keeps nothing) the next build adds",
+          );
         }
       }
     }
@@ -510,14 +550,16 @@ export function trimStore({ root = REPO_ROOT, slugs: named = [], apply = false, 
   const noEntry = [...notReached["no-entry"]].sort().map(([s, n]) => `${s} ${n}`);
   log(
     `totals: ${plans.length} capture(s) of ${sitesBarred.size} copying-barred site(s): ${totals.trim} ${apply ? "trimmed" : "would be trimmed"} ` +
-      `(${totals.frozen} frozen, ${totals.live} live), ${totals.already} already trimmed, ${totals.nothing} with nothing in the tree; ` +
+      `(${totals.frozen} frozen, ${totals.live} live), ${totals.already} already trimmed, ${totals.nothing} with nothing in the tree, ${totals.refused} refused alone; ` +
       `bodies: ${totals.bodiesRemoved} ${apply ? "removed" : "would be removed"}, ${totals.bodiesKept} kept trimmed (cited by line); ` +
       `texts: ${totals.texts} trimmed; ${fmt(totals.bytes)} bytes ${apply ? "removed" : "would be removed"}; ` +
-      `${totals.citations} citation(s) kept; ${MANIFEST}: ${totals.recorded} frozen cop${totals.recorded === 1 ? "y's" : "ies'"} lines ${apply ? "rewritten" : "would be rewritten"}`,
+      `text kept in the trimmed files: ${share(totals.keptBytes, totals.textBytes)}; ` +
+      `${totals.citations} cited range(s) kept; ${MANIFEST}: ${totals.recorded} frozen cop${totals.recorded === 1 ? "y's" : "ies'"} lines ${apply ? "rewritten" : "would be rewritten"}`,
   );
   if (!named.length) {
     log(`not reached: ${notReached.allowed} capture(s) of copying-allowed sites, ${notReached.unread} of unread sites, ${[...notReached["no-entry"].values()].reduce((a, b) => a + b, 0)} of ${noEntry.length} site(s) with no verdict entry${noEntry.length ? ` (${noEntry.join(", ")})` : ""}`);
   }
+  if (totals.refused) return 4;
   return totals.trim ? 0 : 3;
 }
 

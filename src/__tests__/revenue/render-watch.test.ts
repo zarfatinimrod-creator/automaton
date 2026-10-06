@@ -10,8 +10,10 @@ import {
   buildMeta,
   copyingBarredSite,
   copyingBarredSites,
+  copyingRedirectError,
   COPYING_RULING,
   emptiedLines,
+  fetchOne,
   readCopyingBarred,
   decodeEntities,
   describePdfTextError,
@@ -2142,6 +2144,40 @@ describe("storeCapture and main — a copying-barred site's page goes to the art
     expect(meta.textPath).toBe("research/rendered/bar-terms.txt");
   });
 
+  it("keeps the trimmed block through a failed fetch (a non-2xx, a timeout: no bytes), and a later success writes a fresh one", async () => {
+    const out = tmpOut();
+    const art = tmpOut();
+    await store(out, art);
+    const routed = JSON.parse(readFileSync(join(out, "bar-terms.meta.json"), "utf8"));
+    const txt = readFileSync(join(out, "bar-terms.txt"));
+    const artifact = snapshot(art);
+    const failure = (error: string, status: number | null) => ({ status, contentType: status ? "text/html" : null, bytes: null, truncated: false, error });
+    // The site still barred, then (a verdict changed) no longer: a failed fetch writes no file either way, so the block stays.
+    for (const [copying, error, status] of [
+      ["barred.test", "HTTP 503 Service Unavailable", 503],
+      [null, "timeout after 30000ms (AbortError: This operation was aborted)", null],
+    ] as const) {
+      const { meta } = await storeCapture(ENTRY, failure(error, status), { outDir: out, now: () => T1, copying, artifactDir: art, artifact: ARTIFACT });
+      expect(meta.changed, error).toBe(true);
+      const tree = JSON.parse(readFileSync(join(out, "bar-terms.meta.json"), "utf8"));
+      expect(tree, error).toMatchObject({ error, status, sha256: null, bodyPath: null });
+      expect(tree.trimmed, error).toEqual(routed.trimmed);
+      expect(Object.keys(tree).at(-1)).toBe("trimmed");
+      expect(readdirSync(out).sort()).toEqual(["bar-terms.meta.json", "bar-terms.txt"]);
+      expect(readFileSync(join(out, "bar-terms.txt"))).toEqual(txt);
+      expect(snapshot(art)).toEqual(artifact);
+    }
+    // The page back: the route stores it again, with a block of its own.
+    const back = await store(out, art, html, "2026-10-20T05:00:00.000Z");
+    expect(back.meta.changed).toBe(true);
+    expect(back.meta.trimmed).toMatchObject({ on: "2026-10-20", fullSha256: routed.trimmed.fullSha256, body: { sha256: routed.trimmed.body.sha256 } });
+    // A plain page's failed fetch gains no block.
+    const plainOut = tmpOut();
+    await storeCapture(ENTRY, result(html), { outDir: plainOut, now: () => T0 });
+    await storeCapture(ENTRY, failure("HTTP 503", 503), { outDir: plainOut, now: () => T1 });
+    expect(JSON.parse(readFileSync(join(plainOut, "bar-terms.meta.json"), "utf8")).trimmed).toBeUndefined();
+  });
+
   it("stores a failed fetch of a barred site as any failed fetch: a meta, and nothing in the artifact", async () => {
     const out = tmpOut();
     const art = tmpOut();
@@ -2149,6 +2185,55 @@ describe("storeCapture and main — a copying-barred site's page goes to the art
     expect(readdirSync(out)).toEqual(["bar-terms.meta.json"]);
     expect(readdirSync(art)).toEqual([]);
     expect(JSON.parse(readFileSync(join(out, "bar-terms.meta.json"), "utf8")).trimmed).toBeUndefined();
+  });
+
+  it("fetchOne: a redirect from a URL not on a copying-barred site to one that is is refused before it is requested; one inside a barred site is followed", async () => {
+    const calls: string[] = [];
+    const fetchImpl = async (url: string) => {
+      calls.push(url);
+      if (url === "https://go.open.test/x") return new Response(null, { status: 301, headers: { location: "https://WWW.Barred.test/terms" } });
+      if (url === "https://barred.test/old") return new Response(null, { status: 302, headers: { location: "/terms" } });
+      return new Response(html, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+    };
+    const into = await fetchOne({ url: "https://go.open.test/x", slug: "redir-page", lineNumber: 1 }, { fetchImpl, copyingBarred: ["barred.test"] });
+    expect(into).toEqual({ status: 301, contentType: null, bytes: null, truncated: false, error: copyingRedirectError("barred.test", "www.barred.test") });
+    expect(into.error).toBe(
+      "redirected to barred.test (www.barred.test), whose terms bar copying (ruling 6.10 row 21 (d)); not followed: list that page by its own URL, so the copying-barred route keeps it out of the tree",
+    );
+    expect(calls).toEqual(["https://go.open.test/x"]);
+    // Within the barred site: followed (the route takes the page by its listed URL).
+    calls.length = 0;
+    const within = await fetchOne({ url: "https://barred.test/old", slug: "bar-old", lineNumber: 1 }, { fetchImpl, copyingBarred: ["barred.test"] });
+    expect(within.bytes?.toString("utf8")).toBe(html);
+    expect(calls).toEqual(["https://barred.test/old", "https://barred.test/terms"]);
+    // No barred list (the default): followed, as before.
+    const none = await fetchOne({ url: "https://go.open.test/x", slug: "redir-page", lineNumber: 1 }, { fetchImpl });
+    expect(none.bytes?.toString("utf8")).toBe(html);
+  });
+
+  it("main: a page redirected into a copying-barred site lands nowhere in full: a failure meta in the tree, nothing in the artifact", async () => {
+    const out = tmpOut();
+    const art = join(tmpOut(), "barred");
+    const fetched: string[] = [];
+    vi.stubGlobal("fetch", async (url: string) => {
+      fetched.push(String(url));
+      if (new URL(String(url)).pathname === "/robots.txt") return new Response(null, { status: 404 });
+      if (String(url) === "https://go.open.test/x") return new Response(null, { status: 301, headers: { location: "https://www.barred.test/terms" } });
+      return new Response(html, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+    });
+    const stdout = captureStdout();
+    try {
+      const list = writeList(out, "https://go.open.test/x\tredir-page");
+      expect(await main(["--list", list, "--out", out], { RENDER_WATCH_ARTIFACT_DIR: art }, { copyingBarred: ["barred.test"], delayMs: 0 })).toBe(0);
+    } finally {
+      stdout.restore();
+      vi.unstubAllGlobals();
+    }
+    expect(readdirSync(out).sort()).toEqual(["redir-page.meta.json", "urls.txt"]);
+    expect(existsSync(art) ? readdirSync(art) : []).toEqual([]);
+    const meta = JSON.parse(readFileSync(join(out, "redir-page.meta.json"), "utf8"));
+    expect(meta).toMatchObject({ url: "https://go.open.test/x", status: 301, sha256: null, bodyPath: null, error: copyingRedirectError("barred.test", "www.barred.test") });
+    expect(fetched).not.toContain("https://www.barred.test/terms");
   });
 
   it("main: a barred site's page goes to RENDER_WATCH_ARTIFACT_DIR under RENDER_WATCH_ARTIFACT_NAME and the run's id, beside an ordinary page stored as always, and barred=1 goes to the workflow", async () => {

@@ -12,9 +12,11 @@ import {
   fullSha256Of,
   keptRanges,
   main,
+  planCapture,
   RULING,
   trimLines,
   trimStore,
+  WIDE_LINES,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/trim-capture.mjs";
 import {
@@ -34,7 +36,7 @@ import { siteOf } from "../../../scripts/queue-zero-test.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { planRemask } from "../../../scripts/remask-captures.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
-import { copyingBarredSite, readCopyingBarred, routeTrimmed } from "../../../scripts/render-watch.mjs";
+import { copyingBarredSite, readCopyingBarred, routeTrimmed, storeCapture } from "../../../scripts/render-watch.mjs";
 
 /**
  * scripts/trim-capture.mjs (tick 56, 6.10.2026): research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4
@@ -136,6 +138,14 @@ function snapshot(root: string): string[] {
   return out;
 }
 
+/** "k of n bytes, p%": the text bytes (newlines not counted) of the given 1-based lines of a text, as the dry run prints them. */
+function keptShare(text: string, keep: Array<[number, number]>): string {
+  const lines = text.split("\n");
+  const all = lines.reduce((n, l) => n + Buffer.byteLength(l), 0);
+  const kept = lines.reduce((n, l, i) => n + (keep.some(([a, b]) => i + 1 >= a && i + 1 <= b) ? Buffer.byteLength(l) : 0), 0);
+  return `${kept.toLocaleString("en-US")} of ${all.toLocaleString("en-US")} bytes, ${((100 * kept) / all).toFixed(1)}%`;
+}
+
 function run(root: string, options: Record<string, unknown> = {}) {
   const lines: string[] = [];
   const code = trimStore({ root, on: "2026-10-06", log: (l: string) => lines.push(l), ...options });
@@ -162,9 +172,10 @@ describe("keptRanges and trimLines", () => {
 
 describe("trim-capture on a fixture store", () => {
   it("a dry run lists each capture of the barred site with its cited lines and files, the lines kept and the bytes removed, and writes nothing", () => {
-    const { root } = makeStore("dry");
+    const { root, dir } = makeStore("dry");
     const before = snapshot(root);
     const { code, out } = run(root);
+    const fileText = (f: string) => readFileSync(join(dir, f), "utf8");
     expect(code).toBe(0);
     expect(snapshot(root)).toEqual(before);
     expect(out).toContain("would trim bar-live (barred.test, copying barred; live)");
@@ -174,10 +185,22 @@ describe("trim-capture on a fixture store", () => {
     // A bare :20 the scanner gives to "robots.txt" on a line naming the copy is kept anyway.
     expect(out).toContain("cited txt:20 by research/notes/n.md:3 (on its line)");
     expect(out).toContain("cited html:7 by research/notes/n.md:5 (on its line)");
-    expect(out).toContain("txt: keep 8-12, 18-22 (10 of 31 lines)");
-    expect(out).toContain("html: keep 3-9 (7 of 21 lines)");
+    expect(out).toContain(`txt: keep 8-12, 18-22 (10 of 31 lines; ${keptShare(fileText("bar-live-2026-10-01.txt"), [[8, 12], [18, 22]])})`);
+    expect(out).toContain(`html: keep 3-9 (7 of 21 lines; ${keptShare(fileText("bar-live-2026-10-01.html"), [[3, 9]])})`);
+    expect(out).toContain("txt: keep no line (0 of 31 lines; 0 of ");
     expect(out).toMatch(/html: removed from the tree \(\d+ bytes, 21 lines; sha256 [0-9a-f]{12} in the meta\)/);
-    expect(out).toContain("json: keep 2-6 (5 of 11 lines)");
+    expect(out).toContain(`json: keep 2-6 (5 of 11 lines; ${keptShare(fileText("bar-json.json"), [[2, 6]])})`);
+    // The totals: every trimmed file's text and what of it is kept; each cited range of a capture once.
+    const all = ["bar-live-2026-10-01.txt", "bar-live-2026-10-01.html", "bar-live.txt", "bar-json.json"];
+    const textBytes = all.reduce((n, f) => n + fileText(f).split("\n").reduce((m, l) => m + Buffer.byteLength(l), 0), 0);
+    const keptBytes = [
+      ["bar-live-2026-10-01.txt", [[8, 12], [18, 22]]],
+      ["bar-live-2026-10-01.html", [[3, 9]]],
+      ["bar-json.json", [[2, 6]]],
+    ].reduce((n, [f, keep]) => n + fileText(f as string).split("\n").reduce((m, l, i) => m + ((keep as number[][]).some(([a, b]) => i + 1 >= a && i + 1 <= b) ? Buffer.byteLength(l) : 0), 0), 0);
+    expect(out).toContain(`text kept in the trimmed files: ${keptBytes.toLocaleString("en-US")} of ${textBytes.toLocaleString("en-US")} bytes, ${((100 * keptBytes) / textBytes).toFixed(1)}%;`);
+    expect(out).toContain("; 5 cited range(s) kept;");
+    expect(out).not.toContain("wide:");
     expect(out).toContain("nothing to trim: bar-403 (barred.test): no body and no text in the tree (status 403)");
     expect(out).toMatch(/totals: 4 capture\(s\) of 1 copying-barred site\(s\): 3 would be trimmed \(1 frozen, 2 live\), 0 already trimmed, 1 with nothing in the tree/);
     expect(out).toMatch(/not reached: 1 capture\(s\) of copying-allowed sites, 1 of unread sites, 1 of 1 site\(s\) with no verdict entry \(nowhere\.test 1\)/);
@@ -294,13 +317,27 @@ describe("trim-capture on a fixture store", () => {
     expect(copyingOf("x.test", sites)).toEqual({ site: "x.test", state: "no-entry" });
   });
 
-  it("refuses a trimmed capture cited later at a line its trim emptied, and one whose files no longer match its block", () => {
+  it("refuses, alone, a trimmed capture cited later at a line its trim emptied (the rest of the run goes on, exit 4), and refuses the run for one whose files no longer match its block", () => {
     const { root, dir } = makeStore("late");
     expect(run(root, { apply: true }).code).toBe(0);
     writeFileSync(join(root, "research/notes/n.md"), `${NOTE}A later line: research/rendered/bar-live-2026-10-01.txt:25\n`);
+    // A capture of the barred site that arrived after the first run: trimmed in the same run as the refusal.
+    const h = htmlOf(6);
+    writeFileSync(join(dir, "bar-new.meta.json"), metaText(baseMeta("bar-new", "https://www.barred.test/new", "html", h)));
+    writeFileSync(join(dir, "bar-new.html"), h);
+    writeFileSync(join(dir, "bar-new.txt"), textOf(8, "new"));
+    const copyBefore = snapshot(join(dir)).filter((l) => l.startsWith("/bar-live-2026-10-01."));
     const late = run(root, { apply: true });
-    expect(late.code).toBe(1);
-    expect(late.out).toContain("bar-live-2026-10-01 is trimmed (2026-10-06) and research/notes/n.md:7 cites txt:25, which the trim emptied");
+    expect(late.code).toBe(4);
+    expect(late.out).toContain(
+      "REFUSED bar-live-2026-10-01 (this capture alone; nothing of it is written, the run goes on): bar-live-2026-10-01 is trimmed (2026-10-06) and research/notes/n.md:7 cites txt:25, which the trim emptied (1 such citation(s)): " +
+        "freeze the capture from the commit that holds the full bytes (git history) and trim that copy, or cite a kept line",
+    );
+    expect(late.out).toContain("trimmed bar-new (barred.test, copying barred; live)");
+    expect(late.out).toMatch(/1 trimmed \(0 frozen, 1 live\), 2 already trimmed, 1 with nothing in the tree, 1 refused alone;/);
+    expect(existsSync(join(dir, "bar-new.html"))).toBe(false);
+    expect(snapshot(join(dir)).filter((l) => l.startsWith("/bar-live-2026-10-01."))).toEqual(copyBefore);
+    expect(run(root).code).toBe(4);
     writeFileSync(join(root, "research/notes/n.md"), NOTE);
     writeFileSync(join(dir, "bar-live.html"), "<html>back</html>\n");
     const back = run(root);
@@ -326,13 +363,81 @@ describe("trim-capture on a fixture store", () => {
     expect(ok.out).toContain("note: research/notes/n.md:8 gives bar-live-2026-10-01 txt:99, which it does not have (past the end)");
   });
 
+  it("prints a cited range longer than WIDE_LINES lines as wide, with its citing line, and keeps it in this pass (amendment 1 (5)(iii)'s interim)", () => {
+    expect(WIDE_LINES).toBe(20);
+    const note =
+      // "in full (body :2-22)" as indiebook.md:108 has it: the scanner's citation and a bare :N on its line, printed once.
+      `${NOTE}Read research/rendered/bar-live-2026-10-01.txt in full (body :2-22), and a quotation (research/rendered/bar-live-2026-10-01.txt:25-27).\n` +
+      "Twenty lines (research/rendered/bar-live-2026-10-01.html:2-21).\nThe quotation again (research/rendered/bar-live-2026-10-01.txt:25-27).\n";
+    const { root, dir } = makeStore("wide", { note });
+    const full = readFileSync(join(dir, "bar-live-2026-10-01.txt"), "utf8");
+    const r = run(root, { apply: true });
+    expect(r.code).toBe(0);
+    expect(r.out).toContain(
+      "wide: txt:2-22 (research/notes/n.md:7) is longer than 20 lines: kept in this pass, the stated interim of RULING-2026-10-06-robots-and-terms.md amendment 1 (5)(iii), whose rule (such a range is not a quotation and keeps nothing) the next build adds",
+    );
+    expect(r.out.match(/wide:/g)).toHaveLength(1);
+    // Each cited range of a capture once, however many lines cite it (txt:25-27 twice): 7 of the copy, 1 of bar-json.
+    expect(r.out).toContain("; 8 cited range(s) kept;");
+    expect(r.out).toContain(`txt: keep 1-29 (29 of 31 lines; ${keptShare(full, [[1, 29]])})`);
+    expect(readFileSync(join(dir, "bar-live-2026-10-01.txt"), "utf8").split("\n").slice(0, 29)).toEqual(full.split("\n").slice(0, 29));
+  });
+
+  it("render-watch's route meets the trim: a failed fetch keeps the capture trimmed, and a citation of a line the tree never held is refused alone, with a remedy that can be followed", async () => {
+    const { root, dir } = makeStore("route");
+    const art = join(root, "artifact");
+    const entry = { url: "https://www.barred.test/route", slug: "bar-route", lineNumber: 1 };
+    const page = `<html><body>${Array.from({ length: 6 }, (_, i) => `<p>${MARK} route ${i + 1}</p>`).join("")}</body></html>`;
+    const options = { outDir: dir, copying: "barred.test", artifactDir: art, artifact: { name: "render-watch-barred-5-1", run: "5" } };
+    await storeCapture(entry, { status: 200, contentType: "text/html", bytes: Buffer.from(page), truncated: false, error: null }, { ...options, now: () => "2026-10-13T05:00:00.000Z" });
+    await storeCapture(entry, { status: 503, contentType: "text/html", bytes: null, truncated: false, error: "HTTP 503" }, { ...options, now: () => "2026-10-20T05:00:00.000Z" });
+    const routed = JSON.parse(readFileSync(join(dir, "bar-route.meta.json"), "utf8"));
+    expect(routed).toMatchObject({ status: 503, sha256: null, trimmed: { on: "2026-10-13", fullSha256: sha(readFileSync(join(art, "bar-route.txt"))) } });
+    const dry = run(root);
+    expect(dry.code).toBe(0);
+    expect(dry.out).toContain("already trimmed: bar-route (barred.test, 2026-10-13)");
+    expect(dry.out).not.toContain("would trim bar-route");
+    // A note cites a line of it: refused alone, the rest of the store trimmed in the same run.
+    writeFileSync(join(root, "research/notes/n.md"), `${NOTE}The route page (research/rendered/bar-route.txt:3).\n`);
+    const cited = run(root, { apply: true });
+    expect(cited.code).toBe(4);
+    expect(cited.out).toContain(
+      "REFUSED bar-route (this capture alone; nothing of it is written, the run goes on): bar-route is trimmed (2026-10-13) and research/notes/n.md:7 cites txt:3, which the trim emptied (1 such citation(s)): " +
+        "its full bytes were never committed (workflow artifact render-watch-barred-5-1 (run 5): bar-route.meta.json, bar-route.html, bar-route.txt, kept 90 days; never in the tree or in git history), " +
+        "so no line of it can come back to the tree and no copy of it can be frozen: quote it in the research file without a line of this capture (its URL, fetchedAt and sha256 name the version), or drop the citation",
+    );
+    expect(cited.out).toMatch(/3 trimmed \(1 frozen, 2 live\), 0 already trimmed, 1 with nothing in the tree, 1 refused alone;/);
+    expect(existsSync(join(dir, "bar-live.html"))).toBe(false);
+    expect(cited.out).not.toContain(MARK);
+    // freeze-capture says the same: there is no full capture to freeze.
+    expect(() => planFreeze({ slug: "bar-route", files: diskFiles("bar-route", dir), dir, urlsText: "", on: "2026-10-20" })).toThrow(
+      /bar-route is trimmed \(2026-10-13, ruling 6\.10 row 21 \(d\)\).* Its full bytes were never committed \(workflow artifact render-watch-barred-5-1 .*\): no copy of it can be frozen and no line of it cited/,
+    );
+  });
+
+  it("refuses to blank a cited line even when the trim itself is wrong (decision 4(5)): the guard checks every cited line after trimming", () => {
+    const { root, dir } = makeStore("guard");
+    const urls = readFileSync(join(dir, "urls.txt"), "utf8");
+    const slug = "bar-live-2026-10-01";
+    const cites = citationsOf({ root, slugs: [slug], urlsText: urls }).get(slug);
+    const args = { slug, dir, files: diskFiles(slug, dir), cites, site: "barred.test", on: "2026-10-06", commit: null };
+    expect(planCapture(args).state).toBe("trim");
+    // A trim that keeps the line count but empties every line (as a wrong keptRanges would): refused, naming the line.
+    expect(() => planCapture({ ...args, trimText: (text: string) => trimLines(text, []) })).toThrow(
+      `${slug}.txt: the trim would blank txt:10, which research/notes/n.md:2 cites`,
+    );
+    // One that drops a line instead is refused before that, for the line count.
+    expect(() => planCapture({ ...args, trimText: (text: string) => text.split("\n").slice(1).join("\n") })).toThrow(`${slug}.txt: the trimmed text would not keep its 31 lines`);
+  });
+
   it("in a git repository, names the commit that holds the full bytes, and refuses a capture with uncommitted changes", () => {
     const { root, dir } = makeStore("git");
     const git = (...args: string[]) => spawnSync("git", ["-c", "user.name=t", "-c", `user.email=${["t", "example.invalid"].join("@")}`, "-c", "commit.gpgsign=false", ...args], { cwd: root, encoding: "utf8" });
     expect(git("init", "-q").status).toBe(0);
     expect(git("add", "-A").status).toBe(0);
     expect(git("commit", "-q", "-m", "fixture").status).toBe(0);
-    const head = git("log", "-1", "--format=%h").stdout.trim();
+    const head = git("log", "-1", "--format=%H").stdout.trim();
+    expect(head).toMatch(/^[0-9a-f]{40}$/);
     writeFileSync(join(dir, "bar-json.json"), "changed\n");
     const dirty = run(root, { apply: true });
     expect(dirty.code).toBe(1);
@@ -371,7 +476,9 @@ describe("the readers of a trimmed capture understand it", () => {
   });
 
   it("freeze-capture refuses to freeze a trimmed capture, and --cited's existingCopy takes the trimmed copy for the full version", () => {
-    expect(() => planFreeze({ slug: "bar-live", files: diskFiles("bar-live", dir), dir, urlsText: "", on: "2026-10-06" })).toThrow(/bar-live is trimmed \(2026-10-06, ruling 6\.10 row 21 \(d\)\)/);
+    expect(() => planFreeze({ slug: "bar-live", files: diskFiles("bar-live", dir), dir, urlsText: "", on: "2026-10-06" })).toThrow(
+      /bar-live is trimmed \(2026-10-06, ruling 6\.10 row 21 \(d\)\).* Freeze the full capture \(its full bytes: git history; --from-commit for a commit\)/,
+    );
     expect(existingCopy(dir, "bar-live", full)).toBe("bar-live-2026-10-01");
     // The same version with one byte changed is another version.
     const other = new Map(full);

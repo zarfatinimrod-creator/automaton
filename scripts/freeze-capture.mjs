@@ -381,8 +381,11 @@ export function planFreeze({ slug, files, dir, urlsText, date, on, commit = null
   if (meta.trimmed) {
     throw new Error(
       `${slug} is trimmed (${meta.trimmed.on}, ruling 6.10 row 21 (d)): the tree keeps only its cited lines, and a copy would ` +
-        `freeze emptied lines as if read. Freeze the full capture (its full bytes: ${meta.trimmed.fullBytesIn ?? "git history"}; ` +
-        "--from-commit for a commit), then run scripts/trim-capture.mjs on the copy",
+        "freeze emptied lines as if read. " +
+        // render-watch's route keeps the full bytes out of git altogether: there is no full capture to freeze.
+        (meta.trimmed.fullBytesIn == null || /^commit [0-9a-f]+\b/.test(String(meta.trimmed.fullBytesIn))
+          ? `Freeze the full capture (its full bytes: ${meta.trimmed.fullBytesIn ?? "git history"}; --from-commit for a commit), then run scripts/trim-capture.mjs on the copy`
+          : `Its full bytes were never committed (${meta.trimmed.fullBytesIn}): no copy of it can be frozen and no line of it cited; quote it without a line of this capture`),
     );
   }
 

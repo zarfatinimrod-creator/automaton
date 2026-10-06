@@ -150,5 +150,93 @@
     "replace": "const blanked = resolved.filter((c) => c.how === \"cited\" && !inside(c));",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 56 sim-tree proof: a re-run refuses a trimmed capture over a reference past its end (indiebook-terms.txt:724 on the real store), so the trim is not idempotent"
+  },
+  {
+    "id": "T56-X1",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  if (totals.refused) return 4;",
+    "replace": "  if (false) return 4;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: a capture refused alone no longer changes the exit code (the run reads as done)"
+  },
+  {
+    "id": "T56-X2",
+    "file": "scripts/trim-capture.mjs",
+    "find": "plan.committed = t.fullBytesIn == null || /^commit [0-9a-f]+\\b/.test(String(t.fullBytesIn));",
+    "replace": "plan.committed = true;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: a route capture cited by line gets the freeze-from-a-commit remedy, which cannot be followed (review finding 3)"
+  },
+  {
+    "id": "T56-X3",
+    "file": "scripts/trim-capture.mjs",
+    "find": "      plan.state = \"refused\";",
+    "replace": "      plan.state = \"already\";",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: a trimmed capture cited at an emptied line passes as already trimmed"
+  },
+  {
+    "id": "T56-X4",
+    "file": "scripts/trim-capture.mjs",
+    "find": "      plan.kept[ext].keptBytes = out.length - (n - 1);",
+    "replace": "      plan.kept[ext].keptBytes = out.length;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: the kept-bytes share counts the newlines of the emptied lines (review finding 4)"
+  },
+  {
+    "id": "T56-X5",
+    "file": "scripts/trim-capture.mjs",
+    "find": "x.range[1] - x.range[0] + 1 > WIDE_LINES",
+    "replace": "x.range[1] - x.range[0] + 1 >= WIDE_LINES",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: a cited range of exactly 20 lines is printed as wide (amendment 1 (5)(iii): longer than 20)"
+  },
+  {
+    "id": "T56-X6",
+    "file": "scripts/trim-capture.mjs",
+    "find": "\"--format=%H\"",
+    "replace": "\"--format=%h\"",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: fullBytesIn names an abbreviated commit, which can become ambiguous"
+  },
+  {
+    "id": "T56-X7",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    totals.citations += byRange.size;",
+    "replace": "    totals.citations += p.cites.length;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: the totals count a range once per citing line instead of once"
+  },
+  {
+    "id": "T56-X8",
+    "file": "scripts/trim-capture.mjs",
+    "find": "if (!wide.has(key) || c.how === \"cited\") wide.set(key, c);",
+    "replace": "wide.set(`${key} ${c.how}`, c);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: a wide range the scanner cites and the line names again is printed twice"
+  },
+  {
+    "id": "T56-X9",
+    "file": "scripts/trim-capture.mjs",
+    "find": "if (!wide.has(key) || c.how === \"cited\") wide.set(key, c);",
+    "replace": "if (!wide.has(key) || c.how !== \"cited\") wide.set(key, c);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: a wide range is printed as found on its line although the scanner cites it"
+  },
+  {
+    "id": "T56-X10",
+    "file": "scripts/trim-capture.mjs",
+    "find": "      if (lost) throw new Error(",
+    "replace": "      if (false) throw new Error(",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review R12 (survived the review: the guard was unreachable); the fixer's trimText seam reaches it: a cited line blanked by a wrong trim is not refused"
+  },
+  {
+    "id": "T56-X11",
+    "file": "scripts/trim-capture.mjs",
+    "find": "      if (lineCountOf(out) !== n) throw",
+    "replace": "      if (false) throw",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: a trim that drops lines (citations by line would move) is not refused"
   }
 ]
