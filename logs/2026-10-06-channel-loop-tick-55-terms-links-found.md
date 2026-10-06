@@ -163,3 +163,82 @@ ansperformance, מספר שורה שגוי בהערה, שורת ה-Total, שור
 - קריאת `queue-zero-test.mjs` כולו (854 שורות), כשהכותרת ו-`termsGate` הספיקו לרוב.
 - הרצת הבדיקות על הבסיס ו-`verify.sh` המלא על הבסיס (רקע, כ-10 דקות): לא בזבוז. כך ידעתי ששתי הכשלות קדמו לעבודה שלי.
 - שני תיקונים שנבעו מטעויות (`--old=` ו-slugs בטבלה), ותוכנית המוטציות שנכתבה פעמיים.
+
+## Review fixes
+
+**מה התבקש.** לטפל בכל ממצא "fix" של הסקירה (לא היו ממצאי "blocking"), להריץ שוב את `scripts/verify.sh` על ששת קובצי הבדיקה
+ואת `scripts/verify.sh` המלא (שניהם exit 0), להריץ שוב את המוטציות ששרדו (כולן חייבות להיהרג), ולבצע commit עם ה-trailers.
+`origin/claude/new-session-j071dx` לא זז (עדיין `364bf71`, אב קדמון של הענף), ולכן לא היה מה למזג.
+
+**שלושת ממצאי ה-fix:**
+
+1. **בדיקה שנשברת מכל שינוי לא קשור.** הבדיקה "keeps the two tick-54 entries as a fixture" השוותה כל רשומה אחרת של
+   `terms-verdicts.json`, ואת קבוצת האתרים כולה, ל-`364bf71`, ורק כשהקומיט זמין. עכשיו היא בודקת רק את שתי הרשומות
+   שנפתחו מחדש מול ה-fixture (ומול `364bf71` כשהוא זמין), ואת הסוגריים של ansperformance.eu בלבד: `ANS_NOW` מופיע פעם אחת,
+   `ANS_TICK54` נעלם, ובבסיס `ANS_TICK54` הופיע פעם אחת ו-`ANS_NOW` לא הופיע. אלה עובדות על `364bf71` שקומיט מאוחר לא משנה.
+   הצמדת "השורה האחרונה ב-ZERO-TESTS היא 267" הכפולה (בבדיקת התור של טיק 55) הוחלפה: השורות שה-candidate שלהן הוא
+   "terms audit (tick 55): " הן בדיוק 266 ו-267. ההצמדה הישנה של טיק 54 (`last`) נשארה כפי שהייתה.
+2. **ציטוטי שורות משניים שאף בדיקה לא החזיקה.** נוספה בדיקה "ties every line, row, fetch time and commit the tick-55 texts
+   cite". היא מחלצת כל ציטוט `research/rendered/<file>:N` או `:N-M`, וכל `:N` חשוף אחרי רווח או "(" (ביחס לקובץ האחרון
+   שנזכר לפניו), משמונה טקסטים: שני המקורות עד המפריד, שתי ההערות, שתי הערות ה-terms- ב-`urls.txt`, ושתי שורות הטבלה.
+   בנוסף היא מחלצת מהפרוזה של סעיף טיק 55. כל שורה מצוטטת (טווח: כל שורה בו) חייבת להיות שורה ש-`LINKS_FOUND.observed`
+   מונה, עם המילים שהיא מחזיקה. כל שורה ברשימה חייבת להיות מצוטטת במקום כלשהו. לרשימה נוספו שתי שורות שהטקסטים מצטטים
+   ולא היו בה: agenthon `.txt:1952` (Privacy, בתוך הטווח 1951-1953) ו-eurocontrol `.txt:367` ("Website Privacy Policy").
+   כל `row N` / `rows N and M` / `row-N` מצוטט חייב להיות שורת ZERO-TESTS של אותו אתר. זה לא חל על "ruling 6.10 row 21".
+   ה-URL, `fetchedAt` והקומיט שכל מקור מצהיר עליהם, והזמן והקומיט בתא הטבלה, חייבים להיות אלה שב-meta של העותק הקפוא.
+   שורת ה-privacy-notice היא 242, השורה של `terms-eurocontrol`.
+3. **סעיפי טיק 54 שעדיין טענו "עכשיו" דבר לא נכון.** בכל מקום כזה הוצב הערך הנוכחי, ולידו ערך טיק 54 בסוגריים מתוארכות,
+   בצורה של רשימת קבוצות הרינדור. השינויים נעשו דרך `node scripts/loop-edit.mjs replace-in-line`. לא השתמשתי ב-`set-cell`
+   כי `` `agenthon.net` `` ו-`` `eurocontrol.int` `` הם מפתח שורה בשתי טבלאות, והפקודה מסרבת למפתח כפול:
+   - "Robots verdicts", עמודת "Verdict now" של agenthon.net: `TERMS_PENDING (6.10, tick 54: NO_TERMS_ROBOTS_OK, until tick 55
+     found a terms link in its footer, "Terms links found after the verdicts" below)`.
+   - המשפט "The 17 sites' 20 rules URLs pass `termsGate` now" נכתב מחדש: "The rules URLs of the sites that hold
+     NO_TERMS_ROBOTS_OK, 19 on 16 sites, pass `termsGate` now (6.10, tick 54: the 17 sites' 20, until agenthon.net went back
+     to TERMS_PENDING in tick 55, ...)".
+   - "Terms read", eurocontrol.int: בתא "Lines now" מופיעים שורת ה-Disclaimers (row 267), ה-probe המושהה (row 265) ו-URL
+     החוקים שנדחה. ערך טיק 54 נמצא בסוגריים. לשאלה הפתוחה נוספה "(answered 6.10, tick 55: it is read first, ...)".
+   - פרוזת סעיף טיק 55 ("stays as tick 54 left it") עודכנה כך שתתאר את זה.
+   - הבדיקות של טיק 54 עודכנו: ה-regex של הטבלה מקבל את הסוגריים. הפסיק משווה ל-`verdicts()`, וההיסטוריה משווה ל-`tick54()`,
+     רק לאתר של `LINKS_FOUND`. משפט הספירה ותא "Lines now" מוצמדים במלואם.
+
+**הערות (notes) שטופלו כי היו זולות:**
+- ZERO-TESTS שורה 247: הנוסח הוא עכשיו "the robots verdict scripts/robots-verdict.mjs set from this probe's capture is
+  reversed", כי ה-probe לא נתן את הפסיק.
+- ZERO-TESTS שורה 242: נוסף אחרי סימן ה-READ סימן מתוארך "**6.10 (tick 55): ... queued as row 267 ...**", ו-regex ה-READ של
+  טיק 54 עדיין מתקיים.
+- הכותרת "Now, on robots.txt (6.10, tick 54)" היא עכשיו "(6.10, ticks 54 and 55)".
+- ההערה של eurocontrol.int ופרוזת סעיף טיק 55 כבר לא מכריעות מראש מה יקרה אם ה-Disclaimers ריק. הן אומרות שזו החלטה של
+  ה-main thread. ההערה נכתבה דרך סקריפט node שמייבא `serializeVerdicts`. הסקריפט בדק תחילה שהקובץ עובר round-trip בייט
+  לבייט, ושינה משפט אחד שמופיע פעם אחת בדיוק.
+
+**הערות שלא טופלו, ל-main thread:**
+- הערות התור של שורות 247 ו-265 ב-`urls.txt` ("exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads")
+  לא שונו. אין סקריפט שכותב משפט "Paused ..." כזה, ואין היום שורה שכנה בצורה הזו. התקדים (3dc6a6b) קיים רק בהיסטוריה.
+  המצב הנוכחי כתוב בשורות ה-`# paused` ובסימני ה-PAUSED של ZERO-TESTS.
+- `research/measurements/ai-allowed-events.md:42` מצטט את לכידת agenthon החיה לפי שורה, תחת פסיק שבוטל. הקובץ מחוץ להיקף.
+- העותק הקפוא של agenthon הוא עותק מלא נוסף של דף שתנאיו לא נקראו (החלטה 4 של ruling 6.10 row 21 תחול עליו אם התנאים
+  יאסרו העתקה).
+- תא "Lines now" של kaggle.com ב-"Terms read" ("stays on the weekly watch") שגוי מאז רינדור ה-js של טיק 54, ולא בגלל טיק 55.
+  לא נגעתי בו.
+- מגבלה ידועה של הבדיקה החדשה: היא לא תופסת החלפה בין שתי שורות שנמצאות ברשימה בתוך אותו טקסט (למשל :2583 ו-:2584).
+
+**שגיאות.** `loop-edit.mjs` דחה `--anchor '- **Now, ...'` (ערך שמתחיל ב-"-"). תוקן בצורת `--anchor=...`, כפי שכותרת
+הסקריפט אומרת.
+
+**בדיקות.**
+- `scripts/verify.sh` על ששת הקבצים: exit 0 (typecheck exit 0; 6 קבצים, 241 בדיקות).
+- `scripts/verify.sh` המלא: exit 0 (typecheck exit 0; 79 קבצים, 2647 עברו ו-2 דולגו), ב-worktree עצמו.
+- `urls-pause-comments.mjs --check`: exit 0. `freeze-capture.mjs --cited`: exit 0 ושום קובץ לא השתנה.
+  `queue-zero-test.mjs --apply-verdicts --dry-run`: "would pause 0 line(s)".
+- מוטציות (`node scripts/mutate.mjs --plan`, 25 מוטציות על נתונים בלבד; התוכנית בתיקיית ה-scratch שלי, כי אף סקריפט
+  לא השתנה):
+  - 24 נהרגו.
+  - כל 11 השורדות של הסקירה נהרגו עכשיו: ‎:433→:443, ‎:2830→:2831 (מקור, הערת urls.txt, טבלה), ‎1951-1953→1952-1954,
+    ‎2582-2584→2583-2585, ‎Licensing :2584→:2585, ‎row 242→243, ‎fetchedAt, ‎007f7f0→007f7f1 (מקור וטבלה).
+  - 13 מוטציות חדשות נהרגו: פסיק "Verdict now", הסוגריים, משפט הספירה, "Lines now", מצביע שורה 242, נוסח 247, ההכרעה
+    המוקדמת, קומיט המקור של eurocontrol, row 265→264 ו-:2581→:2580 בפרוזה, Licensing בטבלה, סוגרי ansperformance,
+    והתשובה לשאלה הפתוחה.
+  - שרדה אחת, בכוונה: בדיקת השבירות (עריכה לא קשורה בהערה של un.org) עוברת עכשיו ב-worktree, שבו `364bf71` זמין.
+- grep השמות: exit 1, בלי פלט.
+
+**אסימונים.** קריאת בלוקי הבדיקה הארוכים (טיק 54 וטיק 55) כדי למצוא איזה טקסט מוצמד. ריצת ה-verify המלא ברקע (כ-10 דקות).
