@@ -320,7 +320,7 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     expect(lines[2]).toBe(`# superseded by the js line below (${TERMS_SHELL_RULING}) — https://pending.example/terms\tterms-pending`);
     expect(lines[3]).toBe(out.comment);
     expect(out.comment.startsWith("# ruling 6.10 row 21 (c), once-only js render of a shell terms page (")).toBe(true);
-    expect(out.comment).toContain(`sha256 ${SHA.slice(0, 12)}`);
+    expect(out.comment).toContain(`(sha256 ${SHA.slice(0, 12)}, fetched 2026-09-30, robots allowed) is js-shell by scripts/capture-check.mjs; pending.example is TERMS_PENDING.`);
     expect(out.sha256Prefix).toBe(SHA.slice(0, 12));
     expect(out.comment).toContain("research/rendered/terms-pending ");
     expect(out.comment).toMatch(/\(6\.10\.2026\)\.$/);
