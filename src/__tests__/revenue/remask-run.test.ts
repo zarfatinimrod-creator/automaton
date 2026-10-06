@@ -182,7 +182,10 @@ describe("remask-run.sh", () => {
     rmSync(join(r.root, "untracked.txt"));
     expect(status(r)).toBe("");
     for (const bad of ["2026-13-01", "2026-02-30", "6.10.2026", "20261006", ""]) refused(run(r, bad ? [bad] : []));
-    refused(run(r, [DATE], {}, join(r.root, "research")));
+    // From a subdirectory, even with --rendered given as an absolute path: only the root check stands in the way.
+    const sub = run(r, [DATE, "--rendered", r.dir], {}, join(r.root, "research"));
+    refused(sub);
+    expect(sub.err).toContain("run it from the root of the repository");
     refused(run(r, [DATE], { REMASK_RUN_FORBIDDEN_RE: undefined }));
     refused(run(r, [DATE], { REMASK_RUN_FORBIDDEN_RE: "(" }));
     refused(run(r, [DATE, "--rendered", scratch]));
