@@ -491,3 +491,53 @@ describe("scripts/sim-tree.sh: the checkout is never touched", () => {
     expect(readdirSync(tmp)).toEqual([]);
   }, 120_000);
 });
+
+/**
+ * Stopped by a signal (logs/CHANNEL_LOOP.md §9, tick 51 item 2): a sim-tree killed while its command ran (SIGPIPE when
+ * its stderr was piped to `head`, a kill, a Ctrl-C) used to die on the spot and leave its tree with no removal hint.
+ * Once the tree exists, INT, TERM, HUP and PIPE are trapped: the command is stopped, the tree is kept, its path and the
+ * quoted removal command are printed, and the exit is 128 + the signal's number. The trap runs as the signal arrives,
+ * not when the command would have ended.
+ */
+describe("scripts/sim-tree.sh: stopped by a signal", () => {
+  /** A process that exists and is not a zombie (a container's init may not reap one). */
+  const alive = (pid: number) => {
+    try {
+      return !/^\d+ \(.*\) Z /.test(readFileSync(`/proc/${pid}/stat`, "utf8"));
+    } catch {
+      return false;
+    }
+  };
+  const until = async (ok: () => boolean, ms = 10_000) => {
+    const end = Date.now() + ms;
+    while (!ok()) {
+      if (Date.now() > end) return false;
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    return true;
+  };
+
+  it("SIGTERM while the command sleeps: the command stops, the tree is kept with its quoted removal hint, exit 143", async () => {
+    const { repo, tmp } = makeRepo();
+    const pidFile = join(tmp, "..", "command.pid");
+    const c = spawn("bash", [SCRIPT, "--", "bash", "-c", 'echo $$ > "$PID_FILE"; exec sleep 15'], {
+      cwd: repo,
+      env: { ...process.env, ...gitEnv, TMPDIR: tmp, PID_FILE: pidFile },
+    });
+    let stderr = "";
+    c.stderr.on("data", (d) => (stderr += d));
+    const closed = new Promise<{ code: number | null; signal: NodeJS.Signals | null }>((done) => c.on("close", (code, signal) => done({ code, signal })));
+    expect(await until(() => existsSync(pidFile) && readFileSync(pidFile, "utf8").trim() !== "")).toBe(true);
+    const pid = Number(readFileSync(pidFile, "utf8"));
+    const sent = Date.now();
+    c.kill("SIGTERM");
+    expect(await closed).toEqual({ code: 143, signal: null });
+    expect(Date.now() - sent).toBeLessThan(10_000);
+    const tree = treeOf(stderr);
+    const q = spawnSync("bash", ["-c", 'printf %q "$1"', "_", tree], { encoding: "utf8" }).stdout;
+    expect(stderr).toContain(`sim-tree: stopped by SIGTERM; kept ${tree}; remove it with: rm -rf -- ${q}\n`);
+    expect(existsSync(join(tree, "file.txt"))).toBe(true);
+    expect(await until(() => !alive(pid))).toBe(true);
+    rmSync(tree, { recursive: true, force: true });
+  }, 30_000);
+});

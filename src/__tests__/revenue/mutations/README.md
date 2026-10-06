@@ -15,7 +15,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `remask-captures.json` | `scripts/remask-captures.mjs` (+ `freeze-capture.mjs`'s `maskedMeta`) | `remask-captures.test.ts` | ticks 49, 50 |
 | `render-dispatch.json` | `scripts/render-dispatch.sh` | `render-dispatch.test.ts` | tick 52 |
 | `render-watch.json` | `scripts/render-watch.mjs` (the address mask) | `render-watch.test.ts` | ticks 48, 50 |
-| `sim-tree.json` | `scripts/sim-tree.sh` | `sim-tree.test.ts` | tick 51 |
+| `sim-tree.json` | `scripts/sim-tree.sh` | `sim-tree.test.ts` | ticks 51, 52 |
 
 ## An entry
 

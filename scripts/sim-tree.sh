@@ -28,6 +28,12 @@
 # checkout's node_modules. Tools write there on their own too: vitest keeps its results cache in node_modules/.vite.
 # `git status` of the checkout cannot see any of it (node_modules is ignored).
 #
+# Stopped by a signal (INT, TERM, HUP or PIPE) once the tree exists: the command is sent TERM, the tree is kept, its path
+# and the quoted removal command are printed (to a stderr that is still open), and the exit is 128 + the signal's number
+# (130, 143, 129, 141). The command runs in the background under `wait` so the trap runs when the signal arrives, not
+# when the command would have ended; its standard input is passed on (`<&0`). The traps are set before the command
+# starts, so it keeps the default response to SIGINT: a Ctrl-C at a terminal reaches it as well as sim-tree.
+#
 # Exit: the command's own exit code; 2 a refusal, with nothing created: not inside a git repository, an unknown ref,
 # an empty, existing (a dangling link included) or uncreatable --dir, a tree path inside the repository, no command
 # after --, or a bad option. (A command that itself
@@ -92,19 +98,34 @@ if [ -d "$root/node_modules" ]; then
   echo "/node_modules" >> "$tree/.git/info/exclude"
 fi
 trap - EXIT
+printf -v q '%q' "$tree"
+child=""
+stopped() {
+  # A second signal while stopping is not acted on; the hint on a closed stderr fails quietly instead of raising SIGPIPE.
+  trap '' INT TERM HUP PIPE
+  if [ -n "$child" ]; then kill -TERM "$child" 2>/dev/null || true; fi
+  echo "sim-tree: stopped by SIG$1; kept $tree; remove it with: rm -rf -- $q" >&2 || true
+  exit $((128 + $2))
+}
+trap 'stopped INT 2' INT
+trap 'stopped TERM 15' TERM
+trap 'stopped HUP 1' HUP
+trap 'stopped PIPE 13' PIPE
 
 echo "sim-tree: tree $tree" >&2
 echo "sim-tree: from $ref at $sha" >&2
 code=0
-( cd "$tree" && SIM_TREE="$tree" exec "$@" ) || code=$?
+( cd "$tree" && SIM_TREE="$tree" exec "$@" ) <&0 &
+child=$!
+wait "$child" || code=$?
 echo "sim-tree: the command exited $code" >&2
 
-printf -v q '%q' "$tree"
 if [ "$keep" -eq 1 ]; then
   echo "sim-tree: kept $tree (--keep); remove it with: rm -rf -- $q" >&2
 elif [ "$code" -ne 0 ]; then
   echo "sim-tree: kept $tree to inspect the failure; remove it with: rm -rf -- $q" >&2
 else
+  trap - INT TERM HUP PIPE
   rm -rf -- "$tree"
   echo "sim-tree: removed $tree" >&2
 fi
