@@ -30,5 +30,206 @@
     "replace": "  // a field outside ENTRY_FIELDS is dropped",
     "test": "src/__tests__/revenue/robots-verdict.test.ts",
     "note": "tick 54: orderEntry drops a field it does not list, so a later fold's field is lost on the next write"
+  },
+  {
+    "id": "T57-D1-verdict-word",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"eurocontrol.int\": {\n   \"verdict\": \"NO_TERMS_ROBOTS_OK\",",
+    "replace": "\"eurocontrol.int\": {\n   \"verdict\": \"NO_TERMS\",",
+    "test": [
+      "src/__tests__/revenue/prize-terms-audit.test.ts",
+      "src/__tests__/revenue/robots-verdict.test.ts"
+    ],
+    "note": "tick 57: eurocontrol.int's verdict word back to NO_TERMS, the robots verdict not applied"
+  },
+  {
+    "id": "T57-D2-live-capture",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "robots.txt read at research/rendered/robots-eurocontrol-2026-10-06.txt (",
+    "replace": "robots.txt read at research/rendered/robots-eurocontrol.txt (",
+    "test": [
+      "src/__tests__/revenue/prize-terms-audit.test.ts",
+      "src/__tests__/revenue/robots-verdict.test.ts"
+    ],
+    "note": "tick 57: the source names the live capture, which the weekly run rewrites, as the script wrote it before the repoint"
+  },
+  {
+    "id": "T57-D3-waiver-removed",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": " The main thread ruled on that step in tick 57 (6.10): the grep was tried on 6.10 (tick 56), listing the two organisations' repositories with gh api orgs/<org>/repos for euctrl-pru and for eurocontrol, and both answered HTTP 403, since this session is bound to its configured repositories; so the step is unreachable from this session, as GitHub-wide code search is in R1 itself, the tick-45 search of the organisations' GitHub presence stands as the search of record, and the step is waived for eurocontrol.int",
+    "replace": "",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the note loses the main thread's waiver of R1's repository grep"
+  },
+  {
+    "id": "T57-D4-old-sentence-kept",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "The main thread ruled on that step in tick 57 (6.10): the grep was tried",
+    "replace": "The ruling neither ran it nor waived it, so before scripts/robots-verdict.mjs is applied the main thread runs that grep at github grade or rules the step immaterial (tick-56 review). The grep was tried",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the tick-56 sentence the ruling replaced stays beside it"
+  },
+  {
+    "id": "T57-D5-sha-prefix",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "sha256 45d83d13c223): all 1 queued path",
+    "replace": "sha256 45d83d13c224): all 1 queued path",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the source's sha256 prefix is not the frozen copy's"
+  },
+  {
+    "id": "T57-D6-fetched-at",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "fetched 2026-10-06T12:07:27.881Z, sha256 45d83d13c223",
+    "replace": "fetched 2026-10-06T12:07:27.882Z, sha256 45d83d13c223",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the source's fetch time is not the frozen copy's"
+  },
+  {
+    "id": "T57-D7-copying",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "ansperformance.eu's non-commercial copy notice binds that host only.\",\n   \"copying\": \"unread\"",
+    "replace": "ansperformance.eu's non-commercial copy notice binds that host only.\",\n   \"copying\": \"allowed\"",
+    "test": [
+      "src/__tests__/revenue/prize-terms-audit.test.ts",
+      "src/__tests__/revenue/robots-verdict.test.ts"
+    ],
+    "note": "tick 57: the robots verdict changes eurocontrol.int's copying field, which it must keep"
+  },
+  {
+    "id": "T57-D8-ans-parenthetical",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "NO_TERMS, exhaustive-negative, again in tick 56, when that page was read: no site terms, and NO_TERMS_ROBOTS_OK since tick 57, when scripts/robots-verdict.mjs found that its robots.txt allows its one queued rules page)",
+    "replace": "and NO_TERMS, exhaustive-negative, again since tick 56, when that page was read: no site terms)",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: ansperformance.eu's note names eurocontrol.int's entry as tick 56 left it"
+  },
+  {
+    "id": "T57-U1-pause-word",
+    "file": "research/rendered/urls.txt",
+    "find": "6.10.2026; verdict as of 6.10.2026): eurocontrol.int is NO_TERMS_ROBOTS_OK in research/channel-loop/terms-verdicts.json — https://www.eurocontrol.int/info/disclaimers",
+    "replace": "6.10.2026): eurocontrol.int is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.eurocontrol.int/info/disclaimers",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the Disclaimers line's pause comment keeps the stale verdict word (urls-pause-comments --fix not run)"
+  },
+  {
+    "id": "T57-Z1-row-265-mark",
+    "file": "research/channel-loop/ZERO-TESTS.md",
+    "find": "**VERDICT SET 6.10 (tick 57): the main thread ruled R1's grep",
+    "replace": "**VERDICT SET 6.10 (tick 57): the main thread ran R1's grep",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: ZERO-TESTS row 265's mark says the grep was run, not waived"
+  },
+  {
+    "id": "T57-A1-group2-count",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "(6.10, ticks 54, 55 and 57): 20 URLs on 17 sites**",
+    "replace": "(6.10, ticks 54, 55 and 57): 19 URLs on 16 sites**",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the robots group's heading keeps the tick-56 count"
+  },
+  {
+    "id": "T57-A2-url-line",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "- `https://www.eurocontrol.int/air-navigation-services-performance-review` (eurocontrol.int; ai-allowed-events.urls.txt@548be52:162)\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the rules URL the gate now admits is not listed under the robots group"
+  },
+  {
+    "id": "T57-A3-total",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "Total: 14 + 20 + 1 + 1 + 9 + 0 + 37",
+    "replace": "Total: 14 + 19 + 1 + 1 + 9 + 1 + 37",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the Total line keeps the tick-56 groups"
+  },
+  {
+    "id": "T57-A4-robots-section-count",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "NO_TERMS_ROBOTS_OK, 20 on 17 sites, pass",
+    "replace": "NO_TERMS_ROBOTS_OK, 19 on 16 sites, pass",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the robots section's count sentence keeps the tick-56 count"
+  },
+  {
+    "id": "T57-A5-history-count",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "Of the audited sites, 17 are NO_TERMS_ROBOTS_OK now",
+    "replace": "Of the audited sites, 18 are NO_TERMS_ROBOTS_OK now",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the history paragraph's count counts agenthon.net too (the brief's 18)"
+  },
+  {
+    "id": "T57-A6-history-fetched",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "(as 364bf71 stored it: fetched 2026-10-06T12:07:27.881Z, sha256 45d83d13c223, the live capture's bytes)",
+    "replace": "(as 364bf71 stored it: fetched 2026-10-06T12:07:27.880Z, sha256 45d83d13c223, the live capture's bytes)",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the history paragraph's fetch time is not the frozen copy's"
+  },
+  {
+    "id": "T57-A7-group6-count",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "judged in tick 57): 0 URLs on 0 sites** since tick 57",
+    "replace": "judged in tick 57): 1 URL on 1 site** since tick 57",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the sixth group keeps eurocontrol.int's URL"
+  },
+  {
+    "id": "T57-F1-fixture",
+    "file": "src/__tests__/revenue/fixtures/terms-verdicts-19d203a-robots-verdict.json",
+    "find": "\"verdict\": \"NO_TERMS\"",
+    "replace": "\"verdict\": \"NO_TERMS_ROBOTS_OK\"",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57: the tick-56 fixture no longer holds the entry as 19d203a had it"
+  },
+  {
+    "id": "T57-RF1-page-fetched",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "open to dispatch; the page has not been fetched.",
+    "replace": "open to dispatch; the page has been fetched.",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review R57-6: the tick-57 paragraph says the prize page was fetched (it was pinned by phrases; pinned whole since the review fix)"
+  },
+  {
+    "id": "T57-RF2-copying-allowed",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "the copying field (\"unread\") are kept",
+    "replace": "the copying field (\"allowed\") are kept",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review R57-7: the tick-57 paragraph quotes copying as \"allowed\", which the entry does not hold"
+  },
+  {
+    "id": "T57-RF3-group-move-reversed",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "eurocontrol.int moves from \"Robots probe captured, robots verdict not yet run\", empty since, to \"Now, on robots.txt\".",
+    "replace": "eurocontrol.int moves from \"Now, on robots.txt\" to \"Robots probe captured, robots verdict not yet run\", empty before.",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review R57-15: the tick-57 paragraph has the render-group move the wrong way round"
+  },
+  {
+    "id": "T57-RF4-tick56-pointer-removed",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": " (Since 6.10, tick 57: the group holds 0 URLs on 0 sites, eurocontrol.int's rules URL being in \"Now, on robots.txt\", and the gate admits 34 of the 101; \"eurocontrol.int's robots verdict\" below.)",
+    "replace": "",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix: the tick-56 counts paragraph's present-tense \"1 URL on 1 site\" and \"still admits 33\" stand without the dated pointer"
+  },
+  {
+    "id": "T57-RF5-tick56-pointer-gate",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "and the gate admits 34 of the 101;",
+    "replace": "and the gate admits 33 of the 101;",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix: the tick-56 paragraph's pointer gives the gate's tick-56 count, not the one termsGate gives now"
+  },
+  {
+    "id": "T57-RF6-tick56-pointer-group",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "the group holds 0 URLs on 0 sites, eurocontrol.int",
+    "replace": "the group holds 1 URLs on 1 sites, eurocontrol.int",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix: the tick-56 paragraph's pointer keeps the probe group's tick-56 count against its heading"
   }
 ]

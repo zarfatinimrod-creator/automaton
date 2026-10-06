@@ -34,7 +34,11 @@
     "keptLines": [
       [
         288,
-        315
+        292
+      ],
+      [
+        297,
+        305
       ]
     ],
     "context": 2,
@@ -58,16 +62,6 @@
         ],
         "by": [
           "research/channel-loop/TERMS-AUDIT-2026-09-29.md:191"
-        ]
-      },
-      {
-        "file": "txt",
-        "lines": [
-          293,
-          313
-        ],
-        "by": [
-          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:22"
         ]
       },
       {
@@ -107,8 +101,33 @@
         ]
       }
     ],
+    "wide": [
+      {
+        "file": "txt",
+        "lines": [
+          293,
+          313
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:22"
+        ]
+      }
+    ],
     "captureCheck": "ok",
     "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/terms-btl-2026-09-29.<ext>)",
-    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask.",
+    "passes": [
+      {
+        "on": "2026-10-06",
+        "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md amendment 1 (5)(iii) (ruling 6.10 row 21 (d)): a cited range longer than 20 lines keeps nothing",
+        "keptLinesBefore": [
+          [
+            288,
+            315
+          ]
+        ],
+        "bodyKeptLinesBefore": []
+      }
+    ]
   }
 }

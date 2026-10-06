@@ -397,4 +397,27 @@ describe("robots-verdict CLI", () => {
     expect(got.stdout).toMatch(/no change: robots\.txt disallows 8 queued path\(s\) for MehudakRenderWatch/);
     expect(got.stdout).not.toMatch(/NO_TERMS_ROBOTS_OK/);
   });
+
+  it("declines eurocontrol.int on the committed files since tick 57: the script set it, so it is already NO_TERMS_ROBOTS_OK", () => {
+    // Applied 6.10 (tick 57) with --urls research/measurements/ai-allowed-events.urls.txt, once the main thread waived R1's
+    // repository grep for the site; the source then repointed to the frozen copy of the capture it read
+    // (src/__tests__/revenue/prize-terms-audit.test.ts, "tick 57", re-derives it). Run again dry, on either list, it declines
+    // (dry, so that a broken script cannot write into the committed file from a test).
+    const verdictsFile = join(ROOT, "research", "channel-loop", "terms-verdicts.json");
+    const before = readFileSync(verdictsFile, "utf8");
+    for (const urls of [join(ROOT, "research", "measurements", "ai-allowed-events.urls.txt"), join(ROOT, "research", "rendered", "urls.txt")]) {
+      const got = spawnSync(process.execPath, [SCRIPT, "eurocontrol.int", "--urls", urls], { encoding: "utf8" });
+      expect(got.status).toBe(3);
+      expect(got.stdout.split("\n")[0]).toBe("robots-verdict: eurocontrol.int (NO_TERMS_ROBOTS_OK)");
+      expect(got.stdout).toContain("no change: eurocontrol.int is already NO_TERMS_ROBOTS_OK");
+    }
+    expect(readFileSync(verdictsFile, "utf8")).toBe(before);
+    const entry = JSON.parse(before).sites["eurocontrol.int"];
+    expect([entry.verdict, entry.checked, entry.copying]).toEqual(["NO_TERMS_ROBOTS_OK", "2026-10-06", "unread"]);
+    expect(entry.note.startsWith("exhaustive-negative: ")).toBe(true);
+    expect(entry.source.startsWith(
+      "robots.txt read at research/rendered/robots-eurocontrol-2026-10-06.txt (https://www.eurocontrol.int/robots.txt, fetched 2026-10-06T12:07:27.881Z, sha256 45d83d13c223): all 1 queued path allowed for MehudakRenderWatch (scripts/robots-verdict.mjs); ruling research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v); NO_TERMS before: ",
+    )).toBe(true);
+    expect(before).not.toContain("research/rendered/robots-eurocontrol.txt");
+  });
 });

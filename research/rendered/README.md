@@ -183,43 +183,70 @@ not `allowed`, and only `barred` is trimmed). What stays of such a capture, live
 - its `.meta.json`, every field as it was (`sha256` is the full body's hash, the verification hash), with a `trimmed`
   block appended: `on`, `ruling`, `site`, `keptLines`, `fullSha256`/`fullByteLength`/`lineCount` of the full `.txt`,
   `body` (`sha256`, `byteLength`, `lineCount`, `keptLines`, `inTree`), `cited` (which file:line keeps each line),
-  `captureCheck` (capture-check's kind of the whole capture), `fullBytesIn` (where the full bytes are) and `history`;
+  `wide` (the cited ranges longer than 20 lines, which keep nothing; below), `captureCheck` (capture-check's kind of the
+  whole capture), `fullBytesIn` (where the full bytes are), `history`, and, on a capture a later pass re-trimmed,
+  `passes` (below);
 - a `.txt` of the **same line count**, the cited lines and two either side verbatim and every other line empty, so a
   citation by line still names the same line;
 - no body, unless a decision-bearing file cites a line of the body itself (`<slug>.html:50`): then the body stays the way
   the `.txt` does, cited lines only. A frozen copy's lines in `FROZEN.sha256` are of the trimmed files.
 
-**The full bytes are in git history** (the commit `fullBytesIn` names: `git show <commit>:research/rendered/<slug>.html`);
-whether to rewrite public history is the owner's decision, with the §6 public/private one. A page of such a site that the
-weekly run fetches after the route below never lands here in full at all: its body, full text and plain meta go to a
-workflow artifact (`render-watch-barred-<run id>-<attempt>`, kept 90 days; `fullBytesIn` and `trimmed.artifact` name it),
-and the tree gets the meta and an emptied `.txt`. **Such a capture cannot be cited by line:** the tree never holds a line
-of it, its full bytes are in no commit, and `freeze-capture.mjs` refuses to freeze a trimmed capture, so a citation of one
-of its lines points at an empty line for good (`trim-capture.mjs` refuses that capture, alone). What its weekly line gives
-is change detection by hash (`sha256`, and the block's hashes); a reading of it is quoted in the research file with the
-URL, `fetchedAt` and `sha256`, without a line of the capture. On a public repository a signed-in GitHub user with read
-access can download a run's artifacts, so the artifact is not private by itself: the ruling's amendment 1 (6.10) has the
-next build stop uploading it, after which the block says the body was not retained. A page reached from a URL that is
-not on a copying-barred site, by a redirect (or a js page's move) to one that is, is not stored at all: list it by its own
-URL.
+**A cited range longer than 20 lines keeps nothing** (the ruling's amendment 1 (5)(iii), 6.10): such a range ("txt in
+full (body :29-269)") is a statement that the text was read, which the `sha256` already proves, not a quotation. Neither
+its lines nor its two ends are kept, whether the scanner cites it or it is read on its line; a line inside it that another
+citation names apart keeps that citation's two lines either side. The dry run lists each such range as `wide`, with the
+file:line that cites it, and says it keeps nothing; the block lists it under `wide`, not `cited`. To quote from such a
+text, cite the lines quoted, each one apart.
+
+**The second pass.** The 6.10 trim kept wide ranges (the amendment's stated interim): `indiebook-terms.txt` kept 245 of
+its 298 lines for `indiebook.md:108`, and the frozen 29.9 terms copies of btl.gov.il and worksheets4kids.co.il kept
+`:293-313` and `:185-205` for `RULING-2026-10-06-robots-and-terms.md:22`. `trim-capture.mjs --apply` re-trims such a
+capture: in each kept file a wide range reaches (cited now, or in the block's `cited` or `wide` record), every line
+kept only because of a wide range is emptied, and no emptied line comes back. A range counts as in the first trim: one
+that starts in the file does, even when it runs past the end (it is wide by its own length, or keeps what of it the
+file has), and one that starts past the end does not. `keptLines` (and `body.keptLines`; a body left with
+none leaves the tree) are recomputed; `fullSha256`, `fullByteLength`, `lineCount` and `body.sha256` stay as they were,
+since the full hash is the verification hash and never changes; `cited` and `wide` are rewritten; and the block gains
+`passes: [{ on, ruling, keptLinesBefore, bodyKeptLinesBefore }]`, `ruling` naming amendment 1 (5)(iii). The meta's
+lines above the block do not move, and a frozen copy's `FROZEN.sha256` lines follow. The dry run prints `would re-trim
+<slug> (wide range ...)` with the lines and bytes kept before and after; a run after the second pass has nothing to do
+(exit 3).
+
+**The full bytes of a capture trimmed by `trim-capture.mjs` are in git history** (the commit `fullBytesIn` names: `git
+show <commit>:research/rendered/<slug>.html`); whether to rewrite public history is the owner's decision, with the §6
+public/private one. **A page of such a site that the weekly run fetches is retained nowhere** (amendment 1, 6.10: on a
+public repository anyone signed in to GitHub can download a run's workflow artifacts, so an artifact is not private, and
+none is uploaded): render-watch reads the body in memory (a PDF through a temporary file deleted as soon as pdftotext
+is done), and the tree gets the meta, with `sha256`, the byte and line counts and a `trimmed` block whose `fullBytesIn`
+says `not retained (...)` and whose `artifact` is null, and an emptied `.txt` of the same line count. The workflow's
+commit step refuses the commit if a body (`.html`, `.json`, `.pdf`, `.xml`, `.bin`) of a slug the fetch step stored that
+way is in this directory; the fetch step lists those slugs in a file outside the checkout (`RENDER_WATCH_BARRED_LIST`).
+What such a site's weekly line gives is change detection by hash.
+
+**How to cite a page the route stored: without a line.** The tree never holds a line of it, its full bytes are nowhere,
+and `freeze-capture.mjs` refuses to freeze a trimmed capture, so a citation of one of its lines points at an empty line
+for good (`trim-capture.mjs` refuses that capture, alone). Quote what was read in the research file with the capture's
+URL, `fetchedAt` and `sha256` (which name the version: a later fetch of the same bytes hashes the same), and no
+`<slug>.txt:N`. A page reached from a URL that is not on a copying-barred site, by a redirect (or a js page's move) to
+one that is, is not stored at all: list it by its own URL.
 
 - `node scripts/trim-capture.mjs [<slug>...]` is a dry run: per capture of a copying-barred site, the site and its field,
   the cited lines found and in which files, the lines kept and the bytes removed, then the totals and what was not
   reached (allowed, unread, no verdict entry), and per kept file the bytes of its text kept and their share. It never
-  prints a capture's text. `--apply` writes. Exit 0 would trim / trimmed, 3 nothing to do (a second run over a trimmed
-  store), 1 a refusal with nothing written (a barred site's entry with no `copying` field, a named capture of an unread
-  site or of one with no entry, a binary body cited by line, a capture with uncommitted changes), 4 a capture refused
-  alone with the rest of the run done: a trimmed capture cited later at a line its trim emptied, with the remedy for
-  where its full bytes are (a commit: freeze from it and trim the copy; the route: quote without a line). The citations
-  are freeze-capture's scanner's, every form, plus every bare `:N`, "line N" and `html:N` on a decision-file line that
-  names a capture no active line names (the scanner gives some of those to another name on the line; the trim keeps
-  them rather than blank a line a note reads). A cited range longer than 20 lines is printed as `wide` with the line
-  that cites it: the ruling's amendment 1 (5)(iii) holds that it is not a quotation and keeps nothing, a rule the next
-  build adds; this pass keeps it, the amendment's stated interim.
+  prints a capture's text. `--apply` writes. Exit 0 would trim or re-trim / did, 3 nothing to do (a run over a store
+  already trimmed under the wide rule), 1 a refusal with nothing written (a barred site's entry with no `copying` field,
+  a named capture of an unread site or of one with no entry, a binary body cited by line, a capture with uncommitted
+  changes), 4 a capture refused alone with the rest of the run done: a trimmed capture cited later at a line its trim
+  emptied (a wide range is not such a citation), with the remedy for where its full bytes are (a commit: freeze from it
+  and trim the copy; the route: the bytes were never retained, so cite the URL, `fetchedAt` and `sha256` without a
+  line). The citations are freeze-capture's scanner's, every form, plus every bare `:N`, "line N" and `html:N` on a
+  decision-file line that names a capture no active line names (the scanner gives some of those to another name on the
+  line; the trim keeps them rather than blank a line a note reads), each one wide or not by the rule above.
 - `freeze-capture.mjs` refuses to freeze a trimmed capture (freeze the full one from the commit `fullBytesIn` names,
   then trim the copy; a capture the route stored has no such commit); `checkManifest` (the frozen-citations guard) holds a trimmed frozen copy to its block; `--cited`
-  takes a trimmed copy for the version whose full hashes its block records. `capture-check.mjs` reads a trimmed capture
-  (its body is not a missing file) and reports the kind it had whole, or `trimmed` for one the artifact route stored.
+  takes a trimmed copy for the version whose full hashes its block records (a re-trimmed copy too: its full hashes do not
+  change). `capture-check.mjs` reads a trimmed capture (its body is not a missing file) and reports the kind it had whole,
+  or `trimmed` for one render-watch's route stored.
   `remask-captures.mjs` does not look for a body the block says left.
 - Simulate before running it on the repository: `scripts/sim-tree.sh -- sh -c 'node scripts/trim-capture.mjs --apply &&
   scripts/verify.sh'` (the full revenue suite on the trimmed copy is the acceptance test).

@@ -27,8 +27,24 @@
     "copying": "barred",
     "keptLines": [
       [
-        27,
-        271
+        45,
+        49
+      ],
+      [
+        83,
+        99
+      ],
+      [
+        125,
+        129
+      ],
+      [
+        131,
+        135
+      ],
+      [
+        163,
+        171
       ]
     ],
     "context": 2,
@@ -56,17 +72,6 @@
           812
         ],
         "by": [
-          "research/measurements/indiebook.md:108"
-        ]
-      },
-      {
-        "file": "txt",
-        "lines": [
-          29,
-          269
-        ],
-        "by": [
-          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:461",
           "research/measurements/indiebook.md:108"
         ]
       },
@@ -168,8 +173,39 @@
         ]
       }
     ],
+    "wide": [
+      {
+        "file": "txt",
+        "lines": [
+          29,
+          269
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:461",
+          "research/measurements/indiebook.md:108"
+        ]
+      }
+    ],
     "captureCheck": "ok",
     "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/indiebook-terms.<ext>)",
-    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask.",
+    "passes": [
+      {
+        "on": "2026-10-06",
+        "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md amendment 1 (5)(iii) (ruling 6.10 row 21 (d)): a cited range longer than 20 lines keeps nothing",
+        "keptLinesBefore": [
+          [
+            27,
+            271
+          ]
+        ],
+        "bodyKeptLinesBefore": [
+          [
+            810,
+            814
+          ]
+        ]
+      }
+    ]
   }
 }

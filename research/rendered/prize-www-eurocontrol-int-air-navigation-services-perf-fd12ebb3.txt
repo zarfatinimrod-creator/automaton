@@ -1,0 +1,828 @@
+Air navigation services performance review | EUROCONTROL
+
+Skip to main content
+
+Supporting
+European
+Aviation
+
+Main navigation
+
+About us
+
+What we do
+
+We deliver
+
+Optimised operational performance
+
+Powered by the Network Manager
+
+Effective cost-recovery system
+
+Powered by the CRCO
+
+Civil-military cooperation in aviation
+
+Powered by the Civil-Military Cooperation Division and the Network Manager
+
+Cross-border air navigation services
+
+Powered by the Maastricht Upper Area Control Centre
+
+Innovation, research and simulation
+
+Powered by the EUROCONTROL Innovation Hub
+
+Training
+
+Powered by the ALC
+
+We contribute to
+
+Air navigation services performance review
+
+Airports
+
+Airspace design and utilisation
+
+Artificial intelligence
+
+Aviation sustainability
+
+Communications, navigation and surveillance
+
+Customised support to stakeholders
+
+Cybersecurity
+
+Digitalisation and information management
+
+Disruption and crisis management
+
+Forecasting
+
+Master plan, architecture and monitoring
+
+Network operations
+
+Network operations planning
+
+Network performance
+
+Safety
+
+Simulations and validation
+
+Space and higher airspace operations
+
+Standardisation
+
+Unmanned aircraft systems
+
+Key applications
+
+NOP
+
+Your gateway to interact with EUROCONTROL's Network manager Operations Centre
+
+Access
+
+Aviation Intelligence Portal
+
+Our online air navigation services performance data portal
+
+Access
+
+Live traffic
+
+Real-time European air traffic situation map.
+
+Access
+
+Discover what we do
+
+Newsroom
+
+Events
+
+Library
+
+We offer
+
+Our data
+
+Procurement
+
+Careers
+
+Work with us
+
+Traineeship programme
+
+Secondment opportunities
+
+Become an ATCO
+
+Search
+
+Trending
+
+ASTERIX
+NOP
+FEAST Info
+Learning Zone
+How to find us
+
+Close
+
+Secondary navigation
+
+Search
+
+Air navigation services performance review
+
+Ensuring Europe's ANS systems perform to their potential.
+
+About
+
+Focus
+
+Dashboard
+
+Deliverables
+
+Governance
+
+Highlights
+
+ABOUT
+
+The EUROCONTROL Performance Review Commission (PRC) and Unit (PRU) provide objective information and independent advice based on extensive research, data analysis and consultation with our governing bodies and interested stakeholders on European air traffic management (ATM) performance. EUROCONTROL's performance review system was a world-first at the time it was built. The PRC and PRU look at all aspects of European air navigation services and provide a strong, transparent and independent review of their performance.
+
+The PRC’s work has been built on in wider fora, such as ICAO’s global performance-based approach, and the performance scheme of the Single European Sky (SES). The PRC has received the ATC Maastricht Award for Contribution to European ATM, as well as a Special Recognition Award from IATA. The EUROCONTROL performance review system and the SES performance scheme jointly contribute towards improving the overall performance of air navigation services and network functions in Europe.
+
+About
+
+The EUROCONTROL Performance Review Commission (PRC) and Unit (PRU) provide objective information and independent advice based on extensive research, data analysis and consultation with our governing bodies and interested stakeholders on European air traffic management (ATM) performance. EUROCONTROL's performance review system was a world-first at the time it was built. The PRC and PRU look at all aspects of European air navigation services and provide a strong, transparent and independent review of their performance.
+
+The PRC’s work has been built on in wider fora, such as ICAO’s global performance-based approach, and the performance scheme of the Single European Sky (SES). The PRC has received the ATC Maastricht Award for Contribution to European ATM, as well as a Special Recognition Award from IATA. The EUROCONTROL performance review system and the SES performance scheme jointly contribute towards improving the overall performance of air navigation services and network functions in Europe.
+
+2019 ATM performance
+
+9.9
+
+%
+
+of flights experienced en-route ATFM delay
+
+95.6
+
+%
+
+horizontal flight efficiency in filed flight plans
+
+97.2
+
+%
+
+horizontal flight efficiency in actual trajectories
+
+Focus
+
+Background
+
+Performance analysis
+
+Data provision
+
+Support to European Commission
+
+The Performance Review Commission (PRC) was created by the EUROCONTROL States in 1998, following the adoption of the European Civil Aviation Conference (ECAC) Institutional Strategy the previous year.
+
+A key feature of this Strategy was that “an independent Performance Review System covering all aspects of ATM in the ECAC area will be established to put greater emphasis on performance and improved cost-effectiveness, in response to objectives set at a political level” .
+
+The Performance Review Unit (PRU) supports the Work Programme of PRC, which in turn provides independent advice to the EUROCONTROL Permanent Commission through the Provisional Council on pan-European ATM performance.
+
+PRC Terms of Reference
+PRC Aim and Objectives
+
+The PRU, with the PRC, collects and analyses performance-related data and develops recommendations to the Permanent Commission through an annual performance review report. Supported by the PRU, the PRC:
+
+conducts performance research to improve long-term performance measurement and to test new indicators;
+
+benchmarks operational stakeholders;
+
+provides in-depth analysis and independent ad-hoc studies on PRC initiative and at the request of interested parties;
+
+ensures widespread circulation of best practices for ATM performance.
+
+The PRU has developed web-based Performance dashboards giving up-to-date and user-friendly access to and display of a wealth of performance data.
+
+The ANS performance data portal provides monthly updates of performance information covering all 41 States. Customised reports can also be requested online, e.g. vertical flight efficiency.
+
+The ACE dashboard gives easy access to data, indicators and interactive graphics on European ANS cost-effectiveness.
+
+The Service Units Dashboard allows monitoring and interacting with en-route service units billed by the CRCO or forecasted by STATFOR and States.
+
+The PRU also supports the official Single European Sky SES Performance Dashboard .
+
+The Performance Review Unit (PRU) provides support to the EC under a service contract, signed in 2017, which runs for four years. Activities include support to monitoring, target setting and assessment of performance plans.
+
+The PRU also supports the EC, its Agencies and Advisory Bodies under a longer-term co-operation agreement. Activities include:
+
+assessment of technical compliance of unit rates and reporting on costs exempt from cost sharing;
+
+work on US-EU performance comparisons and ad hoc analyses at the EC’s request in support of performance and charging schemes;
+
+promotion of global and regional performance measurement within ICAO and other world regions;
+
+secondment of performance experts to the EC.
+
+Areas of common interest can be added to this co-operation.
+
+Video
+
+Performance Review Commission
+
+The PRC – EUROCONTROL Performance Review Commission – is a group of 7 independent & hugely experienced aviation experts dedicated to raising the performance of the pan-European aviation network.
+
+Dashboards
+
+AIU Portal
+
+Aviation intelligence portal
+
+Public access
+
+More info
+
+ACE
+
+Air traffic management cost-effectiveness dashboard
+
+Public access
+
+More info
+
+Service units dashboard
+
+Public access
+
+More info
+
+SES Online
+
+Single European Sky online monitoring dashboard
+
+Public access
+
+More info
+
+Dashboards
+
+ACE
+
+Air traffic management cost-effectiveness dashboard
+
+Public access
+
+More info
+
+AIU Portal
+
+Aviation intelligence portal
+
+Public access
+
+More info
+
+AGL
+
+EUROCONTROL airline groups lookup
+
+More info
+
+Service units dashboard
+
+Public access
+
+More info
+
+SES Online
+
+Single European Sky online monitoring dashboard
+
+Public access
+
+More info
+
+See all
+
+Have a look around
+
+Boarding pass focussing on crisis management
+
+Deliverables
+
+Latest
+
+PRR
+
+ACE
+
+Studies
+
+ATM Cost-Effectiveness (ACE): First look at ANSPs' 2025 data
+
+30 September 2026
+
+Download
+
+Retrospective on the ANS industry’s response to the COVID-19 crisis
+
+17 June 2026
+
+Download
+
+Review of the most penalising Area Control Centers in 2025
+
+12 June 2026
+
+Download
+
+Air traffic management cost-effectiveness (ACE) benchmarking report (2026 edition)
+
+Edition/Version
+24
+
+8 June 2026
+
+Download
+
+Brazil-Europe Comparison of Air Navigation System Performance
+
+29 May 2026
+
+Download
+
+Performance Review Report (PRR) 2025
+
+27 March 2026
+
+Download
+
+PRC Airport Operations Centres (APOC) Factsheets
+
+19 March 2026
+
+Download
+
+PRC Observer #5 – Data: The Foundation of Credibility
+
+16 February 2026
+
+Download
+
+See all
+
+Retrospective on the ANS industry’s response to the COVID-19 crisis
+
+17 June 2026
+
+Download
+
+Review of the most penalising Area Control Centers in 2025
+
+12 June 2026
+
+Download
+
+Performance Review Report (PRR) 2025
+
+27 March 2026
+
+Download
+
+Benefits of Free Route Airspace implementation in Europe
+
+19 May 2025
+
+Download
+
+Performance Review Report (PRR) 2024
+
+21 March 2025
+
+Download
+
+Performance Review Report (PRR) 2023
+
+10 June 2024
+
+Download
+
+Performance Review Report (PRR) 2022
+
+15 June 2023
+
+Download
+
+Performance Review Report (PRR) 2021
+
+8 June 2022
+
+Download
+
+See all
+
+ATM Cost-Effectiveness (ACE): First look at ANSPs' 2025 data
+
+30 September 2026
+
+Download
+
+Air traffic management cost-effectiveness (ACE) benchmarking report (2026 edition)
+
+Edition/Version
+24
+
+8 June 2026
+
+Download
+
+High-level Summary Report on preliminary ACE 2024 data
+
+16 December 2025
+
+Download
+
+ATM Cost-Effectiveness (ACE): First look at ANSPs' 2024 data
+
+30 September 2025
+
+Download
+
+Air traffic management cost-effectiveness (ACE) benchmarking report (2025 edition)
+
+Edition/Version
+23
+
+12 June 2025
+
+Download
+
+High-level Summary Report on Preliminary ACE 2023 Data
+
+17 December 2024
+
+Download
+
+ATM Cost-Effectiveness (ACE): First look at ANSPs' 2023 data
+
+11 September 2024
+
+Download
+
+Air traffic management cost-effectiveness (ACE) benchmarking report (2024 edition)
+
+Edition/Version
+22
+
+14 June 2024
+
+Download
+
+See all
+
+PRC Performance Insight #10 - ATM Cost-Effectiveness
+
+Edition/Version
+10
+
+20 June 2024
+
+Download
+
+PRC Performance Insight #9 - Gate-to-gate CO₂ emissions in Europe
+
+Edition/Version
+9
+
+13 June 2024
+
+Download
+
+PRC Performance Insight #8 - ATM performance benefit pools for improved civil-military cooperation and coordination
+
+Edition/Version
+8
+
+14 February 2024
+
+Download
+
+Performance Insight #7 - Reorganising ATS with Virtual Centres
+
+17 January 2023
+
+Download
+
+Performance Insight #6 - 20 years of performance-oriented approach for ATM in Europe
+
+1 December 2022
+
+Download
+
+Performance Insight #5 - Open performance data
+
+14 October 2022
+
+Download
+
+Special report on the impact of the COVID-19 pandemic on the U.S. and European ANS systems
+
+8 December 2021
+
+Download
+
+Technical note on Vertical Flight Efficiency
+
+29 April 2021
+
+Download
+
+See all
+
+Governance
+
+Our air navigation services performance review activities are performed by the Performance Review Unit (PRU) on behalf of the Performance Review Commission.
+
+For more information about the relation between the two bodies and their way of working visit our governance section.
+
+Learn more
+
+Latest highlights
+
+News
+
+30 September 2026
+
+ATM Cost-Effectiveness (ACE): First look at ANSPs' 2025 data
+
+Learn more
+
+News
+
+17 June 2026
+
+Performance Review Commission issues a retrospective on the ANS industry’s response to the COVID-19 crisis
+
+Learn more
+
+News
+
+8 June 2026
+
+Performance Review Commission issues its latest ATM Cost-Effectiveness Benchmarking Report
+
+Learn more
+
+News
+
+29 May 2026
+
+DECEA and EUROCONTROL publish fifth Brazil-Europe ANS Performance Comparison Report
+
+Learn more
+
+News
+
+9 December 2025
+
+EASA and EUROCONTROL publish joint report on assessment of gate-to-gate CO2 emissions
+
+Learn more
+
+News
+
+30 September 2025
+
+ATM Cost-Effectiveness (ACE) First look at ANSPs' 2024 data
+
+Learn more
+
+See all
+
+Contact us
+
+&times;
+
+You must have JavaScript enabled to use this form.
+
+How may we be of help?
+
+- Select an option -
+General question
+Support to NSAs
+Technical questions and support
+
+First name
+
+Last name
+
+Your Email
+
+Your Email
+
+Confirm email
+
+Message
+
+I agree that my data can be processed in accordance with EUROCONTROL's privacy and data protection policy .
+
+EUROCONTROL respects your personal data
+
+At EUROCONTROL, we manage your personal data responsibly, meaning we only use it for the pur-pose defined in the privacy statement. EUROCONTROL will never share your personal data to third parties. Read our full full privacy and data protection policy (PDF) to learn more.
+
+Leave this field blank
+
+Social Footer
+
+Follow our Director General on LinkedIn
+
+Tertiary navigation
+
+Locations
+
+Contacts
+
+Brand
+
+Privacy
+
+Disclaimers
+
+Fraud warning
+
+OneSky Online
+
+© EUROCONTROL
+
+Close navigation
+
+Search
+
+Trending
+
+ASTERIX
+NOP
+FEAST Info
+Learning Zone
+How to find us
+
+Main navigation (mobile)
+
+About us
+
+What we do
+
+We deliver
+
+Optimised operational performance
+
+Powered by the Network Manager
+
+Effective cost-recovery system
+
+Powered by the CRCO
+
+Civil-military cooperation in aviation
+
+Powered by the Civil-Military Cooperation Division and the Network Manager
+
+Cross-border air navigation services
+
+Powered by the Maastricht Upper Area Control Centre
+
+Innovation, research and simulation
+
+Powered by the EUROCONTROL Innovation Hub
+
+Training
+
+Powered by the ALC
+
+We contribute to
+
+Air navigation services performance review
+
+Airports
+
+Airspace design and utilisation
+
+Artificial intelligence
+
+Aviation sustainability
+
+Communications, navigation and surveillance
+
+Customised support to stakeholders
+
+Cybersecurity
+
+Digitalisation and information management
+
+Disruption and crisis management
+
+Forecasting
+
+Master plan, architecture and monitoring
+
+Network operations
+
+Network operations planning
+
+Network performance
+
+Safety
+
+Simulations and validation
+
+Space and higher airspace operations
+
+Standardisation
+
+Unmanned aircraft systems
+
+Key applications
+
+NOP
+
+Your gateway to interact with EUROCONTROL's Network manager Operations Centre
+
+Access
+
+Aviation Intelligence Portal
+
+Our online air navigation services performance data portal
+
+Access
+
+Live traffic
+
+Real-time European air traffic situation map.
+
+Access
+
+Discover what we do
+
+Newsroom
+
+Events
+
+Library
+
+We offer
+
+Our data
+
+Procurement
+
+Careers
+
+Work with us
+
+Traineeship programme
+
+Secondment opportunities
+
+Become an ATCO
+
+Secondary navigation (mobile)
+
+Search
+
+Tertiary navigation (mobile)
+
+Locations
+
+Contacts
+
+Brand
+
+Privacy
+
+Disclaimers
+
+Fraud warning
+
+OneSky Online
+
+Was this page helpful?
+
+Yes No &times;
+
+Contact us
+
+&times;
