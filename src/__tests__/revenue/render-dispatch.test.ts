@@ -177,7 +177,9 @@ function world(opts: { short?: boolean; raw?: boolean; forms?: boolean; oldCaptu
   git(seed, ...who, "commit", "-q", "-m", "scripts");
   git(seed, "push", "-q", bare, `HEAD:refs/heads/${REF}`);
   git(seed, "push", "-q", bare, "HEAD:refs/heads/main");
-  git(base, "clone", "-q", "-b", REF, bare, checkout);
+  // --no-hardlinks: a local clone hardlinks the bare repository's pack files, and the two pushes just above can repack them
+  // mid-clone ("fatal: hardlink different from source at .../tmp_pack_..."; CI, 6.10). Copying the objects has no race.
+  git(base, "clone", "-q", "--no-hardlinks", "-b", REF, bare, checkout);
 
   const rendered = join(seed, "research", "rendered");
   const forms = opts.forms ? ` ${FORMS.map((f) => `Or ${f} .`).join(" ")}` : "";
