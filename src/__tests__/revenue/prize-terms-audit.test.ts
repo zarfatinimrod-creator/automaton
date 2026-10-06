@@ -11,6 +11,7 @@ import {
   robotsDecision,
   robotsRulesFor,
   robotsTxtUrl,
+  termsBarred,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/render-watch.mjs";
 import {
@@ -1355,7 +1356,217 @@ describe("tick 54: the terms read on 6.10", () => {
     "zindi.africa": "store or transmit any of the material on our Website",
     "grand-challenge.org": "without the express written permission by Radboudumc",
     "stanford.edu": "User may not otherwise copy, reproduce, retransmit, distribute, publish",
+    "codabench.org": "'Any reproduction in whole or in part is prohibited without prior consent of its owner.'",
+    "tipalti.com":
+      "\"You may not download or save a copy of the Site or any portion thereof, including, without limitation, any materials and logos, for any purpose, without Tipalti’s prior written consent.\"",
   };
+  /**
+   * The tick-54 review's two: the other sites whose verdicts already rested on a read copying clause (codabench.org's
+   * CONDITIONAL_UNMET on its organisers' content clause, tipalti.com's TERMS_BARRED entry on its website terms), set barred
+   * by the same rule as READ_COPY_BARRED. The file and line each note cites, which holds the clause.
+   */
+  const REVIEW_COPY_BARRED: Record<string, { file: string; line: number }> = {
+    "codabench.org": { file: "research/channel-loop/terms/codabench-privacy-and-terms-2026-10-05.md", line: 39 },
+    "tipalti.com": { file: "research/rendered/terms-tipalti-website.txt", line: 245 },
+  };
+  /**
+   * Sites whose notes quote a copying clause only as an open caveat beside a verdict that rests on something else: they
+   * stay "unread" for fold 10(i)'s copying audit (the _about's rule), each note holding the caveat's words.
+   */
+  const CAVEAT_UNREAD: Record<string, string> = {
+    "aimo-interp.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "build-arena.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "fomo26.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "lbl.gov": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "neural-interfaces26.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "realpdecompetition.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "robosyn-bench.net": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "roco-spring.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "szczurek-lab.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "xiuwenz2.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "posthog.com": "'Please do not duplicate, copy, or use our website'",
+    "ansperformance.eu": "'It may be copied in whole or in part, provided that EUROCONTROL is mentioned as the source and it is not used for commercial purposes",
+  };
+  /** The _about's sentence on the copying field and the kind words, whole. */
+  const ABOUT_COPYING =
+    'Since 6.10 (RULING-2026-10-06-robots-and-terms.md, row 21) every entry carries a fifth field after "note", "copying": "barred" when the read terms bar copying, reproducing, distributing or publishing the content (the note cites the clause, and the verdict rests on it: a copying clause quoted only as an open caveat beside a verdict that rests on something else stays "unread" for fold 10(i)\'s copying audit; decision 4(1)-(3) keeps full copies of its pages out of the tree once fold 9\'s trim and artifact route exist), "allowed" when they were read and bar none of it, and "unread" otherwise, which is not "allowed" (decision 4(2)); and the note of a NO_TERMS or TERMS_PENDING site whose terms page could not be read opens with its kind word, refusal-type, exhaustive-negative, unanswered, shell or "deferred to <site>" (decision 3(1)).';
+  /**
+   * The secondary quotes and line citations of the six read notes: the frozen copy (or another file), the line, words the
+   * line holds, and the fragment of the note that cites it (the words in it when quoted). The decisive clauses are in
+   * DECISIVE; these are the scope, binding and condition lines the verdicts also rest on.
+   */
+  const fz = (slug: string, ext = "txt") => `research/rendered/${slug}-2026-10-06.${ext}`;
+  const SECONDARY: { site: string; file: string; line: number; words: string; cite: string; quoted: boolean }[] = [
+    { site: "devpost.com", file: fz("terms-devpost"), line: 111, words: "the Devpost website, www.devpost.com", cite: 'the Site is "the Devpost website, www.devpost.com" (:111)', quoted: true },
+    {
+      site: "devpost.com",
+      file: fz("terms-devpost"),
+      line: 114,
+      words: "By using and/or visiting our Site, you agree to the terms and conditions outlined in this Agreement",
+      cite: 'visiting binds (:114, "By using and/or visiting our Site, you agree to the terms and conditions outlined in this Agreement")',
+      quoted: true,
+    },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 123, words: "other visitors to the Site", cite: 'Users include "other visitors to the Site" (:123)', quoted: true },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 128, words: "“Hackathon Content” means User Content", cite: "Hackathon Content is User Content (:128)", quoted: false },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 129, words: "Hackathon Website", cite: "the hackathon pages sit inside it (:129, :170, :185)", quoted: false },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 170, words: "Hackathon Website", cite: "the hackathon pages sit inside it (:129, :170, :185)", quoted: false },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 185, words: "Hackathon Website", cite: "the hackathon pages sit inside it (:129, :170, :185)", quoted: false },
+    {
+      site: "devpost.com",
+      file: fz("terms-devpost"),
+      line: 143,
+      words: "All Users agree NOT to post or make available content",
+      cite: 'in the list "All Users agree NOT to post or make available content" of :143',
+      quoted: true,
+    },
+    {
+      site: "devpost.com",
+      file: fz("terms-devpost"),
+      line: 252,
+      words: "Unauthorized copying or use of any Devpost Content or Intellectual Property Rights without the express written consent of Devpost is strictly prohibited.",
+      cite: '"Unauthorized copying or use of any Devpost Content or Intellectual Property Rights without the express written consent of Devpost is strictly prohibited." (:252)',
+      quoted: true,
+    },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 250, words: "the “Devpost Content”", cite: ":250 bars transmitting Devpost Content", quoted: false },
+    {
+      site: "zindi.africa",
+      file: fz("terms-zindi"),
+      line: 47,
+      words: "the legitimate purpose of building and submitting a Competition solution",
+      cite: ':47 limits content downloaded from the Website to "the legitimate purpose of building and submitting a Competition solution"',
+      quoted: true,
+    },
+    {
+      site: "zindi.africa",
+      file: fz("terms-zindi"),
+      line: 74,
+      words: "Any use of the Website not expressly permitted by these Terms of Use",
+      cite: ':74 makes "Any use of the Website not expressly permitted by these Terms of Use" a breach',
+      quoted: true,
+    },
+    {
+      site: "zindi.africa",
+      file: fz("terms-zindi"),
+      line: 14,
+      words: "your access to and use of www.zindi.africa, including any content, functionality and services offered on or through www.zindi.africa",
+      cite: '"your access to and use of www.zindi.africa, including any content, functionality and services offered on or through www.zindi.africa" (:14)',
+      quoted: true,
+    },
+    { site: "zindi.africa", file: fz("terms-zindi"), line: 15, words: "By using the Website, you accept and agree to be bound", cite: "bind on use (:15)", quoted: false },
+    { site: "zindi.africa", file: fz("terms-zindi", "html"), line: 50, words: "https://zindi.world/terms", cite: "research/rendered/terms-zindi-2026-10-06.html:50, https://zindi.world/terms", quoted: true },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 122, words: "for Research Use Only", cite: '"for Research Use Only" (:122)', quoted: true },
+    {
+      site: "grand-challenge.org",
+      file: fz("terms-grand-challenge"),
+      line: 50,
+      words: "solely for scientific or academic purposes",
+      cite: '"solely for scientific or academic purposes" (:50)',
+      quoted: true,
+    },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 124, words: "explicitly NOT for clinical use", cite: "aimed at clinical use (:124)", quoted: false },
+    {
+      site: "grand-challenge.org",
+      file: fz("terms-grand-challenge"),
+      line: 76,
+      words: "Accounts registered by “bots” or other automated methods are not permitted.",
+      cite: '"Accounts registered by “bots” or other automated methods are not permitted." (:76)',
+      quoted: true,
+    },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 56, words: "accesses or uses the Platform", cite: '"accesses or uses the Platform" (:56, :34)', quoted: true },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 34, words: "By using grand-challenge.org, you are agreeing to be bound", cite: '"accesses or uses the Platform" (:56, :34)', quoted: false },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 164, words: "govern your use of", cite: "govern the Platform and its Services (:164)", quoted: false },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 54, words: "hosting an AI challenge", cite: '"hosting an AI challenge" (:54)', quoted: true },
+    {
+      site: "stanford.edu",
+      file: fz("terms-stanford"),
+      line: 97,
+      words: "available at stanford.edu, stanfordalumni.org or other Stanford sites",
+      cite: '"available at stanford.edu, stanfordalumni.org or other Stanford sites" (:97)',
+      quoted: true,
+    },
+    { site: "stanford.edu", file: fz("terms-stanford"), line: 99, words: "any Stanford-affiliated entity", cite: '"any Stanford-affiliated entity" (:99)', quoted: true },
+    {
+      site: "virtualembryo.ai",
+      file: fz("terms-virtualembryo"),
+      line: 43,
+      words: "Reverse engineer, disrupt, or attack the Services.",
+      cite: '"Reverse engineer, disrupt, or attack the Services." (:43)',
+      quoted: true,
+    },
+    {
+      site: "virtualembryo.ai",
+      file: fz("terms-virtualembryo"),
+      line: 54,
+      words: "All website content, datasets, documentation, software, graphics, logos, and trademarks remain the property of the organizers or their licensors unless otherwise stated.",
+      cite: ':54 is an ownership notice ("All website content, datasets, documentation, software, graphics, logos, and trademarks remain the property of the organizers or their licensors unless otherwise stated.")',
+      quoted: true,
+    },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 55, words: "Participants may use released competition materials only", cite: ":55 limits participants' use of released competition materials", quoted: false },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 84, words: "Challenge Rules", cite: "separate from the Challenge Rules (:84)", quoted: true },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 14, words: "(collectively, the “Services”)", cite: "documentation included (:14, :16)", quoted: false },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 16, words: "documentation", cite: "documentation included (:14, :16)", quoted: true },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 75, words: "https://virtualembryo.ai", cite: "at https://virtualembryo.ai (:75)", quoted: true },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 45, words: "Violate applicable laws or the Official Rules.", cite: "violating them is barred to every user (:45)", quoted: false },
+    {
+      site: "virtualembryo.ai",
+      file: fz("terms-virtualembryo"),
+      line: 109,
+      words: "Lab, Stanford University. All rights reserved.",
+      cite: 'the page\'s footer reads "© 2026 … Lab, Stanford University. All rights reserved." (:109)',
+      quoted: true,
+    },
+    {
+      site: "virtualembryo.ai",
+      file: fz("terms-stanford"),
+      line: 97,
+      words: "available at stanford.edu, stanfordalumni.org or other Stanford sites",
+      cite: 'govern any website "available at stanford.edu, stanfordalumni.org or other Stanford sites" (research/rendered/terms-stanford-2026-10-06.txt:97)',
+      quoted: true,
+    },
+    { site: "virtualembryo.ai", file: fz("terms-stanford"), line: 99, words: "any Stanford-affiliated entity", cite: '"Stanford" including "any Stanford-affiliated entity" (:99)', quoted: true },
+    {
+      site: "virtualembryo.ai",
+      file: fz("terms-stanford"),
+      line: 125,
+      words: "only for User’s own personal, non-commercial use",
+      cite: 'allow download "only for User’s own personal, non-commercial use" (:125)',
+      quoted: true,
+    },
+    { site: "eurocontrol.int", file: fz("terms-eurocontrol"), line: 433, words: "Disclaimers", cite: 'the footer\'s "Disclaimers" item (:433)', quoted: true },
+    { site: "eurocontrol.int", file: fz("terms-eurocontrol"), line: 439, words: "© EUROCONTROL", cite: 'the bare footer "© EUROCONTROL" (:439)', quoted: true },
+    {
+      site: "eurocontrol.int",
+      file: fz("terms-eurocontrol", "html"),
+      line: 1961,
+      words: 'href="/info/disclaimers"',
+      cite: 'its link is https://www.eurocontrol.int/info/disclaimers (href="/info/disclaimers" at research/rendered/terms-eurocontrol-2026-10-06.html:1961 and :2830)',
+      quoted: true,
+    },
+    {
+      site: "eurocontrol.int",
+      file: fz("terms-eurocontrol", "html"),
+      line: 2830,
+      words: 'href="/info/disclaimers"',
+      cite: 'its link is https://www.eurocontrol.int/info/disclaimers (href="/info/disclaimers" at research/rendered/terms-eurocontrol-2026-10-06.html:1961 and :2830)',
+      quoted: true,
+    },
+    {
+      site: "eurocontrol.int",
+      file: "research/channel-loop/terms/ansperformance-disclaimer-2026-10-05.md",
+      line: 28,
+      words: "It may be copied in whole or in part",
+      cite: "the copyright notice of ansperformance.eu's data (research/channel-loop/terms/ansperformance-disclaimer-2026-10-05.md:28)",
+      quoted: false,
+    },
+    {
+      site: "ansperformance.eu",
+      file: fz("terms-eurocontrol"),
+      line: 367,
+      words: "Website Privacy Policy",
+      cite: 'its contents headed "Website Privacy Policy" (research/rendered/terms-eurocontrol-2026-10-06.txt:367)',
+      quoted: true,
+    },
+  ];
   /** Decision 3(1)'s five kinds, by the first word of the note. */
   const KIND = /^(refusal-type|exhaustive-negative|unanswered|shell|deferred to [a-z0-9.-]+)\b/;
   /** The kind word fold 2 and this reading give each named site. */
@@ -1511,18 +1722,100 @@ describe("tick 54: the terms read on 6.10", () => {
     const raw = JSON.parse(readFileSync(VERDICTS, "utf8"));
     for (const [site, e] of Object.entries(v)) expect(["barred", "allowed", "unread"], site).toContain(e.copying);
     const barred = Object.keys(v).filter((s) => v[s].copying === "barred").sort();
-    expect(barred).toEqual([...Object.keys(RULING_COPY_BARRED), ...Object.keys(READ_COPY_BARRED)].sort());
+    expect(barred).toEqual([...Object.keys(RULING_COPY_BARRED), ...Object.keys(READ_COPY_BARRED), ...Object.keys(REVIEW_COPY_BARRED)].sort());
     for (const [site, cite] of Object.entries({ ...RULING_COPY_BARRED, ...READ_COPY_BARRED })) expect(v[site].note, site).toContain(cite);
+    // The review's two: the note cites the file and line, which hold the clause the note quotes.
+    for (const [site, { file, line }] of Object.entries(REVIEW_COPY_BARRED)) {
+      expect(v[site].note, site).toContain(`(${file}:${line})`);
+      expect(v[site].note, site).toMatch(/^copying barred \(tick-54 review; |\. Copying barred \(tick-54 review; /);
+      expect(readFileSync(file, "utf8").split("\n")[line - 1], site).toContain(COPY_CLAUSE[site].slice(1, -1));
+    }
+    expect(v["tipalti.com"].note).toContain("the clause TERMS_BARRED in scripts/render-watch.mjs rests on");
+    expect(termsBarred("tipalti.com")?.why).toContain("research/rendered/terms-tipalti-website.txt:245");
+    // A clause quoted only as a caveat beside a verdict resting on something else waits for fold 10(i).
+    for (const [site, words] of Object.entries(CAVEAT_UNREAD)) {
+      expect(v[site].copying, site).toBe("unread");
+      expect(v[site].note, site).toContain(words);
+    }
     for (const site of Object.keys(RULING_COPY_BARRED)) expect(v[site].note, site).toContain("copying barred (ruling 6.10 row 21 (d), decision 4(2))");
     for (const [site, words] of Object.entries(COPY_CLAUSE)) expect(v[site].note, site).toContain(words);
     expect(Object.keys(v).filter((s) => v[s].copying === "allowed")).toEqual(["virtualembryo.ai"]);
     expect(v["virtualembryo.ai"].note).toContain("copying: allowed, read 6.10");
-    expect(Object.keys(v).filter((s) => v[s].copying === "unread")).toHaveLength(Object.keys(v).length - 9);
+    expect(Object.keys(v).filter((s) => v[s].copying === "unread")).toHaveLength(Object.keys(v).length - 11);
     // The field sits after "note" (or after "checked" when there is none) in every entry, and the _about says what it is.
     for (const [site, e] of Object.entries(raw.sites as Record<string, Entry>)) expect(Object.keys(e).at(-1), site).toBe("copying");
     expect(raw._about).toContain('every entry carries a fifth field after "note", "copying"');
+    expect(raw._about.endsWith(` ${ABOUT_COPYING}`)).toBe(true);
     expect(raw._about).toContain("which is not \"allowed\" (decision 4(2))");
     expect(raw._about).toContain('refusal-type, exhaustive-negative, unanswered, shell or "deferred to <site>" (decision 3(1))');
+  });
+
+  it("ties every secondary quote and line citation of the read notes to its line, the words there and in the note", () => {
+    const v = verdicts();
+    const lines = new Map<string, string[]>();
+    for (const { site, file, line, words, cite, quoted } of SECONDARY) {
+      if (!lines.has(file)) lines.set(file, readFileSync(file, "utf8").split("\n"));
+      expect(lines.get(file)![line - 1], `${file}:${line}`).toContain(words);
+      expect(v[site].note, `${site} :${line}`).toContain(cite);
+      expect(cite, `${site} :${line}`).toMatch(new RegExp(`:${line}(?!\\d)`));
+      if (quoted) expect(cite, `${site} :${line}`).toContain(words);
+    }
+    expect(SECONDARY.filter((s) => s.site === "eurocontrol.int").map((s) => s.line)).toEqual([433, 439, 1961, 2830, 28]);
+  });
+
+  it("answers the terms-read review: ansperformance's second document, eurocontrol's Disclaimers link and R1 record, virtualembryo's Stanford question", () => {
+    const v = verdicts();
+    const audit = readFileSync(AUDIT, "utf8");
+    const read = audit.slice(audit.indexOf("## Terms read (6.10.2026, tick 54)"));
+    const row = (site: string) => read.split("\n").find((l) => l.startsWith(`| \`${site}\` | `))!;
+    // ansperformance.eu: its second linked document was read 6.10 and is a privacy notice only.
+    const ans = v["ansperformance.eu"].note!;
+    expect(ans).toContain(
+      "the footer's second document, EUROCONTROL's 'Privacy statement' (footer.html:222-224), does not stand in the way: it was read on 6.10 (tick 54) and is a privacy notice only",
+    );
+    expect(ans).toContain("(eurocontrol.int's entry, NO_TERMS since 6.10)");
+    expect(ans).not.toContain("TERMS_PENDING page");
+    expect(v["ansperformance.eu"].verdict).toBe("CONDITIONAL_UNMET");
+    // eurocontrol.int: the Disclaimers link is in the frozen HTML, the R1 record's two missing steps, and the open question,
+    // which holds the verdict at NO_TERMS until the main thread answers it (robots-verdict.mjs keeps the note).
+    const eu = v["eurocontrol.int"].note!;
+    expect(eu).not.toContain("holds no URL");
+    expect(eu).toContain(
+      "The tick-54 review found the record short of R1's list in two steps: the tick-45 URL record (TERMS-AUDIT-2026-10-05-prize-events.md, eurocontrol.int's entries) lists the euctrl-pru organisation, the eurocontrol organisation's repository listing, two repository searches and a user search, but no grep of their repositories' contents for terms, legal, privacy, impressum or mentions légales files, and no search of this repository",
+    );
+    const OPEN = "Open for the main thread before scripts/robots-verdict.mjs is run on the row-265 probe: whether the Disclaimers page is read first.";
+    expect(eu.endsWith(OPEN)).toBe(true);
+    expect(v["eurocontrol.int"].verdict).toBe("NO_TERMS");
+    for (const u of ["https://github.com/euctrl-pru`", "https://github.com/orgs/eurocontrol/repositories?type=all`", "https://github.com/search?type=users&q=eurocontrol`"]) {
+      expect(audit, u).toContain(u);
+    }
+    const euRow = row("eurocontrol.int");
+    expect(euRow).toContain("(:433; its link, /info/disclaimers, is at `research/rendered/terms-eurocontrol-2026-10-06.html:1961` and :2830)");
+    expect(euRow).toContain("The tick-54 review found the record short of R1's list in two steps");
+    expect(euRow).toContain("Whether the Disclaimers page is read before `scripts/robots-verdict.mjs` runs on the row-265 probe is open for the main thread.");
+    // virtualembryo.ai: the Stanford scope question, open for the main thread before its rules page is dispatched.
+    const ve = v["virtualembryo.ai"].note!;
+    expect(ve).toContain("Open for the main thread (tick-54 review): ");
+    expect(ve).toContain(
+      "Neither the reader nor the verifier weighed whether virtualembryo.ai is such a site; the main thread rules on it before the rules page (the /challenge line, the one URL prize-dispatch --skip-captured offers) is dispatched, and if it is, this site takes stanford.edu's verdict and copying field.",
+    );
+    expect(v["virtualembryo.ai"].verdict).toBe("NOT_BARRED");
+    expect(row("virtualembryo.ai")).toContain("Open for the main thread (tick-54 review): the footer names a Stanford University lab");
+    // kaggle.com: the --js --terms-shell route was built 6.10 (the base this branch merged), not "being built".
+    expect(v["kaggle.com"].note).toContain("(decision 3(2); built 6.10, commit 5a3ee24)");
+    expect(v["kaggle.com"].note).not.toContain("being built");
+    expect(readFileSync("scripts/queue-zero-test.mjs", "utf8")).toContain("--terms-shell");
+    expect(row("kaggle.com")).toContain("(built 6.10, commit 5a3ee24)");
+    // The audit's copying paragraph counts the review's two and names the caveat-only sites.
+    expect(audit).toContain('"allowed" for virtualembryo.ai, and "unread" for the other 121, which is not "allowed".');
+    expect(audit).toContain("for the two other sites whose verdicts already rested on a read copying clause (codabench.org,");
+    expect(Object.keys(v).length - 11).toBe(121);
+    // No note or row names a person: the footer's words before " Lab," (the lab's name) stay out of both.
+    const footer = readFileSync(fz("terms-virtualembryo"), "utf8").split("\n")[108];
+    const named = footer.slice(0, footer.indexOf(" Lab,"));
+    expect(named.length).toBeGreaterThan("© 2026 ".length);
+    expect(ve.includes(named)).toBe(false);
+    expect(row("virtualembryo.ai").includes(named)).toBe(false);
   });
 
   it("opens every NO_TERMS and TERMS_PENDING note with its kind word, but for the sites no kind fits yet, which are named", () => {
