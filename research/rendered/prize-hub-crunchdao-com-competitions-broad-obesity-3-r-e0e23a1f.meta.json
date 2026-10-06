@@ -1,0 +1,20 @@
+{
+  "url": "https://hub.crunchdao.com/competitions/broad-obesity-3?ref=mlcontests",
+  "slug": "prize-hub-crunchdao-com-competitions-broad-obesity-3-r-e0e23a1f",
+  "fetchedAt": "2026-10-06T08:46:41.001Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 251296,
+  "sha256": "b20979b836f07439582f78cf744dab1a51c687cb322ddf18919863ecb6c5b238",
+  "truncated": false,
+  "redacted": 5,
+  "error": null,
+  "bodyPath": "research/rendered/prize-hub-crunchdao-com-competitions-broad-obesity-3-r-e0e23a1f.html",
+  "textPath": "research/rendered/prize-hub-crunchdao-com-competitions-broad-obesity-3-r-e0e23a1f.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://hub.crunchdao.com/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

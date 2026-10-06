@@ -1,0 +1,595 @@
+Competitions – IJCAI 2026
+
+Skip to content
+
+Program
+
+At a Glance
+
+Full Program
+
+Video Recordings
+
+Accepted Papers
+
+Awards
+
+Competitions
+
+Doctoral Consortium
+
+D&I Activities
+
+IJCAI-26 Awards
+
+Industry Day
+
+Invited Talks
+
+Tutorials
+
+Outreach
+
+Workshops
+
+Calls (expired)
+
+Main Track CFP
+
+Special Track – AI4Tech
+
+Special Track – AI and Health
+
+Special Track – AI and Robotics
+
+Special Track – AI and Social Good
+
+Special Track – Human-Centred AI
+
+Survey Track
+
+Competitions And Challenges
+
+Demonstrations Track
+
+Doctoral Consortium
+
+Workshops
+
+Tutorials
+
+Early Career Spotlights
+
+D&I activities
+
+Call for Nominations: IJCAI-2026 Awards
+
+Grants & Volunteering
+
+Call For Grant Applications
+
+Call For Volunteers
+
+Join
+
+Call for PC Members
+
+Call for SPC Members
+
+FAQ
+
+Submissions FAQ
+
+Author’s Response FAQ
+
+Registration FAQ
+
+Attending
+
+Registration
+
+Registration Information
+
+Disclaimer
+
+Registration FAQ
+
+PPI Reviewer Benefits
+
+Social Events
+
+Travelling
+
+Venues
+
+Visa Information
+
+Hotel Booking
+
+Organization
+
+Conference Committee
+
+Program Committee
+
+Local Arrangements Committee
+
+Contact
+
+Press
+
+Sponsorship
+
+Sponsors
+
+Sponsorship Opportunities
+
+Exhibitors
+
+Exhibition Opportunities
+
+Video Recordings
+
+Program
+
+At a Glance
+
+Full Program
+
+Video Recordings
+
+Accepted Papers
+
+Awards
+
+Competitions
+
+Doctoral Consortium
+
+D&I Activities
+
+IJCAI-26 Awards
+
+Industry Day
+
+Invited Talks
+
+Tutorials
+
+Outreach
+
+Workshops
+
+Calls (expired)
+
+Main Track CFP
+
+Special Track – AI4Tech
+
+Special Track – AI and Health
+
+Special Track – AI and Robotics
+
+Special Track – AI and Social Good
+
+Special Track – Human-Centred AI
+
+Survey Track
+
+Competitions And Challenges
+
+Demonstrations Track
+
+Doctoral Consortium
+
+Workshops
+
+Tutorials
+
+Early Career Spotlights
+
+D&I activities
+
+Call for Nominations: IJCAI-2026 Awards
+
+Grants & Volunteering
+
+Call For Grant Applications
+
+Call For Volunteers
+
+Join
+
+Call for PC Members
+
+Call for SPC Members
+
+FAQ
+
+Submissions FAQ
+
+Author’s Response FAQ
+
+Registration FAQ
+
+Attending
+
+Registration
+
+Registration Information
+
+Disclaimer
+
+Registration FAQ
+
+PPI Reviewer Benefits
+
+Social Events
+
+Travelling
+
+Venues
+
+Visa Information
+
+Hotel Booking
+
+Organization
+
+Conference Committee
+
+Program Committee
+
+Local Arrangements Committee
+
+Contact
+
+Press
+
+Sponsorship
+
+Sponsors
+
+Sponsorship Opportunities
+
+Exhibitors
+
+Exhibition Opportunities
+
+Video Recordings
+
+Competitions
+
+Competition Sessions
+
+Room Sessions: Room 4.1 A
+
+18 August 2026 Tuesday
+
+20 August 2026 Thursday
+
+21 August 2026 Friday
+
+11:30–12:30
+GearXAI: An Explainable Neuro-Symbolic Gearbox Fault Diagnosis Challenge
+
+10:00–12:00
+The 17th Automated Negotiating Agents Competition (ANAC 2026)
+
+10:00–12:00
+The FREUID Challenge 2026
+
+15:00–16:30
+CAR-bench: Building Reliable LLM Agents Under Real-World Uncertainty
+
+12:10–12:30
+Industrial Automation Challenge: Benchmarking Physics-Grounded LLMs for Task Reasoning
+
+16:35–18:00
+The 2026 NeuroGolf Championship
+
+15:00–17:00
+The 6th International Mahjong AI Competition
+
+Booth Sessions: Competition Booth Sessions
+
+18 August 2026 Tuesday
+
+19 August 2026 Wednesday
+
+20 August 2026 Thursday
+
+21 August 2026 Friday
+
+09:30–15:00
+The Underwater Robotics AI Challenge: Connecting Research, Industry, and Applications
+
+10:00–12:30
+The 6th International Mahjong AI Competition
+
+10:00–12:00
+AI Olympics with RealAIGym: Benchmarking Global Swing-Up Policies on CloudPendulum Hardware
+
+14:30–15:30
+The FREUID Challenge 2026
+
+15:00–17:00
+The 17th Automated Negotiating Agents Competition (ANAC 2026)
+
+15:00–17:00
+Industrial Automation Challenge: Benchmarking Physics-Grounded LLMs for Task Reasoning
+
+The 2nd Challenge on Deepfake Detection, Localization, and Interpretability
+
+Deepfake realism has spurred numerous detection competitions, but most emphasize image-level classification, overlooking spatial localization and interpretable trace analysis. The localization of manipulated regions improves the explainability of decisions, and the increasing number of multimodal forgeries increases the risk. We introduce the Deepfake Detection, Localization, and Explainability Challenge, supported by a large-scale multimodal deepfake description dataset that leverages Qwen3-VL to enrich the DDL-I corpus and advances spatial localization and explainability.
+
+Website:
+https://ai-safety-workshop-ijcai2026.github.io/Track3.html
+
+Timeline:
+
+Competition Announcement & Registration Opens: April 22, 2026
+
+Training Data & Validation Data Released: April 24, 2026
+
+Test Data Released & Registration Closed: May 15, 2026
+
+Test Period Ends: June 8, 2026
+
+Submission of Solutions and Papers: June 15, 2026
+
+The OpenClaw Security Attack and Defense Challenge
+
+With the rapid advancement of AI agent frameworks such as OpenClaw, autonomous task execution offers significant user convenience while introducing unprecedented security risks. As agents gain the ability to perform system-level autonomous operations, mitigating threats such as prompt injection attacks, skill poisoning, and supply chain vulnerabilities has become a critical challenge. The OpenClaw Security Attack-and-Defense Challenge focuses on practical offensive and defensive techniques within AI agent environments, bringing together global security researchers to explore adversarial methods and defenses in AI agent security.
+
+Website:
+https://ai-safety-workshop-ijcai2026.github.io/Track1.html
+
+Timeline:
+
+Competition Announcement & Registration Opens: April 22, 2026
+
+Test Phase 1: May 10, 2026
+
+Test Phase 2: June 1, 2026
+
+Test Period Ends: June 8, 2026
+
+Submission of Solutions and Papers: June 12, 2026
+
+The 6th International Mahjong AI Competition
+
+In this competition, participants will develop a Mahjong AI that can compete with other agents and human players on Botzone, an online AI platform. The Mahjong Competition Rules are based on Chinese Mahjong Competition Rules, also known as Chinese Official Mahjong. A sample game-playing agent and judge program are provided for learning and debugging. Winners and rankings will be determined after two rounds of competition.
+
+Website:
+https://botzone.org.cn/static/gamecontest2026a.html
+
+Timeline:
+
+Registration Deadline / Simulation Round Ends: June 9, 2026 GMT+8
+
+Round 1 / Tournament Round: June 9, 2026 GMT+8
+
+Round 1 Results Announced: June 16, 2026 GMT+8
+
+Round 2 / Final Round: July 7, 2026 GMT+8
+
+Final Results Announcement: July 14, 2026 GMT+8
+
+The 2026 NeuroGolf Championship
+
+Today’s AI systems perform well on familiar tasks but often struggle to generalize to new ones. This competition uses the ARC-AGI-1 public training subset to build highly optimized neural networks, where each assembly of tensor operations acts as a synthesized program describing a puzzle’s mechanics. Contestants submit ONNX-formatted networks that are strictly correct, while minimizing parameter count, computational complexity, and memory footprint.
+
+Website:
+https://kaggle.com/competitions/neurogolf-2026
+
+Timeline:
+
+Start Date: April 15, 2026
+
+Entry Deadline: July 8, 2026
+
+Team Merger Deadline: July 8, 2026
+
+Final Submission Deadline: July 15, 2026
+
+The 5th Remote Physiological Signal Sensing Challenge — RePSS beyond Visible Light
+
+The RePSS challenge focuses on contactless physiological signal sensing from sources including visible-light videos, infrared videos, and radar. Facial videos contain subtle color changes induced by heartbeats, revealing remote photoplethysmography signals, while radar can detect subtle chest motion to measure heartbeat and respiration. The challenge brings together interdisciplinary researchers to advance robust physiological signal extraction and provide a fair platform for competition and resource sharing.
+
+Website:
+https://www.kaggle.com/competitions/the-5th-repss ;
+https://www.kaggle.com/competitions/the-5th-repss-t2
+
+Timeline:
+
+Challenge Opening Online: April 28, 2026
+
+Pretraining and Training Data Released: May 15, 2026
+
+Team Registration Deadline: May 28, 2026
+
+Testing and Validation Data Released: June 4, 2026
+
+Final Test Submission Deadline: June 18, 2026
+
+Paper Submission Deadline: June 25, 2026
+
+Notification to Authors: July 7, 2026
+
+Camera Ready Submission Deadline: July 14, 2026
+
+GearXAI: An Explainable Neuro-Symbolic Gearbox Fault Diagnosis Challenge
+
+GearXAI is a single-track IJCAI-ECAI 2026 competition focused on explainable and neuro-symbolic approaches for multiclass gearbox fault diagnosis from vibration time series. Participants submit ONNX models evaluated in CPU-only, containerized runs for reproducible inference. Submissions must meet a minimum predictive-performance requirement, after which ranking is determined by an automated explainability score measuring faithfulness and stability.
+
+Website:
+https://gearxai-ijcai-ecai2026.pages.dev/
+
+Timeline:
+
+Call for Participation, Baseline, Dataset Details, and Development Evaluator Release: Late April / Early May 2026
+
+Development Phase and Leaderboard Submissions: May 2026 to June 30, 2026
+
+Final Submission Deadline: July 15, 2026, 23:59 AoE
+
+Winner Notification: July 25, 2026
+
+On-site GearXAI Session at IJCAI-ECAI 2026 in Bremen: August 15–21, 2026
+
+CAR-bench: Building Reliable LLM Agents Under Real-World Uncertainty
+
+CAR-bench is an academic competition dedicated to LLM agent reliability and limit-awareness, evaluating agents as automotive in-car voice assistants. It tests base multi-turn task completion, hallucination resistance under missing capabilities, and disambiguation of ambiguous requests. Agents chain calls across tools and policies in a mutable environment while interacting with an LLM-simulated user. The competition includes an Open Track and a Cerebras Fast-Reasoning Track.
+
+Website:
+https://car-bench.github.io/car-bench/
+
+Timeline:
+
+Competition Announcement & Registration Opens: May 4, 2026
+
+1st Evaluation on Hidden Test Set: July 10, 2026
+
+Final Evaluation on Hidden Test Set: July 19, 2026
+
+Technical Report Submission Deadline: July 26, 2026
+
+Award Winners Announced: July 31, 2026
+
+The FREUID Challenge 2026
+
+The FREUID Challenge 2026 addresses identity document fraud detection across a realistic threat surface combining physical manipulations, GenAI-driven multimodal edits, and print-and-capture forgeries. Built on the FREUID dataset from the Microblink Fraud Lab, it spans under-represented document types to test cross-domain generalization and reward robust detectors. Submissions are ranked by AuDET and APCER at 1% BPCER on a private test set, with a public validation leaderboard.
+
+Website:
+https://freuid2026.microblink.com
+
+Timeline:
+
+Call for Participation & Registration Opens: May 11, 2026
+
+Dataset Released: June 8, 2026
+
+Registration Closes: July 13, 2026
+
+Final Submission Deadline: July 27, 2026
+
+Preliminary Results & Feedback Window: August 3, 2026
+
+Final Winner Announcement: August 10, 2026
+
+Live Showdown & Award Ceremony: August 18–21, 2026
+
+The 17th Automated Negotiating Agents Competition — ANAC 2026
+
+The Automated Negotiating Agent Competition brings together researchers from the negotiation community and provides a benchmark for evaluating practical negotiation strategies in multi-issue domains. ANAC encourages the development of effective negotiation protocols and strategies for bidding, accepting, and opponent modeling. This year includes the Automated Negotiation League, Supply Chain Management League, and Human Agent Negotiation League.
+
+Website:
+https://web.tuat.ac.jp/~katfuji/ANAC2026/
+
+Timeline:
+
+Submission Deadline for the Competition: June 1, 2026
+
+Notification of Finalists: June 15, 2026
+
+Competition Session: August 15–21, 2026
+
+AI Olympics with RealAIGym: Benchmarking Global Swing-Up Policies on CloudPendulum Hardware
+
+The 4th AI Olympics with RealAIGym provides a reproducible hardware benchmark for robotics and reinforcement learning. Teams develop and showcase controllers for a standardized task: swinging up and stabilizing a double pendulum from any configuration. Participants will train controllers on real hardware and compete against baseline controllers.
+
+Website:
+https://ai-olympics.dfki-bremen.de/
+
+Timeline:
+
+Website Online and Competition Advertised: May 1, 2026
+
+Registration Deadline: May 31, 2026
+
+First Stage Solutions and Reports Submitted: May 1 – June 15, 2026
+
+First Stage Winners Announced and Invited to Second Stage: July 1, 2026
+
+Second Stage: July 1 – August 15, 2026
+
+Meeting at IJCAI Conference: August 15–21, 2026
+
+The Underwater Robotics AI Challenge: Connecting Research, Industry, and Applications
+
+This challenge offers participants the opportunity to exchange the latest research ideas in AI-based marine robotics, present their systems to a broad public as part of a competition, and demonstrate what is already possible in the field of underwater AI.
+
+Website:
+https://uw-competition-26.dfki-bremen.de/
+
+Timeline:
+
+Competition Announcement & Registration Opens: May 1, 2026
+
+Training Dataset Released: May 15, 2026
+
+Registration Closed: July 15, 2026
+
+Notification on Participation: July 30, 2026
+
+Date of the Competition: August 18, 2026, tentative
+
+Industrial Automation Challenge: Benchmarking Physics-Grounded LLMs for Task Reasoning
+
+The Industrial Automation Challenge evaluates AI models’ ability to translate raw industrial signal noise into actionable, physics-grounded maintenance narratives. The challenge requires models to use structured industrial context, such as Failure Mode and Effects Analysis, to justify diagnostic decisions through causal reasoning. It includes two tracks: internal model reasoning using native parameters, and agentic tool-augmented reasoning with external industrial tools.
+
+Website:
+https://sites.google.com/view/ai-industrial-challenge-ijcai/home
+
+Timeline:
+
+Call for Participation Release: June 1, 2026
+
+Dataset and Baseline Release: June 15, 2026
+
+Submission Deadline: August 1, 2026
+
+Winner Notification: August 15, 2026
+
+2nd Challenge for 4D Micro-Expression Analysis for Mind Reading — 4DMR
+
+This challenge uses 4D facial analysis to study subtle, rapid, involuntary micro-expressions that reveal concealed emotions. Unlike traditional 2D or static 3D approaches, 4D analysis captures temporal evolution in 3D space. The challenge includes two tracks: Micro-expression Recognition and Micro-expression Action Unit Detection, both framed as multi-label classification tasks.
+
+Website:
+https://www.kaggle.com/competitions/4-dma-ijcai-workshop-challenge-2026/overview
+
+Timeline:
+
+Registration Opens: April 29, 2025
+
+Challenge Start / Dataset Release: May 2, 2025
+
+Submission Deadline: May 29, 2025
+
+Evaluation Period: May 29–31, 2025
+
+Final Results Announced: June 5, 2025
+
+The 2nd Travel Itinerary Planning Challenge for AI Agent
+
+This challenge evaluates agents’ ability to generate feasible multi-day itineraries from natural language queries by integrating tools such as flights and hotels while satisfying complex spatial, temporal, and financial constraints. The 2026 challenge builds on the ChinaTravel benchmark and includes two tracks: Travel Planning and Agentic Skill Development, which focuses on specialized tool-use plugins for commercial agentic platforms.
+
+Website:
+https://chinatravel-competition.github.io/IJCAI2026/#overview
+
+Timeline:
+
+Data Released and Submission Begins: May 31, 2026
+
+Phase 1 Submission Deadline: July 15, 2026
+
+Phase 2 Submission: July 16–31, 2026
+
+Paper / Technical Report Submission Deadline: August 5, 2026
+
+Final Results Notification at IJCAI 2026: August 15, 2026
+
+IJCAI - International Joint Conferences on Artificial Intelligence
+
+Copyright © 2025 IJCAI

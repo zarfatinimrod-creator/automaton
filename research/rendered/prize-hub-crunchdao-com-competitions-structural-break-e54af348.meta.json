@@ -1,0 +1,20 @@
+{
+  "url": "https://hub.crunchdao.com/competitions/structural-break-real-time?ref=mlcontests",
+  "slug": "prize-hub-crunchdao-com-competitions-structural-break-e54af348",
+  "fetchedAt": "2026-10-06T08:46:56.914Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 245203,
+  "sha256": "d1f2d48ab06cb635e082400d6901f65f2ca0868d33008e616f8c02470be9c664",
+  "truncated": false,
+  "redacted": 5,
+  "error": null,
+  "bodyPath": "research/rendered/prize-hub-crunchdao-com-competitions-structural-break-e54af348.html",
+  "textPath": "research/rendered/prize-hub-crunchdao-com-competitions-structural-break-e54af348.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://hub.crunchdao.com/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

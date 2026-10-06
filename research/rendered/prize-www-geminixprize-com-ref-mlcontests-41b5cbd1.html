@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-85PZYD07D8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-85PZYD07D8');
+</script>
+
+<!-- Home is served at the site root (geminixprize.com/). Use absolute /assets/...
+     and /rules paths so they resolve identically from the root and from /rules. -->
+<title>Build With Gemini XPRIZE - $2M in prizes. Pick a problem worth solving.</title>
+<meta name="description" content="Build a real AI business in 90 days. $2M in prizes across 25 winners. Launched at Google I/O on May 19, 2026. Presented by XPRIZE × Google." />
+<meta name="theme-color" content="#0B0E0C" />
+<link rel="canonical" href="https://www.geminixprize.com" />
+
+<!-- Open Graph (Facebook, LinkedIn, Slack, Discord, iMessage) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Build with Gemini XPRIZE" />
+<meta property="og:url" content="https://www.geminixprize.com" />
+<meta property="og:title" content="Build with Gemini XPRIZE — $2M, 90 days, build a real AI business" />
+<meta property="og:description" content="Pick a problem worth solving. Build a real business with AI. $2M in prizes across 25 winners. Launched at Google I/O on May 19, 2026." />
+<meta property="og:image" content="https://www.geminixprize.com/assets/og-image-v3.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="675" />
+<meta property="og:image:alt" content="Build with Gemini XPRIZE hero — 90 days. Pick a problem worth solving. Build a real business with AI. $2M in prizes." />
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Build with Gemini XPRIZE — $2M, 90 days, build a real AI business" />
+<meta name="twitter:description" content="Pick a problem worth solving. Build a real business with AI. $2M in prizes. Launched at Google I/O on May 19, 2026." />
+<meta name="twitter:image" content="https://www.geminixprize.com/assets/og-image-v3.png" />
+
+<link rel="icon" type="image/png" href="/assets/xprize-mark.png" />
+<link rel="apple-touch-icon" href="/assets/xprize-mark.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://unpkg.com" crossorigin />
+<link rel="preload" as="image" href="/assets/lockup-white-v2.svg" />
+<link rel="preload" as="image" href="/assets/wordmark-white.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=VT323&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --cyan: #1BBFE0;
+    --cyan-soft: #A2DDEB;
+    --black: #000000;
+    --near-black: #0B0E0C;
+    --dark-gray: #2C3630;
+    --mid-gray: #7D8D83;
+    --off-white: #FAFAFA;
+    --white: #FFFFFF;
+    --border: rgba(0,0,0,0.08);
+    --border-dark: rgba(255,255,255,0.12);
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-pixel: 'VT323', 'Courier New', monospace;
+    --tracking-tight: -0.04em;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* Note: `scroll-behavior: smooth` on html breaks native anchor scroll entirely in
+     Chrome on this page (likely a smooth-scroll bug interacting with the document
+     dimensions / overflow setup). Replaced with JS-driven smooth scroll on nav-link
+     clicks via element.scrollIntoView, which is unaffected. */
+  body {
+    font-family: var(--font-sans);
+    background: var(--near-black);
+    color: var(--white);
+    line-height: 1.5;
+    letter-spacing: var(--tracking-tight);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;               /* mobile safety: never allow horizontal scroll.
+                                        Using `clip` (not `hidden`) so we don't create a
+                                        scroll container that would break the smooth-scroll
+                                        anchor-link behavior from `html { scroll-behavior: smooth }`. */
+    overflow-wrap: break-word;
+    -webkit-text-size-adjust: 100%; /* prevent iOS auto-zoom on landscape */
+  }
+  img, picture, svg, video { max-width: 100%; height: auto; }
+  ::selection { background: var(--cyan); color: var(--near-black); }
+  a { color: inherit; text-decoration: none; }
+
+  /* Accessible focus ring — cyan, 2px, brand-matched. System default is a
+     low-contrast blue that's hard to see on the dark hero. `:focus-visible` only
+     shows the ring for keyboard navigation, not mouse clicks (avoids the
+     "selected button" look after a click). */
+  :focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  /* For buttons/links that already have a rounded shape (.btn pills, nav-sheet close),
+     use a slightly bigger offset so the ring sits clearly outside the pill. */
+  .btn:focus-visible, .nav-hamburger:focus-visible, .nav-sheet__close:focus-visible,
+  .cookie-banner__btn:focus-visible {
+    outline-offset: 4px;
+  }
+
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+  @media (max-width: 720px) { .container { padding: 0 20px; } }
+
+  section { padding: 112px 0; border-top: 1px solid var(--border-dark); position: relative; }
+  section.light { background: var(--white); color: var(--near-black); border-top: 1px solid var(--border); }
+  section.light .lead { color: var(--dark-gray); }
+  @media (max-width: 720px) { section { padding: 72px 0; } }
+
+  .eyebrow {
+    font-family: var(--font-pixel);
+    font-size: 18px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow .dot { width: 8px; height: 8px; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 12px var(--cyan); }
+
+  h1, h2, h3 { font-weight: 700; letter-spacing: var(--tracking-tight); line-height: 1.02; }
+  h2 { font-size: clamp(36px, 5vw, 64px); margin-bottom: 24px; max-width: 22ch; line-height: 1.05; }
+  h3 { font-size: 24px; font-weight: 600; line-height: 1.2; margin-bottom: 12px; }
+  .display-xl { font-size: clamp(56px, 9vw, 120px); font-weight: 700; line-height: 0.95; letter-spacing: -0.045em; }
+
+  .lead { font-size: 22px; color: rgba(255,255,255,0.78); max-width: 65ch; line-height: 1.55; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 24px; border-radius: 999px;
+    font-family: var(--font-sans);
+    font-weight: 600; font-size: 16px;
+    letter-spacing: var(--tracking-tight);
+    cursor: pointer; border: none;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--cyan); color: var(--near-black); }
+  .btn-primary:hover { background: #16A8C6; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--white); border: 1px solid var(--border-dark); }
+  .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+  .btn-secondary { background: var(--white); color: var(--near-black); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--off-white); }
+
+  code, .pixel {
+    font-family: var(--font-pixel);
+    text-transform: uppercase;
+  }
+  code {
+    font-size: 17px; background: rgba(27,191,224,0.14);
+    color: var(--cyan); padding: 2px 8px; border-radius: 4px;
+  }
+
+  .grid { display: grid; gap: 20px; }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 880px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+
+  .accent { color: var(--cyan); }
+
+  /* ───────── Live indicator (pulsing cyan dot for the "Builders registered" stat) ───────── */
+  @keyframes pulse-live {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(27,191,224,0.55); }
+    50%      { box-shadow: 0 0 0 7px rgba(27,191,224,0); }
+  }
+  .live-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--cyan); margin-right: 8px; vertical-align: middle;
+    animation: pulse-live 1.6s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot { animation: none; }
+  }
+
+  /* ───────── Hero co-presenter lockup (XPRIZE × Gemini) ───────── */
+  /* Co-presenter lockup — sits BELOW the hero content (after the stats strip),
+     separated by a hairline rule. Moved off the top to de-duplicate the
+     "Build with Gemini XPRIZE" nav wordmark. Official Lockup is ~5.97:1 aspect.
+     !important needed to override the global `img { max-width:100%; height:auto }` rule. */
+  .hero-lockup {
+    display: block;
+    margin-top: 48px;
+    padding-top: 32px;
+    padding-bottom: 56px;
+    border-top: 1px solid var(--border-dark);
+    filter: drop-shadow(0 4px 18px rgba(0,0,0,0.55));
+  }
+  .hero-lockup__img {
+    width: 360px !important; height: 60px !important;
+    display: block;
+  }
+  @media (max-width: 880px) {
+    .hero-lockup { margin-top: 40px; padding-top: 28px; padding-bottom: 44px; }
+    .hero-lockup__img { width: 300px !important; height: 50px !important; }
+  }
+  @media (max-width: 480px) {
+    .hero-lockup { margin-top: 32px; padding-top: 24px; padding-bottom: 36px; }
+    .hero-lockup__img { width: 240px !important; height: 40px !important; }
+  }
+  @media (max-width: 380px) {
+    .hero-lockup__img { width: 210px !important; height: 35px !important; }
+  }
+
+  /* ───────── Hero (Aurora + fallback gradient) ───────── */
+  .hero-shell {
+    /* Static cyan-glow gradient sits behind the canvas. If the WebGL shader
+       fails to compile (e.g. iOS WebGL 1 quirks), the hero still looks intentional. */
+    background:
+      radial-gradient(ellipse 70% 45% at 75% 20%, rgba(27,191,224,0.22), transparent 70%),
+      radial-gradient(ellipse 55% 40% at 25% 85%, rgba(27,191,224,0.14), transparent 70%),
+      radial-gradient(ellipse 45% 30% at 50% 50%, rgba(27,191,224,0.06), transparent 75%),
+      var(--near-black);
+  }
+
+  /* ───────── Hero eyebrow / pill ───────── */
+  .hero-eyebrow { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 32px; }
+  .hero-pill {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-pixel);
+    color: var(--cyan); border: 1px solid var(--cyan);
+    padding: 8px 16px; border-radius: 999px;
+    text-transform: uppercase;
+    flex-wrap: wrap; font-size: clamp(15px, 1.6vw, 22px);
+    background: rgba(11,14,12,0.55);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    line-height: 1.2;
+  }
+  .hero-pill__dot {
+    width: 8px; height: 8px; background: var(--cyan); border-radius: 50%;
+    box-shadow: 0 0 12px var(--cyan); flex-shrink: 0;
+  }
+  .hero-pill__amount { font-weight: 600; letter-spacing: 0.01em; }
+  .hero-pill__rest { display: inline; }
+  .hero-eyebrow__sub {
+    display: none;
+    font-family: var(--font-pixel);
+    font-size: 13px;
+    color: rgba(255,255,255,0.78);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.55);
+  }
+  @media (max-width: 720px) {
+    .hero-pill__rest { display: none; }
+    .hero-eyebrow__sub { display: block; }
+    .hero-pill { font-size: 15px; padding: 7px 14px; }
+  }
+
+  /* ───────── Moonshot phase cards (Ideate / Build / Ship / Sell) ───────── */
+  .moonshot-steps {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; margin-bottom: 56px; background: var(--white);
+  }
+  .moonshot-step {
+    padding: 28px;
+    display: flex; flex-direction: column; gap: 10px; min-height: 200px;
+  }
+  .moonshot-step + .moonshot-step { border-left: 1px solid var(--border); }
+  .moonshot-step__num { font-family: var(--font-pixel); font-size: 24px; color: var(--cyan); }
+  .moonshot-step__title { font-size: 22px; font-weight: 700; letter-spacing: var(--tracking-tight); color: var(--near-black); }
+  .moonshot-step__desc { font-size: 17px; color: var(--dark-gray); line-height: 1.5; margin-top: auto; }
+
+  @media (max-width: 880px) {
+    /* 2×2 grid reads better than 1×4 on mobile — keeps the timeline shape */
+    .moonshot-steps { grid-template-columns: 1fr 1fr; }
+    .moonshot-step + .moonshot-step { border-left: none; }
+    .moonshot-step:nth-child(2) { border-left: 1px solid var(--border); }
+    .moonshot-step:nth-child(3),
+    .moonshot-step:nth-child(4) { border-top: 1px solid var(--border); }
+    .moonshot-step:nth-child(4) { border-left: 1px solid var(--border); }
+    .moonshot-step { min-height: auto; padding: 22px; }
+  }
+  @media (max-width: 480px) {
+    /* Single column at very narrow widths — divider becomes top instead of left */
+    .moonshot-steps { grid-template-columns: 1fr; }
+    .moonshot-step { border-left: none !important; padding: 20px; min-height: auto; }
+    .moonshot-step + .moonshot-step { border-top: 1px solid var(--border); }
+    .moonshot-step__num { font-size: 20px; }
+    .moonshot-step__title { font-size: 20px; }
+  }
+
+  /* ───────── Anchored sections ─────────
+     Sticky nav is 68px; give scroll targets breathing room. */
+  section, header[id] { scroll-margin-top: 80px; }
+
+  /* ───────── NAV ───────── */
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(11,14,12,0.92);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid var(--border-dark);
+  }
+  .site-nav__row {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px; gap: 24px;
+  }
+  .site-nav__logo {
+    display: inline-flex; align-items: center;
+    color: var(--white);  /* drives the inline SVG via currentColor */
+    flex-shrink: 0;       /* never let the flex row squeeze the logo */
+    min-width: 0;
+  }
+  .site-nav__logo img { height: 30px; width: auto; display: block; }
+  /* Wordmark: explicit width/height attrs on the SVG handle base sizing;
+     CSS only overrides for smaller viewports. flex-shrink:0 keeps it from
+     being compressed by adjacent items. */
+  /* Official wordmark SVG is ~14.32:1 aspect (444×31).  Explicit !important sizing
+     here because the global `img { max-width: 100%; height: auto }` safety rule
+     would otherwise force the SVG to render at its intrinsic dimensions. */
+  .site-nav__wordmark {
+    display: block; flex-shrink: 0;
+    width: 300px !important; height: 21px !important;
+  }
+  @media (max-width: 720px) {
+    .site-nav__wordmark { width: 230px !important; height: 16px !important; }
+  }
+  @media (max-width: 480px) {
+    .site-nav__wordmark { width: 190px !important; height: 13.3px !important; }
+  }
+  @media (max-width: 380px) {
+    .site-nav__wordmark { width: 160px !important; height: 11.2px !important; }
+  }
+  @media (max-width: 340px) {
+    .site-nav__wordmark { width: 144px !important; height: 10px !important; }
+  }
+  .footer-wordmark {
+    width: 290px !important; height: 20.2px !important;
+    display: block;
+  }
+  @media (max-width: 480px) {
+    .footer-wordmark { width: 236px !important; height: 16.5px !important; }
+  }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 28px;
+    list-style: none;
+  }
+  .nav-links li { display: inline-flex; align-items: center; }
+  .nav-links a {
+    position: relative;
+    color: rgba(255,255,255,0.92);
+    font-family: var(--font-sans);
+    font-size: 15px; font-weight: 500;
+    letter-spacing: -0.01em;
+    padding: 6px 0;
+    transition: color 0.15s ease;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-links a.is-active { color: var(--cyan); }
+  .nav-links a.is-active::after {
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: -10px;
+    height: 2px; background: var(--cyan);
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(27,191,224,0.6);
+  }
+  .nav-links__divider {
+    width: 1px; height: 18px;
+    background: var(--border-dark);
+    margin: 0 4px;
+  }
+  .nav-links__rules {
+    display: inline-flex !important; align-items: center; gap: 5px;
+    color: rgba(255,255,255,0.62) !important;
+  }
+  .nav-links__rules:hover { color: var(--cyan) !important; }
+  .nav-links__arrow {
+    font-size: 13px; opacity: 0.85;
+    transform: translateY(-1px);
+    transition: transform 0.15s ease;
+  }
+  .nav-links__rules:hover .nav-links__arrow {
+    transform: translate(2px, -3px);
+  }
+  .nav-register { font-size: 14px !important; padding: 10px 18px !important; }
+
+  /* Hamburger (mobile-only) */
+  .nav-hamburger {
+    display: none;
+    background: transparent; border: none;
+    width: 40px; height: 40px;
+    flex-direction: column; gap: 5px;
+    justify-content: center; align-items: center;
+    cursor: pointer; padding: 0;
+  }
+  .nav-hamburger span {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--white);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Full-screen sheet — light theme so it's clearly distinct from the dark page */
+  .nav-sheet {
+    position: fixed; inset: 0; z-index: 60;
+    background: #FFFFFF;
+    color: var(--near-black);
+    display: flex; flex-direction: column;
+    padding: 20px 28px 32px;
+    opacity: 0; pointer-events: none;
+    transform: translateY(-8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .nav-sheet.is-open {
+    opacity: 1; pointer-events: auto;
+    transform: translateY(0);
+  }
+  .nav-sheet__head {
+    display: flex; justify-content: flex-end;
+    height: 48px; align-items: center;
+    margin-bottom: 24px;
+  }
+  .nav-sheet__close {
+    background: transparent; border: none; color: var(--near-black);
+    font-size: 38px; line-height: 1;
+    width: 44px; height: 44px;
+    cursor: pointer;
+  }
+  .nav-sheet__list {
+    list-style: none;
+    display: flex; flex-direction: column;
+    gap: 0; margin: 0;
+  }
+  .nav-sheet__list li a {
+    display: block;
+    padding: 18px 4px;
+    font-size: 26px; font-weight: 600;
+    color: var(--near-black);
+    letter-spacing: -0.03em;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.15s ease;
+  }
+  .nav-sheet__list li a:hover,
+  .nav-sheet__list li a:active { color: var(--cyan); }
+  .nav-sheet__list li:last-child a { border-bottom: none; }
+  .nav-sheet__rules a {
+    color: var(--mid-gray) !important;
+    font-size: 20px !important;
+    font-weight: 500 !important;
+  }
+  .nav-sheet__rules a:hover,
+  .nav-sheet__rules a:active { color: var(--cyan) !important; }
+  .nav-sheet__rules span { font-size: 16px; opacity: 0.9; margin-left: 4px; }
+  .nav-sheet__cta {
+    margin-top: 28px;
+    display: flex !important; justify-content: center;
+    width: 100%; padding: 18px 24px !important;
+    font-size: 17px !important;
+  }
+
+  /* Breakpoint switch */
+  @media (max-width: 720px) {
+    .nav-links { display: none !important; }
+    .nav-register { display: none !important; }
+    .nav-hamburger { display: inline-flex !important; }
+  }
+  @media (min-width: 721px) {
+    .nav-sheet { display: none !important; }
+  }
+
+  /* ───────── Mobile responsiveness ───────── */
+  @media (max-width: 720px) {
+    /* Stack any inline-styled multi-column grid on mobile (covers all variants in use) */
+    [style*="grid-template-columns"][style*="repeat(2"],
+    [style*="grid-template-columns"][style*="repeat(3"],
+    [style*="grid-template-columns"][style*="repeat(4"],
+    [style*="grid-template-columns"][style*="repeat(5"],
+    [style*="grid-template-columns"][style*="repeat(6"],
+    [style*="grid-template-columns"][style*="repeat(7"],
+    [style*="grid-template-columns: 1fr 1fr"],
+    [style*="grid-template-columns: 1fr auto"],
+    [style*="grid-template-columns: 1.1fr"],
+    [style*="grid-template-columns: 1.2fr"],
+    [style*="grid-template-columns: 1.4fr"],
+    [style*="grid-template-columns: 1.5fr"],
+    [style*="grid-template-columns: 120px"],
+    [style*="grid-template-columns: 80px"],
+    [style*="grid-template-columns: 56px"] {
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+    }
+    /* Hero: let content set the height on mobile so nothing gets clipped
+       — the desktop default is `height: 100vh` which squishes the long stack of
+       lockup + pill + h1 + subhead + 2 buttons + 3 stat rows. */
+    .hero-shell {
+      height: auto !important;
+      min-height: 100vh !important;
+    }
+    /* The overlay div is normally absolute (so content sits over the canvas at
+       fixed dimensions). On mobile we make it static so it can push the hero
+       taller as content needs. */
+    .hero-overlay {
+      position: static !important;
+      pointer-events: auto !important;
+      padding: 88px 0 56px !important;       /* top clears the 68px sticky nav */
+      align-items: flex-start !important;
+    }
+    /* Tighter stats grid on mobile: 4 columns collapse to 2×2 grid */
+    .hero-shell [style*="grid-template-columns: repeat(4"] {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 14px 20px !important;
+    }
+    /* Section padding tightens */
+    section { padding: 64px 0 !important; }
+    /* Tighter container at <420px */
+    /* Card / block padding compression — works because React serializes "padding: 32" as "padding: 32px" in the DOM */
+    [style*="padding: 48px"] { padding: 24px !important; }
+    [style*="padding: 40px"] { padding: 22px !important; }
+    [style*="padding: 36px"] { padding: 22px !important; }
+    [style*="padding: 32px"]:not(.btn):not(.btn-primary):not(.btn-ghost):not(.btn-secondary) { padding: 20px !important; }
+    [style*="padding: 28px"] { padding: 18px !important; }
+    [style*="padding: 24px"]:not(.btn):not(.btn-primary):not(.btn-ghost):not(.btn-secondary) { padding: 18px !important; }
+    /* Multi-axis padding patterns from inline JSX */
+    [style*="padding: \"32px 40px\""],
+    [style*="padding: \"32px 36px\""],
+    [style*="padding: \"24px 28px\""] { padding: 20px !important; }
+    /* Big number callouts: tame the largest fonts so they fit on 320–360px viewports */
+    [style*="font-size: \"clamp(80px, 14vw, 180px)\""] { font-size: clamp(64px, 22vw, 100px) !important; }
+    /* Hide the 7-col Google Stack phase header row on mobile (decorative) */
+    [style*="grid-template-columns"][style*="repeat(7"] { display: none !important; }
+    /* FAQ tap-targets: ensure 44px+ buttons */
+    button[style*="grid-template-columns: 56px"] { padding: 18px 0 !important; }
+  }
+
+  @media (max-width: 420px) {
+    .container { padding: 0 16px !important; }
+  }
+
+  /* ───────── Cookie consent banner ───────── */
+  .cookie-banner {
+    position: fixed;
+    bottom: 16px; left: 16px; right: 16px;
+    z-index: 9999;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    background: rgba(11,14,12,0.96);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--border-dark);
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    font-family: var(--font-sans);
+    color: var(--white);
+    transform: translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .cookie-banner.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .cookie-banner__inner {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: 16px;
+  }
+  .cookie-banner__text {
+    flex: 1 1 280px;
+    font-size: 14px; line-height: 1.5;
+    margin: 0;
+    color: rgba(255,255,255,0.85);
+  }
+  .cookie-banner__text a {
+    color: var(--cyan);
+    border-bottom: 1px solid rgba(27,191,224,0.4);
+  }
+  .cookie-banner__text a:hover { border-bottom-color: var(--cyan); }
+  .cookie-banner__actions {
+    display: flex; gap: 10px; flex-shrink: 0;
+  }
+  .cookie-banner__btn {
+    font-family: var(--font-sans);
+    font-size: 14px; font-weight: 600;
+    letter-spacing: -0.01em;
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer; border: none;
+    transition: all 0.15s;
+  }
+  .cookie-banner__btn--primary {
+    background: var(--cyan);
+    color: var(--near-black);
+  }
+  .cookie-banner__btn--primary:hover { background: #16A8C6; }
+  .cookie-banner__btn--ghost {
+    background: transparent;
+    color: var(--white);
+    border: 1px solid var(--border-dark);
+  }
+  .cookie-banner__btn--ghost:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  @media (max-width: 560px) {
+    .cookie-banner {
+      bottom: 12px; left: 12px; right: 12px;
+      padding: 16px 18px;
+    }
+    .cookie-banner__inner { flex-direction: column; align-items: stretch; gap: 12px; }
+    .cookie-banner__text { flex: 0 0 auto; }  /* prevent 280px flex-basis from inflating column height */
+    .cookie-banner__actions { justify-content: flex-end; }
+  }
+</style>
+
+<!-- Production-minified React/ReactDOM. JSX is precompiled by build.mjs (npm run compile)
+     — no Babel-standalone in production. defer = don't block HTML parsing.
+     Subresource Integrity (SRI) hashes pin the file content — protects against a
+     compromised unpkg CDN serving altered JS. -->
+<script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+        integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z"
+        crossorigin="anonymous"></script>
+<script defer src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+        integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1"
+        crossorigin="anonymous"></script>
+
+<!-- Three.js removed: the Aurora hero is now raw WebGL (see AuroraShader in
+     sections.jsx). Saved ~1.24 MB and the lazy-loader entirely. -->
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Fallback content for users with JS disabled. React renders into #root above;
+       without JS, the visible content is just this block. -->
+  <noscript>
+    <style>
+      .noscript-fallback {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 64px 24px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        color: var(--white);
+        line-height: 1.5;
+      }
+      .noscript-fallback h1 { font-size: clamp(32px, 5vw, 56px); letter-spacing: -0.045em; line-height: 1.05; margin-bottom: 24px; }
+      .noscript-fallback p { font-size: 18px; color: rgba(255,255,255,0.78); margin-bottom: 20px; }
+      .noscript-fallback a.btn-primary {
+        display: inline-block; padding: 14px 24px; border-radius: 999px;
+        background: var(--cyan); color: var(--near-black);
+        font-weight: 600; font-size: 16px; margin-right: 12px;
+        text-decoration: none;
+      }
+      .noscript-fallback a.btn-ghost {
+        display: inline-block; padding: 13px 23px; border-radius: 999px;
+        border: 1px solid var(--border-dark); color: var(--white);
+        font-weight: 600; font-size: 16px;
+        text-decoration: none;
+      }
+    </style>
+    <div class="noscript-fallback">
+      <h1>Build with Gemini XPRIZE — <span style="color: var(--cyan)">90 days</span> to build a real AI business.</h1>
+      <p><strong style="color: var(--cyan)">$2M</strong> in prizes across 25 winners. Launched at Google I/O on May 19, 2026.</p>
+      <p>This page needs JavaScript enabled to view the interactive content. Use the links below or enable JavaScript for the full experience.</p>
+      <p>
+        <span class="btn-primary" aria-disabled="true" style="opacity: 0.42; cursor: not-allowed; pointer-events: none;">Submissions Closed</span>
+        <span class="btn-ghost" aria-disabled="true" style="opacity: 0.42; cursor: not-allowed; pointer-events: none;">Read the rules</span>
+      </p>
+    </div>
+  </noscript>
+
+  <!-- Cookie consent banner. Shows once; choice persisted in localStorage. -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" aria-live="polite">
+    <div class="cookie-banner__inner">
+      <p class="cookie-banner__text">
+        We use cookies to improve your experience and analyze site traffic. By clicking
+        <strong>Accept</strong>, you consent to our use of cookies. See our
+        <a href="https://info.devpost.com/privacy" target="_blank" rel="noopener">privacy policy</a>.
+      </p>
+      <div class="cookie-banner__actions">
+        <button type="button" id="cookie-decline" class="cookie-banner__btn cookie-banner__btn--ghost">Decline</button>
+        <button type="button" id="cookie-accept" class="cookie-banner__btn cookie-banner__btn--primary">Accept</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var KEY = 'mxs_cookie_consent_v1';
+      var banner = document.getElementById('cookie-banner');
+      if (!banner) return;
+      try { if (localStorage.getItem(KEY)) return; } catch (e) {}
+      setTimeout(function () { banner.classList.add('is-visible'); }, 600);
+      function dismiss(value) {
+        try { localStorage.setItem(KEY, value); } catch (e) {}
+        banner.classList.remove('is-visible');
+        setTimeout(function () { banner.style.display = 'none'; }, 280);
+      }
+      document.getElementById('cookie-accept').addEventListener('click', function () { dismiss('accepted'); });
+      document.getElementById('cookie-decline').addEventListener('click', function () { dismiss('declined'); });
+    })();
+  </script>
+
+  <!-- Precompiled by build.mjs (esbuild). To regenerate: cd hackathon && npm run compile.
+       Absolute paths (not relative) — see header comment about <base> tag and anchor-scroll. -->
+  <script defer src="/sections.js?v=20260908a"></script>
+  <script defer src="/app.js?v=20260908a"></script>
+
+  <!-- Vercel Speed Insights — static-HTML mode (script auto-served by Vercel once
+       Speed Insights is enabled in the project dashboard). Not the Next.js component:
+       this site has no bundler/build step. -->
+  <script>
+    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+
+  <!-- Vercel Web Analytics — static-HTML mode (script auto-served by Vercel once
+       Analytics is enabled in the project dashboard). Not the Next.js component. -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

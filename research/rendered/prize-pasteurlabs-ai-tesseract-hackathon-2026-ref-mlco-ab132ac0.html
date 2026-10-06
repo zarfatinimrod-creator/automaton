@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NMS899M9');</script>
+    <!-- End Google Tag Manager -->
+    <title>Tesseract Hackathon 2026 | Pasteur Labs</title>
+
+    <link rel="icon" type="image/png" href="../images/logoo.png">
+
+    <!-- Facebook/LinkedIn open graph -->
+    <meta property="og:url" content="https://pasteurlabs.ai/tesseract-hackathon-2026">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Tesseract Hackathon 2026 | Pasteur Labs">
+    <meta property="og:image" content="https://pasteurlabs.ai/tesseract-hackathon-2026/t-logo-dark.png">
+    <meta property="og:site_name" content="">
+    <meta property="og:description" content="Compose a differentiable scientific workflow from multiple Tesseracts and use end-to-end gradients to solve a real design, inference, or training problem. Four weeks, online, August 3&ndash;31. $20,000 prize pool.">
+
+    <!-- Twitter card -->
+    <meta name="twitter:url" content="https://pasteurlabs.ai/tesseract-hackathon-2026">
+    <meta name="twitter:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tesseract Hackathon 2026 | Pasteur Labs">
+    <meta name="twitter:description" content="Compose a differentiable scientific workflow from multiple Tesseracts and use end-to-end gradients to solve a real design, inference, or training problem. Four weeks, online, August 3&ndash;31. $20,000 prize pool.">
+    <meta name="twitter:image" content="https://pasteurlabs.ai/tesseract-hackathon-2026/t-logo-dark.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0e0e14;
+            --panel: #16161f;
+            --line: #2a2a38;
+            --text: #dcdce6;
+            --muted: #9a9aae;
+            /* Brand palette, retinted for a dark background:
+               --purple is the brand deep purple (#4226a9), --purple-soft the
+               brand indigo (#8057ff) used where dark-bg legibility matters,
+               --pink the brand pink accent (#c71367) with a lighter --pink-soft
+               for hover states on dark. */
+            --purple: #4226a9;
+            --purple-soft: #8057ff;
+            --pink: #c71367;
+            --pink-soft: #ec4b93;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: 'Gaal';
+            font-weight: 500;
+            src: url(/fonts/Gaal-medium.otf);
+        }
+
+        html {
+            scroll-padding-top: 90px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Montserrat, sans-serif;
+            font-size: 16.5px;
+            line-height: 1.65;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        a {
+            color: var(--purple-soft);
+        }
+
+        a:focus-visible,
+        button:focus-visible {
+            outline: 2px solid var(--purple-soft);
+            outline-offset: 3px;
+        }
+
+        /* ---------- nav ---------- */
+
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(14, 14, 20, 0.92);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--line);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        nav .logo img {
+            height: 46px;
+            display: block;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 26px;
+        }
+
+        nav ul a {
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.82em;
+            letter-spacing: 0.4px;
+            transition: color 0.2s;
+        }
+
+        nav ul a:hover {
+            color: var(--pink-soft);
+        }
+
+        .nav-register {
+            border: 1px solid var(--purple);
+            padding: 7px 16px;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        .nav-register:hover {
+            background: var(--purple);
+            border-color: var(--purple);
+            color: #fff;
+        }
+
+        /* ---------- layout ---------- */
+
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section {
+            padding: 84px 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .eyebrow {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78em;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--purple-soft);
+            margin-bottom: 14px;
+        }
+
+        h2 {
+            font-family: 'Gaal', Montserrat, sans-serif;
+            font-weight: 500;
+            font-size: 2.1em;
+            line-height: 1.2;
+            color: #fff;
+            margin-bottom: 30px;
+            letter-spacing: 0.3px;
+        }
+
+        h3 {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: #f2f2f7;
+            margin: 0 0 12px 0;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        .lede {
+            font-size: 1.12em;
+            max-width: 760px;
+        }
+
+        code {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.88em;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 2px 7px;
+            color: var(--purple-soft);
+        }
+
+        /* ---------- hero ---------- */
+
+        header {
+            text-align: center;
+            padding: 84px 0 72px;
+        }
+
+        .tesseract-logo {
+            width: 104px;
+            height: 104px;
+            margin: 0 auto 28px;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Gaal', Montserrat, sans-serif;
+            font-weight: 500;
+            font-size: 3.6em;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+
+        h1 .year {
+            color: var(--purple-soft);
+        }
+
+        .dateline {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.88em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 22px 0 30px;
+        }
+
+        .dateline strong {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .thesis {
+            font-size: 1.28em;
+            line-height: 1.55;
+            color: var(--text);
+            max-width: 780px;
+            margin: 0 auto 14px;
+        }
+
+        .subthesis {
+            color: var(--muted);
+            max-width: 640px;
+            margin: 0 auto 40px;
+        }
+
+        .cta-row {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            font-family: Montserrat, sans-serif;
+            font-weight: 700;
+            font-size: 1em;
+            text-decoration: none;
+            padding: 14px 34px;
+            border-radius: 4px;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--purple);
+            border: 1px solid var(--purple);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--pink);
+            border-color: var(--pink);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--pink-soft);
+            color: #fff;
+        }
+
+        /* ---------- pipeline diagram ---------- */
+
+        .pipeline {
+            margin: 64px auto 0;
+            max-width: 920px;
+        }
+
+        .pipeline svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .pipeline .box {
+            fill: var(--panel);
+            stroke: var(--line);
+            stroke-width: 1.5;
+        }
+
+        .pipeline .box-name {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 15px;
+            fill: var(--text);
+        }
+
+        .pipeline .box-sub {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11.5px;
+            fill: var(--muted);
+        }
+
+        .pipeline .fwd {
+            stroke: #55556c;
+            stroke-width: 1.7;
+        }
+
+        .pipeline .bracket {
+            stroke: var(--line);
+            stroke-width: 1.2;
+            fill: none;
+        }
+
+        .pipeline .bracket-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            fill: var(--muted);
+        }
+
+        .pipeline .grad-path {
+            fill: none;
+            stroke: url(#gradflow);
+            stroke-width: 2.2;
+            stroke-dasharray: 8 8;
+            animation: flow 1.6s linear infinite;
+        }
+
+        .pipeline .grad-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-style: italic;
+            font-size: 15px;
+            fill: var(--pink-soft);
+        }
+
+        @keyframes flow {
+            to { stroke-dashoffset: -32; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            .pipeline .grad-path {
+                animation: none;
+            }
+            .btn-primary:hover {
+                transform: none;
+            }
+        }
+
+        /* ---------- challenge criteria ---------- */
+
+        .criteria-heading {
+            font-weight: 600;
+            font-size: 1.5em;
+            color: #fff;
+            margin-top: 56px;
+        }
+
+        .criteria {
+            margin-top: 20px;
+            border-top: 1px solid var(--line);
+        }
+
+        .criterion {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 40px;
+            padding: 36px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .criterion h3 {
+            font-weight: 600;
+            font-size: 1.25em;
+            color: #fff;
+        }
+
+        .criterion .tag {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.6em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--purple-soft);
+            margin-bottom: 10px;
+        }
+
+        .criterion p {
+            color: var(--text);
+        }
+
+        .note-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+            margin-top: 20px;
+        }
+
+        .note-card {
+            padding: 24px 28px;
+            background: var(--panel);
+            border-left: 3px solid var(--purple);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .note-card h4 {
+            font-size: 1.05em;
+            font-weight: 600;
+            color: #f2f2f7;
+            margin-bottom: 8px;
+        }
+
+        .note-card p {
+            color: var(--text);
+            margin-bottom: 0;
+        }
+
+        /* ---------- tracks ---------- */
+
+        .track {
+            display: grid;
+            grid-template-columns: 110px 1fr;
+            gap: 36px;
+            padding: 34px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .track:last-of-type {
+            border-bottom: none;
+        }
+
+        .track .num {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 400;
+            font-size: 2.2em;
+            line-height: 1;
+            color: var(--purple);
+        }
+
+        .track h3 {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+        }
+
+        .track p {
+            color: var(--muted);
+        }
+
+        /* ---------- workshop callout ---------- */
+
+        .workshop-band {
+            background: var(--panel);
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            padding: 56px 0;
+        }
+
+        .workshop-band .inner {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 48px;
+            align-items: center;
+        }
+
+        .workshop-band h2 {
+            margin-bottom: 16px;
+        }
+
+        .workshop-band p {
+            color: var(--muted);
+        }
+
+        /* ---------- timeline ---------- */
+
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 36px;
+            margin-top: 20px;
+        }
+
+        .titem {
+            position: relative;
+            border-top: 1px solid var(--line);
+            padding-top: 22px;
+        }
+
+        .titem::before {
+            content: '';
+            position: absolute;
+            top: -4.5px;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--purple);
+        }
+
+        .titem .date {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1.25em;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .titem .label {
+            font-weight: 600;
+            font-size: 0.95em;
+            color: var(--text);
+        }
+
+        .titem .detail {
+            font-size: 0.86em;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* ---------- prizes ---------- */
+
+        .prize-list {
+            list-style: none;
+            margin-top: 36px;
+            border-top: 1px solid var(--line);
+        }
+
+        .prize-list li {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 40px;
+            padding: 26px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .prize-list .prize-name {
+            font-weight: 600;
+            font-size: 1.15em;
+            color: #fff;
+        }
+
+        .prize-list .prize-desc {
+            color: var(--muted);
+        }
+
+        .prize-pool {
+            display: flex;
+            align-items: baseline;
+            gap: 18px;
+            margin: 4px 0 26px;
+        }
+
+        .prize-pool .amount {
+            font-family: 'Gaal', Montserrat, sans-serif;
+            font-weight: 500;
+            font-size: 3.4em;
+            line-height: 1;
+            color: var(--purple-soft);
+        }
+
+        .prize-pool .pool-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.82em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        /* ---------- participate ---------- */
+
+        .participate-block {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 40px;
+            padding: 36px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .participate-block:last-of-type {
+            border-bottom: none;
+        }
+
+        .participate-block h3 {
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+
+        .participate-block ul,
+        .participate-block ol {
+            margin: 0 0 0 22px;
+        }
+
+        .participate-block li {
+            margin: 10px 0;
+        }
+
+        .participate-block li::marker {
+            color: var(--purple-soft);
+        }
+
+        /* ---------- resources ---------- */
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+            margin-top: 12px;
+            list-style: none;
+        }
+
+        .resource-grid li {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 24px 28px;
+            font-size: 0.94em;
+        }
+
+        .resource-grid li strong {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 500;
+            font-size: 0.92em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--purple-soft);
+            margin-bottom: 10px;
+        }
+
+        .resource-grid li.extrawide {
+            grid-column: 1 / -1;
+        }
+
+        .resource-grid li.feature {
+            border-color: var(--purple);
+            border-left-width: 3px;
+        }
+
+        .resource-grid .paper-list {
+            margin: 12px 0 0 22px;
+        }
+
+        .resource-grid .paper-list li {
+            background: none;
+            border: none;
+            padding: 4px 0;
+            margin: 0;
+        }
+
+        /* ---------- final cta / footer ---------- */
+
+        .final-cta {
+            text-align: center;
+            padding: 84px 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .final-cta h2 {
+            margin-bottom: 14px;
+        }
+
+        .final-cta p:not(.eyebrow) {
+            color: var(--muted);
+            max-width: 560px;
+            margin: 0 auto 32px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 24px;
+            color: #7a7a90;
+            border-top: 1px solid var(--line);
+            font-size: 0.88em;
+        }
+
+        footer a {
+            color: var(--purple-soft);
+            text-decoration: none;
+        }
+
+        /* ---------- anchor links ---------- */
+
+        .anchor-link {
+            opacity: 0;
+            margin-left: 8px;
+            color: var(--purple-soft);
+            text-decoration: none;
+            font-weight: 300;
+            transition: opacity 0.2s ease;
+        }
+
+        h2:hover .anchor-link,
+        h3:hover .anchor-link {
+            opacity: 1;
+        }
+
+        /* ---------- responsive ---------- */
+
+        @media (max-width: 900px) {
+            .criterion,
+            .participate-block,
+            .prize-list li {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 14px;
+            }
+
+            .workshop-band .inner,
+            .note-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .timeline {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                font-size: 15.5px;
+            }
+
+            nav {
+                position: relative;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px 16px;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px 16px;
+            }
+
+            h1 {
+                font-size: 2.4em;
+            }
+
+            .thesis {
+                font-size: 1.12em;
+            }
+
+            header {
+                padding: 56px 0 48px;
+            }
+
+            .section {
+                padding: 56px 0;
+            }
+
+            .timeline,
+            .resource-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .track {
+                grid-template-columns: 64px 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NMS899M9"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <a href="https://pasteurlabs.ai"><img src="../images/Pasteur_iSi_logo_dark.png" alt="Pasteur Labs logo"></a>
+            </div>
+            <ul>
+                <li><a href="#challenge">Challenge</a></li>
+                <li><a href="#tracks">Tracks</a></li>
+                <li><a href="#timeline">Timeline</a></li>
+                <li><a href="#prizes">Prizes</a></li>
+                <li><a href="#participate">Participate</a></li>
+                <li><a href="#resources">Resources</a></li>
+                <li><a href="https://tally.so/r/kdx2ej" target="_blank" class="nav-register">Register</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <img src="t-logo-dark.png" alt="Tesseract logo" class="tesseract-logo">
+            <h1>Tesseract Hackathon <span class="year">2026</span></h1>
+            <p class="dateline"><strong>August 3&ndash;31, 2026</strong> &nbsp;&middot;&nbsp; online &nbsp;&middot;&nbsp; solo or teams of up to 4</p>
+            <p class="thesis">
+                Compose a differentiable scientific workflow from multiple
+                <a href="https://docs.pasteurlabs.ai/projects/tesseract-core/latest/" target="_blank">Tesseracts</a>,
+                and use end-to-end gradients to solve a real design, inference, or training problem.
+            </p>
+            <p class="subthesis">
+                Four weeks to build something that couldn't exist within a single framework. Compete for a
+                share of the $20,000 prize pool and a head start on your next research paper.
+            </p>
+            <div class="cta-row">
+                <a href="https://tally.so/r/kdx2ej" target="_blank" class="btn btn-primary">Register now</a>
+                <a href="https://si-tesseract.discourse.group/c/hackathons-events/tesseract-summer-hackathon-2026/" target="_blank" class="btn btn-secondary">Join the forum</a>
+            </div>
+
+            <div class="pipeline">
+                <svg viewBox="0 0 920 250" role="img" aria-labelledby="pipeline-title pipeline-desc">
+                    <title id="pipeline-title">A differentiable Tesseract pipeline</title>
+                    <desc id="pipeline-desc">Three Tesseracts built with different languages and differentiation strategies compose into one differentiable function, with gradients flowing backward through the whole pipeline.</desc>
+                    <defs>
+                        <linearGradient id="gradflow" x1="100%" y1="0%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="#ec4b93"/>
+                            <stop offset="100%" stop-color="#8057ff"/>
+                        </linearGradient>
+                        <marker id="arrow-fwd" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#55556c"/>
+                        </marker>
+                        <marker id="arrow-grad" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8057ff"/>
+                        </marker>
+                    </defs>
+
+                    <!-- bracket: one differentiable function -->
+                    <path class="bracket" d="M 60 34 L 60 22 L 355 22"/>
+                    <path class="bracket" d="M 565 22 L 860 22 L 860 34"/>
+                    <text class="bracket-label" x="460" y="26" text-anchor="middle">one differentiable function</text>
+
+                    <!-- component boxes -->
+                    <rect class="box" x="60" y="52" width="232" height="76" rx="6"/>
+                    <text class="box-name" x="176" y="85" text-anchor="middle">Tesseract A</text>
+                    <text class="box-sub" x="176" y="107" text-anchor="middle">C++ &middot; finite differences</text>
+
+                    <rect class="box" x="344" y="52" width="232" height="76" rx="6"/>
+                    <text class="box-name" x="460" y="85" text-anchor="middle">Tesseract B</text>
+                    <text class="box-sub" x="460" y="107" text-anchor="middle">Julia &middot; analytic adjoint</text>
+
+                    <rect class="box" x="628" y="52" width="232" height="76" rx="6"/>
+                    <text class="box-name" x="744" y="85" text-anchor="middle">Tesseract C</text>
+                    <text class="box-sub" x="744" y="107" text-anchor="middle">Python &middot; JAX autodiff</text>
+
+                    <!-- forward arrows -->
+                    <line class="fwd" x1="294" y1="90" x2="336" y2="90" marker-end="url(#arrow-fwd)"/>
+                    <line class="fwd" x1="578" y1="90" x2="620" y2="90" marker-end="url(#arrow-fwd)"/>
+
+                    <!-- backward gradient flow -->
+                    <path class="grad-path" marker-end="url(#arrow-grad)"
+                          d="M 844 132 C 844 192, 620 196, 400 196 C 200 196, 104 188, 104 140"/>
+                    <text class="grad-label" x="430" y="232" text-anchor="middle">&#8706;J/&#8706;&#952;</text>
+                </svg>
+            </div>
+        </header>
+
+        <section class="section" id="challenge">
+            <p class="eyebrow">The challenge</p>
+            <h2>Use Tesseract to elevate differentiable systems<a href="#challenge" class="anchor-link">#</a></h2>
+            <p class="lede">
+                Real scientific workflows span tools, languages, and machines, and that is exactly where
+                gradients usually die. This year's challenge is to build a pipeline where they don't:
+                multiple Tesseracts, one differentiable function, and an optimization, training, or inference
+                loop that puts it to work.
+            </p>
+
+            <h3 class="criteria-heading">Criteria</h3>
+            <div class="criteria">
+                <div class="criterion">
+                    <h3><span class="tag">01 &middot; composition</span>It composes two or more Tesseracts across a real boundary</h3>
+                    <p>
+                        The components should disagree about <em>how</em> they compute, yet still compose into an <a href="https://docs.pasteurlabs.ai/projects/tesseract-core/latest/content/creating-tesseracts/pipelines.html" target="_blank">end-to-end differentiable function</a>.
+                        The boundary can be one of differentiation strategy, language, framework, or hardware. What matters is that it's a boundary that's otherwise hard to cross.
+                    </p>
+                </div>
+                <div class="criterion">
+                    <h3><span class="tag">02 &middot; gradients</span>The gradients do the work</h3>
+                    <p>
+                        They drive a gradient-based optimizer, a training loop, or an inference scheme on a
+                        problem that can't be solved component by component, such as a coupled equilibrium, an inverse
+                        design, or a calibration. Show the objective improving and the recovered solution.
+                    </p>
+                </div>
+                <div class="criterion">
+                    <h3><span class="tag">03 &middot; framework fit</span>The workflow genuinely needs Tesseract</h3>
+                    <p>
+                        Your writeup should make the case for <em>why</em> this is a Tesseract problem: what was
+                        impossible or painful before (a language barrier, incompatible AD strategies, conflicting
+                        dependencies, a remote GPU, orchestration on HPC) that composition across the boundary resolves. We'd rather see
+                        a modest problem where Tesseract is clearly load-bearing than an ambitious one where it's
+                        a costume.
+                    </p>
+                </div>
+            </div>
+
+            <h3 class="criteria-heading">Two things worth knowing</h3>
+            <div class="note-grid">
+                <div class="note-card">
+                    <h4>Aim at a real problem</h4>
+                    <p>
+                        A prototype pointed at something a practitioner in the field would actually care about
+                        is how you win.
+                        For a sense of the bar, see last year's
+                        <a href="https://pasteurlabs.ai/insights/tesseract-hackathon-winners" target="_blank">winning entries</a>
+                        and the <a href="https://si-tesseract.discourse.group/t/parametric-shape-optimization-of-rocket-fins-with-ansys-spaceclaim-pyansys-and-tesseract/109" target="_blank">rocket-fin shape optimization</a>
+                        case study that composes three Tesseracts across CAD, meshing, and an FEA solver.
+                    </p>
+                </div>
+                <div class="note-card">
+                    <h4>Hack Tesseract if you need to</h4>
+                    <p>
+                        Hit a missing feature, a performance bottleneck, or a critical bug? <a href="https://github.com/pasteurlabs/tesseract-core" target="_blank">Fork Tesseract</a> and
+                        patch it yourself</a>. We love to see teams that modify the software to fit their needs, as long as
+                        it's still recognizably <em>Tesseract</em>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="tracks">
+            <p class="eyebrow">Tracks</p>
+            <h2>Five ways in<a href="#tracks" class="anchor-link">#</a></h2>
+            <p class="lede">
+                Pick the track that best describes your headline result. Cross-track submissions are fine;
+                choose the track for the result you're proudest of.
+            </p>
+
+            <div class="track">
+                <div class="num">01</div>
+                <div>
+                    <h3>Inverse design &amp; shape optimization</h3>
+                    <p>
+                        A geometry/mesh/solver pipeline optimized end to end. Strongest entries cross a tool
+                        boundary (e.g. CAD or mesher &harr; solver) where the components differentiate differently:
+                        a finite-difference or surrogate-gradient mesher feeding an autodiff solver, an
+                        Enzyme-differentiated kernel composed with JAX, or an adjoint solver feeding autodiff
+                        post-processing.
+                    </p>
+                </div>
+            </div>
+            <div class="track">
+                <div class="num">02</div>
+                <div>
+                    <h3>Multi-physics &amp; coupled systems</h3>
+                    <p>
+                        Two or more solvers from different domains coupled into one optimizable pipeline, with
+                        gradients flowing through the coupling. Ideally two-way, where each solver feeds back
+                        into the other and the optimum depends on their coupling.
+                    </p>
+                </div>
+            </div>
+            <div class="track">
+                <div class="num">03</div>
+                <div>
+                    <h3>Hybrid ML + mechanistic models</h3>
+                    <p>
+                        A learned component (closure, sub-grid model, surrogate, neural operator) trained by
+                        backpropagating through a physics solver that lives behind a Tesseract: the solver keeps
+                        its own container, language, and AD strategy, and gradients still flow from your loss,
+                        through the solver, into the network's weights. The interesting cases recover something
+                        physically meaningful, not just a black-box fit.
+                    </p>
+                </div>
+            </div>
+            <div class="track">
+                <div class="num">04</div>
+                <div>
+                    <h3>Differentiable inference &amp; UQ</h3>
+                    <p>
+                        An expensive or black-box solver wrapped as a Tesseract and dropped into a probabilistic
+                        workflow (NumPyro, oryx, PyMC, an SBI scheme) for Bayesian calibration or an inverse problem.
+                        The solver may expose its Jacobian by autodiff or by finite differences; the composition
+                        with the inference engine is the contribution.
+                    </p>
+                </div>
+            </div>
+            <div class="track">
+                <div class="num">05</div>
+                <div>
+                    <h3>Differentiable graphics &amp; rendering</h3>
+                    <p>
+                        A differentiable renderer, rasterizer, or geometry-processing component composed with a
+                        physics or ML Tesseract: inverse rendering, image-driven shape or material recovery,
+                        simulation-in-the-loop rendering. Gradients flow from a rendered image or geometric
+                        quantity back through the pipeline to the parameters that produced it.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="workshop-band" id="workshop">
+        <div class="container">
+            <div class="inner">
+                <div>
+                    <p class="eyebrow">The long game</p>
+                    <h2>From hackathon to research paper</h2>
+                </div>
+                <div>
+                    <p>
+                        A strong entry can have a second life. A novel composition, a working method, and
+                        results to show are already most of what a research paper needs, so a good
+                        submission doubles as a running start on your next publication. It's been done
+                        <a href="https://solaris-jhu.github.io/CINOC-website/" target="_blank">[1]</a> <a href="https://arxiv.org/abs/2511.10761" target="_blank">[2]</a> <a href="https://arxiv.org/abs/2511.13262" target="_blank">[3]</a>,
+                        and we'll happily work with the strongest teams to get there.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="section" id="timeline">
+            <p class="eyebrow">Timeline</p>
+            <h2>Four weeks in August<a href="#timeline" class="anchor-link">#</a></h2>
+            <div class="timeline">
+                <div class="titem">
+                    <div class="date">Aug 3</div>
+                    <div class="label">Challenge goes live</div>
+                    <div class="detail">Registration opens and the clock starts. Join any time during the build period.</div>
+                </div>
+                <div class="titem">
+                    <div class="date">Aug 3&ndash;31</div>
+                    <div class="label">Build</div>
+                    <div class="detail">Four weeks to build, with weekly office hours and the forum for questions and teammates.</div>
+                </div>
+                <div class="titem">
+                    <div class="date">Aug 31</div>
+                    <div class="label">Submissions close</div>
+                    <div class="detail">11:59 PM, Anywhere on Earth.</div>
+                </div>
+                <div class="titem">
+                    <div class="date">Sep 21</div>
+                    <div class="label">Winners announced</div>
+                    <div class="detail">Judging and feedback sessions run through mid-September.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="prizes">
+            <p class="eyebrow">Prizes</p>
+            <h2>What's in it for you<a href="#prizes" class="anchor-link">#</a></h2>
+            <div class="prize-pool">
+                <span class="amount">$20,000</span>
+                <span class="pool-label">total prize pool</span>
+            </div>
+
+            <ul class="prize-list">
+                <li>
+                    <div class="prize-name">Grand prize &mdash; $8,000</div>
+                    <div class="prize-desc">The headline prize for the strongest overall submission.</div>
+                </li>
+                <li>
+                    <div class="prize-name">Second prize &mdash; $5,000</div>
+                    <div class="prize-desc">Runner-up across all tracks.</div>
+                </li>
+                <li>
+                    <div class="prize-name">Best in track &mdash; $1,000 &times; 5</div>
+                    <div class="prize-desc">The standout submission in each of the <a href="#tracks">five tracks</a>.</div>
+                </li>
+                <li>
+                    <div class="prize-name">Best engineering / Tesseract hack &mdash; $1,000</div>
+                    <div class="prize-desc">For the entry that shows the deepest engagement with the stack. Clean engineering that scales, or a fork/patch to Tesseract itself.</div>
+                </li>
+                <li>
+                    <div class="prize-name">Best visual &mdash; $1,000</div>
+                    <div class="prize-desc">For the plot, animation, or demo video that makes your pipeline impossible to forget.</div>
+                </li>
+            </ul>
+
+            <h3 class="criteria-heading">Beyond the cash</h3>
+            <ul class="prize-list">
+                <li>
+                    <div class="prize-name">Research collaboration</div>
+                    <div class="prize-desc">The winning team gets the opportunity to work with our research team on a follow-up project.</div>
+                </li>
+                <li>
+                    <div class="prize-name">Feature &amp; visibility</div>
+                    <div class="prize-desc">Top projects are featured on the <a href="https://docs.pasteurlabs.ai/projects/tesseract-core/latest/blog/index.html" target="_blank">Tesseract blog</a>, in our docs, and across our channels. Honorable mentions become community case studies.</div>
+                </li>
+            </ul>
+            <p style="margin-top: 28px; font-size: 0.88em; color: var(--muted);">
+                Prize eligibility and tax details are covered in the
+                <a href="terms_and_conditions.txt" target="_blank">Terms &amp; Conditions</a>.
+            </p>
+        </section>
+
+        <section class="section" id="participate">
+            <p class="eyebrow">Participate</p>
+            <h2>How it works<a href="#participate" class="anchor-link">#</a></h2>
+
+            <div class="participate-block" id="eligibility">
+                <h3>Eligibility</h3>
+                <div>
+                    <p>
+                        Open to everyone: hobbyists, PhD students, postdocs, research engineers, and industry
+                        researchers. Participate solo or in teams of up to 4 people. Registration is free and
+                        required to be eligible for prizes.
+                    </p>
+                </div>
+            </div>
+
+            <div class="participate-block" id="what-to-submit">
+                <h3>What to submit</h3>
+                <div>
+                    <ul>
+                        <li>A project that meets the <a href="#challenge">challenge criteria</a>: two or more composed Tesseracts, with end-to-end gradients solving a real problem.</li>
+                        <li>Code written during the hackathon period, licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache 2.0</a>.</li>
+                        <li>A public GitHub repository with a README that lets others reproduce your results.</li>
+                        <li>A short technical writeup (2&ndash;4 pages, or a detailed README) that names your <a href="#tracks">track</a> and makes the case for why the workflow needs Tesseract.</li>
+                        <li>Optional: a demo video (5 minutes max) showing what you built and why it matters.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="participate-block" id="judging">
+                <h3>How we judge</h3>
+                <div>
+                    <p>Submissions are evaluated on, in roughly this order:</p>
+                    <ol>
+                        <li><strong>Composition across a real boundary.</strong> The heart of the challenge.</li>
+                        <li><strong>Gradients doing real work.</strong> A visible objective improving on a problem that can't be solved piecewise.</li>
+                        <li><strong>The why-Tesseract case.</strong> Tesseract as load-bearing infrastructure, not a costume.</li>
+                        <li><strong>A real application.</strong> A prototype with a line of sight to a genuine science or engineering problem beats a toy; domains we don't already have a demo for score higher.</li>
+                        <li><strong>Execution &amp; technical depth.</strong> Clean engineering that makes the pipeline scale, or <a href="#challenge">forking and patching Tesseract itself</a> to remove a blocker.</li>
+                        <li><strong>Reproducibility &amp; communication.</strong> Can others run it, and does the writeup explain it clearly, with visuals that support understanding?</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="participate-block" id="how-to-submit">
+                <h3>How to submit</h3>
+                <div>
+                    <p>
+                        Submit your project through the
+                        <a href="https://tally.so/r/KYNZMg" target="_blank">submission form</a>,
+                        with a link to your public GitHub repository. Then post your project on LinkedIn, tagging
+                        <a href="https://www.linkedin.com/company/pasteur-isi" target="_blank">Pasteur Labs &amp; ISI</a> and
+                        <a href="https://www.linkedin.com/company/si-tesseract" target="_blank">Tesseract</a>. That's it!
+                    </p>
+                    <p>
+                        We also encourage you to share it in the
+                        <a href="https://si-tesseract.discourse.group/c/showcase/11" target="_blank">forum showcase</a>
+                        to show the community what you've built.
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="section" id="resources">
+            <p class="eyebrow">Resources</p>
+            <h2>Everything you need to start building<a href="#resources" class="anchor-link">#</a></h2>
+            <ul class="resource-grid">
+                <li class="extrawide feature">
+                    <strong>Hackathon template</strong>
+                    Pre-configured starter repo with example Tesseracts and workflow patterns. The fastest way to a working pipeline.<br>
+                    <a href="https://github.com/pasteurlabs/cookiecutter-tesseract" target="_blank">cookiecutter-tesseract</a>
+                </li>
+                <li>
+                    <strong>Documentation</strong>
+                    API references, tutorials, and architectural deep dives.<br>
+                    <a href="https://docs.pasteurlabs.ai/projects/tesseract-core/latest/" target="_blank">Tesseract Core</a> &middot;
+                    <a href="https://docs.pasteurlabs.ai/projects/tesseract-jax/latest/" target="_blank">Tesseract-JAX</a> &middot;
+                    <a href="https://github.com/pasteurlabs/tesseract-torch" target="_blank">Tesseract-Torch</a>
+                </li>
+                <li>
+                    <strong>Source code</strong>
+                    Repos with examples, demos, and issue trackers.<br>
+                    <a href="https://github.com/pasteurlabs/tesseract-core" target="_blank">tesseract-core</a> &middot;
+                    <a href="https://github.com/pasteurlabs/tesseract-jax" target="_blank">tesseract-jax</a> &middot;
+                    <a href="https://github.com/pasteurlabs/tesseract-torch" target="_blank">tesseract-torch</a>
+                </li>
+                <li>
+                    <strong>Demos &amp; showcase</strong>
+                    Starting points to build on, and what others have shared.<br>
+                    <a href="https://docs.pasteurlabs.ai/projects/tesseract-core/latest/content/examples/example_gallery.html" target="_blank">Demo gallery</a> &middot;
+                    <a href="https://si-tesseract.discourse.group/c/showcase/11" target="_blank">Community showcase</a>
+                </li>
+                <li>
+                    <strong>Mosaic</strong>
+                    A benchmark suite for differentiable physics solvers, and a growing repository of ready-to-use Tesseracts to build on.<br>
+                    <a href="https://github.com/pasteurlabs/mosaic" target="_blank">github.com/pasteurlabs/mosaic</a>
+                </li>
+                <li>
+                    <strong>Community forum</strong>
+                    The hub for the hackathon: ask questions, find teammates, share progress, and follow announcements in the dedicated hackathon channel.<br>
+                    <a href="https://si-tesseract.discourse.group" target="_blank">si-tesseract.discourse.group</a>
+                </li>
+                <li class="extrawide">
+                    <strong>Background reading</strong>
+                    Differentiable programming and automatic differentiation in scientific contexts, with and without Tesseract.
+                    <ol class="paper-list">
+                        <li><a href="https://joss.theoj.org/papers/10.21105/joss.08385" target="_blank">Tesseract Core: Universal, autodiff-native software components for Simulation Intelligence</a></li>
+                        <li><a href="https://proceedings.scipy.org/articles/kvfm5762" target="_blank">Pipeline-level differentiable programming for the real world</a></li>
+                        <li><a href="https://arxiv.org/abs/2511.10761" target="_blank">Surrogate-based differentiable pipeline for shape optimization</a></li>
+                        <li><a href="https://www.arxiv.org/abs/2511.13262" target="_blank">Case study of a differentiable heterogeneous multiphysics solver for a nuclear fusion application</a></li>
+                        <li><a href="https://arxiv.org/abs/2606.27895" target="_blank">Mosaic: A Benchmark Suite for Differentiable Physics Solvers</a></li>
+                        <li><a href="https://physicsbaseddeeplearning.org/intro.html" target="_blank">Physics-based deep learning</a></li>
+                        <li><a href="https://www.jmlr.org/papers/volume18/17-468/17-468.pdf" target="_blank">Automatic differentiation in machine learning: a survey</a></li>
+                        <li><a href="https://sciml.ai/" target="_blank">SciML: open source software for scientific machine learning</a></li>
+                    </ol>
+                </li>
+            </ul>
+        </section>
+
+        <section class="final-cta" id="join">
+            <p class="eyebrow">Join the challenge</p>
+            <h2>Boundaries were made to be differentiated</h2>
+            <p>
+                Register now, join the forum, and spend four weeks in August building the pipeline
+                your research has been missing.
+            </p>
+            <div class="cta-row">
+                <a href="https://tally.so/r/kdx2ej" target="_blank" class="btn btn-primary">Register now</a>
+                <a href="https://si-tesseract.discourse.group/c/hackathons-events/tesseract-summer-hackathon-2026/" target="_blank" class="btn btn-secondary">Join the forum</a>
+            </div>
+            <p style="margin-top: 36px; font-size: 0.9em;">
+                Questions? Ask in the
+                <a href="https://si-tesseract.discourse.group/c/hackathons-events/tesseract-summer-hackathon-2026/" target="_blank">Hackathon channel</a> on the Tesseract forum.
+            </p>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 <a href="https://pasteurlabs.ai" target="_blank">Pasteur Labs, Inc</a></p>
+        <p style="margin-top: 10px;">
+            <a href="mailto:[redacted:email]@simulation.science">[redacted:email]@simulation.science</a> |
+            <a href="terms_and_conditions.txt" target="_blank">Terms and Conditions</a> |
+            <a href="privacy_policy.txt" target="_blank">Privacy Policy</a> |
+            <a href="../tesseract-hackathon-2025/" target="_blank">2025 edition</a>
+        </p>
+    </footer>
+</body>
+</html>

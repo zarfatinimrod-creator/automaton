@@ -1,0 +1,19 @@
+{
+  "url": "https://wundernn.io/connectome/docs/quick_start",
+  "slug": "prize-wundernn-io-connectome-docs-quick-start-7dfa4b97",
+  "fetchedAt": "2026-10-06T08:46:36.149Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 36886,
+  "sha256": "ae19ebc0ad551e66ce6cd558dfb6fa18c35bf571ae5c17d4e6d231c798117669",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/prize-wundernn-io-connectome-docs-quick-start-7dfa4b97.html",
+  "textPath": "research/rendered/prize-wundernn-io-connectome-docs-quick-start-7dfa4b97.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://wundernn.io/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

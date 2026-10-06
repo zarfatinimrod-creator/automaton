@@ -1,0 +1,20 @@
+{
+  "url": "https://www.drivendata.org/competitions/311/dat-parkinsons-challenge/?ref=mlcontests",
+  "slug": "prize-www-drivendata-org-competitions-311-dat-parkinso-e9e5099c",
+  "fetchedAt": "2026-10-06T08:46:53.364Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 84641,
+  "sha256": "0124bdcc8e38a056cd6e4b6664366924177dd48de38a3616bbc9f2955463d203",
+  "truncated": false,
+  "redacted": 5,
+  "error": null,
+  "bodyPath": "research/rendered/prize-www-drivendata-org-competitions-311-dat-parkinso-e9e5099c.html",
+  "textPath": "research/rendered/prize-www-drivendata-org-competitions-311-dat-parkinso-e9e5099c.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://www.drivendata.org/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

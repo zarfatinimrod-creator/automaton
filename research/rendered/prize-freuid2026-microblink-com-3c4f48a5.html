@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NJKLH75');</script>
+  <!-- End Google Tag Manager -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>The FREUID Challenge 2026 - 1st Competition on Identity Documents Fraud Detection - IJCAI-ECAI 2026</title>
+  <meta name="description" content="The FREUID Challenge benchmarks next-generation identity documents fraud detection at IJCAI-ECAI 2026 in Bremen. Physical, digital and print-and-capture forgeries on under-represented document types." />
+  <meta name="theme-color" content="#142641" />
+  <meta property="og:title" content="The FREUID Challenge @ IJCAI-ECAI 2026" />
+  <meta property="og:description" content="Detect identity document fraud across physical, digital and print-and-capture attacks. $6,000 prize pool." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://freuid2026.microblink.com/" />
+  <meta property="og:image" content="https://freuid2026.microblink.com/assets/img/freuid-mark.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The FREUID Challenge @ IJCAI-ECAI 2026" />
+  <meta name="twitter:description" content="Detect identity document fraud across physical, digital and print-and-capture attacks. $6,000 prize pool." />
+  <meta name="twitter:image" content="https://freuid2026.microblink.com/assets/img/freuid-mark.svg" />
+  <link rel="canonical" href="https://freuid2026.microblink.com/" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/img/microblink/microblink-logo-sign.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <!-- Satoshi is Microblink's brand typeface (served by Fontshare) -->
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            /* Microblink brand */
+            'mb-cobalt':    '#0062F2',
+            'mb-cobalt-2':  '#3D8AF7',
+            'mb-lime':      '#DFFF00',
+            'mb-lime-2':    '#ECFF66',
+            'mb-deep':      '#142641',
+            'mb-deep-2':    '#0A1A30',
+            'mb-deep-3':    '#1E3253',
+            /* Legacy `fr-*` aliases mapped to Microblink palette to preserve markup */
+            'fr-navy':      '#0A1A30',
+            'fr-navy-2':    '#1E3253',
+            'fr-cyan':      '#0062F2',
+            'fr-amber':     '#DFFF00',
+            'fr-paper':     '#F8FAFC',
+          },
+          fontFamily: {
+            sans:    ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
+            display: ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
+            mono:    ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJKLH75"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <!-- =================== NAV =================== -->
+  <header class="absolute inset-x-0 top-0 z-30">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 pt-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-4 flex-wrap">
+          <a href="#top" class="block">
+            <img src="assets/img/freuid-mark.svg" alt="FREUID Challenge" class="h-18 md:h-20 w-auto" />
+          </a>
+          <div class="hidden sm:flex items-center gap-5 pl-4 border-l border-white/15">
+            <span class="font-mono text-[10px] uppercase tracking-widest text-slate-400 whitespace-nowrap">Hosted at</span>
+            <a href="https://2026.ijcai.org/" target="_blank" rel="noopener" aria-label="IJCAI-ECAI 2026"
+               class="inline-flex items-center justify-center bg-white/95 hover:bg-white rounded-md px-2 py-1 transition-colors shadow-sm">
+              <img src="assets/img/sponsors/ijcai-ecai-2026-logo.png" alt="IJCAI-ECAI 2026 Bremen" class="h-9 md:h-10 w-auto" />
+            </a>
+            <span class="font-mono text-[10px] uppercase tracking-widest text-slate-400 whitespace-nowrap pl-2 border-l border-white/15">Powered by</span>
+            <a href="https://microblink.com" target="_blank" rel="noopener" aria-label="Microblink"
+               class="inline-flex items-center bg-white/95 hover:bg-white rounded-md px-2 py-1 transition-colors shadow-sm">
+              <img src="assets/img/microblink/microblink-logo-color-dark.svg" alt="Microblink" class="h-9 md:h-10 w-auto" />
+            </a>
+            <a href="https://www.fer.unizg.hr/" target="_blank" rel="noopener" aria-label="University of Zagreb, Faculty of Electrical Engineering and Computing"
+               class="inline-flex items-center justify-center bg-white/95 hover:bg-white rounded-md px-2 py-1 transition-colors shadow-sm">
+              <img src="assets/img/sponsors/fer-logo.placeholder.png" alt="UniZG FER" class="h-9 md:h-10 w-auto" />
+            </a>
+            <a href="https://www.polito.it/" target="_blank" rel="noopener" aria-label="Politecnico di Torino"
+               class="inline-flex items-center justify-center bg-white/95 hover:bg-white rounded-md px-2 py-1 transition-colors shadow-sm">
+              <img src="assets/img/sponsors/PoliTO_Logo_BLU.svg" alt="Politecnico di Torino" class="h-9 md:h-10 w-auto" />
+            </a>
+          </div>
+        </div>
+        <button data-mobile-toggle aria-label="Toggle navigation" aria-expanded="false" class="md:hidden text-white p-2 rounded border border-white/20 mt-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+
+      <nav class="hidden md:flex items-center justify-between gap-6 mt-5 pt-4 border-t border-white/10">
+        <div class="flex items-center gap-7 flex-wrap">
+          <a href="#about"      class="nav-link">About</a>
+          <a href="#timeline"   class="nav-link">Timeline</a>
+          <a href="#dataset"    class="nav-link">Dataset</a>
+          <a href="#evaluation" class="nav-link">Evaluation</a>
+          <a href="reproducibility.html" class="nav-link">Reproducibility</a>
+          <a href="#rules"      class="nav-link">Rules &amp; Awards</a>
+          <a href="#organizers" class="nav-link">Organizers</a>
+          <a href="#faq"        class="nav-link">FAQ</a>
+        </div>
+      </nav>
+    </div>
+    <div data-mobile-menu class="nav-mobile md:hidden bg-fr-navy/95 backdrop-blur border-t border-white/10 mt-5">
+      <div class="px-6 py-4 flex flex-col gap-3">
+        <a href="#about"      class="nav-link text-white">About</a>
+        <a href="#timeline"   class="nav-link text-white">Timeline</a>
+        <a href="#dataset"    class="nav-link text-white">Dataset</a>
+        <a href="#evaluation" class="nav-link text-white">Evaluation</a>
+        <a href="reproducibility.html" class="nav-link text-white">Reproducibility</a>
+        <a href="#rules"      class="nav-link text-white">Rules &amp; Awards</a>
+        <a href="#organizers" class="nav-link text-white">Organizers</a>
+        <a href="#faq"        class="nav-link text-white">FAQ</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- =================== HERO =================== -->
+  <section id="top" class="hero pt-36 lg:pt-44 pb-32">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-10 items-center relative z-10">
+      <div class="lg:col-span-7">
+        <div class="flex flex-wrap items-center gap-2 mb-6">
+          <span class="pill pill-light"><span class="font-mono">IJCAI-ECAI 2026</span></span>
+          <span class="pill"><span class="font-mono">Bremen, Germany</span></span>
+          <span class="pill pill-amber"><span class="font-mono">August 15-21, 2026</span></span>
+        </div>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.05]">
+          The <span class="brand-gradient">FREUID</span> Challenge 2026
+        </h1>
+        <p class="mt-4 text-xl lg:text-2xl text-blue-100 font-medium">
+          1st Competition on Identity Documents Fraud Detection
+        </p>
+        <p class="mt-6 max-w-2xl text-slate-300 text-base lg:text-lg leading-relaxed">
+          Detect next-generation identity document fraud across physical
+          manipulations, GenAI-driven digital edits, and print-and-capture
+          attacks - on a globally diverse, under-represented set of document
+          types.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a id="register" href="https://www.kaggle.com/competitions/the-freuid-challenge-2026-ijcai-ecai" class="btn btn-primary" data-kaggle-link target="_blank" rel="noopener">
+            Register on Kaggle
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="https://discord.gg/8hKbNEKnT" class="btn btn-ghost" target="_blank" rel="noopener" aria-label="Join the FREUID Challenge Discord discussion server">
+            <svg width="16" height="16" viewBox="0 0 127.14 96.36" fill="currentColor" aria-hidden="true"><path d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2.05a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2.05a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.12-18.9-72.15ZM42.45 65.69c-6.28 0-11.44-5.75-11.44-12.84S36.06 40 42.45 40s11.55 5.8 11.44 12.87-5.06 12.82-11.44 12.82Zm42.24 0c-6.28 0-11.44-5.75-11.44-12.84S78.3 40 84.69 40s11.55 5.8 11.44 12.87-5.06 12.82-11.44 12.82Z"/></svg>
+            Join Discord discussion
+          </a>
+          <div class="ml-2" data-countdown></div>
+        </div>
+
+        <div class="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-3" data-key-dates></div>
+      </div>
+
+      <div class="lg:col-span-5 relative">
+        <img src="assets/img/hero-id-card.svg" alt="Stylized identity document with AI inspection overlay" class="w-full h-auto drop-shadow-2xl" />
+      </div>
+    </div>
+
+    <div class="mrz mt-16 relative z-10" aria-label="Machine-readable zone scanner">
+      <div class="mrz-track">
+        <span>P&lt;UTOFREUID&lt;&lt;CHALLENGE&lt;IJCAI&lt;ECAI&lt;2026&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span>
+        <span>L898902C36UTO2605118F2608216&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;06</span>
+        <span>BREMEN&lt;DE&lt;AUGUST&lt;15&lt;21&lt;2026&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span>
+        <span aria-hidden="true">P&lt;UTOFREUID&lt;&lt;CHALLENGE&lt;IJCAI&lt;ECAI&lt;2026&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span>
+        <span aria-hidden="true">L898902C36UTO2605118F2608216&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;06</span>
+        <span aria-hidden="true">BREMEN&lt;DE&lt;AUGUST&lt;15&lt;21&lt;2026&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== ABOUT =================== -->
+  <section id="about" class="py-24">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="section-eyebrow on-light">About the challenge</div>
+      <h2 class="mt-3 text-3xl lg:text-4xl font-extrabold tracking-tight">
+        Benchmarking ID document fraud detection in the GenAI era
+      </h2>
+
+      <div class="mt-8 grid lg:grid-cols-3 gap-6">
+        <div class="card">
+          <div class="stat-number">$47B</div>
+          <p class="text-slate-600 mt-3 text-sm leading-relaxed">
+            Lost by American adults to identity fraud in 2024 - up $4B
+            year-over-year.
+          </p>
+        </div>
+        <div class="card">
+          <div class="stat-number">+244%</div>
+          <p class="text-slate-600 mt-3 text-sm leading-relaxed">
+            Year-over-year surge in AI-driven digital document forgeries.
+          </p>
+        </div>
+        <div class="card">
+          <div class="stat-number">5 min</div>
+          <p class="text-slate-600 mt-3 text-sm leading-relaxed">
+            How often deepfake-based identity theft incidents now occur.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-10 max-w-4xl text-slate-700 text-lg leading-relaxed space-y-5">
+        <p>
+          Existing benchmarks have saturated on purely digital artifacts and
+          under-represent the global diversity of real identity documents,
+          leaving production verification systems exposed to the next
+          generation of attacks. The <strong>FREUID Challenge</strong> - the
+          first competition built on the new FREUID dataset, contributed by
+          the <strong>Microblink Fraud Lab</strong> - asks participants to
+          detect identity document fraud across a uniquely realistic threat
+          surface that combines:
+        </p>
+        <ol class="list-decimal pl-6 space-y-2">
+          <li><strong>Physical manipulations</strong> on real document substrates,</li>
+          <li><strong>GenAI-driven multimodal edits</strong> accessible to common fraudsters, and</li>
+          <li><strong>Print-and-capture forgeries</strong> that close the &ldquo;analog hole&rdquo; most current detectors rely on.</li>
+        </ol>
+        <p>
+          The dataset deliberately spans under-represented document types to 
+          force cross-domain generalization. Top
+          teams will present live at IJCAI-ECAI 2026 in Bremen.
+        </p>
+      </div>
+
+      <div class="mt-10 grid md:grid-cols-3 gap-6">
+        <div class="card-dark card">
+          <img src="assets/img/icons/global.svg" alt="" class="w-12 h-12 mb-2" />
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Open problem #1</div>
+          <h3 class="mt-2 text-lg font-semibold text-white">Cross-domain generalization</h3>
+          <p class="text-slate-300 mt-2 text-sm leading-relaxed">
+            Build models that perform accurately across highly under-represented
+            document types.
+          </p>
+        </div>
+        <div class="card-dark card">
+          <img src="assets/img/icons/detection.svg" alt="" class="w-12 h-12 mb-2" />
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Open problem #2</div>
+          <h3 class="mt-2 text-lg font-semibold text-white">Physical vs. digital artifacts</h3>
+          <p class="text-slate-300 mt-2 text-sm leading-relaxed">
+            Move beyond fragile GenAI pixel noise toward semantic
+            inconsistencies in physically printed and captured forgeries.
+          </p>
+        </div>
+        <div class="card-dark card">
+          <img src="assets/img/icons/security.svg" alt="" class="w-12 h-12 mb-2" />
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Open problem #3</div>
+          <h3 class="mt-2 text-lg font-semibold text-white">Anti-fragility in vision models</h3>
+          <p class="text-slate-300 mt-2 text-sm leading-relaxed">
+            Foster detectors that adapt to open-ended, continuously evolving
+            fraud strategies rather than overfitting to known attack vectors.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== TIMELINE =================== -->
+  <section id="timeline" class="py-24 bg-slate-100">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="section-eyebrow on-light">Timeline</div>
+      <h2 class="mt-3 text-3xl lg:text-4xl font-extrabold tracking-tight">
+        Key dates - all times 23:59 AoE (UTC-12)
+      </h2>
+      <!--
+      <p class="mt-3 text-slate-600 max-w-2xl">
+        Important milestones from the call for participation through the live
+        award ceremony. Dates are managed in a single source-of-truth
+        (<span class="font-mono text-sm">assets/js/main.js</span>) so updates
+        are easy.
+      </p>
+      -->
+
+      <div class="mt-12 grid lg:grid-cols-12 gap-10">
+        <div class="lg:col-span-8">
+          <ol class="timeline" data-timeline></ol>
+        </div>
+        <aside class="lg:col-span-4">
+          <div class="card-dark card">
+            <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Live Showdown</div>
+            <div class="mt-3 inline-flex items-center justify-center bg-white/95 rounded-lg px-4 py-3 shadow-sm">
+              <img src="assets/img/sponsors/ijcai-ecai-2026-logo.png" alt="IJCAI-ECAI 2026 Bremen" class="h-14 w-auto" />
+            </div>
+            <h3 class="mt-3 text-xl font-bold text-white">Bremen, Germany</h3>
+            <p class="text-slate-300 mt-2 text-sm leading-relaxed">
+              Main conference: Aug 18-21, 2026 at the Bremen Exhibition Center.
+              Workshops &amp; tutorials kick off Aug 15-17 at the University
+              of Bremen.
+            </p>
+            <a href="https://2026.ijcai.org/" class="btn btn-ghost mt-5 text-sm" target="_blank" rel="noopener">
+              Visit IJCAI-ECAI 2026
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== TASK & DATASET =================== -->
+  <section id="dataset" class="py-24">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="section-eyebrow on-light">Task &amp; Dataset</div>
+      <h2 class="mt-3 text-3xl lg:text-4xl font-extrabold tracking-tight">
+        The FREUID dataset
+      </h2>
+      <p class="mt-4 max-w-3xl text-slate-700 text-lg leading-relaxed">
+        FREUID is a proprietary collection of high-fidelity bona-fide and
+        fraudulent documents provided by the Microblink Fraud Lab. It is
+        designed to surface the failure modes hiding behind the saturated
+        metrics of existing benchmarks.
+      </p>
+
+      <div class="mt-10 grid md:grid-cols-3 gap-6">
+        <div class="card">
+          <img src="assets/img/icons/identity-document-light.svg" alt="" class="w-12 h-12 mb-2" />
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-cobalt">Differentiator #1</div>
+          <h3 class="mt-2 text-lg font-semibold">Bridging the &ldquo;analog hole&rdquo;</h3>
+          <p class="text-slate-600 mt-2 text-sm leading-relaxed">
+            Digital forgeries are physically printed and
+            captured to obfuscate the digital noise that SOTA detectors
+            currently exploit. Additionally, physical forgeries are done on top
+            of the printed documents to cover for such domain of attacks (these are again captured).
+          </p>
+        </div>
+        <div class="card">
+          <img src="assets/img/icons/customizable-light.svg" alt="" class="w-12 h-12 mb-2" />
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-cobalt">Differentiator #2</div>
+          <h3 class="mt-2 text-lg font-semibold">GenAI tampering</h3>
+          <p class="text-slate-600 mt-2 text-sm leading-relaxed">
+            Forgeries created using accessible multimodal (text + image) GenAI
+            editing tools, reflecting the real modern threat landscape.
+          </p>
+        </div>
+        <div class="card">
+          <img src="assets/img/icons/global-light.svg" alt="" class="w-12 h-12 mb-2" />
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-cobalt">Differentiator #3</div>
+          <h3 class="mt-2 text-lg font-semibold">Expanded global coverage</h3>
+          <p class="text-slate-600 mt-2 text-sm leading-relaxed">
+            Document types that are
+            under-represented in existing datasets, to test cross-document
+            generalization.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="mt-16 text-2xl font-bold tracking-tight">How FREUID compares</h3>
+      <p class="mt-2 text-slate-600 max-w-3xl">
+        Side-by-side comparison of FREUID against the closest existing
+        identity-document fraud benchmarks.
+      </p>
+
+      <div class="cmp-wrap mt-6">
+        <table class="cmp">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>PAD-ID Card 2025</th>
+              <th>FantasyID</th>
+              <th>IDNet</th>
+              <th class="ours-head">FREUID (Ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Primary focus</strong></td>
+              <td>Presentation Attack Detection (PAD)</td>
+              <td>Digital manipulation detection</td>
+              <td>Large-scale synthetic dataset for ID fraud</td>
+              <td class="ours">Physical &amp; digital manipulations on under-represented document types</td>
+            </tr>
+            <tr>
+              <td><strong>Bona-fide data</strong></td>
+              <td>Printed / captured plastic cards</td>
+              <td>Printed / captured &ldquo;Fantasy&rdquo; (mocked) plastic cards</td>
+              <td>Synthetic</td>
+              <td class="ours">Synthetic + printed / captured plastic cards</td>
+            </tr>
+            <tr>
+              <td><strong>Manipulations / tampering</strong></td>
+              <td>Physical &amp; digital manipulations</td>
+              <td>Digital manipulations</td>
+              <td>Digital manipulations</td>
+              <td class="ours">Physical &amp; digital manipulations + print / capture</td>
+            </tr>
+            <tr>
+              <td><strong>Diversity</strong></td>
+              <td>24 countries, 155 unique doc types (train); 4 LATAM countries, 20 doc types (test)</td>
+              <td>13 unique doc types / 10 languages</td>
+              <td>10 US and 10 EU document types</td>
+              <td class="ours">7 document types (Asian and African) with diverse scripts (Latin, Arabic)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="mt-10 card flex flex-col md:flex-row items-start md:items-center gap-5 justify-between">
+        <div>
+          <div class="font-mono text-xs uppercase tracking-widest text-fr-navy-2">Hosting</div>
+          <h4 class="text-lg font-semibold mt-1">The competition is hosted on Kaggle</h4>
+          <p class="text-slate-600 mt-1 text-sm">
+            Teams submit prediction files generated on their own infrastructure.
+            A public validation leaderboard tracks progress; final rankings
+            are computed on a private held-out test set.
+          </p>
+        </div>
+        <a href="https://www.kaggle.com/competitions/the-freuid-challenge-2026-ijcai-ecai" data-kaggle-link class="btn btn-dark text-sm whitespace-nowrap" target="_blank" rel="noopener">
+          Open Kaggle page
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== EVALUATION =================== -->
+  <section id="evaluation" class="py-24 bg-fr-navy text-fr-paper">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="section-eyebrow">Evaluation</div>
+      <h2 class="mt-3 text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
+        How submissions are scored
+      </h2>
+      <p class="mt-4 max-w-3xl text-slate-300 text-lg leading-relaxed">
+        We adopt standard metrics from the presentation attack detection
+        literature.
+      </p>
+
+      <div class="mt-10 grid md:grid-cols-2 gap-6">
+        <div class="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur">
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Primary metric</div>
+          <h3 class="mt-2 text-2xl font-bold text-white">AuDET</h3>
+          <p class="text-slate-300 mt-2 leading-relaxed">
+            Area under the Detection Error Trade-off (DET) curve. A single
+            scalar capturing the trade-off between false-accept and
+            false-reject errors across operating points.
+          </p>
+        </div>
+        <div class="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur">
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Operating point</div>
+          <h3 class="mt-2 text-2xl font-bold text-white">APCER @ 1% BPCER</h3>
+          <p class="text-slate-300 mt-2 leading-relaxed">
+            Attack Presentation Classification Error Rate measured at a fixed
+            1% Bona-Fide Presentation Classification Error Rate - the
+            production-relevant slice of the DET curve.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-10 grid md:grid-cols-2 gap-6">
+        <div class="rounded-2xl p-6 border border-white/10">
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Public leaderboard</div>
+          <p class="text-slate-200 mt-2">
+            Powered by a validation subset; updates with every submission so
+            teams can iterate quickly.
+          </p>
+        </div>
+        <div class="rounded-2xl p-6 border border-white/10">
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Private final ranking</div>
+          <p class="text-slate-200 mt-2">
+            Computed on a held-out test set, ensuring
+            the leaderboard reflects true generalization.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== RULES & AWARDS =================== -->
+  <section id="rules" class="py-24">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="section-eyebrow on-light">Rules &amp; Awards</div>
+      <h2 class="mt-3 text-3xl lg:text-4xl font-extrabold tracking-tight">
+        Participation, prizes and reproducibility
+      </h2>
+
+      <div class="mt-10 grid lg:grid-cols-2 gap-10">
+        <div>
+          <h3 class="text-xl font-bold">Eligibility &amp; participation</h3>
+          <ul class="mt-4 space-y-3 text-slate-700 leading-relaxed">
+            <li class="flex gap-3">
+              <span class="text-fr-cyan font-mono shrink-0 leading-7">&gt;</span>
+              <span>Open to academia and industry. Up to <strong>~20 teams</strong> are expected.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-fr-cyan font-mono shrink-0 leading-7">&gt;</span>
+              <span>Teams may use any model architecture and any external public data.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-fr-cyan font-mono shrink-0 leading-7">&gt;</span>
+              <span>All submissions are made on the participant's own infrastructure - no GPU quota imposed by us.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-fr-cyan font-mono shrink-0 leading-7">&gt;</span>
+              <span><strong>Prize eligibility requires a full reproducibility package</strong> by the final deadline (July 15, 2026) - open code, technical report, runnable Docker, and one pinned-thread reply. <a href="reproducibility.html" class="text-mb-cobalt font-semibold underline">Details &amp; templates</a>. Teams that do not comply are <strong>not eligible for prizes</strong>.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-fr-cyan font-mono shrink-0 leading-7">&gt;</span>
+              <span>For final, private leaderboard evaluation, teams must provide predictions on the published test set via Kaggle and pass organizer verification of their submitted pipeline.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-fr-cyan font-mono shrink-0 leading-7">&gt;</span>
+              <span>Teams must provide the source code used to generate the participant's or Team's ranked Submission(s), together with all configuration, training, and inference scripts and instructions sufficient to enable the Organizer to review and reasonably reproduce the ranked results.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-fr-cyan font-mono shrink-0 leading-7">&gt;</span>
+              <span>Data usage is restricted to <strong>non-commercial research</strong>.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-dark card">
+          <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Prize pool</div>
+          <h3 class="text-3xl font-extrabold text-white mt-2">$6,000<span class="text-lg text-slate-300 font-medium ml-2">USD</span></h3>
+          <p class="text-slate-300 mt-2 text-sm">Sponsored by Microblink. Conference entries provided to top performers (workshops/competitions part, subject to organizer confirmation).</p>
+
+          <div class="mt-6 grid grid-cols-3 gap-3">
+            <div class="rounded-xl bg-white/5 border border-white/10 p-4 text-center">
+              <div class="font-mono text-xs text-mb-lime">1st</div>
+              <div class="text-2xl font-extrabold text-white mt-1">$3,000</div>
+            </div>
+            <div class="rounded-xl bg-white/5 border border-white/10 p-4 text-center">
+              <div class="font-mono text-xs text-mb-lime">2nd</div>
+              <div class="text-2xl font-extrabold text-white mt-1">$2,000</div>
+            </div>
+            <div class="rounded-xl bg-white/5 border border-white/10 p-4 text-center">
+              <div class="font-mono text-xs text-mb-lime">3rd</div>
+              <div class="text-2xl font-extrabold text-white mt-1">$1,000</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== ORGANIZERS =================== -->
+  <section id="organizers" class="py-24 bg-slate-100">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="section-eyebrow on-light">Organizers</div>
+      <h2 class="mt-3 text-3xl lg:text-4xl font-extrabold tracking-tight">
+        The team behind FREUID
+      </h2>
+
+      <!-- ===== Microblink ===== -->
+      <div class="mt-12">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8 pb-6 border-b border-slate-300">
+          <div class="flex items-center gap-5">
+            <a href="https://microblink.com" target="_blank" rel="noopener" class="shrink-0 group">
+              <img src="assets/img/microblink/microblink-logo-color-dark.svg" alt="Microblink" class="h-14 w-auto group-hover:opacity-80 transition-opacity" />
+            </a>
+            <div>
+              <div class="font-mono text-xs uppercase tracking-widest text-mb-cobalt">Industrial organizer</div>
+              <h3 class="text-2xl font-bold tracking-tight mt-0.5">Microblink</h3>
+              <p class="text-sm text-slate-600 mt-1 max-w-xl">Dataset, prize pool &amp; lead organization. The FREUID dataset is contributed by the Microblink Fraud Lab.</p>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          <div class="card text-center">
+            <img src="assets/img/organizers/ivan-relic.placeholder.svg" alt="Ivan Relic" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Ivan Reli&cacute;</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/vincenzo-delia.placeholder.svg" alt="Vincenzo D'Elia" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Vincenzo D'Elia</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/stefano-bortoli.placeholder.svg" alt="Stefano Bortoli" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Stefano Bortoli</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/radu-tudoran.placeholder.svg" alt="Radu Tudoran" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Radu Tudoran</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/hristina-nedyalkova.placeholder.svg" alt="Hristina Nedyalkova" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Hristina Nedyalkova</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/mihaela-bosnjak.placeholder.svg" alt="Mihaela Bosnjak" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Mihaela Bo&scaron;njak</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/stanislav-pavlic.placeholder.svg" alt="Stanislav Pavlic" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Stanislav Pavli&cacute;</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/tin-mavracic.placeholder.svg" alt="Tin Mavracic" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Tin Mavra&ccaron;i&cacute;</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/darin-dasic.placeholder.svg" alt="Darin Dasic" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Darin Da&scaron;i&cacute;</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/marin-kacan.placeholder.svg" alt="Marin Kacan" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Marin Ka&ccaron;an</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/jerko-segvic.placeholder.svg" alt="Jerko Segvic" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Jerko &Scaron;egvi&cacute;</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/paolo-ceric.placeholder.svg" alt="Paolo Ceric" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Paolo &Ccaron;eri&cacute;</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/filip-soprun.placeholder.svg" alt="Filip Soprun" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Filip &Scaron;oprun</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/matej-miocic.placeholder.svg" alt="Matej Miocic" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Matej Mio&ccaron;i&cacute;</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== UniZG FER ===== -->
+      <div class="mt-16">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8 pb-6 border-b border-slate-300">
+          <div class="flex items-center gap-5">
+            <a href="https://www.fer.unizg.hr/" target="_blank" rel="noopener" class="shrink-0">
+              <img src="assets/img/sponsors/fer-logo.placeholder.png" alt="UniZG FER" class="h-14 w-auto" />
+            </a>
+            <div>
+              <div class="font-mono text-xs uppercase tracking-widest text-mb-cobalt">Academic partner</div>
+              <h3 class="text-2xl font-bold tracking-tight mt-0.5">UniZG FER</h3>
+              <p class="text-sm text-slate-600 mt-1 max-w-xl">University of Zagreb, Faculty of Electrical Engineering and Computing.</p>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          <div class="card text-center">
+            <img src="assets/img/organizers/marin-orsic.placeholder.svg" alt="Marin Orsic" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Marin Or&scaron;i&cacute;</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Politecnico di Torino ===== -->
+      <div class="mt-16">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8 pb-6 border-b border-slate-300">
+          <div class="flex items-center gap-5">
+            <a href="https://www.polito.it/" target="_blank" rel="noopener" class="shrink-0">
+              <img src="assets/img/sponsors/PoliTO_Logo_BLU.svg" alt="Politecnico di Torino" class="h-14 w-auto" />
+            </a>
+            <div>
+              <div class="font-mono text-xs uppercase tracking-widest text-mb-cobalt">Academic partner</div>
+              <h3 class="text-2xl font-bold tracking-tight mt-0.5">Politecnico di Torino</h3>
+              <p class="text-sm text-slate-600 mt-1 max-w-xl">DataBase and Data Mining Group.</p>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          <div class="card text-center">
+            <img src="assets/img/organizers/lorenzo-vaiani.placeholder.svg" alt="Lorenzo Vaiani" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Lorenzo Vaiani</div>
+          </div>
+          <div class="card text-center">
+            <img src="assets/img/organizers/paolo-garza.placeholder.svg" alt="Paolo Garza" class="w-24 h-24 rounded-full mx-auto" />
+            <div class="mt-4 font-semibold">Paolo Garza</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================== CONTACT =================== -->
+  <section id="contact" class="py-24 bg-fr-navy text-fr-paper">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 grid lg:grid-cols-2 gap-12 items-start">
+      <div>
+        <div class="section-eyebrow">Contact</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
+          Get in touch with the organizers
+        </h2>
+        <p class="mt-4 text-slate-300 max-w-xl leading-relaxed">
+          Have a question about eligibility, the dataset, or the evaluation
+          protocol? Reach out and we'll respond as quickly as we can.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a href="mailto:[redacted:email]@microblink.com" class="btn btn-primary">
+            [redacted:email]@microblink.com
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+          </a>
+          <button data-copy-email class="btn btn-ghost">Copy email</button>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+        <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Quick links</div>
+        <ul class="mt-4 space-y-3">
+          <li class="flex items-center justify-between gap-4">
+            <span>Kaggle competition page</span>
+            <a href="https://www.kaggle.com/competitions/the-freuid-challenge-2026-ijcai-ecai" data-kaggle-link class="font-mono text-sm text-mb-lime hover:text-white" target="_blank" rel="noopener">Open &rarr;</a>
+          </li>
+          <li class="flex items-center justify-between gap-4">
+            <span>Discord discussion server</span>
+            <a href="https://discord.gg/8hKbNEKnT" class="font-mono text-sm text-mb-lime hover:text-white" target="_blank" rel="noopener">Join &rarr;</a>
+          </li>
+          <li class="flex items-center justify-between gap-4">
+            <span>IJCAI-ECAI 2026 conference</span>
+            <a href="https://2026.ijcai.org/" class="font-mono text-sm text-mb-lime hover:text-white" target="_blank" rel="noopener">Open &rarr;</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== FAQ =================== -->
+  <section id="faq" class="py-24">
+    <div class="max-w-4xl mx-auto px-6 lg:px-10">
+      <div class="section-eyebrow on-light">FAQ</div>
+      <h2 class="mt-3 text-3xl lg:text-4xl font-extrabold tracking-tight">Frequently asked questions</h2>
+
+      <div class="faq mt-10">
+        <details>
+          <summary>Who can participate?</summary>
+          <p>The challenge is open to academic and industry teams worldwide. We anticipate around 20 teams. Microblink employees, organizers and members of their immediate research groups are not eligible for prizes but may participate informally.</p>
+        </details>
+        <details>
+          <summary>How do I get access to the FREUID dataset?</summary>
+          <p>Sample of the training dataset is available on Kaggle. Full dataset will be released at the beginning of June.</p>
+        </details>
+        <details>
+          <summary>Are there team size limits?</summary>
+          <p>Up to five members per team. A person may only be a member of a single team. Cross-affiliation teams are encouraged.</p>
+        </details>
+        <details>
+          <summary>Are pre-trained models or external data allowed?</summary>
+          <p>Yes - any publicly available pre-trained model or dataset may be used, provided the license is compatible and the artifact is fully cited in the team's report. Use of proprietary data that is not freely accessible is not permitted.</p>
+        </details>
+        <details>
+          <summary>What is required for prize eligibility after the deadline?</summary>
+          <p>By <strong>July 15, 2026, 23:59 AoE</strong> (final submission deadline), teams must post one reply on the pinned Kaggle discussion with open-source code (OSI license), a technical report (PDF), and a Docker image that runs in a no-network sandbox. <strong>Teams that do not provide a complete package are not eligible for prizes.</strong> Full instructions and templates: <a href="reproducibility.html">freuid2026.microblink.com/reproducibility.html</a>.</p>
+        </details>
+        <details>
+          <summary>Do I have to release my code?</summary>
+          <p>Yes. To be eligible for competition, teams must release their training and inference code under an OSI-approved open-source license, together with a short technical report.</p>
+        </details>
+        <details>
+          <summary>Can I use the dataset commercially?</summary>
+          <p>No. The FREUID dataset is licensed for non-commercial research use only. Reach out to <span class="font-mono">[redacted:email]@microblink.com</span> to discuss commercial licensing.</p>
+        </details>
+        <details>
+          <summary>Do I need to attend IJCAI-ECAI 2026 in Bremen?</summary>
+          <p>Top-three teams are strongly encouraged to attend the live award showdown on August 18-21, 2026. Conference entries are provided by the organizers to facilitate this (workshops/competitions part), subject to organizer confirmation.</p>
+        </details>
+        <details>
+          <summary>How is the leaderboard scored?</summary>
+          <p>Please look into the Kaggle competition page for the exact scoring method.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== REFERENCES =================== -->
+  <section id="references" class="py-24 bg-slate-100">
+    <div class="max-w-4xl mx-auto px-6 lg:px-10">
+      <div class="section-eyebrow on-light">References</div>
+      <h2 class="mt-3 text-3xl lg:text-4xl font-extrabold tracking-tight">Related work &amp; sources</h2>
+
+      <ol class="refs mt-10">
+        <li>
+          Christina Ianzito (AARP). <em>Identity Fraud and Scams Cost Americans $47 Billion in 2024.</em>
+          <a href="https://www.aarp.org/money/scams-fraud/javelin-identity-theft-report-2024/" target="_blank" rel="noopener">aarp.org</a>, 2024.
+        </li>
+        <li>
+          DeepID. <em>DeepID Competition.</em>
+          <a href="https://deepid-iccv.github.io/" target="_blank" rel="noopener">deepid-iccv.github.io</a>, 2025.
+        </li>
+        <li>
+          Entrust. <em>2025 Identity Fraud Report.</em>
+          <a href="https://www.entrust.com/sites/default/files/documentation/reports/2025-identity-fraud-report.pdf" target="_blank" rel="noopener">entrust.com</a>, 2025.
+        </li>
+        <li>
+          Hong Guan et al. <em>IDNet: A Novel Dataset for Identity Document Analysis and Fraud Detection.</em>
+          <a href="https://arxiv.org/abs/2408.01690" target="_blank" rel="noopener">arXiv:2408.01690</a>, 2024.
+        </li>
+        <li>
+          Pavel Korshunov et al. <em>FantasyID: A Dataset for Detecting Digital Manipulations of ID Documents.</em>
+          <a href="https://arxiv.org/abs/2507.20808" target="_blank" rel="noopener">arXiv:2507.20808</a>, 2025.
+        </li>
+        <li>
+          PAD-ID. <em>PAD-ID Competition.</em>
+          <a href="https://sites.google.com/view/ijcb-pad-id-card-2025/" target="_blank" rel="noopener">sites.google.com/view/ijcb-pad-id-card-2025</a>, 2025.
+        </li>
+        <li>
+          Juan E. Tapia et al. <em>Second Competition on Presentation Attack Detection on ID Card.</em>
+          <a href="https://arxiv.org/abs/2507.20404" target="_blank" rel="noopener">arXiv:2507.20404</a>, 2025.
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- =================== FOOTER =================== -->
+  <footer class="bg-fr-navy text-slate-300 py-12">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 grid md:grid-cols-3 gap-8 items-start">
+      <div>
+        <img src="assets/img/freuid-mark.svg" alt="FREUID Challenge" class="h-9 w-auto" />
+        <p class="mt-4 text-sm leading-relaxed text-slate-400">
+          The FREUID Challenge 2026 is the 1st competition on identity documents
+          fraud detection in the GenAI era, held at IJCAI-ECAI 2026 in
+          Bremen, Germany.
+        </p>
+        <a href="https://2026.ijcai.org/" target="_blank" rel="noopener"
+           class="mt-5 inline-flex items-center gap-3 bg-white/95 hover:bg-white rounded-md px-3 py-2 transition-colors shadow-sm"
+           aria-label="IJCAI-ECAI 2026 conference website">
+          <img src="assets/img/sponsors/ijcai-ecai-2026-logo.png" alt="IJCAI-ECAI 2026 Bremen" class="h-10 w-auto" />
+        </a>
+      </div>
+      <div>
+        <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Sections</div>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li><a href="#about" class="hover:text-white">About</a></li>
+          <li><a href="#timeline" class="hover:text-white">Timeline</a></li>
+          <li><a href="#dataset" class="hover:text-white">Dataset</a></li>
+          <li><a href="#evaluation" class="hover:text-white">Evaluation</a></li>
+          <li><a href="reproducibility.html" class="hover:text-white">Reproducibility</a></li>
+          <li><a href="#rules" class="hover:text-white">Rules &amp; Awards</a></li>
+          <li><a href="#organizers" class="hover:text-white">Organizers</a></li>
+          <li><a href="#faq" class="hover:text-white">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-mono text-xs uppercase tracking-widest text-mb-lime">Contact</div>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li><a href="mailto:[redacted:email]@microblink.com" class="hover:text-white">[redacted:email]@microblink.com</a></li>
+          <li><a href="https://discord.gg/8hKbNEKnT" class="hover:text-white" target="_blank" rel="noopener">Discord discussion server</a></li>
+          <li><a href="https://microblink.com" class="hover:text-white" target="_blank" rel="noopener">microblink.com</a></li>
+          <li><a href="https://2026.ijcai.org/" class="hover:text-white" target="_blank" rel="noopener">IJCAI-ECAI 2026</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 mt-10 pt-6 border-t border-white/10 text-xs text-slate-500 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+      <span>&copy; 2026 The FREUID Challenge organizers. Brand placeholders subject to replacement.</span>
+      <span class="font-mono">v1.0 / built for IJCAI-ECAI 2026</span>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

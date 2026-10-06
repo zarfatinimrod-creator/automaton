@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Project OmniBus</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg" />
+    <meta property="og:image" content="logo.jpg" />
+
+    <meta name="description"
+        content="Project OmniBus — a concluded machine learning competition focused on school bus routing and reinforcement learning. View final standings and the closing ceremony." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        :root {
+            --cream: #f5f0e8;
+            --ink: #1a1714;
+            --muted: #7a7168;
+            --accent: #c84b2f;
+            --rule: #d8d1c4;
+
+            --mono: 'DM Mono', monospace;
+            --serif: 'DM Serif Display', serif;
+            --sans: 'DM Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--cream);
+            color: var(--ink);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+
+            z-index: 9999;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 1.25rem 3rem;
+
+            background: rgba(245, 240, 232, 0.92);
+            backdrop-filter: blur(8px);
+
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        .logo {
+            width: 54px;
+            height: 54px;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+
+            color: var(--muted);
+            text-decoration: none;
+
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            color: var(--ink);
+        }
+
+        .nav-cta {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+
+            padding: 0.55rem 1.2rem;
+
+            background: var(--ink);
+            color: var(--cream);
+
+            border: none;
+            cursor: pointer;
+
+            transition: background 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: var(--accent);
+        }
+
+        /* Hamburger menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--ink);
+            margin-bottom: 5px;
+            transition: 0.3s;
+        }
+        
+        .mobile-menu-btn span:last-child {
+            margin-bottom: 0;
+        }
+
+        .hero {
+            min-height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+
+            padding: 0 3rem 5rem;
+
+            border-bottom: 1px solid var(--rule);
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg-text {
+            position: absolute;
+
+            top: 50%;
+            right: -2rem;
+
+            transform: translateY(-50%);
+
+            font-family: var(--serif);
+            font-size: 22vw;
+
+            color: rgba(26, 23, 20, 0.04);
+
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+
+            color: var(--accent);
+
+            margin-bottom: 1.5rem;
+
+            opacity: 0;
+            animation: rise 0.9s ease forwards 0.2s;
+        }
+
+        .hero h1 {
+            font-family: var(--serif);
+
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            line-height: 1;
+
+            font-weight: 400;
+
+            max-width: 900px;
+
+            opacity: 0;
+            animation: rise 0.9s ease forwards 0.4s;
+        }
+
+        .hero-sub {
+            margin-top: 2rem;
+
+            max-width: 560px;
+
+            font-size: 1rem;
+            line-height: 1.8;
+            font-weight: 300;
+
+            color: var(--muted);
+
+            opacity: 0;
+            animation: rise 0.9s ease forwards 0.6s;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+
+            margin-top: 3rem;
+
+            opacity: 0;
+            animation: rise 0.9s ease forwards 0.8s;
+        }
+
+        .btn-primary,
+        .btn-accent,
+        .btn-ghost,
+        .btn-register {
+            font-family: var(--mono);
+
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+
+            padding: 0.85rem 2rem;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--ink);
+            color: var(--cream);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--cream);
+            border: none;
+        }
+
+        .btn-accent:hover {
+            background: var(--ink);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--rule);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--ink);
+        }
+
+        .btn-register {
+            background: var(--ink);
+            color: var(--cream);
+            border: 1px solid var(--ink);
+            border-radius: 4px;
+            font-family: var(--sans);
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.02em;
+            text-transform: none;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(26, 23, 20, 0.1);
+        }
+
+        .btn-register:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--cream);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(200, 75, 47, 0.2);
+        }
+
+        .btn-discord {
+            background: #5865F2;
+            color: var(--cream);
+            border: 1px solid #5865F2;
+            border-radius: 4px;
+            font-family: var(--sans);
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.02em;
+            text-transform: none;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.2);
+            cursor: pointer;
+            transition: 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .btn-discord:hover {
+            background: #4752C4;
+            border-color: #4752C4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(88, 101, 242, 0.3);
+            color: var(--cream);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .oauth-btn {
+            padding: 0.8rem 1.3rem;
+
+            border: 1px solid var(--rule);
+            background: transparent;
+
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .oauth-btn:hover {
+            border-color: var(--ink);
+            background: rgba(26, 23, 20, 0.03);
+        }
+
+        section {
+            padding: 6rem 3rem;
+            border-bottom: 1px solid var(--rule);
+
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: var(--mono);
+
+            font-size: 0.7rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+
+            color: var(--accent);
+
+            margin-bottom: 3rem;
+
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--rule);
+        }
+
+        h3 {
+            font-weight: normal;
+        }
+
+        section h2 {
+            font-family: var(--serif);
+
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 400;
+
+            line-height: 1.15;
+
+            max-width: 760px;
+        }
+
+        .problem-grid,
+        .sponsor-grid,
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+
+            margin-top: 3rem;
+        }
+
+        .contact-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+
+            margin-top: 3rem;
+        }
+
+        .problem-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+            border: 1px solid var(--rule);
+        }
+
+        .problem-cell {
+            padding: 2.5rem;
+
+            border-right: 1px solid var(--rule);
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .problem-cell:nth-child(2n) {
+            border-right: none;
+        }
+
+        .problem-cell:nth-last-child(-n+2) {
+            border-bottom: none;
+        }
+
+        .problem-cell h3,
+        .contact-card h3 {
+            font-family: var(--mono);
+
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+
+            color: var(--muted);
+
+            margin-bottom: 1rem;
+        }
+
+        .problem-cell p,
+        .why-desc {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .why-list {
+            margin-top: 4rem;
+            border-top: 1px solid var(--rule);
+        }
+
+        .why-item {
+            display: grid;
+            grid-template-columns: 3rem 1fr 2fr;
+
+            gap: 2rem;
+
+            padding: 2rem 0;
+
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .why-num {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .why-title {
+            font-family: var(--serif);
+            font-size: 1.3rem;
+        }
+
+        .why-desc {
+            color: var(--muted);
+        }
+
+        .code-block {
+            margin-top: 4rem;
+            border: 1px solid var(--rule);
+            overflow: hidden;
+        }
+
+        .code-bar {
+            background: var(--ink);
+            padding: 0.75rem 1.25rem;
+        }
+
+        .code-bar span {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: rgba(245, 240, 232, 0.45);
+        }
+
+        pre {
+            background: #0f0d0b;
+            padding: 2rem 2.5rem;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            line-height: 2;
+            color: #c8bfb0;
+        }
+
+        .kw {
+            color: #e0956a;
+        }
+
+        .str {
+            color: #8fbe8a;
+        }
+
+        .cm {
+            color: #5a554e;
+        }
+
+        .fn {
+            color: #7db5d8;
+        }
+
+        .lb-table {
+            width: 100%;
+            margin-top: 4rem;
+            border-collapse: collapse;
+        }
+
+        .lb-table th {
+            font-family: var(--mono);
+
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+
+            color: var(--muted);
+
+            text-align: left;
+
+            padding: 0 1rem 1.25rem;
+
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .lb-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--rule);
+            font-size: 0.9rem;
+        }
+
+        .tag {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+
+            padding: 0.2rem 0.6rem;
+            border-radius: 2px;
+        }
+
+        .tag-rl {
+            background: rgba(200, 75, 47, 0.1);
+            color: var(--accent);
+        }
+
+        .tag-exact {
+            background: rgba(26, 23, 20, 0.07);
+            color: var(--muted);
+        }
+
+        .tag-h {
+            background: rgba(26, 23, 20, 0.04);
+            color: #a09880;
+        }
+
+        .contact-card {
+            border: 1px solid var(--rule);
+            background: rgba(26, 23, 20, 0.015);
+            padding: 2rem;
+        }
+
+        .sponsor-card {
+            border: 1px dashed var(--rule);
+            background: transparent;
+            height: 140px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+
+            transition: background 0.2s, border-color 0.2s, transform 0.2s;
+        }
+
+        .sponsor-card:hover {
+            background: rgba(26, 23, 20, 0.04);
+            border-color: var(--accent);
+        }
+
+        .sponsor-card span {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .sponsor-card--real {
+            border-style: solid;
+            border-color: var(--rule);
+            background: rgba(26, 23, 20, 0.02);
+        }
+
+        .sponsor-card--real:hover {
+            border-color: var(--accent);
+            background: rgba(200, 75, 47, 0.04);
+        }
+
+        .contact-card {
+            padding: 2rem;
+        }
+
+        .contact-card a {
+            color: var(--ink);
+            text-decoration: none;
+        }
+
+        .contact-card a:hover {
+            color: var(--accent);
+        }
+
+        #join {
+            padding: 7rem 3rem;
+            text-align: center;
+        }
+
+        #join .inner {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #join h2 {
+            font-family: var(--serif);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1.5rem;
+        }
+
+        #join p {
+            color: var(--muted);
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
+
+        .join-form {
+            display: flex;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .join-form input {
+            flex: 1;
+
+            padding: 0.9rem 1.25rem;
+
+            border: 1px solid var(--rule);
+            border-right: none;
+
+            background: transparent;
+
+            outline: none;
+        }
+
+        .join-form button {
+            padding: 0.9rem 1.5rem;
+
+            background: var(--ink);
+            color: var(--cream);
+
+            border: 1px solid var(--ink);
+
+            font-family: var(--mono);
+
+            cursor: pointer;
+        }
+
+        footer {
+            padding: 2rem 3rem;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        footer span {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+
+            transition:
+                opacity 0.7s ease,
+                transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Countdown Banner ── */
+
+        .countdown-wrapper {
+            width: 100%;
+            max-width: 680px;
+            margin: 1.5rem auto 0;
+            opacity: 0;
+            animation: rise 0.9s ease forwards 1s;
+        }
+
+        .competition-dates {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .competition-dates .dates-sep {
+            width: 28px;
+            height: 1px;
+            background: var(--rule);
+        }
+
+        .competition-dates .dates-accent {
+            color: var(--accent);
+        }
+
+        .countdown-card {
+            border: 1px solid var(--rule);
+            background: rgba(200, 75, 47, 0.03);
+            padding: 1.4rem 1.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .countdown-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .countdown-pulse {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse-dot 1.4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        .countdown-units {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .countdown-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 56px;
+        }
+
+        .countdown-val {
+            font-family: var(--serif);
+            font-size: 2.4rem;
+            line-height: 1;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+            transition: opacity 0.15s;
+        }
+
+        .countdown-lbl {
+            font-family: var(--mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 0.3rem;
+        }
+
+        .countdown-colon {
+            font-family: var(--serif);
+            font-size: 2.4rem;
+            color: var(--rule);
+            line-height: 1;
+            margin-bottom: 1rem;
+            animation: blink-colon 1s step-end infinite;
+        }
+
+        @keyframes blink-colon {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .countdown-live {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #2a7a50;
+            padding: 0.3rem 0.8rem;
+            border: 1px solid rgba(42, 122, 80, 0.25);
+            background: rgba(42, 122, 80, 0.06);
+            border-radius: 2px;
+        }
+
+        .countdown-live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #2a7a50;
+            animation: pulse-dot 1.2s ease-in-out infinite;
+        }
+
+        .countdown-ended {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        @media (max-width: 768px) {
+
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+                gap: 1.5rem;
+                padding-top: 1.5rem;
+                padding-bottom: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .hero {
+                padding: 0 1.5rem 4rem;
+            }
+
+            section,
+            #join {
+                padding: 4rem 1.5rem;
+            }
+
+            .problem-grid,
+            .sponsor-grid,
+            .contact-grid,
+            .contact-grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .problem-cell {
+                border-right: none;
+            }
+
+            .why-item {
+                grid-template-columns: 2rem 1fr;
+            }
+
+            .why-desc {
+                display: none;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+        }
+
+        /* ── Embedded Simulator ── */
+
+        .sim-intro {
+            color: var(--muted);
+            max-width: 620px;
+            margin: 1.5rem 0 0;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .sim-embed {
+            margin-top: 2.5rem;
+            border: 1px solid var(--rule);
+            border-radius: 4px;
+            overflow: hidden;
+            background: #faf7f2;
+        }
+
+        .sim-embed-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 1rem;
+            background: var(--cream);
+            border-bottom: 1px solid var(--rule);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .sim-embed-toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .sim-embed-toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .sim-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--rule);
+            background: transparent;
+            border-radius: 3px;
+            color: var(--muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .sim-btn:hover {
+            border-color: var(--ink);
+            color: var(--ink);
+        }
+
+        .sim-btn.active {
+            background: var(--ink);
+            color: var(--cream);
+            border-color: var(--ink);
+        }
+
+        .sim-select {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            background: transparent;
+            border: 1px solid var(--rule);
+            border-radius: 3px;
+            color: var(--ink);
+            padding: 0.35rem 0.5rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .sim-select:hover {
+            border-color: var(--ink);
+        }
+
+        .sim-toolbar-sep {
+            width: 1px;
+            height: 20px;
+            background: var(--rule);
+            margin: 0 0.3rem;
+        }
+
+        .sim-clock-label {
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .sim-clock-val {
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            color: var(--ink);
+            letter-spacing: 0.03em;
+        }
+
+        .sim-badge {
+            font-family: var(--mono);
+            font-size: 0.62rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 2px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .sim-badge.ready {
+            background: rgba(34, 130, 80, 0.08);
+            color: #2a7a50;
+            border: 1px solid rgba(34, 130, 80, 0.2);
+        }
+
+        .sim-badge.running {
+            background: rgba(200, 75, 47, 0.08);
+            color: var(--accent);
+            border: 1px solid rgba(200, 75, 47, 0.2);
+        }
+
+        .sim-badge.paused {
+            background: rgba(180, 150, 50, 0.08);
+            color: #8a7530;
+            border: 1px solid rgba(180, 150, 50, 0.2);
+        }
+
+        .sim-badge.complete {
+            background: rgba(34, 130, 80, 0.08);
+            color: #2a7a50;
+            border: 1px solid rgba(34, 130, 80, 0.2);
+        }
+
+        .sim-embed-body {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            height: 480px;
+        }
+
+        .sim-embed-map-wrap {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sim-embed-map-wrap #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sim-embed-map-wrap .leaflet-container {
+            background: #f0ece4 !important;
+        }
+
+        .sim-embed-map-wrap .leaflet-control-zoom a {
+            background: rgba(245, 240, 232, 0.9) !important;
+            color: var(--ink) !important;
+            border-color: var(--rule) !important;
+        }
+
+        .sim-embed-map-wrap .leaflet-popup-content-wrapper {
+            background: #faf7f2 !important;
+            color: var(--ink) !important;
+            border: 1px solid var(--rule) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 4px 16px rgba(26, 23, 20, 0.1) !important;
+            font-family: var(--mono) !important;
+            font-size: 0.72rem !important;
+        }
+
+        .sim-embed-map-wrap .leaflet-popup-tip {
+            background: #faf7f2 !important;
+        }
+
+        .map-overlay {
+            position: absolute;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .map-overlay-topright {
+            top: 10px;
+            right: 10px;
+            pointer-events: auto;
+        }
+
+        .event-banner {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            padding: 0.4rem 0.7rem;
+            border-radius: 3px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            backdrop-filter: blur(8px);
+            animation: slide-in 0.3s ease;
+            transition: opacity 0.3s;
+        }
+
+        .event-banner.traffic {
+            background: rgba(180, 140, 30, 0.12);
+            border: 1px solid rgba(180, 140, 30, 0.3);
+            color: #8a7020;
+        }
+
+        .event-banner.closure {
+            background: rgba(200, 75, 47, 0.1);
+            border: 1px solid rgba(200, 75, 47, 0.3);
+            color: var(--accent);
+        }
+
+        .event-banner.weather {
+            background: rgba(70, 130, 180, 0.1);
+            border: 1px solid rgba(70, 130, 180, 0.3);
+            color: #4682b4;
+        }
+
+        .event-banner.breakdown {
+            background: rgba(200, 75, 47, 0.1);
+            border: 1px solid rgba(200, 75, 47, 0.3);
+            color: var(--accent);
+        }
+
+        .event-banner.absence {
+            background: rgba(122, 113, 104, 0.1);
+            border: 1px solid rgba(122, 113, 104, 0.2);
+            color: var(--muted);
+        }
+
+        @keyframes slide-in {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .sim-embed-panel {
+            border-left: 1px solid var(--rule);
+            background: var(--cream);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sim-panel-section {
+            padding: 0.8rem 0.9rem;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .sim-panel-section-grow {
+            flex: 1;
+            border-bottom: none;
+            overflow-y: auto;
+        }
+
+        .sim-panel-header {
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sim-panel-header::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--rule);
+        }
+
+        .sim-metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem;
+        }
+
+        .sim-metric {
+            background: rgba(26, 23, 20, 0.02);
+            border: 1px solid var(--rule);
+            border-radius: 3px;
+            padding: 0.4rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sim-metric-val {
+            font-family: var(--mono);
+            font-size: 0.95rem;
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        .sim-metric-val.good { color: #2a7a50; }
+        .sim-metric-val.warn { color: #8a7530; }
+        .sim-metric-val.bad { color: var(--accent); }
+
+        .sim-metric-label {
+            font-family: var(--mono);
+            font-size: 0.52rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .bus-card {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.5rem;
+            border-radius: 3px;
+            border: 1px solid var(--rule);
+            background: rgba(26, 23, 20, 0.02);
+            margin-bottom: 0.3rem;
+            transition: border-color 0.2s;
+        }
+
+        .bus-card:hover {
+            border-color: var(--muted);
+        }
+
+        .bus-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .bus-card .bus-info { flex: 1; min-width: 0; }
+
+        .bus-card .bus-name {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            color: var(--ink);
+        }
+
+        .bus-card .bus-status {
+            font-size: 0.58rem;
+            color: var(--muted);
+        }
+
+        .bus-card .bus-occupancy {
+            font-family: var(--mono);
+            font-size: 0.62rem;
+            color: var(--muted);
+            text-align: right;
+        }
+
+        .occupancy-bar {
+            width: 40px;
+            height: 3px;
+            background: var(--rule);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 2px;
+        }
+
+        .occupancy-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .sim-event-log {
+            max-height: 140px;
+            overflow-y: auto;
+        }
+
+        .event-log-item {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(216, 209, 196, 0.5);
+            font-size: 0.65rem;
+            animation: fade-in 0.3s ease;
+        }
+
+        .event-log-item:last-child { border-bottom: none; }
+
+        .event-log-item .time {
+            font-family: var(--mono);
+            color: var(--muted);
+            flex-shrink: 0;
+            width: 40px;
+        }
+
+        .event-log-item .msg {
+            color: var(--ink);
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(-3px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stop-demand-marker {
+            border-radius: 50%;
+            background: rgba(58, 112, 198, 0.28);
+            border: 2px solid rgba(58, 112, 198, 0.9);
+            box-shadow: 0 1px 5px rgba(26, 23, 20, 0.18);
+            transition: width 0.25s, height 0.25s, opacity 0.25s, transform 0.25s;
+            cursor: pointer;
+        }
+
+        .stop-demand-marker.empty {
+            background: rgba(58, 112, 198, 0.06);
+            border-color: rgba(58, 112, 198, 0.35);
+            opacity: 0.45;
+        }
+
+        .stop-demand-marker.late {
+            background: rgba(200, 75, 47, 0.16);
+            border-color: var(--accent);
+            animation: pulse-marker 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-marker {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .bus-marker-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: bold;
+            border: 2px solid;
+            box-shadow: 0 1px 4px rgba(26, 23, 20, 0.15);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .bus-marker-icon.en-route { animation: bus-pulse 2s ease-in-out infinite; }
+        .bus-marker-icon.loading { animation: bus-loading 0.5s ease-in-out infinite; }
+        .bus-marker-icon.broken { opacity: 0.4; filter: grayscale(1); }
+
+        @keyframes bus-pulse {
+            0%, 100% { box-shadow: 0 1px 4px rgba(26, 23, 20, 0.15); }
+            50% { box-shadow: 0 2px 10px rgba(200, 75, 47, 0.2); }
+        }
+
+        @keyframes bus-loading {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .school-marker {
+            width: 34px;
+            height: 34px;
+            background: var(--accent);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 56%, 79% 91%, 50% 70%, 21% 91%, 32% 56%, 2% 35%, 39% 35%);
+            filter: drop-shadow(0 1px 4px rgba(26, 23, 20, 0.2));
+        }
+
+        .sim-map-legend {
+            background: rgba(245, 240, 232, 0.92);
+            border: 1px solid var(--rule);
+            padding: 0.75rem 0.85rem;
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            box-shadow: 0 6px 18px rgba(26, 23, 20, 0.08);
+        }
+
+        .sim-map-legend div {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-top: 0.4rem;
+        }
+
+        .sim-map-legend div:first-child {
+            margin-top: 0;
+        }
+
+        .legend-school,
+        .legend-stop,
+        .legend-bus {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            flex: 0 0 12px;
+        }
+
+        .legend-school {
+            background: var(--accent);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 56%, 79% 91%, 50% 70%, 21% 91%, 32% 56%, 2% 35%, 39% 35%);
+        }
+
+        .legend-stop {
+            border-radius: 50%;
+            background: rgba(58, 112, 198, 0.35);
+            border: 1px solid rgba(58, 112, 198, 0.9);
+        }
+
+        .legend-bus {
+            border-radius: 2px;
+            background: rgba(42, 122, 80, 0.2);
+            border: 2px solid #2a7a50;
+        }
+
+        @media (max-width: 768px) {
+            .sim-embed-body {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .sim-embed-map-wrap {
+                height: 320px;
+            }
+
+            .sim-embed-panel {
+                border-left: none;
+                border-top: 1px solid var(--rule);
+                max-height: 300px;
+            }
+
+            .sim-embed-toolbar-left {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+
+    <nav>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="nav-logo" style="text-decoration: none; cursor: pointer;">
+                <img src="bca-logo.png" alt="BCA Logo" class="logo" onerror="this.style.display='none'">
+                <span>Project OmniBus</span>
+            </a>
+            
+            <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="https://www.codabench.org/competitions/16945/" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight: 500;">Competition ↗</a></li>
+            <li><a href="#closing-ceremony">Closing Ceremony</a></li>
+            <li><a href="#sponsors">Sponsors</a></li>
+            <li><a href="information.html">Information</a></li>
+            <li><a href="#simulator">Simulator</a></li>
+            <li><a href="standings.html">Standings</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+
+    </nav>
+
+    <!-- HERO -->
+
+    <div class="hero" style="padding-top:6rem">
+
+        <div
+            style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 1200px; margin: 0 auto; text-align: center; padding-bottom: 4rem;">
+            
+            <div class="hero-eyebrow" style="margin-bottom: 0; position: relative; top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; justify-content: center;">
+                MACHINE LEARNING COMPETITION
+                <span style="display: inline-block; font-family: var(--mono); font-size: 0.6rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; background: var(--muted); color: var(--cream); padding: 0.2rem 0.55rem; border-radius: 2px;">Concluded</span>
+            </div>
+
+            <div style="opacity: 0; animation: rise 0.9s ease forwards 0.4s; width: 100%; display: flex; justify-content: center; margin-top: -1rem; margin-bottom: 0;">
+                <img src="logo.png" alt="Official Logo" style="width: 100%; max-width: 500px; object-fit: contain; mix-blend-mode: multiply;">
+            </div>
+
+            <div style="opacity: 0; animation: rise 0.9s ease forwards 0.5s; width: 100%; display: flex; justify-content: center; gap: 1.5rem; margin-top: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: center;">
+                <a href="https://www.janestreet.com/" target="_blank" rel="noopener noreferrer" title="Jane Street"><img src="jane-street.png" alt="Jane Street" style="height: 24px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7"></a>
+                <a href="https://artofproblemsolving.com" target="_blank" rel="noopener noreferrer" title="Art of Problem Solving"><img src="AoPS_Main_Logo.png" alt="AoPS" style="height: 24px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7"></a>
+                <a href="https://interviewbuddy.net/" target="_blank" rel="noopener noreferrer" title="Interview Buddy"><img src="interview-buddy.png" alt="Interview Buddy" style="height: 24px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7"></a>
+                <a href="https://saily.com/" target="_blank" rel="noopener noreferrer" title="Saily"><img src="Saily.png" alt="Saily" style="height: 24px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7"></a>
+                <a href="https://nordvpn.com/" target="_blank" rel="noopener noreferrer" title="NordVPN"><img src="NordVPN.png" alt="NordVPN" style="height: 24px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7"></a>
+                <a href="https://nordpass.com/" target="_blank" rel="noopener noreferrer" title="NordPass"><img src="NordPass.png" alt="NordPass" style="height: 24px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7"></a>
+                <a href="https://nordprotect.com/" target="_blank" rel="noopener noreferrer" title="NordProtect"><img src="NordProtect.png" alt="NordProtect" style="height: 24px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7"></a>
+                <a href="https://incogni.com/" target="_blank" rel="noopener noreferrer" title="Incogni"><img src="Incogni.png" alt="Incogni" style="height: 24px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7"></a>
+            </div>
+
+            <p class="hero-sub" style="margin-top: 1rem; max-width: 800px; margin-left: auto; margin-right: auto; opacity: 0; animation: rise 0.9s ease forwards 0.6s; font-size: 1.1rem;">
+                Reinforcement learning for dynamic school bus routing, scheduling, and real-time replanning. The competition ran Jun 10 – Aug 1, 2026.
+            </p>
+
+            <div style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 680px; margin: 2.5rem auto 0 auto; opacity: 0; animation: rise 0.9s ease forwards 0.8s;">
+                <div class="hero-actions" style="display: flex; width: 100%; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 0; margin-bottom: 1.5rem; opacity: 1; animation: none;">
+                    <a href="standings.html" style="text-decoration: none; flex: 1; min-width: 180px;"><button class="btn-accent" style="width: 100%;">Final Results</button></a>
+                    <a href="#closing-ceremony" style="text-decoration: none; flex: 1; min-width: 180px;"><button class="btn-primary" style="width: 100%;">Closing Ceremony</button></a>
+                    <a href="#simulator" style="text-decoration: none; flex: 1; min-width: 180px;"><button class="btn-ghost" style="width: 100%;">Try Simulator</button></a>
+                    <a href="information.html" style="text-decoration: none; flex: 1; min-width: 180px;"><button class="btn-ghost" style="width: 100%;">Read Details</button></a>
+                </div>
+                <div style="display: flex; gap: 1rem; width: 100%; flex-wrap: wrap; justify-content: center;">
+                    <a href="https://discord.gg/bx4Ha3DWx" target="_blank" rel="noopener noreferrer" style="text-decoration: none; flex: 1; min-width: 250px;">
+                        <button class="btn-discord" style="width: 100%;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059 9 9 0 0 1-1.226-.588.05.05 0 0 1-.004-.083c.085-.063.169-.129.25-.196a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .051.007c.081.067.165.133.25.196a.05.05 0 0 1-.004.083 9 9 0 0 1-1.226.588.05.05 0 0 0-.01.059c.236.466.51.909.818 1.329a.05.05 0 0 0 .056.019 13.3 13.3 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019zM5.89 8.131c-.679 0-1.228-.61-1.228-1.36 0-.75.541-1.36 1.228-1.36.69 0 1.235.618 1.228 1.36 0 .75-.538 1.36-1.228 1.36m4.22 0c-.679 0-1.228-.61-1.228-1.36 0-.75.541-1.36 1.228-1.36.69 0 1.235.618 1.228 1.36 0 .75-.538 1.36-1.228 1.36"/>
+                            </svg>
+                            Join Discord
+                        </button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- CONCLUDED BANNER -->
+            <div class="countdown-wrapper">
+                <div class="competition-dates">
+                    <span class="dates-accent">Competition</span>
+                    <span class="dates-sep"></span>
+                    <span>Jun 10, 2026</span>
+                    <span>→</span>
+                    <span>Aug 1, 2026</span>
+                </div>
+                <div class="countdown-card" style="text-align: center;">
+                    <div class="countdown-header">
+                        <div class="countdown-pulse" style="background: var(--muted); animation: none;"></div>
+                        <span style="font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase;">Thank you to all participants!</span>
+                    </div>
+                    <div style="padding: 0.75rem 0 0.25rem;">
+                        <div class="countdown-ended" style="font-size: 1.05rem; font-family: var(--serif); color: var(--ink); font-weight: 600;">Competition Concluded &mdash; Aug 1, 2026</div>
+                        <div style="font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.4rem; letter-spacing: 0.06em;">VIEW THE <a href="standings.html" style="color: var(--accent); text-decoration: none;">FINAL STANDINGS ↗</a></div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+
+    <!-- CLOSING CEREMONY -->
+    <section id="closing-ceremony" style="background: rgba(26, 23, 20, 0.02);">
+        <div class="section-label">Closing Ceremony</div>
+        <h2 style="margin-bottom: 3rem;">Watch the Closing Ceremony</h2>
+        
+        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border: 1px solid var(--rule); border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); background: #000;">
+            <iframe 
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+                src="https://www.youtube.com/embed/CmK-9YC6a9Q" 
+                title="Closing Ceremony" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <details style="margin-top: 2rem; font-family: var(--mono); font-size: 0.78rem; color: var(--muted);">
+            <summary style="cursor: pointer; user-select: none; letter-spacing: 0.05em; text-transform: uppercase;">Opening Ceremony ↓</summary>
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border: 1px solid var(--rule); border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); background: #000; margin-top: 1rem;">
+                <iframe 
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+                    src="https://www.youtube.com/embed/IXhIw7YqCJU" 
+                    title="Opening Ceremony" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </details>
+    </section>
+    <!-- SPONSORS -->
+    <section id="sponsors">
+        <div class="section-label">01 / Sponsors</div>
+        <h2>Our Sponsors</h2>
+        <h3 style="margin-top: 2vh">Our sponsors make Project OmniBus possible by providing resources, mentorship, and opportunities for all participants.</h3>
+        <div class="sponsor-grid">
+            <!-- Jane Street — confirmed sponsor -->
+            <a href="https://www.janestreet.com/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block;">
+                <div class="sponsor-card sponsor-card--real">
+                    <img src="jane-street.png" alt="Jane Street" style="max-width: 160px; max-height: 70px; object-fit: contain;">
+                    <span style="font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;">Jane Street</span>
+                </div>
+            </a>
+            <!-- AoPS — confirmed sponsor -->
+            <a href="https://artofproblemsolving.com" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block;">
+                <div class="sponsor-card sponsor-card--real">
+                    <img src="AoPS_Main_Logo.png" alt="Art of Problem Solving" style="max-width: 160px; max-height: 70px; object-fit: contain;">
+                    <span style="font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;">Art of Problem Solving</span>
+                </div>
+            </a>
+            <a href="https://interviewbuddy.net/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block;">
+                <div class="sponsor-card sponsor-card--real">
+                    <img src="interview-buddy.png" alt="Interview Buddy" style="max-width: 160px; max-height: 70px; object-fit: contain;">
+                    <span style="font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;">Interview Buddy</span>
+                </div>
+            </a>
+            <a href="https://saily.com/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block;">
+                <div class="sponsor-card sponsor-card--real">
+                    <img src="Saily.png" alt="Saily" style="max-width: 160px; max-height: 70px; object-fit: contain;">
+                    <span style="font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;">Saily</span>
+                </div>
+            </a>
+            <a href="https://nordvpn.com/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block;">
+                <div class="sponsor-card sponsor-card--real">
+                    <img src="NordVPN.png" alt="NordVPN" style="max-width: 180px; max-height: 70px; object-fit: contain;">
+                    <span style="font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;">NordVPN</span>
+                </div>
+            </a>
+            <a href="https://nordpass.com/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block;">
+                <div class="sponsor-card sponsor-card--real">
+                    <img src="NordPass.png" alt="NordPass" style="max-width: 180px; max-height: 70px; object-fit: contain;">
+                    <span style="font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;">NordPass</span>
+                </div>
+            </a>
+            <a href="https://nordprotect.com/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block;">
+                <div class="sponsor-card sponsor-card--real">
+                    <img src="NordProtect.png" alt="NordProtect" style="max-width: 190px; max-height: 70px; object-fit: contain;">
+                    <span style="font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;">NordProtect</span>
+                </div>
+            </a>
+            <a href="https://incogni.com/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block;">
+                <div class="sponsor-card sponsor-card--real">
+                    <img src="Incogni.png" alt="Incogni" style="max-width: 180px; max-height: 70px; object-fit: contain;">
+                    <span style="font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;">Incogni</span>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- SIMULATOR -->
+    <section id="simulator" style="max-width:1200px">
+        <div class="section-label">Interactive Demo</div>
+        <h2>Try the Routing Simulator</h2>
+        <p class="sim-intro">
+            Pick a routing agent, press play, and watch it make decisions in real time on a
+            real road network. See how different algorithms compare on the same scenario.
+        </p>
+
+        <div class="sim-embed">
+            <div class="sim-embed-toolbar">
+                <div class="sim-embed-toolbar-left">
+                    <button class="sim-btn" id="btn-reset" title="Reset">↺</button>
+                    <button class="sim-btn" id="btn-step" title="Step">⏭</button>
+                    <button class="sim-btn" id="btn-play" title="Play">▶</button>
+                    <button class="sim-btn" id="btn-pause" title="Pause">⏸</button>
+                    <select class="sim-select" id="speed-select" title="Speed">
+                        <option value="1">1×</option>
+                        <option value="2">2×</option>
+                        <option value="5" selected>5×</option>
+                        <option value="10">10×</option>
+                        <option value="25">25×</option>
+                    </select>
+                    <span class="sim-toolbar-sep"></span>
+                    <select class="sim-select" id="agent-select" title="Agent">
+                        <option value="rl">RL Agent</option>
+                        <option value="nn">Nearest Neighbor</option>
+                        <option value="cw">Clarke-Wright</option>
+                        <option value="ortools">OR-Tools</option>
+                    </select>
+                </div>
+                <div class="sim-embed-toolbar-right">
+                    <span class="sim-clock-label">Sim</span>
+                    <span class="sim-clock-val" id="clock-display">7:00 AM</span>
+                    <span id="status-badge" class="sim-badge ready">READY</span>
+                </div>
+            </div>
+
+            <div class="sim-embed-body">
+                <div class="sim-embed-map-wrap">
+                    <div id="map"></div>
+                    <div class="map-overlay map-overlay-topright" id="event-banners"></div>
+                </div>
+
+                <div class="sim-embed-panel">
+                    <div class="sim-panel-section">
+                        <div class="sim-panel-header">Metrics</div>
+                        <div class="sim-metrics-grid">
+                            <div class="sim-metric">
+                                <span class="sim-metric-val" id="metric-delivered">0</span>
+                                <span class="sim-metric-label">Delivered</span>
+                            </div>
+                            <div class="sim-metric">
+                                <span class="sim-metric-val" id="metric-waiting">—</span>
+                                <span class="sim-metric-label">Waiting</span>
+                            </div>
+                            <div class="sim-metric">
+                                <span class="sim-metric-val" id="metric-late">0</span>
+                                <span class="sim-metric-label">Late</span>
+                            </div>
+                            <div class="sim-metric">
+                                <span class="sim-metric-val" id="metric-reward">0</span>
+                                <span class="sim-metric-label">Reward</span>
+                            </div>
+                        </div>
+                        <div class="sim-metrics-grid" style="margin-top:0.4rem">
+                            <div class="sim-metric">
+                                <span class="sim-metric-val" id="metric-avg-ride">—</span>
+                                <span class="sim-metric-label">Avg Ride</span>
+                            </div>
+                            <div class="sim-metric">
+                                <span class="sim-metric-val" id="metric-progress">0%</span>
+                                <span class="sim-metric-label">Progress</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sim-panel-section">
+                        <div class="sim-panel-header">Bus Fleet</div>
+                        <div id="bus-fleet"></div>
+                    </div>
+
+                    <div class="sim-panel-section sim-panel-section-grow">
+                        <div class="sim-panel-header">Event Log</div>
+                        <div id="event-log" class="sim-event-log"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" style="padding-bottom: 6rem;">
+        <div class="section-label">05 / Contact</div>
+        <h2>Get in Touch</h2>
+        <div class="contact-grid">
+            <div class="contact-card" style="text-align: center;">
+                <h3>Email Us</h3>
+                <p><a href="mailto:[redacted:email]@bergen.org"
+                        style="font-size: 1.1rem;">[redacted:email]@bergen.org</a></p>
+            </div>
+            <div class="contact-card" style="text-align: center;">
+                <h3>Join Discord</h3>
+                <p><a href="https://discord.gg/bx4Ha3DWx" target="_blank" rel="noopener noreferrer"
+                        style="font-size: 1.1rem; color: #5865F2;">Communicate and ask questions</a></p>
+            </div>
+            <div class="contact-card" style="text-align: center;">
+                <h3>Machine Learning Club</h3>
+                <p><a href="https://bcamlc.com" target="_blank" rel="noopener noreferrer"
+                        style="font-size: 1.1rem;">Click here to learn more about the Machine Learning Club</a></p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <span>&copy; 2026 Project OmniBus</span>
+        <span>Machine Learning Competition</span>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/scenario_data.js"></script>
+<script src="js/sim-engine.js"></script>
+    <script src="js/agents.js"></script>
+    <script src="js/map-renderer.js"></script>
+    <script src="js/controls.js"></script>
+
+    <script>
+        (async function initSimulator() {
+            const engine = new SimulationEngine();
+            engine.speed = 5;
+
+            const mapRenderer = new MapRenderer('map', { theme: 'light' });
+            const controls = new Controls(engine);
+            controls.init();
+
+            engine.setAgent(new RLAgent());
+            await engine.loadScenario('data/scenario_default.json');
+
+            const state = engine.getState();
+            mapRenderer.renderNetwork(state.network);
+            mapRenderer.renderSchools(state.schools);
+            mapRenderer.renderStudents(state.students);
+            mapRenderer.renderBuses(state.buses);
+            renderBusFleet(state.buses);
+            window._simBuses = state.buses;
+
+            engine.on('tick', (st) => {
+                mapRenderer.renderStudents(st.students);
+                mapRenderer.renderBuses(st.buses);
+                mapRenderer.renderRoutes(st.buses, st.network);
+                mapRenderer.renderEvents(st.activeEvents);
+                mapRenderer.updateNetworkOverlay(st.network);
+                updateMetrics(st.metrics);
+                updateClock(st.time);
+                renderBusFleet(st.buses);
+                window._simBuses = st.buses;
+            });
+
+            engine.on('event', ({ type, data }) => {
+                addEventBanner(type, data.desc, data.duration);
+                addEventLog(engine.formatTime(engine.currentTime), data.desc, type);
+                mapRenderer.updateNetworkOverlay(engine.network);
+            });
+
+            engine.on('pickup', ({ student, bus, time }) => {
+                addEventLog(engine.formatTime(time), `${bus.id} picked up ${student.id}`, 'pickup');
+            });
+
+            engine.on('delivery', ({ bus, count, time }) => {
+                addEventLog(engine.formatTime(time), `${bus.id} delivered ${count} students`, 'delivery');
+            });
+
+            engine.on('statusChange', (status) => {
+                controls.updateUI();
+                if (status === 'complete') {
+                    addEventLog(engine.formatTime(engine.currentTime), 'Simulation complete!', 'complete');
+                }
+            });
+
+            window._onReset = () => {
+                document.getElementById('event-log').innerHTML = '';
+                document.getElementById('event-banners').innerHTML = '';
+                engine.reset();
+                const s = engine.getState();
+                mapRenderer.renderNetwork(s.network);
+                mapRenderer.renderSchools(s.schools);
+                mapRenderer.renderStudents(s.students);
+                mapRenderer.renderBuses(s.buses);
+                renderBusFleet(s.buses);
+                window._simBuses = s.buses;
+                updateClock(390);
+                resetMetrics();
+            };
+
+            window._onAgentChange = () => {};
+
+            function updateClock(time) {
+                const el = document.getElementById('clock-display');
+                if (el) el.textContent = engine.formatTime(time);
+            }
+
+            function setVal(id, val, cls) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = val;
+                if (cls !== undefined) el.className = 'sim-metric-val ' + cls;
+            }
+
+
+            function updateMetrics(m) {
+                setVal('metric-delivered', m.delivered);
+                setVal('metric-waiting', m.waiting, m.waiting > 10 ? 'warn' : '');
+                setVal('metric-late', m.late, m.late > 0 ? 'bad' : '');
+                setVal('metric-reward', m.reward, m.reward > 0 ? 'good' : m.reward < 0 ? 'bad' : '');
+                setVal('metric-avg-ride', m.avgRideTime ? m.avgRideTime.toFixed(1) + 'm' : '—');
+                const pct = m.totalStudents > 0 ? Math.round((m.delivered / (m.totalStudents - m.absent)) * 100) : 0;
+                setVal('metric-progress', pct + '%', pct >= 100 ? 'good' : '');
+            }
+
+            function resetMetrics() {
+                setVal('metric-delivered', '0');
+                setVal('metric-waiting', '—');
+                setVal('metric-late', '0');
+                setVal('metric-reward', '0');
+                setVal('metric-avg-ride', '—');
+                setVal('metric-progress', '0%');
+            }
+
+            function renderBusFleet(buses) {
+                const container = document.getElementById('bus-fleet');
+                if (!container) return;
+                container.innerHTML = buses.map(b => {
+                    const pct = b.capacity > 0 ? Math.round((b.occupancy / b.capacity) * 100) : 0;
+                    const fillColor = pct > 80 ? '#c84b2f' : pct > 50 ? '#b8942a' : b.color;
+                    return `<div class="bus-card">
+                        <div class="bus-indicator" style="background:${b.color}"></div>
+                        <div class="bus-info">
+                            <div class="bus-name">${b.id.replace('_', ' ').toUpperCase()}</div>
+                            <div class="bus-status">${b.status}${b.status === 'broken' ? ' ⚠️' : ''}</div>
+                        </div>
+                        <div class="bus-occupancy">
+                            <div>${b.occupancy}/${b.capacity}</div>
+                            <div class="occupancy-bar"><div class="occupancy-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            function addEventBanner(type, text, duration) {
+                const container = document.getElementById('event-banners');
+                const icons = { traffic_spike: '⚠️', road_closure: '🚧', bus_breakdown: '🔧', weather: '🌧️', student_absence: '👤' };
+                const cls = type.replace('_spike', '').replace('_', '').replace('student_absence', 'absence').replace('bus_breakdown', 'breakdown').replace('traffic', 'traffic').replace('road_closure', 'closure');
+                const banner = document.createElement('div');
+                banner.className = `event-banner ${cls}`;
+                banner.innerHTML = `<span>${icons[type] || '📢'}</span><span>${text}</span>`;
+                container.appendChild(banner);
+                const timeout = duration ? Math.min(duration * 200, 8000) : 5000;
+                setTimeout(() => { banner.style.opacity = '0'; setTimeout(() => banner.remove(), 300); }, timeout);
+            }
+
+            function addEventLog(time, msg, type) {
+                const container = document.getElementById('event-log');
+                const item = document.createElement('div');
+                item.className = 'event-log-item';
+                const typeColors = {
+                    traffic_spike: '#8a7020', road_closure: 'var(--accent)', bus_breakdown: 'var(--accent)',
+                    weather: '#4682b4', pickup: '#2a7a50', delivery: '#4682b4', complete: '#2a7a50'
+                };
+                item.innerHTML = `<span class="time">${time}</span><span class="msg" style="color:${typeColors[type] || 'var(--muted)'}">${msg}</span>`;
+                container.insertBefore(item, container.firstChild);
+                while (container.children.length > 30) container.removeChild(container.lastChild);
+            }
+        })();
+    </script>
+
+    <script>
+        /* ── Countdown removed — competition concluded Aug 1, 2026 ── */
+        (function initCountdown() {
+            const START = new Date('2026-06-10T04:00:00Z');
+            const END   = new Date('2026-08-02T04:59:59Z');
+
+            const daysEl  = document.getElementById('cd-days');
+            const hoursEl = document.getElementById('cd-hours');
+            const minsEl  = document.getElementById('cd-mins');
+            const secsEl  = document.getElementById('cd-secs');
+            const label   = document.getElementById('countdown-label');
+            const unitsEl = document.getElementById('countdown-units');
+            const pulse   = document.getElementById('countdown-pulse');
+
+            function pad(n) { return String(n).padStart(2, '0'); }
+
+            function tick() {
+                const now  = new Date();
+                const msToStart = START - now;
+                const msToEnd   = END   - now;
+
+                if (msToStart > 0) {
+                    /* --- Pre-competition: countdown to start --- */
+                    const totalSecs = Math.floor(msToStart / 1000);
+                    const d = Math.floor(totalSecs / 86400);
+                    const h = Math.floor((totalSecs % 86400) / 3600);
+                    const m = Math.floor((totalSecs % 3600) / 60);
+                    const s = totalSecs % 60;
+
+                    daysEl.textContent  = pad(d);
+                    hoursEl.textContent = pad(h);
+                    minsEl.textContent  = pad(m);
+                    secsEl.textContent  = pad(s);
+
+                    label.textContent = 'Competition starts in';
+                    unitsEl.style.display = 'flex';
+                    pulse.style.background = 'var(--accent)';
+
+                } else if (msToEnd > 0) {
+                    /* --- During competition: show LIVE badge --- */
+                    unitsEl.innerHTML = '<div class="countdown-live"><div class="countdown-live-dot"></div>Competition is LIVE</div>';
+                    label.textContent = 'Running Jun 10 – Aug 1, 2026';
+                    pulse.style.background = '#2a7a50';
+
+                } else {
+                    /* --- Competition ended --- */
+                    unitsEl.innerHTML = '<div class="countdown-ended">Competition ended Aug 1, 2026</div>';
+                    label.textContent = 'Thank you to all participants!';
+                    pulse.style.background = 'var(--muted)';
+                    pulse.style.animation = 'none';
+                }
+            }
+
+            tick();
+            setInterval(tick, 1000);
+        })();
+    </script>
+
+</body>
+
+</html>

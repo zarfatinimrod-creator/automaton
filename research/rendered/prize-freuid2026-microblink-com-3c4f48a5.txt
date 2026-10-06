@@ -1,0 +1,463 @@
+The FREUID Challenge 2026 - 1st Competition on Identity Documents Fraud Detection - IJCAI-ECAI 2026
+
+Hosted at
+
+Powered by
+
+About
+Timeline
+Dataset
+Evaluation
+Reproducibility
+Rules & Awards
+Organizers
+FAQ
+
+About
+Timeline
+Dataset
+Evaluation
+Reproducibility
+Rules & Awards
+Organizers
+FAQ
+
+IJCAI-ECAI 2026
+Bremen, Germany
+August 15-21, 2026
+
+The FREUID Challenge 2026
+
+1st Competition on Identity Documents Fraud Detection
+
+Detect next-generation identity document fraud across physical
+manipulations, GenAI-driven digital edits, and print-and-capture
+attacks - on a globally diverse, under-represented set of document
+types.
+
+Register on Kaggle
+
+Join Discord discussion
+
+P<UTOFREUID<<CHALLENGE<IJCAI<ECAI<2026<<<<<<<<<<<<
+L898902C36UTO2605118F2608216<<<<<<<<<<<<<06
+BREMEN<DE<AUGUST<15<21<2026<<<<<<<<<<<<<<<<<<<<<<
+P<UTOFREUID<<CHALLENGE<IJCAI<ECAI<2026<<<<<<<<<<<<
+L898902C36UTO2605118F2608216<<<<<<<<<<<<<06
+BREMEN<DE<AUGUST<15<21<2026<<<<<<<<<<<<<<<<<<<<<<
+
+About the challenge
+
+Benchmarking ID document fraud detection in the GenAI era
+
+$47B
+
+Lost by American adults to identity fraud in 2024 - up $4B
+year-over-year.
+
++244%
+
+Year-over-year surge in AI-driven digital document forgeries.
+
+5 min
+
+How often deepfake-based identity theft incidents now occur.
+
+Existing benchmarks have saturated on purely digital artifacts and
+under-represent the global diversity of real identity documents,
+leaving production verification systems exposed to the next
+generation of attacks. The FREUID Challenge - the
+first competition built on the new FREUID dataset, contributed by
+the Microblink Fraud Lab - asks participants to
+detect identity document fraud across a uniquely realistic threat
+surface that combines:
+
+Physical manipulations on real document substrates,
+
+GenAI-driven multimodal edits accessible to common fraudsters, and
+
+Print-and-capture forgeries that close the “analog hole” most current detectors rely on.
+
+The dataset deliberately spans under-represented document types to
+force cross-domain generalization. Top
+teams will present live at IJCAI-ECAI 2026 in Bremen.
+
+Open problem #1
+
+Cross-domain generalization
+
+Build models that perform accurately across highly under-represented
+document types.
+
+Open problem #2
+
+Physical vs. digital artifacts
+
+Move beyond fragile GenAI pixel noise toward semantic
+inconsistencies in physically printed and captured forgeries.
+
+Open problem #3
+
+Anti-fragility in vision models
+
+Foster detectors that adapt to open-ended, continuously evolving
+fraud strategies rather than overfitting to known attack vectors.
+
+Timeline
+
+Key dates - all times 23:59 AoE (UTC-12)
+
+Live Showdown
+
+Bremen, Germany
+
+Main conference: Aug 18-21, 2026 at the Bremen Exhibition Center.
+Workshops & tutorials kick off Aug 15-17 at the University
+of Bremen.
+
+Visit IJCAI-ECAI 2026
+
+Task & Dataset
+
+The FREUID dataset
+
+FREUID is a proprietary collection of high-fidelity bona-fide and
+fraudulent documents provided by the Microblink Fraud Lab. It is
+designed to surface the failure modes hiding behind the saturated
+metrics of existing benchmarks.
+
+Differentiator #1
+
+Bridging the “analog hole”
+
+Digital forgeries are physically printed and
+captured to obfuscate the digital noise that SOTA detectors
+currently exploit. Additionally, physical forgeries are done on top
+of the printed documents to cover for such domain of attacks (these are again captured).
+
+Differentiator #2
+
+GenAI tampering
+
+Forgeries created using accessible multimodal (text + image) GenAI
+editing tools, reflecting the real modern threat landscape.
+
+Differentiator #3
+
+Expanded global coverage
+
+Document types that are
+under-represented in existing datasets, to test cross-document
+generalization.
+
+How FREUID compares
+
+Side-by-side comparison of FREUID against the closest existing
+identity-document fraud benchmarks.
+
+Feature
+
+PAD-ID Card 2025
+
+FantasyID
+
+IDNet
+
+FREUID (Ours)
+
+Primary focus
+
+Presentation Attack Detection (PAD)
+
+Digital manipulation detection
+
+Large-scale synthetic dataset for ID fraud
+
+Physical & digital manipulations on under-represented document types
+
+Bona-fide data
+
+Printed / captured plastic cards
+
+Printed / captured “Fantasy” (mocked) plastic cards
+
+Synthetic
+
+Synthetic + printed / captured plastic cards
+
+Manipulations / tampering
+
+Physical & digital manipulations
+
+Digital manipulations
+
+Digital manipulations
+
+Physical & digital manipulations + print / capture
+
+Diversity
+
+24 countries, 155 unique doc types (train); 4 LATAM countries, 20 doc types (test)
+
+13 unique doc types / 10 languages
+
+10 US and 10 EU document types
+
+7 document types (Asian and African) with diverse scripts (Latin, Arabic)
+
+Hosting
+
+The competition is hosted on Kaggle
+
+Teams submit prediction files generated on their own infrastructure.
+A public validation leaderboard tracks progress; final rankings
+are computed on a private held-out test set.
+
+Open Kaggle page
+
+Evaluation
+
+How submissions are scored
+
+We adopt standard metrics from the presentation attack detection
+literature.
+
+Primary metric
+
+AuDET
+
+Area under the Detection Error Trade-off (DET) curve. A single
+scalar capturing the trade-off between false-accept and
+false-reject errors across operating points.
+
+Operating point
+
+APCER @ 1% BPCER
+
+Attack Presentation Classification Error Rate measured at a fixed
+1% Bona-Fide Presentation Classification Error Rate - the
+production-relevant slice of the DET curve.
+
+Public leaderboard
+
+Powered by a validation subset; updates with every submission so
+teams can iterate quickly.
+
+Private final ranking
+
+Computed on a held-out test set, ensuring
+the leaderboard reflects true generalization.
+
+Rules & Awards
+
+Participation, prizes and reproducibility
+
+Eligibility & participation
+
+>
+Open to academia and industry. Up to ~20 teams are expected.
+
+>
+Teams may use any model architecture and any external public data.
+
+>
+All submissions are made on the participant's own infrastructure - no GPU quota imposed by us.
+
+>
+Prize eligibility requires a full reproducibility package by the final deadline (July 15, 2026) - open code, technical report, runnable Docker, and one pinned-thread reply. Details & templates . Teams that do not comply are not eligible for prizes .
+
+>
+For final, private leaderboard evaluation, teams must provide predictions on the published test set via Kaggle and pass organizer verification of their submitted pipeline.
+
+>
+Teams must provide the source code used to generate the participant's or Team's ranked Submission(s), together with all configuration, training, and inference scripts and instructions sufficient to enable the Organizer to review and reasonably reproduce the ranked results.
+
+>
+Data usage is restricted to non-commercial research .
+
+Prize pool
+
+$6,000 USD
+
+Sponsored by Microblink. Conference entries provided to top performers (workshops/competitions part, subject to organizer confirmation).
+
+1st
+
+$3,000
+
+2nd
+
+$2,000
+
+3rd
+
+$1,000
+
+Organizers
+
+The team behind FREUID
+
+Industrial organizer
+
+Microblink
+
+Dataset, prize pool & lead organization. The FREUID dataset is contributed by the Microblink Fraud Lab.
+
+Ivan Reli&cacute;
+
+Vincenzo D'Elia
+
+Stefano Bortoli
+
+Radu Tudoran
+
+Hristina Nedyalkova
+
+Mihaela Bo&scaron;njak
+
+Stanislav Pavli&cacute;
+
+Tin Mavra&ccaron;i&cacute;
+
+Darin Da&scaron;i&cacute;
+
+Marin Ka&ccaron;an
+
+Jerko &Scaron;egvi&cacute;
+
+Paolo &Ccaron;eri&cacute;
+
+Filip &Scaron;oprun
+
+Matej Mio&ccaron;i&cacute;
+
+Academic partner
+
+UniZG FER
+
+University of Zagreb, Faculty of Electrical Engineering and Computing.
+
+Marin Or&scaron;i&cacute;
+
+Academic partner
+
+Politecnico di Torino
+
+DataBase and Data Mining Group.
+
+Lorenzo Vaiani
+
+Paolo Garza
+
+Contact
+
+Get in touch with the organizers
+
+Have a question about eligibility, the dataset, or the evaluation
+protocol? Reach out and we'll respond as quickly as we can.
+
+[redacted:email]@microblink.com
+
+Copy email
+
+Quick links
+
+Kaggle competition page
+Open &rarr;
+
+Discord discussion server
+Join &rarr;
+
+IJCAI-ECAI 2026 conference
+Open &rarr;
+
+FAQ
+
+Frequently asked questions
+
+Who can participate?
+The challenge is open to academic and industry teams worldwide. We anticipate around 20 teams. Microblink employees, organizers and members of their immediate research groups are not eligible for prizes but may participate informally.
+
+How do I get access to the FREUID dataset?
+Sample of the training dataset is available on Kaggle. Full dataset will be released at the beginning of June.
+
+Are there team size limits?
+Up to five members per team. A person may only be a member of a single team. Cross-affiliation teams are encouraged.
+
+Are pre-trained models or external data allowed?
+Yes - any publicly available pre-trained model or dataset may be used, provided the license is compatible and the artifact is fully cited in the team's report. Use of proprietary data that is not freely accessible is not permitted.
+
+What is required for prize eligibility after the deadline?
+By July 15, 2026, 23:59 AoE (final submission deadline), teams must post one reply on the pinned Kaggle discussion with open-source code (OSI license), a technical report (PDF), and a Docker image that runs in a no-network sandbox. Teams that do not provide a complete package are not eligible for prizes. Full instructions and templates: freuid2026.microblink.com/reproducibility.html .
+
+Do I have to release my code?
+Yes. To be eligible for competition, teams must release their training and inference code under an OSI-approved open-source license, together with a short technical report.
+
+Can I use the dataset commercially?
+No. The FREUID dataset is licensed for non-commercial research use only. Reach out to [redacted:email]@microblink.com to discuss commercial licensing.
+
+Do I need to attend IJCAI-ECAI 2026 in Bremen?
+Top-three teams are strongly encouraged to attend the live award showdown on August 18-21, 2026. Conference entries are provided by the organizers to facilitate this (workshops/competitions part), subject to organizer confirmation.
+
+How is the leaderboard scored?
+Please look into the Kaggle competition page for the exact scoring method.
+
+References
+
+Related work & sources
+
+Christina Ianzito (AARP). Identity Fraud and Scams Cost Americans $47 Billion in 2024.
+aarp.org , 2024.
+
+DeepID. DeepID Competition.
+deepid-iccv.github.io , 2025.
+
+Entrust. 2025 Identity Fraud Report.
+entrust.com , 2025.
+
+Hong Guan et al. IDNet: A Novel Dataset for Identity Document Analysis and Fraud Detection.
+arXiv:2408.01690 , 2024.
+
+Pavel Korshunov et al. FantasyID: A Dataset for Detecting Digital Manipulations of ID Documents.
+arXiv:2507.20808 , 2025.
+
+PAD-ID. PAD-ID Competition.
+sites.google.com/view/ijcb-pad-id-card-2025 , 2025.
+
+Juan E. Tapia et al. Second Competition on Presentation Attack Detection on ID Card.
+arXiv:2507.20404 , 2025.
+
+The FREUID Challenge 2026 is the 1st competition on identity documents
+fraud detection in the GenAI era, held at IJCAI-ECAI 2026 in
+Bremen, Germany.
+
+Sections
+
+About
+
+Timeline
+
+Dataset
+
+Evaluation
+
+Reproducibility
+
+Rules & Awards
+
+Organizers
+
+FAQ
+
+Contact
+
+[redacted:email]@microblink.com
+
+Discord discussion server
+
+microblink.com
+
+IJCAI-ECAI 2026
+
+&copy; 2026 The FREUID Challenge organizers. Brand placeholders subject to replacement.
+v1.0 / built for IJCAI-ECAI 2026
