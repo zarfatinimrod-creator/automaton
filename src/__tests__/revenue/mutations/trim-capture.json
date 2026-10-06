@@ -50,10 +50,11 @@
   {
     "id": "T56-T7",
     "file": "scripts/trim-capture.mjs",
-    "find": "        recordFiles(dir, p.slug);",
-    "replace": "        void p.slug;",
+    "find": "if (records(p)) recordFiles(dir, p.slug);",
+    "replace": "if (records(p)) void p.slug;",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
-    "note": "tick 56 build: FROZEN.sha256 does not follow a trimmed frozen copy"
+    "note": "tick 56 build: FROZEN.sha256 does not follow a trimmed frozen copy",
+    "nth": 2
   },
   {
     "id": "T56-T8",
@@ -82,7 +83,7 @@
   {
     "id": "T56-T11",
     "file": "scripts/trim-capture.mjs",
-    "find": "const blanked = resolved.filter((c) => c.how === \"cited\" && !stray(c) && !inside(c));",
+    "find": "const blanked = resolved.filter((c) => c.how === \"cited\" && !isWide(c.range) && !stray(c) && !inside(c));",
     "replace": "const blanked = [];",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 56 build: a trimmed capture cited later at an emptied line is not refused"
@@ -122,7 +123,7 @@
   {
     "id": "T56-T16",
     "file": "scripts/trim-capture.mjs",
-    "find": "  return totals.trim ? 0 : 3;",
+    "find": "  return totals.trim || totals.retrim ? 0 : 3;",
     "replace": "  return 0;",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 56 build: nothing to do is exit 0, not 3"
@@ -146,8 +147,8 @@
   {
     "id": "T56-T19",
     "file": "scripts/trim-capture.mjs",
-    "find": "const blanked = resolved.filter((c) => c.how === \"cited\" && !stray(c) && !inside(c));",
-    "replace": "const blanked = resolved.filter((c) => c.how === \"cited\" && !inside(c));",
+    "find": "const blanked = resolved.filter((c) => c.how === \"cited\" && !isWide(c.range) && !stray(c) && !inside(c));",
+    "replace": "const blanked = resolved.filter((c) => c.how === \"cited\" && !isWide(c.range) && !inside(c));",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 56 sim-tree proof: a re-run refuses a trimmed capture over a reference past its end (indiebook-terms.txt:724 on the real store), so the trim is not idempotent"
   },
@@ -186,10 +187,10 @@
   {
     "id": "T56-X5",
     "file": "scripts/trim-capture.mjs",
-    "find": "x.range[1] - x.range[0] + 1 > WIDE_LINES",
-    "replace": "x.range[1] - x.range[0] + 1 >= WIDE_LINES",
+    "find": "  return b - a + 1 > WIDE_LINES;",
+    "replace": "  return b - a + 1 >= WIDE_LINES;",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
-    "note": "tick 56 review fixer: a cited range of exactly 20 lines is printed as wide (amendment 1 (5)(iii): longer than 20)"
+    "note": "tick 56 review fixer, moved into isWide by tick 57: a cited range of exactly 20 lines is wide (amendment 1 (5)(iii): longer than 20), so a 20-line quotation keeps nothing"
   },
   {
     "id": "T56-X6",
@@ -210,18 +211,18 @@
   {
     "id": "T56-X8",
     "file": "scripts/trim-capture.mjs",
-    "find": "if (!wide.has(key) || c.how === \"cited\") wide.set(key, c);",
-    "replace": "wide.set(`${key} ${c.how}`, c);",
+    "find": "      const key = rangesText([c.range]);\n      if (!ranges.has(key))",
+    "replace": "      const key = `${rangesText([c.range])} ${[c.by].flat().join(\" \")}`;\n      if (!ranges.has(key))",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
-    "note": "tick 56 review fixer: a wide range the scanner cites and the line names again is printed twice"
+    "note": "tick 56 review fixer, rewritten by tick 57 (one wide line per range, every citing line on it): a wide range is printed once per citing line"
   },
   {
     "id": "T56-X9",
     "file": "scripts/trim-capture.mjs",
-    "find": "if (!wide.has(key) || c.how === \"cited\") wide.set(key, c);",
-    "replace": "if (!wide.has(key) || c.how !== \"cited\") wide.set(key, c);",
+    "find": "if (!ranges.get(key).has(by) || c.how === \"cited\") ranges.get(key).set(by, c.how);",
+    "replace": "if (!ranges.get(key).has(by) || c.how !== \"cited\") ranges.get(key).set(by, c.how);",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
-    "note": "tick 56 review fixer: a wide range is printed as found on its line although the scanner cites it"
+    "note": "tick 56 review fixer, rewritten by tick 57: a wide range the scanner cites is printed as found on its line"
   },
   {
     "id": "T56-X10",
@@ -238,5 +239,174 @@
     "replace": "      if (false) throw",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 56 review fixer: a trim that drops lines (citations by line would move) is not refused"
+  },
+  {
+    "id": "T57-T1",
+    "file": "scripts/trim-capture.mjs",
+    "find": "export const WIDE_LINES = 20;",
+    "replace": "export const WIDE_LINES = 21;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build (amendment 1 (5)(iii)): the wide threshold off by one, a 21-line range kept"
+  },
+  {
+    "id": "T57-T2",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  return cites.filter((c) => !isWide(c.range)).map((c) => c.range);",
+    "replace": "  return cites.flatMap((c) => (isWide(c.range) ? [[c.range[0], c.range[0]], [c.range[1], c.range[1]]] : [c.range]));",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: the wide rule keeps a wide range's two ends (and their context)"
+  },
+  {
+    "id": "T57-T3",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    const kept = keptRanges(keepingRanges(all), n);",
+    "replace": "    const kept = keptRanges(all.map((c) => c.range), n);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: the first pass keeps a wide range whole (the 6.10 interim)"
+  },
+  {
+    "id": "T57-T4",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    const cited = all.filter((c) => !isWide(c.range));",
+    "replace": "    const cited = all;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: the guard counts a wide range as cited, so it refuses its own rule"
+  },
+  {
+    "id": "T57-T5",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    const changes = widePass({ t, cites: resolved });",
+    "replace": "    const changes = [];",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: the second pass skips captures already trimmed (indiebook-terms.txt keeps 245 lines)"
+  },
+  {
+    "id": "T57-T6",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  const recorded = [...(t.cited ?? []), ...(t.wide ?? [])].map((r) => ({ ext: r.file, range: r.lines, by: r.by, how: \"recorded\" }));",
+    "replace": "  const recorded = [];",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: the second pass ignores the block's record (a wide range cited on 6.10 and gone since keeps its lines)"
+  },
+  {
+    "id": "T57-T7",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    const after = intersectRanges(keptRanges(keepingRanges(all), lines), before);",
+    "replace": "    const after = keptRanges(keepingRanges(all), lines);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: the second pass brings back lines the first emptied"
+  },
+  {
+    "id": "T57-T8",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  block.passes = [...(t.passes ?? []), {",
+    "replace": "  block.passesX = [...(t.passes ?? []), {",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: the second pass is not recorded in the block's passes"
+  },
+  {
+    "id": "T57-T9",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    if (ch.ext === \"txt\") block.keptLines = ch.after;",
+    "replace": "    if (ch.ext === \"txt\") Object.assign(block, { keptLines: ch.after, fullSha256: sha256(out) });",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: the second pass rewrites the full hash (the verification hash) with the trimmed text's"
+  },
+  {
+    "id": "T57-T10",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    if (ch.ext !== \"txt\" && !ch.after.length) {",
+    "replace": "    if (false) {",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: a body left with no kept line stays in the tree, emptied"
+  },
+  {
+    "id": "T57-T11",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  return totals.trim || totals.retrim ? 0 : 3;",
+    "replace": "  return totals.trim ? 0 : 3;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: a run with re-trims to do exits 3 (nothing to do)"
+  },
+  {
+    "id": "T57-T12",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    if (lost) throw new Error(`${slug}.${ch.ext}: the re-trim would blank",
+    "replace": "    if (false) throw new Error(`${slug}.${ch.ext}: the re-trim would blank",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: the second pass's guard against blanking a line cited apart is off"
+  },
+  {
+    "id": "T57-T13",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    if (lineCountOf(out) !== n) throw new Error(`${slug}.${ch.ext}: the re-trimmed text",
+    "replace": "    if (false) throw new Error(`${slug}.${ch.ext}: the re-trimmed text",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: a re-trim that drops lines (citations by line would move) is not refused"
+  },
+  {
+    "id": "T57-T14",
+    "file": "scripts/trim-capture.mjs",
+    "find": "const blanked = resolved.filter((c) => c.how === \"cited\" && !isWide(c.range) && !stray(c) && !inside(c));",
+    "replace": "const blanked = resolved.filter((c) => c.how === \"cited\" && !stray(c) && !inside(c));",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: a wide range emptied by the second pass reads as a blanked citation, so the third run refuses the capture"
+  },
+  {
+    "id": "T57-T15",
+    "file": "scripts/trim-capture.mjs",
+    "find": "if (records(p)) recordFiles(dir, p.slug);",
+    "replace": "if (records(p)) void p.slug;",
+    "nth": 1,
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: FROZEN.sha256 does not follow a re-trimmed frozen copy"
+  },
+  {
+    "id": "T57-T16",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  if (at < 0) throw new Error(\"the meta's trimmed block cannot be rewritten",
+    "replace": "  if (false) throw new Error(\"the meta's trimmed block cannot be rewritten",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: replaceTrimmed rewrites a meta with no trimmed block"
+  },
+  {
+    "id": "T57-T17",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    if (!wide.length) continue;",
+    "replace": "    if (false) continue;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 build: the second pass re-trims a capture no wide range reaches (citations that moved since 6.10 empty lines)"
+  },
+  {
+    "id": "T57-R13",
+    "file": "scripts/trim-capture.mjs",
+    "find": "      if (lo <= hi) out.push([lo, hi]);",
+    "replace": "      if (lo < hi) out.push([lo, hi]);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 review R13 (survived the review): intersectRanges drops a one-line overlap, so the second pass empties the one old kept line a citation's context reaches"
+  },
+  {
+    "id": "T57-X1",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    const all = [...cites, ...recorded].filter((c) => c.ext === ext && c.range[0] <= lines);",
+    "replace": "    const all = [...cites, ...recorded].filter((c) => c.ext === ext && c.range[1] <= lines);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 review fixer (the review's past-the-end note): the second pass leaves out a range that runs past the end of the file, so a wide one never re-trims and one that is not wide loses the lines the first pass kept for it"
+  },
+  {
+    "id": "T57-X2",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    const all = [...cites, ...recorded].filter((c) => c.ext === ext && c.range[0] <= lines);",
+    "replace": "    const all = [...cites, ...recorded].filter((c) => c.ext === ext);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 review fixer: a wide range that starts past the end of the file (another file's line) starts a second pass, which empties lines kept for citations gone since"
+  },
+  {
+    "id": "T57-X3",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  const now = resolved.filter(starts);",
+    "replace": "  const now = resolved.filter((c) => c.ext !== \"meta.json\" && !stray(c));",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 review fixer: the second pass's record leaves out a range cited since 6.10 that runs past the end of the file (the first pass records it)"
   }
 ]

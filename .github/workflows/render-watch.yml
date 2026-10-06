@@ -206,29 +206,15 @@ jobs:
           # Where the install step above put playwright-core. The script resolves it through
           # NODE_PATH only when a js line asks for a browser; a plain list never looks.
           NODE_PATH: ${{ runner.temp }}/render-watch-js/node_modules
-          # Where a copying-barred site's body goes instead of the tree, and the artifact that keeps it (next step).
-          RENDER_WATCH_ARTIFACT_DIR: ${{ runner.temp }}/render-watch-barred
-          RENDER_WATCH_ARTIFACT_NAME: render-watch-barred-${{ github.run_id }}-${{ github.run_attempt }}
+          # research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) and its amendment 1 (6.10): a page
+          # of a site whose terms bar copying ("copying": "barred" in research/channel-loop/terms-verdicts.json) is never
+          # committed in full, and its body is not kept anywhere else either. No workflow artifact: on a public repository
+          # anyone signed in to GitHub can download a run's artifacts, so an artifact is not private (amendment 1). The
+          # script reads such a body in memory and writes to the tree only the meta (sha256, byte and line counts, a
+          # `trimmed` block saying the bytes were not retained) and an emptied .txt of the same line count; it lists the
+          # slugs it stored that way here, one per line, for the commit step's guard (the file is created empty first).
+          RENDER_WATCH_BARRED_LIST: ${{ runner.temp }}/render-watch-barred-slugs.txt
         run: node scripts/render-watch.mjs
-
-      # research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(3) (ruling 6.10 row 21 (d)): a page of a
-      # site whose terms bar copying ("copying": "barred" in research/channel-loop/terms-verdicts.json) is never
-      # committed in full. The fetch step wrote its body, its full text and its plain meta to RENDER_WATCH_ARTIFACT_DIR,
-      # outside the checkout (the commit step's `git add research/rendered/` cannot pick them up), and to the tree only the
-      # meta, with a `trimmed` block naming this artifact, and an emptied .txt of the same line count. This uploads that
-      # directory as one artifact per run, kept 90 days; it runs only when the fetch step reports such pages. Before the
-      # commit and not continue-on-error: a failed upload stops the run here, so no meta lands naming an artifact that
-      # does not exist (the week's other captures wait for the next run or a dispatch). A stated fact for the decider, not
-      # checked from the container: on a public repository a signed-in GitHub user with read access can download a run's
-      # artifacts, so the ruling's "private to the repository's collaborators" holds only for a private repository.
-      - name: Keep the bodies of copying-barred pages out of the tree (a workflow artifact, 90 days)
-        if: steps.fetch.outputs.barred != '' && steps.fetch.outputs.barred != '0'
-        uses: actions/upload-artifact@v4
-        with:
-          name: render-watch-barred-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/render-watch-barred/
-          retention-days: 90
-          if-no-files-found: error
 
       # Names, in the job summary (a table) and as a warning annotation each on the run page (GitHub
       # may show only some of them), the captures this run just stored that are not read pages:
@@ -252,6 +238,8 @@ jobs:
       - name: Commit the fetched pages back to this branch
         env:
           GH_TOKEN: ${{ github.token }}
+          # The fetch step's list of the copying-barred slugs it stored this run (the guard below).
+          RENDER_WATCH_BARRED_LIST: ${{ runner.temp }}/render-watch-barred-slugs.txt
         run: |
           set -euo pipefail
           # The write token, for this step's git only (checkout persisted none). The same header
@@ -263,19 +251,23 @@ jobs:
           git config user.name "colony-bot"
           git config user.email "colony-bot@users.noreply.github.com"
 
-          # A copying-barred page's body (decision 4(3)) is in the artifact and must not be in the tree: the fetch step
-          # never writes one there, and this stops the commit if anything ever did. Its meta and emptied .txt are committed.
-          if [ -d "${RUNNER_TEMP}/render-watch-barred" ]; then
-            for f in "${RUNNER_TEMP}"/render-watch-barred/*; do
-              [ -e "$f" ] || continue
-              name=$(basename "$f")
-              case "$name" in *.meta.json|*.txt) continue ;; esac
-              if [ -e "research/rendered/${name}" ]; then
-                echo "::error title=copying barred::research/rendered/${name} is the body of a copying-barred page (ruling 6.10 row 21 (d)); not committed."
+          # A copying-barred page's body (decision 4(1), amendment 1) is retained nowhere and must not be in the tree:
+          # the fetch step never writes one there, and this stops the commit if anything ever did. It reads the slugs
+          # the fetch step stored that way, not any body on disk, and refuses when the list is missing (the guard would
+          # be blind). Their metas and emptied .txt files are committed.
+          if [ ! -f "${RENDER_WATCH_BARRED_LIST:-}" ]; then
+            echo "::error title=copying barred::the fetch step wrote no list of copying-barred slugs (RENDER_WATCH_BARRED_LIST); not committed."
+            exit 1
+          fi
+          while IFS= read -r slug || [ -n "$slug" ]; do
+            [ -n "$slug" ] || continue
+            for ext in html json pdf xml bin; do
+              if [ -e "research/rendered/${slug}.${ext}" ]; then
+                echo "::error title=copying barred::research/rendered/${slug}.${ext} is the body of a copying-barred page (ruling 6.10 row 21 (d)); not committed."
                 exit 1
               fi
             done
-          fi
+          done < "${RENDER_WATCH_BARRED_LIST}"
 
           # Stage first, then compare the index: on the very first run every file
           # under research/rendered/ is untracked and `git diff` alone would report

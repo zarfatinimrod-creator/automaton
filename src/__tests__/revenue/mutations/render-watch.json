@@ -590,14 +590,6 @@
     "note": "tick 56 build: an unchanged barred page is written again every run (quiet history)"
   },
   {
-    "id": "T56-RW7",
-    "file": "scripts/render-watch.mjs",
-    "find": "${barredCount > 0 ? `barred=${barredCount}\\n` : \"\"}",
-    "replace": "${barredCount > 9 ? `barred=${barredCount}\\n` : \"\"}",
-    "test": "src/__tests__/revenue/render-watch.test.ts",
-    "note": "tick 56 build: the workflow is not told of the barred pages, so the upload step does not run"
-  },
-  {
     "id": "T56-RW8",
     "file": "scripts/render-watch.mjs",
     "find": "      barredCount += counts.barred;",
@@ -727,5 +719,155 @@
     "replace": "jsRenderer({ launchBrowser: deps.launchBrowser ?? launchChromium, robots });",
     "test": "src/__tests__/revenue/render-watch-js.test.ts",
     "note": "tick 56 review fixer: main does not hand the copying-barred sites to the js renderer"
+  },
+  {
+    "id": "T57-RW1",
+    "file": "scripts/render-watch.mjs",
+    "find": "  if (text) writeFileSync(join(outDir, `${entry.slug}.txt`), emptiedLines(text.toString(\"utf8\")));",
+    "replace": "  writeFileSync(join(outDir, basename(bodyPath)), body);\n  if (text) writeFileSync(join(outDir, `${entry.slug}.txt`), emptiedLines(text.toString(\"utf8\")));",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build (amendment 1): the route writes a copying-barred page's body into outDir"
+  },
+  {
+    "id": "T57-RW2",
+    "file": "scripts/render-watch.mjs",
+    "find": "  const fetchedAt = now();\n  let text = null;",
+    "replace": "  const fetchedAt = now();\n  writeFileSync(join(tmpdir(), basename(bodyPath)), body);\n  let text = null;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build (amendment 1): the route keeps a copy of the body outside the tree (a temporary file left behind)"
+  },
+  {
+    "id": "T57-RW3",
+    "file": "scripts/render-watch.mjs",
+    "find": "      rmSync(scratch, { recursive: true, force: true });",
+    "replace": "      void scratch;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build (amendment 1): a PDF's temporary copy for pdftotext is not deleted"
+  },
+  {
+    "id": "T57-RW4",
+    "file": "scripts/render-watch.mjs",
+    "find": "    if (barredList) appendFileSync(barredList, `${entry.slug}\\n`);",
+    "replace": "    void barredList;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build (amendment 1): the barred-slugs list is not written, so the commit step's guard checks nothing"
+  },
+  {
+    "id": "T57-RW5",
+    "file": "scripts/render-watch.mjs",
+    "find": "  if (barredList) writeFileSync(barredList, \"\");",
+    "replace": "  void barredList;",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build: the barred-slugs list is not created empty first, so a run that stores none leaves the guard no list"
+  },
+  {
+    "id": "T57-RW6",
+    "file": "scripts/render-watch.mjs",
+    "find": "  if (barredList) writeFileSync(barredList, \"\");",
+    "replace": "  if (barredList) appendFileSync(barredList, \"\");",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build: a list left by an earlier run is appended to, not replaced"
+  },
+  {
+    "id": "T57-RW7",
+    "file": "scripts/render-watch.mjs",
+    "find": "    fullBytesIn: NOT_RETAINED,",
+    "replace": "    fullBytesIn: null,",
+    "test": [
+      "src/__tests__/revenue/render-watch.test.ts",
+      "src/__tests__/revenue/trim-capture.test.ts"
+    ],
+    "note": "tick 57 build (amendment 1): the route's block does not say the bytes were not retained (null reads as git history, whose remedy cannot be followed)"
+  },
+  {
+    "id": "T57-RW8",
+    "file": "scripts/render-watch.mjs",
+    "find": "    artifact: null,",
+    "replace": "    artifact: { name: \"render-watch-barred-local\" },",
+    "test": [
+      "src/__tests__/revenue/render-watch.test.ts",
+      "src/__tests__/revenue/trim-capture.test.ts"
+    ],
+    "note": "tick 57 build (amendment 1): the route's block still names an artifact"
+  },
+  {
+    "id": "T57-RW9",
+    "file": "scripts/render-watch.mjs",
+    "find": "    history: NOT_RETAINED_HISTORY,",
+    "replace": "    history: \"The full bytes were never committed: they are in the workflow artifact named above until it expires.\",",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build (amendment 1): the route's block says the bytes are in a workflow artifact"
+  },
+  {
+    "id": "T57-RW10",
+    "file": "scripts/render-watch.mjs",
+    "find": "copying barred (${copying}): body not retained (sha256 ${hash.slice(0, 12)} in the meta)",
+    "replace": "copying barred (${copying}): the body is in the artifact",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build (amendment 1): the run summary names an artifact instead of saying the body was not retained"
+  },
+  {
+    "id": "T57-WF1",
+    "file": ".github/workflows/render-watch.yml",
+    "find": "              if [ -e \"research/rendered/${slug}.${ext}\" ]; then",
+    "replace": "              if [ ! -e \"research/rendered/${slug}.${ext}\" ]; then",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build (amendment 1): the commit step's guard has its file-existence check inverted"
+  },
+  {
+    "id": "T57-WF2",
+    "file": ".github/workflows/render-watch.yml",
+    "find": "          if [ ! -f \"${RENDER_WATCH_BARRED_LIST:-}\" ]; then",
+    "replace": "          if false; then",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build: the guard passes a run whose fetch step wrote no list (a blind guard)"
+  },
+  {
+    "id": "T57-WF3",
+    "file": ".github/workflows/render-watch.yml",
+    "find": "          # The fetch step's list of the copying-barred slugs it stored this run (the guard below).\n          RENDER_WATCH_BARRED_LIST: ${{ runner.temp }}/render-watch-barred-slugs.txt\n",
+    "replace": "          # The fetch step's list of the copying-barred slugs it stored this run (the guard below).\n",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build: the commit step is not given the fetch step's list path"
+  },
+  {
+    "id": "T57-WF4",
+    "file": ".github/workflows/render-watch.yml",
+    "find": "            for ext in html json pdf xml bin; do",
+    "replace": "            for ext in html json pdf xml; do",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build: the guard misses a .bin body"
+  },
+  {
+    "id": "T57-WF5",
+    "file": ".github/workflows/render-watch.yml",
+    "find": "          while IFS= read -r slug || [ -n \"$slug\" ]; do",
+    "replace": "          while IFS= read -r slug; do",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build: the guard skips a last slug with no newline after it"
+  },
+  {
+    "id": "T57-WF6",
+    "file": ".github/workflows/render-watch.yml",
+    "find": "          RENDER_WATCH_BARRED_LIST: ${{ runner.temp }}/render-watch-barred-slugs.txt\n        run: node scripts/render-watch.mjs",
+    "replace": "          RENDER_WATCH_ARTIFACT_DIR: ${{ runner.temp }}/render-watch-barred\n        run: node scripts/render-watch.mjs",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 build (amendment 1): the fetch step writes no list and names an artifact directory again"
+  },
+  {
+    "id": "T57-R10",
+    "file": "scripts/render-watch.mjs",
+    "find": "    if (barredList) appendFileSync(barredList, `${entry.slug}\\n`);",
+    "replace": "    if (barredList) writeFileSync(barredList, `${entry.slug}\\n`);",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 review R10 (survived the review: every main() test stored at most one barred page): each barred slug overwrites the last, so the commit step's guard checks only the last page of a run that stores several"
+  },
+  {
+    "id": "T57-R11",
+    "file": ".github/workflows/render-watch.yml",
+    "find": "            [ -n \"$slug\" ] || continue",
+    "replace": "            [ -n \"$slug\" ] || break",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 review R11 (survived the review): a blank line in the barred-slugs list stops the guard reading the slugs after it"
   }
 ]

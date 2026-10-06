@@ -6,17 +6,24 @@ import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import {
   appendTrimmed,
+  BLOCK_KEYS,
   citationsOf,
   copyingOf,
   CONTEXT,
   fullSha256Of,
+  intersectRanges,
+  isWide,
+  keepingRanges,
   keptRanges,
   main,
   planCapture,
+  replaceTrimmed,
   RULING,
   trimLines,
   trimStore,
   WIDE_LINES,
+  WIDE_RULING,
+  widePass,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/trim-capture.mjs";
 import {
@@ -27,6 +34,7 @@ import {
   MANIFEST,
   planFreeze,
   readManifest,
+  recordFiles,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/freeze-capture.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
@@ -36,7 +44,7 @@ import { siteOf } from "../../../scripts/queue-zero-test.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { planRemask } from "../../../scripts/remask-captures.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
-import { copyingBarredSite, readCopyingBarred, routeTrimmed, storeCapture } from "../../../scripts/render-watch.mjs";
+import { copyingBarredSite, extractText, NOT_RETAINED, readCopyingBarred, routeTrimmed, storeCapture } from "../../../scripts/render-watch.mjs";
 
 /**
  * scripts/trim-capture.mjs (tick 56, 6.10.2026): research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4
@@ -150,6 +158,36 @@ function run(root: string, options: Record<string, unknown> = {}) {
   const lines: string[] = [];
   const code = trimStore({ root, on: "2026-10-06", log: (l: string) => lines.push(l), ...options });
   return { code, out: lines.join("\n") };
+}
+
+/**
+ * Trim a fixture capture the way the 6.10 pass did, before the wide rule: every cited range kept with its context, wide
+ * ones too (amendment 1 (5)(iii)'s stated interim), the block in that pass's shape (no `wide`, no `passes`), a frozen
+ * copy's FROZEN.sha256 lines rewritten. What the second pass meets in the repository.
+ */
+function trimAsOn610(root: string, slug: string) {
+  const dir = join(root, "research", "rendered");
+  const cites = citationsOf({ root, slugs: [slug], urlsText: readFileSync(join(dir, "urls.txt"), "utf8") }).get(slug) as Array<{ ext: string | null; range: [number, number]; by: string }>;
+  const files = diskFiles(slug, dir) as Map<string, Buffer>;
+  const metaText = files.get("meta.json")!.toString("utf8");
+  const meta = JSON.parse(metaText);
+  const block: Record<string, unknown> = { on: "2026-10-06", ruling: RULING, site: "barred.test", copying: "barred", keptLines: [], context: 2, fullSha256: null, fullByteLength: null, lineCount: null, body: null, cited: [], captureCheck: "ok", fullBytesIn: null, history: "fixture: the 6.10 pass" };
+  const cited = new Map<string, { file: string; lines: [number, number]; by: string[] }>();
+  for (const [ext, bytes] of files) {
+    if (ext === "meta.json") continue;
+    const n = bytes.toString("utf8").split("\n").length;
+    const mine = cites.filter((c) => (c.ext ?? (files.has("txt") ? "txt" : ext)) === ext && c.range[0] <= n);
+    for (const c of mine) cited.set(`${ext}:${c.range}`, { file: ext, lines: c.range, by: [...new Set([...(cited.get(`${ext}:${c.range}`)?.by ?? []), c.by])] });
+    const kept = keptRanges(mine.map((c) => c.range), n);
+    if (ext === "txt") Object.assign(block, { keptLines: kept, fullSha256: sha(bytes), fullByteLength: bytes.length, lineCount: n });
+    else block.body = { path: `research/rendered/${slug}.${ext}`, sha256: sha(bytes), byteLength: bytes.length, lineCount: n, keptLines: kept, inTree: kept.length > 0 };
+    if (ext === "txt" || kept.length) writeFileSync(join(dir, `${slug}.${ext}`), trimLines(bytes.toString("utf8"), kept));
+    else rmSync(join(dir, `${slug}.${ext}`));
+  }
+  block.cited = [...cited.values()];
+  writeFileSync(join(dir, `${slug}.meta.json`), appendTrimmed(metaText, meta, block));
+  if (meta.frozen) recordFiles(dir, slug);
+  return block;
 }
 
 describe("keptRanges and trimLines", () => {
@@ -363,36 +401,249 @@ describe("trim-capture on a fixture store", () => {
     expect(ok.out).toContain("note: research/notes/n.md:8 gives bar-live-2026-10-01 txt:99, which it does not have (past the end)");
   });
 
-  it("prints a cited range longer than WIDE_LINES lines as wide, with its citing line, and keeps it in this pass (amendment 1 (5)(iii)'s interim)", () => {
+  it("keeps nothing of a cited range longer than WIDE_LINES lines, cited or on its line, not even its ends; keeps a 20-line range whole; a line cited apart inside a wide range keeps its context (amendment 1 (5)(iii))", () => {
     expect(WIDE_LINES).toBe(20);
+    expect(isWide([2, 22])).toBe(true);
+    expect(isWide([2, 21])).toBe(false);
     const note =
       // "in full (body :2-22)" as indiebook.md:108 has it: the scanner's citation and a bare :N on its line, printed once.
       `${NOTE}Read research/rendered/bar-live-2026-10-01.txt in full (body :2-22), and a quotation (research/rendered/bar-live-2026-10-01.txt:25-27).\n` +
-      "Twenty lines (research/rendered/bar-live-2026-10-01.html:2-21).\nThe quotation again (research/rendered/bar-live-2026-10-01.txt:25-27).\n";
+      "Twenty lines (research/rendered/bar-live-2026-10-01.html:2-21).\nThe quotation again (research/rendered/bar-live-2026-10-01.txt:25-27).\n" +
+      // A wide range only read on its line (the scanner gives :5-30 to robots.txt).
+      "No robots.txt rule (:5-30) of bar-live-2026-10-01.txt reaches it.\n";
     const { root, dir } = makeStore("wide", { note });
     const full = readFileSync(join(dir, "bar-live-2026-10-01.txt"), "utf8");
+    const html = readFileSync(join(dir, "bar-live-2026-10-01.html"), "utf8");
+    const dry = run(root);
+    expect(dry.code).toBe(0);
+    for (const r of [dry, run(root, { apply: true })]) {
+      expect(r.out).toContain(
+        "  wide: txt:2-22 (research/notes/n.md:7) is longer than 20 lines: not a quotation, it keeps nothing (RULING-2026-10-06-robots-and-terms.md amendment 1 (5)(iii)); a line in it that is cited apart keeps that citation's context",
+      );
+      expect(r.out).toContain("  wide: txt:5-30 (research/notes/n.md:10 on its line) is longer than 20 lines: not a quotation, it keeps nothing");
+      expect(r.out.match(/wide:/g)).toHaveLength(2);
+      // :10 and :20 inside 2-22 keep 8-12 and 18-22; :25-27 keeps 23-29; the 20-line html:2-21 keeps the html whole.
+      expect(r.out).toContain(`txt: keep 8-12, 18-29 (17 of 31 lines; ${keptShare(full, [[8, 12], [18, 29]])})`);
+      expect(r.out).toContain(`html: keep 1-21 (21 of 21 lines; ${keptShare(html, [[1, 21]])})`);
+      expect(r.out).toContain("cited html:2-21 by research/notes/n.md:8");
+      expect(r.out).not.toMatch(/cited txt:(2-22|5-30) /);
+      expect(r.out).toContain("2 wide range(s) keeping nothing;");
+      // Each cited range of a capture once, however many lines cite it (txt:25-27 twice), and no wide one: 6 of the copy, 1 of bar-json.
+      expect(r.out).toContain("; 7 cited range(s) kept;");
+    }
+    const lines = full.split("\n");
+    const after = readFileSync(join(dir, "bar-live-2026-10-01.txt"), "utf8").split("\n");
+    expect(after).toHaveLength(lines.length);
+    // Not even the ends of a wide range: line 2 (2-22's first) and lines 30-31 (5-30's last, and the end) are empty.
+    after.forEach((line, i) => expect(line, `line ${i + 1}`).toBe((i + 1 >= 8 && i + 1 <= 12) || (i + 1 >= 18 && i + 1 <= 29) ? lines[i] : ""));
+    expect(readFileSync(join(dir, "bar-live-2026-10-01.html"), "utf8")).toBe(html);
+    const t = JSON.parse(readFileSync(join(dir, "bar-live-2026-10-01.meta.json"), "utf8")).trimmed;
+    expect(Object.keys(t)).toEqual(BLOCK_KEYS);
+    expect(t.keptLines).toEqual([[8, 12], [18, 29]]);
+    expect(t.wide).toEqual([
+      { file: "txt", lines: [2, 22], by: ["research/notes/n.md:7"] },
+      { file: "txt", lines: [5, 30], by: ["research/notes/n.md:10"] },
+    ]);
+    expect(t.cited.map((c: { file: string; lines: number[] }) => `${c.file}:${c.lines.join("-")}`)).not.toContain("txt:2-22");
+    expect(t.cited).toContainEqual({ file: "html", lines: [2, 21], by: ["research/notes/n.md:8"] });
+  });
+
+  it("a binary body cited only by a wide range is no refusal: it keeps nothing and leaves the tree", () => {
+    const note = `${NOTE}All of the PDF (research/rendered/bar-pdf.pdf:1-40).\n`;
+    const { root, dir } = makeStore("widepdf", { note });
+    const pdf = Buffer.from(`%PDF-1.4\n${"binary\n".repeat(44)}`);
+    writeFileSync(join(dir, "bar-pdf.meta.json"), metaText({ ...baseMeta("bar-pdf", "https://www.barred.test/doc.pdf", "pdf", pdf), textPath: null }));
+    writeFileSync(join(dir, "bar-pdf.pdf"), pdf);
     const r = run(root, { apply: true });
-    expect(r.code).toBe(0);
-    expect(r.out).toContain(
-      "wide: txt:2-22 (research/notes/n.md:7) is longer than 20 lines: kept in this pass, the stated interim of RULING-2026-10-06-robots-and-terms.md amendment 1 (5)(iii), whose rule (such a range is not a quotation and keeps nothing) the next build adds",
+    expect(r.code, r.out).toBe(0);
+    expect(r.out).toContain("  wide: pdf:1-40 (research/notes/n.md:7) is longer than 20 lines");
+    expect(existsSync(join(dir, "bar-pdf.pdf"))).toBe(false);
+  });
+
+  it("intersectRanges, keepingRanges and widePass: the second pass takes only what a wide range alone kept, and never brings a line back", () => {
+    expect(intersectRanges([[1, 24]], [[8, 12], [18, 22]])).toEqual([[8, 12], [18, 22]]);
+    expect(intersectRanges([[1, 5], [10, 20]], [[4, 12]])).toEqual([[4, 5], [10, 12]]);
+    expect(intersectRanges([[1, 5]], [])).toEqual([]);
+    // Ranges that share one line share that line.
+    expect(intersectRanges([[1, 5]], [[5, 9]])).toEqual([[5, 5]]);
+    expect(intersectRanges([[3, 3]], [[1, 10]])).toEqual([[3, 3]]);
+    expect(keepingRanges([{ range: [2, 22] }, { range: [10, 10] }, { range: [30, 49] }])).toEqual([[10, 10], [30, 49]]);
+    const t = { keptLines: [[1, 24]], lineCount: 31, body: null, cited: [{ file: "txt", lines: [2, 22], by: ["n.md:1"] }, { file: "txt", lines: [10, 10], by: ["n.md:2"] }] };
+    // The block's record alone: a wide range recorded keeps nothing any more, the line recorded apart stays.
+    expect(widePass({ t, cites: [] })).toEqual([{ ext: "txt", before: [[1, 24]], after: [[8, 12]], lines: 31, wide: [{ ext: "txt", range: [2, 22], by: ["n.md:1"], how: "recorded" }] }]);
+    // A line cited now inside the old kept lines stays with its context; one outside them adds nothing (no line comes back).
+    expect(widePass({ t, cites: [{ ext: "txt", range: [15, 15], by: "n.md:3", how: "cited" }, { ext: "txt", range: [28, 28], by: "n.md:4", how: "cited" }] })[0].after).toEqual([[8, 17]]);
+    // No wide range, recorded or cited: nothing to do, however the citations moved since.
+    expect(widePass({ t: { ...t, cited: [{ file: "txt", lines: [10, 10], by: ["n.md:2"] }] }, cites: [] })).toEqual([]);
+    // A wide range that takes nothing more (its lines kept by others too): nothing to do.
+    expect(widePass({ t: { ...t, keptLines: [[8, 12]] }, cites: [] })).toEqual([]);
+    // A body kept only by a wide range keeps no line.
+    const body = { keptLines: [], lineCount: null, body: { path: "research/rendered/x.html", keptLines: [[1, 30]], lineCount: 30, inTree: true }, cited: [{ file: "html", lines: [2, 28], by: ["n.md:1"] }] };
+    expect(widePass({ t: body, cites: [] })).toMatchObject([{ ext: "html", before: [[1, 30]], after: [] }]);
+    expect(widePass({ t: { ...body, body: { ...body.body, inTree: false } }, cites: [] })).toEqual([]);
+    // A line read on its line beside the old kept lines (emptied, so a note, not a refusal): its context keeps the one
+    // old kept line it reaches, and nothing outside them.
+    expect(widePass({ t, cites: [{ ext: "txt", range: [26, 26], by: "n.md:5", how: "on its line" }] })[0].after).toEqual([[8, 12], [24, 24]]);
+  });
+
+  it("widePass counts a range as the first pass does: one that starts in the file and runs past its end is wide by its own length, or keeps what of it the file has; one that starts past the end counts for nothing", () => {
+    // The review's probe: a wide range recorded past the end keeps nothing in the second pass, as it kept nothing in the first.
+    const pastEnd = { keptLines: [[27, 298]], lineCount: 298, body: null, cited: [{ file: "txt", lines: [29, 400], by: ["n.md:1"] }] };
+    expect(widePass({ t: pastEnd, cites: [] })).toEqual([{ ext: "txt", before: [[27, 298]], after: [], lines: 298, wide: [{ ext: "txt", range: [29, 400], by: ["n.md:1"], how: "recorded" }] }]);
+    // The same range cited now (and in no record).
+    expect(widePass({ t: { ...pastEnd, cited: [] }, cites: [{ ext: "txt", range: [29, 400], by: "n.md:2", how: "cited" }] })).toMatchObject([{ ext: "txt", after: [] }]);
+    // A range that is not wide and runs past the end keeps what of it the file has, recorded or cited now.
+    const t = { keptLines: [[1, 24], [27, 31]], lineCount: 31, body: null, cited: [{ file: "txt", lines: [2, 22], by: ["n.md:1"] }, { file: "txt", lines: [10, 10], by: ["n.md:2"] }, { file: "txt", lines: [29, 33], by: ["n.md:3"] }] };
+    expect(widePass({ t, cites: [] })[0].after).toEqual([[8, 12], [27, 31]]);
+    const cites = [{ ext: "txt", range: [29, 33], by: "n.md:3", how: "cited" }];
+    expect(widePass({ t: { ...t, cited: t.cited.slice(0, 2) }, cites })[0].after).toEqual([[8, 12], [27, 31]]);
+    // A range that starts past the end is another file's line: wide or not, it neither starts a second pass nor keeps a line.
+    const moved = { keptLines: [[8, 12], [20, 24]], lineCount: 31, body: null, cited: [{ file: "txt", lines: [10, 10], by: ["n.md:2"] }] };
+    expect(widePass({ t: moved, cites: [{ ext: "txt", range: [35, 60], by: "n.md:4", how: "cited" }] })).toEqual([]);
+    expect(widePass({ t: { ...t, cited: t.cited.slice(0, 2) }, cites: [{ ext: "txt", range: [32, 34], by: "n.md:5", how: "cited" }] })[0].after).toEqual([[8, 12]]);
+  });
+
+  it("the second pass over ranges that run past the end of the file: the wide one keeps nothing, the one that is not wide keeps what of it the file has, and the block records both, and a range cited since that starts in the file too", () => {
+    const at610 = `${NOTE}Read research/rendered/bar-live-2026-10-01.txt in full (body :2-40).\nIts last lines (research/rendered/bar-live-2026-10-01.txt:29-33).\n`;
+    const { root, dir } = makeStore("past-end", { note: at610 });
+    const copy = "bar-live-2026-10-01";
+    const fullTxt = readFileSync(join(dir, `${copy}.txt`), "utf8");
+    for (const slug of ["bar-live", copy, "bar-json"]) trimAsOn610(root, slug);
+    expect(JSON.parse(readFileSync(join(dir, `${copy}.meta.json`), "utf8")).trimmed.keptLines).toEqual([[1, 31]]);
+    // Since 6.10, a further line cites the copy's end again.
+    writeFileSync(join(root, "research", "notes", "n.md"), `${at610}The end again (research/rendered/bar-live-2026-10-01.txt:30-34).\n`);
+    const dry = run(root, { on: "2026-10-07" });
+    expect(dry.code, dry.out).toBe(0);
+    expect(dry.out).toContain(`would re-trim ${copy} (wide range txt:2-40;`);
+    const applied = run(root, { apply: true, on: "2026-10-07" });
+    expect(applied.code, applied.out).toBe(0);
+    const lines = fullTxt.split("\n");
+    const kept = (n: number) => (n >= 8 && n <= 12) || (n >= 18 && n <= 22) || (n >= 27 && n <= 31);
+    readFileSync(join(dir, `${copy}.txt`), "utf8").split("\n").forEach((line, i) => expect(line, `line ${i + 1}`).toBe(kept(i + 1) ? lines[i] : ""));
+    const block = JSON.parse(readFileSync(join(dir, `${copy}.meta.json`), "utf8")).trimmed;
+    expect(block).toMatchObject({ keptLines: [[8, 12], [18, 22], [27, 31]], fullSha256: sha(fullTxt), lineCount: 31, wide: [{ file: "txt", lines: [2, 40], by: ["research/notes/n.md:7"] }] });
+    expect(block.cited).toContainEqual({ file: "txt", lines: [29, 33], by: ["research/notes/n.md:8"] });
+    expect(block.cited).toContainEqual({ file: "txt", lines: [30, 34], by: ["research/notes/n.md:9"] });
+    expect(checkManifest(dir)).toEqual([]);
+    const third = run(root, { apply: true, on: "2026-10-08" });
+    expect(third.code, third.out).toBe(3);
+  });
+
+  it("the second pass: a capture trimmed on 6.10 whose kept lines a wide range reached is re-trimmed by --apply (lines emptied, keptLines recomputed, the full hashes kept, the pass recorded, FROZEN.sha256 rewritten); a third run has nothing to do", () => {
+    const note = `${NOTE}Read research/rendered/bar-live-2026-10-01.txt in full (body :2-22).\nThe whole body (research/rendered/bar-wide.html:2-28).\n`;
+    const { root, dir } = makeStore("second", { note });
+    // A capture of the barred site whose body only a wide range cites, and no text.
+    const wideHtml = htmlOf(30);
+    writeFileSync(join(dir, "bar-wide.meta.json"), metaText({ ...baseMeta("bar-wide", "https://www.barred.test/wide", "html", wideHtml), textPath: null }));
+    writeFileSync(join(dir, "bar-wide.html"), wideHtml);
+    const fullLive = diskFiles("bar-live", dir);
+    const copy = "bar-live-2026-10-01";
+    const fullTxt = readFileSync(join(dir, `${copy}.txt`), "utf8");
+    for (const slug of ["bar-live", copy, "bar-json", "bar-wide"]) trimAsOn610(root, slug);
+    expect(JSON.parse(readFileSync(join(dir, `${copy}.meta.json`), "utf8")).trimmed.keptLines).toEqual([[1, 24]]);
+    expect(checkManifest(dir)).toEqual([]);
+    const metaBefore = readFileSync(join(dir, `${copy}.meta.json`), "utf8");
+    const txtBefore = readFileSync(join(dir, `${copy}.txt`), "utf8");
+    const textBytes = fullTxt.split("\n").reduce((n, l) => n + Buffer.byteLength(l), 0);
+
+    // The dry run: what it would re-trim, and nothing written.
+    const before = snapshot(root);
+    const dry = run(root, { on: "2026-10-07" });
+    expect(dry.code).toBe(0);
+    expect(snapshot(root)).toEqual(before);
+    expect(dry.out).toContain(`would re-trim ${copy} (wide range txt:2-22; barred.test, copying barred, trimmed 2026-10-06; frozen, ${MANIFEST} follows)`);
+    expect(dry.out).toContain("  wide: txt:2-22 (research/notes/n.md:7) is longer than 20 lines: not a quotation, it keeps nothing");
+    expect(dry.out).toContain(
+      `  txt: keep 8-12, 18-22 (10 of 31 lines; ${keptShare(fullTxt, [[8, 12], [18, 22]])}); was 1-24 (24 lines; ${keptShare(fullTxt, [[1, 24]])})`,
     );
-    expect(r.out.match(/wide:/g)).toHaveLength(1);
-    // Each cited range of a capture once, however many lines cite it (txt:25-27 twice): 7 of the copy, 1 of bar-json.
-    expect(r.out).toContain("; 8 cited range(s) kept;");
-    expect(r.out).toContain(`txt: keep 1-29 (29 of 31 lines; ${keptShare(full, [[1, 29]])})`);
-    expect(readFileSync(join(dir, "bar-live-2026-10-01.txt"), "utf8").split("\n").slice(0, 29)).toEqual(full.split("\n").slice(0, 29));
+    expect(dry.out).toContain("would re-trim bar-wide (wide range html:2-28; barred.test, copying barred, trimmed 2026-10-06; live)");
+    expect(dry.out).toMatch(/ {2}html: keep no line \(0 of 31 lines; 0 of [\d,]+ bytes, 0\.0%\), so it leaves the tree; was 1-30 \(30 lines; /);
+    expect(dry.out).toContain("already trimmed: bar-live (barred.test, 2026-10-06)");
+    expect(dry.out).toContain("already trimmed: bar-json (barred.test, 2026-10-06)");
+    expect(dry.out).toMatch(/0 would be trimmed \(0 frozen, 0 live\), 2 already trimmed, 1 with nothing in the tree, 0 refused alone; 2 trimmed before the wide rule would be re-trimmed \(amendment 1 \(5\)\(iii\)\), 2 wide range\(s\) keeping nothing;/);
+    expect(dry.out).toContain(`${MANIFEST}: 1 frozen copy's lines would be rewritten`);
+    expect(dry.out).not.toContain(MARK);
+
+    // --apply.
+    const applied = run(root, { apply: true, on: "2026-10-07" });
+    expect(applied.code).toBe(0);
+    expect(applied.out).toContain(`re-trimmed ${copy} (wide range txt:2-22;`);
+    const lines = fullTxt.split("\n");
+    const after = readFileSync(join(dir, `${copy}.txt`), "utf8").split("\n");
+    expect(after).toHaveLength(lines.length);
+    after.forEach((line, i) => expect(line, `line ${i + 1}`).toBe((i + 1 >= 8 && i + 1 <= 12) || (i + 1 >= 18 && i + 1 <= 22) ? lines[i] : ""));
+    expect(txtBefore.split("\n").slice(0, 24).every((l, i) => l === lines[i])).toBe(true);
+    // The meta: every line above the block as it was, the block rewritten in its order with the pass recorded.
+    const metaAfter = readFileSync(join(dir, `${copy}.meta.json`), "utf8");
+    const head = metaBefore.slice(0, metaBefore.indexOf('\n  "trimmed": {'));
+    expect(metaAfter.startsWith(head)).toBe(true);
+    const meta = JSON.parse(metaAfter);
+    expect(Object.keys(meta.trimmed)).toEqual([...BLOCK_KEYS, "passes"]);
+    expect(meta.trimmed).toMatchObject({
+      on: "2026-10-06",
+      keptLines: [[8, 12], [18, 22]],
+      fullSha256: sha(fullTxt),
+      fullByteLength: Buffer.byteLength(fullTxt),
+      lineCount: 31,
+      body: { keptLines: [[3, 9]], inTree: true },
+      wide: [{ file: "txt", lines: [2, 22], by: ["research/notes/n.md:7"] }],
+      passes: [{ on: "2026-10-07", ruling: WIDE_RULING, keptLinesBefore: [[1, 24]], bodyKeptLinesBefore: [[3, 9]] }],
+    });
+    expect(meta.trimmed.cited).toContainEqual({ file: "txt", lines: [10, 10], by: ["research/notes/n.md:2"] });
+    expect(meta.trimmed.cited.some((c: { lines: number[] }) => c.lines[0] === 2 && c.lines[1] === 22)).toBe(false);
+    expect(fullSha256Of(dir, copy, "txt")).toBe(sha(fullTxt));
+    expect(textBytes).toBeGreaterThan(0);
+    // FROZEN.sha256 holds the re-trimmed bytes; the frozen-citations guard and --cited's reuse of the copy hold.
+    expect(readManifest(dir).get(`${copy}.txt`)).toBe(sha(readFileSync(join(dir, `${copy}.txt`))));
+    expect(checkManifest(dir)).toEqual([]);
+    expect(existingCopy(dir, "bar-live", fullLive)).toBe(copy);
+    // The body a wide range alone kept left the tree.
+    expect(existsSync(join(dir, "bar-wide.html"))).toBe(false);
+    expect(JSON.parse(readFileSync(join(dir, "bar-wide.meta.json"), "utf8")).trimmed).toMatchObject({
+      keptLines: [],
+      body: { keptLines: [], inTree: false, sha256: sha(wideHtml) },
+      passes: [{ on: "2026-10-07", keptLinesBefore: [], bodyKeptLinesBefore: [[1, 30]] }],
+    });
+    expect(applied.out).not.toContain(MARK);
+
+    // A third run: nothing to do, nothing written.
+    const settled = snapshot(root);
+    const third = run(root, { apply: true, on: "2026-10-08" });
+    expect(third.code).toBe(3);
+    expect(third.out).toContain(`already trimmed: ${copy} (barred.test, 2026-10-06)`);
+    expect(third.out).toContain("already trimmed: bar-wide (barred.test, 2026-10-06)");
+    expect(snapshot(root)).toEqual(settled);
+  });
+
+  it("refuses a re-trim that would blank a line cited apart, or drop a line, even when the trim itself is wrong (the guard holds in the second pass too)", () => {
+    const note = `${NOTE}Read research/rendered/bar-live-2026-10-01.txt in full (body :2-22).\n`;
+    const { root, dir } = makeStore("reguard", { note });
+    const slug = "bar-live-2026-10-01";
+    trimAsOn610(root, slug);
+    const cites = citationsOf({ root, slugs: [slug], urlsText: readFileSync(join(dir, "urls.txt"), "utf8") }).get(slug);
+    const args = { slug, dir, files: diskFiles(slug, dir), cites, site: "barred.test", on: "2026-10-07", commit: null };
+    expect(planCapture(args).state).toBe("retrim");
+    expect(() => planCapture({ ...args, trimText: (text: string) => trimLines(text, []) })).toThrow(`${slug}.txt: the re-trim would blank txt:10, which research/notes/n.md:2 cites`);
+    expect(() => planCapture({ ...args, trimText: (text: string) => text.split("\n").slice(1).join("\n") })).toThrow(`${slug}.txt: the re-trimmed text would not keep its 31 lines`);
+  });
+
+  it("replaceTrimmed rewrites only the block, and refuses a meta whose block is not its last key", () => {
+    const text = '{\n  "a": 1,\n  "trimmed": {\n    "on": "x"\n  }\n}\n';
+    expect(replaceTrimmed(text, { a: 1, trimmed: { on: "x" } }, { on: "x", passes: [1] })).toBe('{\n  "a": 1,\n  "trimmed": {\n    "on": "x",\n    "passes": [\n      1\n    ]\n  }\n}\n');
+    expect(() => replaceTrimmed('{\n  "a": 1\n}\n', { a: 1 }, { on: "y" })).toThrow(/cannot be rewritten/);
+    const notLast = '{\n  "trimmed": {\n    "on": "x"\n  },\n  "b": 2\n}\n';
+    expect(() => replaceTrimmed(notLast, { trimmed: { on: "x" }, b: 2 }, { on: "y" })).toThrow(/cannot be rewritten|cannot take a trimmed block/);
   });
 
   it("render-watch's route meets the trim: a failed fetch keeps the capture trimmed, and a citation of a line the tree never held is refused alone, with a remedy that can be followed", async () => {
     const { root, dir } = makeStore("route");
-    const art = join(root, "artifact");
     const entry = { url: "https://www.barred.test/route", slug: "bar-route", lineNumber: 1 };
     const page = `<html><body>${Array.from({ length: 6 }, (_, i) => `<p>${MARK} route ${i + 1}</p>`).join("")}</body></html>`;
-    const options = { outDir: dir, copying: "barred.test", artifactDir: art, artifact: { name: "render-watch-barred-5-1", run: "5" } };
+    const options = { outDir: dir, copying: "barred.test" };
     await storeCapture(entry, { status: 200, contentType: "text/html", bytes: Buffer.from(page), truncated: false, error: null }, { ...options, now: () => "2026-10-13T05:00:00.000Z" });
     await storeCapture(entry, { status: 503, contentType: "text/html", bytes: null, truncated: false, error: "HTTP 503" }, { ...options, now: () => "2026-10-20T05:00:00.000Z" });
     const routed = JSON.parse(readFileSync(join(dir, "bar-route.meta.json"), "utf8"));
-    expect(routed).toMatchObject({ status: 503, sha256: null, trimmed: { on: "2026-10-13", fullSha256: sha(readFileSync(join(art, "bar-route.txt"))) } });
+    expect(routed).toMatchObject({ status: 503, sha256: null, trimmed: { on: "2026-10-13", fullSha256: sha(`${extractText(page)}\n`), fullBytesIn: NOT_RETAINED, artifact: null } });
     const dry = run(root);
     expect(dry.code).toBe(0);
     expect(dry.out).toContain("already trimmed: bar-route (barred.test, 2026-10-13)");
@@ -403,15 +654,15 @@ describe("trim-capture on a fixture store", () => {
     expect(cited.code).toBe(4);
     expect(cited.out).toContain(
       "REFUSED bar-route (this capture alone; nothing of it is written, the run goes on): bar-route is trimmed (2026-10-13) and research/notes/n.md:7 cites txt:3, which the trim emptied (1 such citation(s)): " +
-        "its full bytes were never committed (workflow artifact render-watch-barred-5-1 (run 5): bar-route.meta.json, bar-route.html, bar-route.txt, kept 90 days; never in the tree or in git history), " +
-        "so no line of it can come back to the tree and no copy of it can be frozen: quote it in the research file without a line of this capture (its URL, fetchedAt and sha256 name the version), or drop the citation",
+        `its full bytes were never retained (fullBytesIn: "${NOT_RETAINED}"), ` +
+        "so no line of it can come back to the tree and no copy of it can be frozen: quote it in the research file without a line of this capture (cite its URL, fetchedAt and sha256, which name the version), or drop the citation",
     );
     expect(cited.out).toMatch(/3 trimmed \(1 frozen, 2 live\), 0 already trimmed, 1 with nothing in the tree, 1 refused alone;/);
     expect(existsSync(join(dir, "bar-live.html"))).toBe(false);
     expect(cited.out).not.toContain(MARK);
     // freeze-capture says the same: there is no full capture to freeze.
     expect(() => planFreeze({ slug: "bar-route", files: diskFiles("bar-route", dir), dir, urlsText: "", on: "2026-10-20" })).toThrow(
-      /bar-route is trimmed \(2026-10-13, ruling 6\.10 row 21 \(d\)\).* Its full bytes were never committed \(workflow artifact render-watch-barred-5-1 .*\): no copy of it can be frozen and no line of it cited/,
+      /bar-route is trimmed \(2026-10-13, ruling 6\.10 row 21 \(d\)\).* Its full bytes were never retained \(fullBytesIn: "not retained \(ruling 6\.10 row 21 amendment 1: a public repository's workflow artifacts are not private\)"\): no copy of it can be frozen and no line of it cited; quote it without a line of this capture \(cite its URL, fetchedAt and sha256\)/,
     );
   });
 
@@ -512,11 +763,12 @@ describe("the readers of a trimmed capture understand it", () => {
     expect(appendTrimmed('{\n  "a": 1\n}\n', { a: 1 }, { on: "x" })).toBe('{\n  "a": 1,\n  "trimmed": {\n    "on": "x"\n  }\n}\n');
   });
 
-  it("render-watch's route writes the same block shape (and names its artifact)", () => {
+  it("render-watch's route writes the same block shape, its full bytes not retained and no artifact (amendment 1)", () => {
     const meta = JSON.parse(readFileSync(join(dir, "bar-live.meta.json"), "utf8"));
-    const route = routeTrimmed({ site: "barred.test", on: "2026-10-06", slug: "x", bodyExt: "html", body: Buffer.from("<p>a</p>\n"), text: Buffer.from("a\n"), artifact: { name: "n", run: "1" } });
-    expect(Object.keys(route)).toEqual([...Object.keys(meta.trimmed), "artifact"]);
-    expect(route.ruling).toBe(RULING);
+    const route = routeTrimmed({ site: "barred.test", on: "2026-10-06", slug: "x", bodyExt: "html", body: Buffer.from("<p>a</p>\n"), text: Buffer.from("a\n") });
+    expect(Object.keys(meta.trimmed)).toEqual(BLOCK_KEYS);
+    expect(Object.keys(route)).toEqual([...BLOCK_KEYS, "artifact"]);
+    expect(route).toMatchObject({ ruling: RULING, wide: [], cited: [], keptLines: [], fullBytesIn: NOT_RETAINED, artifact: null });
   });
 });
 
@@ -533,7 +785,7 @@ describe("the real store (read only)", () => {
       .map(([slug]) => slug)
       .sort();
     expect(barred.length).toBeGreaterThan(40);
-    const reached = lines.map((l) => /^(?:would trim|trimmed|already trimmed:|nothing to trim:) (\S+)/.exec(l)?.[1]).filter(Boolean).sort();
+    const reached = lines.map((l) => /^(?:would trim|trimmed|would re-trim|re-trimmed|already trimmed:|nothing to trim:) (\S+)/.exec(l)?.[1]).filter(Boolean).sort();
     expect(reached).toEqual(barred);
   });
 

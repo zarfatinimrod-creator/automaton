@@ -43,7 +43,7 @@
  *   unreadable     (the CLI's) the capture could not be read: no meta, a meta that is not JSON, a file it names missing.
  *   trimmed        the meta has a `trimmed` block (ruling 6.10 row 21 (d): scripts/trim-capture.mjs, or render-watch's
  *                  route for a copying-barred site) and no kind from before the trim: only cited lines are in the tree,
- *                  and the evidence says where the full bytes are (git history, or the workflow artifact). A capture
+ *                  and the evidence says where the full bytes are (git history, or not retained: the route). A capture
  *                  trim-capture trimmed keeps the kind capture-check gave it whole (the block's captureCheck), with the
  *                  trim named in the evidence; a body the trim removed is not a missing file.
  * "Too little text" is fewer than queue-zero-test's MIN_TERMS_TEXT characters, counted in the text
