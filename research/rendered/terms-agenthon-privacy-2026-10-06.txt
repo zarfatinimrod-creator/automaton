@@ -1,0 +1,316 @@
+Agenthon 2026 — Privacy Notice
+
+Agenthon
+
+Home
+About
+Compete
+Guides
+
+Past Events
+
+2025
+2024
+
+Sign In
+Sign Up
+
+Agenthon Submissions Deadline: October 12th, 23:59 AoE
+
+(October 13th at 7:59 AM New York, October 13th at 12:59 PM London, October 13th at 7:59 PM Singapore)
+
+Announcing Competition Awards!
+
+Privacy Notice
+
+Version 2026-08-17 · Agenthon 2026 — NeurIPS 2026 Competition Track · AH26-POL-03
+
+Policy set: Official Competition Rules ·
+Terms of Participation ·
+Privacy Notice ·
+Data & Software Licensing Policy
+
+This Notice explains what personal data Agenthon processes, why it is used, who receives it,
+what is made public, how international transfers and retention are handled, and what privacy
+rights may apply.
+
+Data-use boundary. Agenthon does not sell participant personal data, does
+not use it for cross-context behavioral advertising, and does not use non-public submissions or
+participant personal data to train general-purpose AI models.
+
+1. Scope and who we are
+
+This Privacy Notice applies to personal data processed for Agenthon 2026, including
+registration, team formation, submissions, evaluation, communications, leaderboards, integrity
+review, prizes, verification, event participation, and related administration.
+
+Agenthon 2026 is organized by the Society of Quantitative Analysts (SQA) and CEWIT at Stony
+Brook University (the “Organizers”), subject to applicable institutional approvals
+and any allocation of privacy responsibilities required by law. Primary privacy contact:
+[redacted:email]@agenthon.net .
+
+2. Personal data we collect
+
+Category
+Examples
+
+Registration and identity
+
+Name, email, country/region when needed, affiliation, public profile URL, account
+identifiers.
+
+Team information
+
+Team name, members, captain status, invitations, changes, and track
+participation.
+
+Submission and evaluation
+
+Submission files or containers, configuration, provenance declarations, technical
+reports, scores, gates, rankings, outputs, and verification materials.
+
+Technical and security
+
+IP address, login/session data, timestamps, device/browser data, execution logs,
+audit records, security events, and leakage indicators.
+
+Communications
+
+Support requests, forum posts, email, rule questions, conduct reports, and
+verification correspondence.
+
+Prize and payment
+
+Identity, address or tax residency where needed, payment details handled by the
+payer/provider, and legally required tax forms.
+
+Optional publicity
+
+Biography, public method description, social handle, photographs, or audio/video
+where provided or consented to.
+
+Do not place unnecessary personal data, sensitive information, private credentials, or
+confidential third-party information in a submission.
+
+3. How we obtain data
+
+Directly from you when you register, join a team, communicate, submit, or provide
+verification or prize information.
+
+From your captain or teammates when they manage membership or submit on the team’s
+behalf.
+
+Automatically from the Competition Site, platform, sandbox, and evaluation systems as
+needed to operate and secure the Competition.
+
+From service providers or public sources when reasonably necessary to verify eligibility,
+affiliation, integrity, or prize administration and permitted by law.
+
+4. Why we use data and legal bases
+
+Purpose
+Typical legal basis where applicable
+
+Register participants, create teams/accounts, and provide access
+
+Contract or steps requested before entering a contract.
+
+Run submissions, score results, maintain leaderboards, and communicate
+
+Contract; legitimate interests in a fair research competition.
+
+Protect integrity, prevent leakage or abuse, and secure systems
+
+Legitimate interests in security, fraud prevention, and scientific validity; legal
+obligation where applicable.
+
+Verify finalists/winners and administer prizes
+
+Contract; legal obligation; legitimate interests.
+
+Publish results and preserve the scientific record
+
+Legitimate interests in transparency and scientific reporting; contract where
+publication is an announced condition.
+
+Send optional future-event or news communications
+
+Consent where required; consent may be withdrawn.
+
+Use identifiable event photos or recordings
+
+Attendance-based consent at in-person events, as described in the
+Terms of Participation (attending in person constitutes
+consent, with an on-site objection route and notice at the venue); consent or another
+disclosed lawful basis otherwise.
+
+Automated technical evaluation generates scores and diagnostics. Decisions with material
+consequences beyond the score — such as disqualification, integrity findings, or prize
+confirmation — may be reviewed by the Organizers. Agenthon does not use participant data
+for credit, employment, lending, insurance, or investment decisions.
+
+5. Who receives personal data
+
+Competition, hosting, storage, authentication, sandbox, and compute providers may process
+data needed to operate the Competition.
+
+Organizing Committee members, track leads, evaluators, and integrity/security reviewers
+may access data reasonably necessary for their role.
+
+Sponsors and Question Partners do not receive contact details or non-public submissions
+merely because they support Agenthon. A designated evaluator may receive limited materials
+only when necessary and subject to appropriate confidentiality obligations.
+
+Payment processors, accountants, legal advisers, institutional administrators, or
+tax/reporting providers may receive information needed for a prize or legal compliance.
+
+Information may be disclosed to authorities or other recipients when reasonably necessary
+to comply with law, enforce rules, protect security, or establish, exercise, or defend legal
+claims.
+
+6. What we make public
+
+Public leaderboards may display team name, rank, total or per-track score, and relevant
+diagnostics.
+
+The permanent record may include final team names, ranks/scores, and, for finalists or
+winners, member names, affiliations, prize information, and public method summaries.
+
+A confirmed prize winner may separately publish a reproducibility repository under the
+Official Competition Rules .
+
+Non-public source code, containers, model artifacts, verification materials, email
+addresses, tax information, and security logs are not made public merely because a
+participant enters, is ranked, is verified, or wins.
+
+Event photographs or recordings are used as described when consent or another applicable
+basis is obtained.
+
+7. Submission confidentiality and AI training
+
+Non-public submissions and private verification materials are handled as
+competition-confidential under the Terms of Participation .
+Winning status does not automatically make Organizer-held materials public. A winner’s
+open-source package is a separate participant-controlled release.
+
+The Organizers do not sell personal data or non-public submissions, do not use them for
+cross-context behavioral advertising, and do not use them to train general-purpose AI models.
+Automated systems may process submission content only to score, test, secure, or verify the
+Competition.
+
+8. International transfers
+
+Agenthon is operated in the United States and may use providers in the United States or
+other countries. Where law restricts international transfers, the Organizers or relevant
+provider will rely on an available mechanism such as an adequacy decision, a recognized privacy
+framework, Standard Contractual Clauses, a UK Addendum/IDTA, or another lawful mechanism.
+Participants may contact [redacted:email]@agenthon.net for
+available information about safeguards relevant to their data.
+
+9. Retention
+
+Data
+Typical retention approach
+
+Non-winning registration, submission, and routine evaluation data
+
+Generally up to 12 months after the Competition, then deleted or anonymized unless
+needed for a dispute, investigation, incident, legal duty, or reproducibility
+record.
+
+Finalist/winner verification records
+
+Only as reasonably necessary for final-result auditability, prizes, disputes,
+security/integrity review, and announced reproducibility obligations; kept non-public and
+reviewed periodically.
+
+Prize and tax records
+
+Generally up to 7 years or another period required by tax, accounting, institutional,
+or legal rules.
+
+Public competition record
+
+Team names, final ranks/scores, and published finalist/winner information may be
+retained indefinitely as part of the historical and scientific record.
+
+Optional marketing
+
+Until consent is withdrawn, the address becomes undeliverable, or retention is no
+longer appropriate.
+
+Security and audit logs
+
+For a period proportionate to security, integrity, incident response, and audit
+needs, then deleted or aggregated where practical.
+
+10. Security
+
+The Organizers use reasonable administrative, technical, and organizational measures
+appropriate to the Competition, including access controls, sandboxed evaluation, role-based
+access where practical, logging, security review, and data minimization. No internet or storage
+system is completely secure, and absolute security cannot be guaranteed.
+
+11. Your privacy rights
+
+Depending on where you live, you may have rights to request access, correction, deletion,
+restriction, portability, or information about processing; to object to certain processing; to
+withdraw consent; and to appeal or complain to a privacy regulator. Rights may be subject to
+legal exceptions, including preserving Competition integrity, resolving disputes, complying
+with law, and maintaining a lawful public scientific record.
+
+To exercise a right, email [redacted:email]@agenthon.net .
+Identity verification may be required. Withdrawing optional consent does not affect prior
+lawful processing and ordinarily does not invalidate a score or result already published under
+another legal basis. Withdrawing an optional consent is as easy as giving it — use the
+same email or your account settings.
+
+12. U.S. state notices, age, and external services
+
+Where applicable U.S. state privacy laws provide additional rights, eligible participants
+may submit requests through the contact below. Agenthon will not discriminate for exercising an
+applicable right, subject to requirements genuinely necessary to provide the Competition or
+maintain integrity.
+
+Agenthon is intended for participants who are at least 18 and have reached
+the age of majority. The Organizers do not knowingly accept children through the Competition
+registration process.
+
+External services — including the competition platform, GitHub, NeurIPS, social
+networks, or partner sites — process data under their own notices. NeurIPS registration,
+badge, visa-support, conference-access, and venue data submitted directly to NeurIPS or a venue
+provider are not automatically part of Agenthon records. Relevant external notices: the
+NeurIPS privacy policy and
+NeurIPS Code
+of Conduct .
+
+13. Changes, contact, and complaints
+
+The Organizers may update this Notice for changes in the Competition, providers, legal
+requirements, or data practices. The version and date will be updated, and material changes
+affecting registered participants will be communicated through an official channel where
+reasonably practicable.
+
+Privacy questions and rights requests:
+[redacted:email]@agenthon.net . Additional published contacts:
+[redacted:email]@sqa-us.org and
+[redacted:email]@cewit.org . Participants in the EEA, UK, or Switzerland
+may also complain to their local data-protection authority.
+
+Alphathon presents Agenthon 2026
+
+Organized by
+SQA &middot;
+CEWIT ,
+Stony Brook University
+
+About
+Compete
+Past Events
+Rules
+Terms
+Privacy
+Licensing
+Contact
+
+Copyright &copy; 2026: agenthon.net. All rights reserved.
