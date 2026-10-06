@@ -18,7 +18,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `remask-captures.json` | `scripts/remask-captures.mjs` (+ `freeze-capture.mjs`'s `maskedMeta`) | `remask-captures.test.ts` | ticks 49, 50 |
 | `remask-run.json` | `scripts/remask-run.sh` | `remask-run.test.ts` | tick 53 |
 | `render-dispatch.json` | `scripts/render-dispatch.sh` | `render-dispatch.test.ts` | ticks 52, 54 |
-| `render-watch.json` | `scripts/render-watch.mjs` (the address mask; the User-Agent and `UA_CONTACT`, tick 54) | `render-watch.test.ts` (+ `render-watch-robots.test.ts` for the T54-U entries) | ticks 48, 50, 54 |
+| `render-watch.json` | `scripts/render-watch.mjs` (the address mask; the User-Agent and `UA_CONTACT`, tick 54; kaggle.com's `TERMS_BARRED` entry, tick 54 shell-terms review) | `render-watch.test.ts` (+ `render-watch-robots.test.ts` for the T54-U entries, `render-watch-terms-barred.test.ts` and `prize-terms-audit.test.ts` for the T54-TB entries) | ticks 48, 50, 54 |
 | `robots-verdict.json` | `scripts/robots-verdict.mjs` (`judgeSite` keeps every field it does not set; `serializeVerdicts`' one field order, copying after note) | `robots-verdict.test.ts` | tick 54 |
 | `sim-tree.json` | `scripts/sim-tree.sh` | `sim-tree.test.ts` | ticks 51, 52 |
 

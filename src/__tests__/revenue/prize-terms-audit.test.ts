@@ -2018,7 +2018,18 @@ describe("tick 54: the shell terms pages rendered once (6.10)", () => {
     { line: 108, words: "template for the Competition Rules", quoted: false },
     { line: 113, words: "an Environment by itself is not a Competition", quoted: false },
     { line: 120, words: "assist you in setting up and managing your Competition", quoted: false },
+    // The verifier's record (tick-54 review fix): the :118 licence, who is a user (:67, :96), and the documents the Terms
+    // name that nobody read (:60, :104).
+    { line: 60, words: "the Privacy Policy and the Community Guidelines", quoted: true },
+    { line: 67, words: "You may be required to sign up for an account", quoted: false },
+    { line: 96, words: "gain access to the Services", quoted: true },
+    { line: 104, words: "may impose additional restrictions or requirements for Competitions", quoted: true },
+    { line: 118, words: "all other users of the Services", quoted: true },
+    { line: 118, words: "as permitted by the functionality of the Services", quoted: true },
   ];
+  /** The verifier's seven refutations: one qualifies :77 itself, six correct supporting points (each cites its line). */
+  const SIX_CORRECTIONS = [":63, not :120", "(:118)", "by :70", ":78's", "(:108)", "(:113)"];
+  const UNREAD = "Not read, all named by the Terms: the Acceptable Use Policy (:75), the Privacy Policy and the Community Guidelines, which the Terms include (:60), and each competition's own Competition Rules, which";
 
   it("freezes the js render under freeze-capture's name for a second copy of one slug and day, beside the plain shell's copy", () => {
     const urlsTxt = readFileSync(URLS, "utf8");
@@ -2070,9 +2081,18 @@ describe("tick 54: the shell terms pages rendered once (6.10)", () => {
       expect(text, `:${line}`).toMatch(new RegExp(`:${line}(?!\\d)`));
       if (quoted) expect(text, `:${line}`).toContain(words);
     }
-    // The verifier's corrections are recorded, the verdict unmoved; the unread document is named.
-    expect(k.note).toContain("The verifier agreed BARRED and corrected four supporting points");
-    expect(k.note).toContain("Not read: the Acceptable Use Policy :75 incorporates.");
+    // The verifier's record as it stands (tick-54 review fix): seven refutations, the verdict unmoved. One qualifies the
+    // first ground, :77, which therefore does not carry the verdict alone; the other six are supporting points, each
+    // named; every document the Terms name and nobody read is listed.
+    expect(k.note).toContain("The verifier agreed BARRED and recorded seven refutations of the reader's, none of which moves the verdict. ");
+    expect(k.note).toContain("One qualifies :77 itself: :77 reaches manual means too, so a narrower bulk-extraction reading can be argued");
+    expect(k.note).toContain("the verdict stands without it, because :87 and :70 each bar the runner alone.");
+    const six = k.note.split("The other six correct supporting points: ")[1]?.split(". Not read, ")[0] ?? "";
+    const items = six.split("; ");
+    expect(items).toHaveLength(6);
+    SIX_CORRECTIONS.forEach((cite, i) => expect(items[i], cite).toContain(cite));
+    expect(k.note).toContain(UNREAD);
+    expect(k.note).not.toContain("four supporting points");
     // Every rules line of the site is cited, pinned, and none was fetched.
     expect(pinnedLines(k.note)).toEqual(KAGGLE_RULES);
     expect(rulesOf("kaggle.com").map((e) => e.n)).toEqual(KAGGLE_RULES);
@@ -2179,6 +2199,15 @@ describe("tick 54: the shell terms pages rendered once (6.10)", () => {
     expect(kaggle).toContain(`\`research/rendered/${JS_FROZEN}.txt:77\``);
     expect(kaggle).toContain(KAGGLE_LINES.find((x) => x.line === 77)!.words);
     expect(kaggle).toContain("17 rules URLs refused");
+    // "The reading" states the verifier's record as the note does: seven refutations, the :77 caveat, the unread documents.
+    const reading = text.split("\n").find((l) => l.startsWith("**The reading.** ")) ?? "";
+    expect(reading).toContain("The verifier's record holds seven refutations of the reader's, none of which moves the verdict.");
+    expect(reading).toContain("One qualifies the first ground itself: :77 reaches manual means too");
+    expect(reading).toContain("the verdict does not wait on it, since :87 and :70 each bar the runner alone.");
+    const sixInAudit = reading.split("The other six correct supporting points: ")[1]?.split(". Not read, ")[0] ?? "";
+    expect(sixInAudit.split("; ")).toHaveLength(6);
+    for (const cite of ["(:120)", "(:118)", ":70 bars", ":78", "(:108)", "(:113)"]) expect(sixInAudit, cite).toContain(cite);
+    expect(reading).toContain(UNREAD);
     expect(post).toContain("`research/rendered/terms-israel-post-2026-09-30.txt`");
     expect(post).toContain("HTTP 403, no body (`research/rendered/terms-israel-post.meta.json`");
     expect(post).toContain("NO_TERMS (refusal-type; shell before)");

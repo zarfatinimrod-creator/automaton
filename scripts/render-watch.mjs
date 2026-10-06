@@ -539,7 +539,7 @@ export const TERMS_BARRED = [
   // under ruling 6.10 row 21 (c) 3(2) and read on its frozen copy by an Opus reader and an adversarial Opus verifier,
   // verdict by the main thread (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md, "Shell terms pages rendered
   // once (6.10.2026, tick 54)"). It covers www.kaggle.com and its competition pages.
-  { domain: "kaggle.com", why: "Kaggle's terms bar using or interacting with the Services in a manner that \"“Crawls,” “scrapes,” or “spiders” any page, data, or portion of or relating to the Services or Content (through use of manual or automated means)\" (research/rendered/terms-kaggle-2026-10-06-a3cb438.txt:77), and copying or publishing any Content not owned by you without its owner's prior consent (:87); the terms page was rendered once in js mode under ruling 6.10 row 21 (c) 3(2) (terms read 6.10, tick 54)" },
+  { domain: "kaggle.com", why: "Kaggle's terms bar using or interacting with the Services in a manner that \"“Crawls,” “scrapes,” or “spiders” any page, data, or portion of or relating to the Services or Content (through use of manual or automated means)\" (research/rendered/terms-kaggle-2026-10-06-a3cb438.txt:77; the verifier found a narrower bulk-only reading of :77 arguable, so the bar does not rest on it alone), copying or publishing any Content not owned by you without its owner's prior consent (:87), and any use but \"your own internal, personal, non-commercial use\" (:70), each of these two sufficient alone; the terms page was rendered once in js mode under ruling 6.10 row 21 (c) 3(2) (terms read 6.10, tick 54)" },
 ];
 
 /** The TERMS_BARRED entry a host falls under (the domain or any subdomain; case and trailing dot ignored), or null. */

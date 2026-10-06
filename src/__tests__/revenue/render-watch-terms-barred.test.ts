@@ -482,6 +482,7 @@ describe("the once-only js render of 6.10 (tick 54): kaggle.com", () => {
   const CLAUSES: { line: number; words: string }[] = [
     { line: 77, words: "“Crawls,” “scrapes,” or “spiders” any page, data, or portion of or relating to the Services or Content (through use of manual or automated means)" },
     { line: 87, words: "for any purpose any Content not owned by you, (i) without the prior consent of the owner of that Content" },
+    { line: 70, words: "your own internal, personal, non-commercial use" },
   ];
   const verdicts = () => JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites;
   const entry = () => (TERMS_BARRED as { domain: string; why: string }[]).find((x) => x.domain === "kaggle.com")!;
@@ -492,6 +493,10 @@ describe("the once-only js render of 6.10 (tick 54): kaggle.com", () => {
     const b = entry();
     expect(b.why).toContain(`${FROZEN}:77`);
     expect(b.why).toContain("(:87)");
+    // The verifier found :77 open to a narrower bulk-only reading, so the entry names the two grounds that bar alone
+    // (tick-54 review fix): :87 and :70, the latter quoted.
+    expect(b.why).toContain(`${FROZEN}:77; the verifier found a narrower bulk-only reading of :77 arguable, so the bar does not rest on it alone)`);
+    expect(b.why).toContain(`"${CLAUSES[2].words}" (:70), each of these two sufficient alone;`);
     expect(b.why).toContain("rendered once in js mode under ruling 6.10 row 21 (c) 3(2)");
     expect(b.why).toContain("terms read 6.10, tick 54");
     const lines = readFileSync(FROZEN, "utf8").split("\n");
