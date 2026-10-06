@@ -561,7 +561,8 @@ function recheckFixture({ law = { body: FROZEN_LAW }, gone = { body: null, statu
     ["hand.example", "robots-hand-2026-10-06"],
   ]) {
     const copy = readCaptureBySlug(slug, rendered);
-    const out = judgeSite({ site, verdicts: v, urls: RE_URLS, readCapture: (u: string) => (u === copy.meta.url ? copy : null), today: "2026-10-06" });
+    // Set on an earlier day than any run of these tests, so a re-check's own date is told from it.
+    const out = judgeSite({ site, verdicts: v, urls: RE_URLS, readCapture: (u: string) => (u === copy.meta.url ? copy : null), today: "2026-10-01" });
     expect(out.changed, site).toBe(true);
     v = out.verdicts;
   }
@@ -793,7 +794,7 @@ describe("robots-verdict --recheck", () => {
     expect(got.status, got.stderr).toBe(0);
     const entry = f.sites()["law.example"];
     expect(entry.verdict).toBe("NO_TERMS");
-    expect(entry.checked).toBe(day);
+    expect([old.checked, entry.checked]).toEqual(["2026-10-01", day]);
     expect(entry.copying).toBe(old.copying);
     const refused = 'law-two (https://www.law.example/law_html/law01/2.htm, "Disallow: /law_html/law01/")';
     // The note: the old one whole, its kind word first, then the dated sentence naming the path.

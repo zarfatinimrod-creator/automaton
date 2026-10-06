@@ -45,7 +45,8 @@
  * a dated frozen copy of the robots.txt capture it was set on (research/rendered/robots-<x>-<date>.txt, or its .meta.json
  * for a 404; scripts/freeze-capture.mjs), so the weekly render, which rewrites the live capture robots-<x> whenever the
  * site's robots.txt changes, never moves what a verdict rests on, and no test sees that change either. --recheck looks.
- * For every NO_TERMS_ROBOTS_OK site (--site: that one only; a site with any other verdict is never touched) whose
+ * For every NO_TERMS_ROBOTS_OK site (--site: that one only, and exit 1 for a site that is not in the file or has another
+ * verdict; a site with any other verdict is never touched) whose
  * source opens with the citation step 5 writes (parseRobotsSource), naming a frozen copy that holds what the citation
  * says (its url, fetchedAt, sha256 prefix or 404 status), it reads the live capture of the same robots.txt URL
  * (readRobotsCapture) and says one of:
