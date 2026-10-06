@@ -515,7 +515,9 @@ const PROBE_PAUSED = (site: string) =>
  * Tick 55 (6.10.2026): the two sites a terms link found after the verdict reopened (logs/CHANNEL_LOOP.md §9, "Queued 6.10
  * (tick 54)" item 1). For each: the verdict tick 54 left and the separator after which the new source keeps the tick-54
  * source; the terms URL the new source names first, the terms- line's slug, its ZERO-TESTS row and candidate cell; the
- * frozen-copy lines the link was observed on (the link first), with words each holds; its robots.txt probe, paused; and its
+ * frozen-copy lines the link was observed on (the link first), then every other frozen-copy line the tick-55 texts cite,
+ * with words each holds: a line one of those texts cites (the two sources and notes, the two terms- lines' comments, the
+ * audit note's tick-55 section) must be one of these, so a changed line number fails; its robots.txt probe, paused; and its
  * rules lines in the fixture.
  */
 type Found = {
@@ -542,6 +544,7 @@ const LINKS_FOUND: Record<string, Found> = {
       { file: `${AGENTHON_COPY}.html`, line: 2583, words: '<a href="/privacy/">Privacy</a>' },
       { file: `${AGENTHON_COPY}.html`, line: 2584, words: '<a href="/licensing/">Licensing</a>' },
       { file: `${AGENTHON_COPY}.txt`, line: 1951, words: "Terms" },
+      { file: `${AGENTHON_COPY}.txt`, line: 1952, words: "Privacy" },
       { file: `${AGENTHON_COPY}.txt`, line: 1953, words: "Licensing" },
       { file: `${AGENTHON_COPY}.html`, line: 2581, words: '<a href="/rules/">Rules</a>' },
     ],
@@ -559,6 +562,7 @@ const LINKS_FOUND: Record<string, Found> = {
       { file: `${EURO_COPY}.html`, line: 1961, words: '<a href="/info/disclaimers"' },
       { file: `${EURO_COPY}.html`, line: 2830, words: '<a href="/info/disclaimers"' },
       { file: `${EURO_COPY}.txt`, line: 433, words: "Disclaimers" },
+      { file: `${EURO_COPY}.txt`, line: 367, words: "Website Privacy Policy" },
     ],
     probe: { row: EURO_PROBE.row, url: EURO_PROBE.url, slug: EURO_PROBE.slug },
     rules: [162],
@@ -1416,17 +1420,19 @@ describe("tick 54: the robots verdicts of 6.10", () => {
     const text = section();
     expect(text).toContain("node scripts/robots-verdict.mjs <site> --urls research/measurements/ai-allowed-events.urls.txt");
     expect(text).toContain("ruling 30.9 16(d) D2(iv)-(v)");
-    // The section is tick 54's record: its verdict column is the state tick 54 left ("tick 55" below has the reversal).
-    const v = tick54(verdicts());
+    // The section is tick 54's record. Its "Verdict now" column holds each site's verdict as it is; where that is no longer
+    // the one tick 54 left (agenthon.net, TERMS_PENDING again since tick 55), the cell gives tick 54's beside it, dated.
+    const now = verdicts();
+    const v = tick54(now);
     const rows = text.split("\n").filter((l) => /^\| `[a-z0-9.-]+` \|/.test(l));
     const sites = [...ROBOTS_OK_TICK54, ...Object.keys(ROBOTS_NOT_SET)].sort();
     expect(rows.map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual([...sites, "nevo.co.il"]);
     for (const row of rows) {
       const m = row.match(
-        /^\| `([a-z0-9.-]+)` \| `(research\/rendered\/robots-[a-z0-9.-]+\.(?:txt|html|meta\.json))`; (\d+|none); (?:`([^`]+)`|none); ([0-9T:.Z-]+); ([0-9a-f]{12}|none) \| (\d+)[^|]* \| ([^|]+) \| ([A-Z_]+) \|$/,
+        /^\| `([a-z0-9.-]+)` \| `(research\/rendered\/robots-[a-z0-9.-]+\.(?:txt|html|meta\.json))`; (\d+|none); (?:`([^`]+)`|none); ([0-9T:.Z-]+); ([0-9a-f]{12}|none) \| (\d+)[^|]* \| ([^|]+) \| ([A-Z_]+)(?: \(([^|]+)\))? \|$/,
       );
       expect(m, row.slice(0, 60)).not.toBeNull();
-      const [, site, path, status, contentType, fetchedAt, sha12, n, answer, verdict] = m!;
+      const [, site, path, status, contentType, fetchedAt, sha12, n, answer, verdict, history] = m!;
       const nevo = site === "nevo.co.il";
       const list = nevo ? readFileSync(URLS, "utf8") : fixture();
       const pages = queuedPaths(list, site).filter((p: { url: string; slug: string }) => !isRobotsProbe(p.url, p.slug));
@@ -1446,7 +1452,12 @@ describe("tick 54: the robots verdicts of 6.10", () => {
       expect(fetchedAt, site).toBe(meta.fetchedAt);
       expect(sha12, site).toBe(meta.sha256 ? meta.sha256.slice(0, 12) : "none");
       expect(Number(n), site).toBe(pages.length);
-      expect(verdict, site).toBe(v[site].verdict);
+      expect(verdict, site).toBe(now[site].verdict);
+      if (now[site].verdict === v[site].verdict) expect(history, site).toBeUndefined();
+      else {
+        expect(Object.hasOwn(LINKS_FOUND, site), site).toBe(true);
+        expect(history, site).toBe(`6.10, tick 54: ${v[site].verdict}, until tick 55 found a terms link in its footer, "Terms links found after the verdicts" below`);
+      }
       // The answer, word for word, by what the capture is and what its rules say of the queued paths: the rule quoted in
       // brackets is the one that decided every path of the site.
       const kind = readableCapture(meta, body).kind;
@@ -1464,8 +1475,10 @@ describe("tick 54: the robots verdicts of 6.10", () => {
       } else {
         expect(answer, site).toBe("no answer (fetch failed): complete disallow, RFC 9309 §2.3.1.4");
       }
-      expect(verdict === "NO_TERMS_ROBOTS_OK", site).toBe(ROBOTS_OK_TICK54.includes(site));
+      expect(v[site].verdict === "NO_TERMS_ROBOTS_OK", site).toBe(ROBOTS_OK_TICK54.includes(site));
+      expect(verdict === "NO_TERMS_ROBOTS_OK", site).toBe(ROBOTS_OK.includes(site));
     }
+    expect(rows.filter((r) => / \| [A-Z_]+ \(6\.10, tick 54: /.test(r)).map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual(["agenthon.net"]);
   });
 
   it("states the counts and sizes in the section's prose as the verdicts and the frozen copies hold them", () => {
@@ -1485,10 +1498,16 @@ describe("tick 54: the robots verdicts of 6.10", () => {
     const k12 = frozenCapture(citedCapture(v["k12-ai-infrastructure.org"].source)!.path);
     expect(k12.body).toBe("");
     expect(robotsRulesFor(parseRobotsTxt(k12.body))).toEqual([]);
-    // "The 17 sites' 20 rules URLs pass termsGate now".
+    // "The rules URLs of the sites that hold NO_TERMS_ROBOTS_OK, 19 on 16 sites, pass termsGate now (6.10, tick 54: the 17
+    // sites' 20, until ...)": the count as it is since tick 55, and tick 54's beside it, dated.
     const rulesUrls = audited().filter((e) => ROBOTS_OK_TICK54.includes(siteOfUrl(e.url)));
-    expect(text).toContain(`The ${ROBOTS_OK_TICK54.length} sites' ${rulesUrls.length} rules URLs pass \`termsGate\` now`);
+    const rulesNow = audited().filter((e) => ROBOTS_OK.includes(siteOfUrl(e.url)));
+    expect(text).toContain(
+      `The rules URLs of the sites that hold NO_TERMS_ROBOTS_OK, ${rulesNow.length} on ${ROBOTS_OK.length} sites, pass \`termsGate\` now (6.10, tick 54: the ${ROBOTS_OK_TICK54.length} sites' ${rulesUrls.length}, until agenthon.net went back to TERMS_PENDING in tick 55, "Terms links found after the verdicts" below;`,
+    );
+    expect(text).not.toContain(`The ${ROBOTS_OK_TICK54.length} sites' ${rulesUrls.length} rules URLs pass \`termsGate\` now`);
     for (const e of rulesUrls) expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(true);
+    for (const e of rulesNow) expect(termsGate(e.url, e.slug, verdicts()).ok, e.url).toBe(true);
     // flagos.io and theemailgame.com: an HTML page each, of the sizes the copies stored.
     const html = text.match(/flagos\.io and theemailgame\.com: \/robots\.txt answered 200 with an HTML page \(`text\/html`, (\d+) and (\d+) bytes\)/);
     expect(html).not.toBeNull();
@@ -2034,7 +2053,16 @@ describe("tick 54: the terms read on 6.10", () => {
     const euRow = row("eurocontrol.int");
     expect(euRow).toContain("(:433; its link, /info/disclaimers, is at `research/rendered/terms-eurocontrol-2026-10-06.html:1961` and :2830)");
     expect(euRow).toContain("The tick-54 review found the record short of R1's list in two steps");
-    expect(euRow).toContain("Whether the Disclaimers page is read before `scripts/robots-verdict.mjs` runs on the row-265 probe is open for the main thread.");
+    expect(euRow).toContain(
+      'Whether the Disclaimers page is read before `scripts/robots-verdict.mjs` runs on the row-265 probe is open for the main thread (answered 6.10, tick 55: it is read first, "Terms links found after the verdicts" below).',
+    );
+    // Its "Lines now" cell gives the lines as they are since tick 55, and tick 54's beside them, dated.
+    const euLines = euRow.split(" | ").at(-1)!;
+    expect(euLines).toBe(
+      'The terms line is paused as read (a privacy notice, no site terms); since 6.10, tick 55, a terms- line for the footer\'s Disclaimers page is queued (ZERO-TESTS row 267), the robots.txt probe (row 265) is paused with its capture unjudged, and 1 rules URL is refused by `termsGate` (6.10, tick 54: the probe queued for the next weekly run and the rules URL waiting on `scripts/robots-verdict.mjs`; "Terms links found after the verdicts" below) |',
+    );
+    expect([LINKS_FOUND["eurocontrol.int"].row, LINKS_FOUND["eurocontrol.int"].probe.row]).toEqual([267, 265]);
+    expect(rulesOf("eurocontrol.int").map((e) => termsGate(e.url, e.slug, verdicts()).ok)).toEqual([false]);
     // virtualembryo.ai: the Stanford scope question, open for the main thread before its rules page is dispatched.
     const ve = v["virtualembryo.ai"].note!;
     expect(ve).toContain("Open for the main thread (tick-54 review): ");
@@ -2406,7 +2434,7 @@ describe("tick 55: the terms links found after the verdicts", () => {
   const pendingWhy = (site: string) =>
     `${site} is TERMS_PENDING: only its terms page (a terms-... slug) may be queued until its terms are read (ruling 30.9 16(d) D2(iv))`;
 
-  it("keeps the two tick-54 entries as a fixture, as terms-verdicts.json held them at 364bf71, and changed nothing else but one parenthetical", () => {
+  it("keeps the two tick-54 entries as a fixture, as terms-verdicts.json held them at 364bf71, and ansperformance.eu's parenthetical on eurocontrol.int names it as it is", () => {
     const bytes = readFileSync(LINKS_FIXTURE);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(LINKS_FIXTURE_SHA256);
     expect(Object.keys(fixture()).sort()).toEqual(Object.keys(LINKS_FOUND).sort());
@@ -2414,24 +2442,25 @@ describe("tick 55: the terms links found after the verdicts", () => {
     // eurocontrol.int NO_TERMS, exhaustive-negative.
     expect(isRobotsOkVerdict(fixture()["agenthon.net"])).toBe(true);
     expect(isExhaustiveNegative(fixture()["eurocontrol.int"])).toBe(true);
+    // ansperformance.eu's note names eurocontrol.int's entry as it is now, and the tick-54 words are gone from it. Only the
+    // parenthetical is checked: the rest of that note, and every other entry, may change in later ticks without this test.
+    const ans = verdicts()["ansperformance.eu"].note!;
+    expect(ans.split(ANS_NOW)).toHaveLength(2);
+    expect(ans).not.toContain(ANS_TICK54);
+    // Where 364bf71 is reachable (a full clone), the fixture is byte for byte its two entries, and ansperformance.eu's note
+    // then held the tick-54 parenthetical once. A shallow CI checkout has no 364bf71; the pinned sha256 still holds the
+    // fixture. Both are facts about 364bf71, which no later commit can change.
     let base: string | null = null;
     try {
       base = execFileSync("git", ["show", `${LINKS_BASE}:${VERDICTS}`], { stdio: ["ignore", "pipe", "ignore"], encoding: "utf8" });
     } catch {
-      base = null; // a shallow CI checkout has no 364bf71; the pinned sha256 above still holds the fixture
+      base = null;
     }
     if (base === null) return;
     const then = JSON.parse(base).sites as Record<string, Entry>;
     for (const [site, e] of Object.entries(fixture())) expect(e, site).toEqual(then[site]);
-    // No other entry changed since 364bf71, but ansperformance.eu's one parenthetical on eurocontrol.int's entry.
-    const now = verdicts();
-    expect(Object.keys(now).sort()).toEqual(Object.keys(then).sort());
-    for (const site of Object.keys(now)) {
-      if (Object.hasOwn(LINKS_FOUND, site)) continue;
-      const was = site === "ansperformance.eu" ? { ...then[site], note: then[site].note!.replace(ANS_TICK54, ANS_NOW) } : then[site];
-      expect(now[site], site).toEqual(was);
-    }
     expect(then["ansperformance.eu"].note!.split(ANS_TICK54)).toHaveLength(2);
+    expect(then["ansperformance.eu"].note!).not.toContain(ANS_NOW);
   });
 
   it("sets both TERMS_PENDING, checked 6.10, each source naming the terms URL and where its link was observed, and keeping tick 54's", () => {
@@ -2471,6 +2500,11 @@ describe("tick 55: the terms links found after the verdicts", () => {
     expect(v["agenthon.net"].note).toContain(`the footer's Rules page (/rules/, ${AGENTHON_COPY}.html:2581)`);
     expect(v["eurocontrol.int"].note).toContain("is answered: it is read first (tick 54 §9 item 1)");
     expect(v["eurocontrol.int"].note).toContain("The privacy-notice line (ZERO-TESTS row 242) stays paused as read");
+    // What follows the reading is not decided in advance: the verdict and the probe are the main thread's call then.
+    expect(v["eurocontrol.int"].note).toContain(
+      "Whether it bars automated access or copying is unknown until read, and what the verdict and the probe become once it is read is the main thread's call.",
+    );
+    for (const site of Object.keys(LINKS_FOUND)) expect(v[site].note, site).not.toMatch(/goes back to NO_TERMS|probe resumes/);
     // ansperformance.eu's note names eurocontrol.int's entry as it is now.
     expect(v["ansperformance.eu"].note).toContain(ANS_NOW);
   });
@@ -2512,6 +2546,104 @@ describe("tick 55: the terms links found after the verdicts", () => {
     expect([eu.url, eu.frozen.commit]).toEqual(["https://www.eurocontrol.int/info/privacy-and-website-terms-use", RENDER_COMMIT]);
   });
 
+  it("ties every line, row, fetch time and commit the tick-55 texts cite to a listed frozen-copy line, the site's ZERO-TESTS rows and the copy's meta", () => {
+    const v = verdicts();
+    const t54 = tick54(v);
+    const rows = zeroRows();
+    const urlsLines = readFileSync(URLS, "utf8").split("\n");
+    const audit = readFileSync(AUDIT, "utf8");
+    const section = audit.slice(audit.indexOf("## Terms links found after the verdicts (6.10.2026, tick 55)"));
+    const tableRow = (site: string) => section.split("\n").find((l) => l.startsWith(`| \`${site}\` | `))!;
+    const prose = section
+      .split("\n")
+      .filter((l) => !l.startsWith("|"))
+      .join("\n");
+    // The source as tick 55 wrote it: everything before the separator, after which it keeps tick 54's byte for byte.
+    const newSource = (site: string) => v[site].source.slice(0, v[site].source.indexOf(LINKS_FOUND[site].marker));
+    /**
+     * Every line a text cites in a research/rendered file: "<file>:N" or "<file>:N-M", and a bare ":N" or ":N-M" after a
+     * space or "(" read against the file named last before it (a time such as 08:46:30 or 12:05 has a digit before its
+     * colon, and a pinned "ai-allowed-events.urls.txt@548be52:N" is pinnedLines' to check). A range cites every line in it.
+     */
+    const lineCites = (text: string, at: string) => {
+      const out: string[] = [];
+      let file: string | null = null;
+      const re = /(research\/rendered\/[a-z0-9.-]+?\.(?:html|txt|meta\.json))(?::(\d+)(?:-(\d+))?)?|(?<=[\s(]):(\d+)(?:-(\d+))?(?![\d:])/g;
+      for (const m of text.matchAll(re)) {
+        if (m[1]) file = m[1];
+        const from = m[2] ?? m[4];
+        if (from === undefined) continue;
+        expect(file, `${at}: ${m[0]} names no file before it`).not.toBeNull();
+        const to = m[3] ?? m[5] ?? from;
+        expect(Number(to) >= Number(from), `${at}: ${m[0]}`).toBe(true);
+        for (let n = Number(from); n <= Number(to); n += 1) out.push(`${file}:${n}`);
+      }
+      return out;
+    };
+    /** Every ZERO-TESTS row a text cites: "row N", "rows N and M", "rows N-M", "row-N"; not a ruling's ("ruling 6.10 row 21"). */
+    const rowCites = (text: string) => {
+      const out: number[] = [];
+      for (const m of text.matchAll(/(?<!ruling [\d.]+ )\brows? (\d+)(?:(-| and )(\d+))?\b|\brow-(\d+)\b/g)) {
+        const from = Number(m[1] ?? m[4]);
+        const to = m[3] === undefined ? from : Number(m[3]);
+        for (let n = from; n <= (m[2] === " and " ? from : to); n += 1) out.push(n);
+        if (m[2] === " and ") out.push(to);
+      }
+      return out;
+    };
+    const listed = new Map(Object.entries(LINKS_FOUND).map(([site, f]) => [site, new Set(f.observed.map((o) => `${o.file}:${o.line}`))]));
+    const all = new Set([...listed.values()].flatMap((s) => [...s]));
+    const citedBy = new Map<string, Set<string>>([...listed.keys()].map((site) => [site, new Set<string>()]));
+    for (const [site, f] of Object.entries(LINKS_FOUND)) {
+      const comment = listedRow(f.row).comment!;
+      const texts: [string, string][] = [
+        ["source", newSource(site)],
+        ["note", v[site].note!],
+        ["urls.txt comment", comment],
+        ["audit table", tableRow(site)],
+      ];
+      for (const [what, text] of texts) {
+        const at = `${site} ${what}`;
+        const cites = lineCites(text, at);
+        expect(cites.length, at).toBeGreaterThan(0);
+        for (const c of cites) {
+          expect(listed.get(site)!.has(c), `${at} cites ${c}`).toBe(true);
+          citedBy.get(site)!.add(c);
+        }
+        // Each row it cites is a ZERO-TESTS row of this site: its terms line, its probe, or (eurocontrol.int) the
+        // privacy-notice line the 6.10 reading paused.
+        for (const n of rowCites(text)) expect(siteOfUrl(rows.get(n)?.url ?? "https://row.missing/"), `${at} cites row ${n}`).toBe(site);
+      }
+      expect(rowCites(comment), site).toEqual([f.row]);
+      // The capture each source and table row names: its URL, its fetch time and the commit its frozen copy was made from,
+      // as the copy's meta holds them.
+      const meta = JSON.parse(readFileSync(`${f.observed[0].file.replace(/\.(html|txt)$/, "")}.meta.json`, "utf8"));
+      const captured = [...newSource(site).matchAll(/the capture is of (\S+), fetched (\S+) by [^,()]+, frozen as ([0-9a-f]{7}) stored it\)/g)];
+      expect(captured.map((m) => [m[1], m[2], m[3]]), site).toEqual([[meta.url, meta.fetchedAt, meta.frozen.commit]]);
+      const cell = tableRow(site).split(" | ")[2];
+      const times = [...cell.matchAll(/fetched (\d{4}-\d\d-\d\dT[\d:.]+Z)/g)].map((m) => m[1]);
+      for (const t of times) expect([meta.fetchedAt, meta.fetchedAt.replace(/\.\d+Z$/, "Z")], site).toContain(t);
+      const commits = [...cell.matchAll(/as ([0-9a-f]{7}) stored it/g)].map((m) => m[1]);
+      expect(commits, site).toEqual([meta.frozen.commit]);
+      expect(t54[site].verdict, site).toBe(f.before);
+    }
+    // The section's prose: every line it cites is one of either site's, and every row one of either site's.
+    for (const c of lineCites(prose, "audit prose")) {
+      expect(all.has(c), `audit prose cites ${c}`).toBe(true);
+      for (const [site, set] of listed) if (set.has(c)) citedBy.get(site)!.add(c);
+    }
+    for (const n of rowCites(prose)) expect(Object.keys(LINKS_FOUND), `audit prose cites row ${n}`).toContain(siteOfUrl(rows.get(n)?.url ?? "https://row.missing/"));
+    // ...and every listed line is cited somewhere, so the list holds nothing the texts do not rest on.
+    for (const [site, set] of listed) expect([...citedBy.get(site)!].sort(), site).toEqual([...set].sort());
+    // The privacy-notice line both eurocontrol.int texts name is the row of its paused terms-eurocontrol line.
+    const privacy = [...rows].filter(([, r]) => r.url === "https://www.eurocontrol.int/info/privacy-and-website-terms-use").map(([n]) => n);
+    expect(privacy).toEqual([242]);
+    expect(listedRow(privacy[0]).line!.endsWith(`\t${TERMS_LINES["eurocontrol.int"].slug}`)).toBe(true);
+    expect(urlsLines.filter((l) => l.endsWith(`\t${TERMS_LINES["eurocontrol.int"].slug}`))).toEqual([listedRow(privacy[0]).line]);
+    expect(v["eurocontrol.int"].note).toContain(`The privacy-notice line (ZERO-TESTS row ${privacy[0]}) stays paused as read`);
+    expect(tableRow("eurocontrol.int")).toContain(`the privacy-notice line (row ${privacy[0]}) paused as read`);
+  });
+
   it("queues one plain terms- line for each through queue-zero-test.mjs, under its ZERO-TESTS row's comment, the site's only active line", () => {
     const v = verdicts();
     const rows = zeroRows();
@@ -2535,7 +2667,9 @@ describe("tick 55: the terms links found after the verdicts", () => {
       expect(parsed.find((e) => e.slug === f.slug)?.js, site).toBeFalsy();
       expect(termsGate(f.url, f.slug, v), site).toEqual({ ok: true, site, verdict: "TERMS_PENDING" });
     }
-    expect(Math.max(...rows.keys())).toBe(Math.max(...Object.values(LINKS_FOUND).map((f) => f.row)));
+    // The two rows are the only ZERO-TESTS rows tick 55 queued (not "the last rows": a later tick adds its own after them).
+    const tick55Rows = [...rows].filter(([, r]) => r.row.includes(" | terms audit (tick 55): ")).map(([n]) => n);
+    expect(tick55Rows).toEqual(Object.values(LINKS_FOUND).map((f) => f.row));
   });
 
   it("pauses each site's robots.txt probe with the reason the ruling gives, keeps its capture, and no robots verdict runs", () => {
@@ -2559,6 +2693,14 @@ describe("tick 55: the terms links found after the verdicts", () => {
         expect(out.why, site).toContain("NO_TERMS_ROBOTS_OK is set only for a NO_TERMS site whose note opens exhaustive-negative");
       }
     }
+    // Each probe's ZERO-TESTS row says why it is paused; agenthon.net's names the script that set the verdict reversed.
+    expect(zeroRows().get(LINKS_FOUND["agenthon.net"].probe.row)?.row).toContain(
+      "**PAUSED 6.10 (tick 55): agenthon.net is TERMS_PENDING again: its home page's footer links a Terms page (row 266), so the robots verdict scripts/robots-verdict.mjs set from this probe's capture is reversed and the probe waits on the terms reading; its capture is kept.** |",
+    );
+    // eurocontrol.int's privacy-notice row (242), read on 6.10, points at the Disclaimers row tick 55 queued, dated.
+    expect(zeroRows().get(242)?.row).toMatch(
+      /the robots\.txt probe is row 265\.\*\* \*\*6\.10 \(tick 55\): eurocontrol\.int is TERMS_PENDING again: the notice's footer links a Disclaimers page, queued as row 267; this line stays paused as read, and the probe \(row 265\) is paused\.\*\* \|$/,
+    );
     // eurocontrol.int's probe: captured by the 12:05 weekly run of 6.10 (a robots.txt the site served), and nothing rests on it.
     const euMeta = JSON.parse(readFileSync(`research/rendered/${EURO_PROBE.slug}.meta.json`, "utf8"));
     expect([euMeta.url, euMeta.status]).toEqual([EURO_PROBE.url, 200]);
@@ -2618,7 +2760,9 @@ describe("tick 55: the terms links found after the verdicts", () => {
     expect([ROBOTS_OK.length, cleared.length, ROBOTS_OK_TICK54.length, clearedThen.length]).toEqual([16, 19, 17, 20]);
     for (const e of cleared) expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(true);
     expect(text).toContain(`Now ${ROBOTS_OK.length} sites are NO_TERMS_ROBOTS_OK and their ${cleared.length} rules URLs pass \`termsGate\``);
-    expect(text).toContain(`its table and counts (${ROBOTS_OK_TICK54.length} sites, ${clearedThen.length} rules URLs) describe that state`);
+    expect(text).toContain(
+      `The "Robots verdicts" section above is tick 54's record (${ROBOTS_OK_TICK54.length} sites, ${clearedThen.length} rules URLs); where a statement of it no longer holds, agenthon.net's verdict and the count of rules URLs that pass \`termsGate\`, it now gives the value since tick 55 with tick 54's beside it, dated, and so does eurocontrol.int's "Lines now" cell in "Terms read".`,
+    );
     const open = audited().filter((e) => termsGate(e.url, e.slug, v).ok).length;
     const openThen = audited().filter((e) => termsGate(e.url, e.slug, t54).ok).length;
     expect([open, openThen]).toEqual([33, 34]);
