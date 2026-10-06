@@ -776,6 +776,11 @@ export const SECRET_PATTERNS = [
   { kind: "github-token", re: /\b(?:gh[pousr]_[0-9A-Za-z]{36,}|github_pat_[0-9A-Za-z_]{40,})\b/g },
   { kind: "aws-access-key-id", re: /\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/g },
   { kind: "slack-token", re: /\bxox[abprs]-[0-9A-Za-z-]{10,}\b/g },
+  // 6.10.2026 (tick 54): a 20-page prize-event dispatch was refused twice for a "Mapbox Secret Access Token"
+  // embedded in a forum page (run 37436768438, annotation). sk. is the secret prefix; pk. (public) and tk. are not masked.
+  { kind: "mapbox-secret-token", re: /\bsk\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g },
+  // Google API keys (AIza…) are on the same push-protection list and web pages embed them for maps and analytics.
+  { kind: "google-api-key", re: /\bAIza[0-9A-Za-z_-]{35}\b/g },
   { kind: "private-key", re: /-----BEGIN (?:[A-Z]+ )?PRIVATE KEY-----[\s\S]*?-----END (?:[A-Z]+ )?PRIVATE KEY-----/g },
 ];
 

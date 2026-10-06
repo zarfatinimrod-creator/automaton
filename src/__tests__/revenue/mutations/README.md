@@ -63,7 +63,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
   | --- | --- | --- |
   | `page-views.json` | 5 | 23 (tick 54 builder, inside sim-tree.sh, alone; the two test files take about 2 s a run) |
   | `prize-dispatch.json` | 28 | 69 |
-  | `render-watch.json` | 62 | 117 with the first 53 (tick 54's 9 entries alone: 52, in sim-tree.sh beside the next two) |
+  | `render-watch.json` | 64 | 117 with the first 53 (tick 54's 9 UA entries alone: 52, in sim-tree.sh beside the next two; the two address-mask entries T54-M1, T54-M2 came from the base) |
   | `queue-zero-test.json` | 16 | 108 (tick 54, alone in sim-tree.sh, after the route's in-place line; 133 the first time, beside `render-watch.json`'s and `render-dispatch.json`'s new entries) |
   | `freeze-capture.json` | 23 | 171 |
   | `loop-edit.json` | 46 | 188, 191 |
