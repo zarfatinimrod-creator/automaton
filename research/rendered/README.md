@@ -225,9 +225,14 @@ verdict), then queue the line. A line for a site with no verdict fails CI, and s
 (`research/channel-loop/RULING-2026-09-30-video.md` 16(d) D2(v)), and the fetcher has them:
 
 - **Who is asking.** Every request — a plain GET, a `js` render, a robots.txt fetch — sends
-  `MehudakRenderWatch/1.0 (+https://il-biz-tools.netlify.app)`: the brand's product token and the brand's URL, never a
-  username and never the repository's URL (a test pins the string and refuses both). It replaced a copied Chrome string.
-  A site that answered a browser but refuses an honest crawler is recorded as refusing it; nothing is done to get past it.
+  `MehudakRenderWatch/1.0 (robots.txt honoured; contact pending)`: the brand's product token, a version, and no
+  contact, because the brand holds no surface that answers yet (`research/channel-loop/RULING-2026-10-06-robots-and-terms.md`
+  2, 6.10: the 30.9 string named il-biz-tools.netlify.app, which is not deployed). Never a username and never the
+  repository's URL (a test pins the string and refuses both). `UA_CONTACT` in `scripts/render-watch.mjs` fills on the
+  first of two events — a brand site live at a URL the loop controls (a deploy record the deploy workflow commits, and
+  a render-watch capture of it at `brand-<host>.meta.json` with status 200, which the test then requires), or the brand
+  mailbox (step 8) — and the version bumps on each. It replaced a copied Chrome string on 30.9. A site that answered a
+  browser but refuses an honest crawler is recorded as refusing it; nothing is done to get past it.
 - **robots.txt first, once per host per run.** Before the first page of a host (scheme, host and port), the fetcher
   fetches that host's `/robots.txt` and keeps it for the run. It reads it as RFC 9309 says: the group naming
   `MehudakRenderWatch` (case-insensitive) if there is one, else the `*` group; the longest matching `Allow`/`Disallow`
@@ -328,6 +333,17 @@ instead of fetched. What that does and does not do:
   the script refuses such a page as a shell the runner cannot read). A URL already active in this file
   is flagged by editing its line (add `js` after the slug, with the terms cited in its comment), not
   queued again.
+- **A terms page that is a shell, once (6.10).** A site's terms page that the plain GET saw as a JavaScript
+  shell (kind K4, `research/channel-loop/RULING-2026-10-06-robots-and-terms.md` 3) may be rendered in `js` mode
+  once, to read it: `node scripts/queue-zero-test.mjs --js --terms-shell --url <the terms URL> --slug terms-<site>
+  [--dry-run]`. It refuses unless the slug starts `terms-`; no `js` line for that slug is in this file (active or
+  commented out) and no meta of it, or of a frozen copy of it, has `renderedWith`; the plain capture of the same URL
+  is here (meta and HTML) with `robots` `allowed` or `none`; `scripts/capture-check.mjs`'s classifier grades it
+  `js-shell`; and the site is `TERMS_PENDING`, or `NO_TERMS` with a note opening `shell` (the terms gate passes such a
+  site's terms page only as a `js` line). The line goes in under the URL's own line, with a comment naming the
+  ruling and the plain capture's sha256 prefix. Freeze the plain shell first (`freeze-capture.mjs <slug>
+  --allow-flagged`; the script says whether a frozen copy exists). Whatever the render brings back is the answer:
+  read it, set the verdict, and retire the line before the next weekly run, which would otherwise render it again.
 - **No browser, no silent week.** The workflow installs the browser only when the list has a `js`
   line. If it still cannot start one, or the browser stops during the run, the `js` lines from then on
   are skipped — including the one that was rendering when it stopped — and nothing is written for them:

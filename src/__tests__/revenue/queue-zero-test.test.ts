@@ -1,7 +1,11 @@
-import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterAll, describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as render-watch.mjs)
-import { MIN_TERMS_TEXT, applyVerdicts, isRobotsOkVerdict, loadVerdicts, overrideLines, queueZeroTest, siteOf, termsGate, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
+import { MIN_TERMS_TEXT, TERMS_SHELL_RULING, applyVerdicts, isRobotsOkVerdict, isShellTermsVerdict, jsCapturesOf, loadVerdicts, overrideLines, queueTermsShell, queueZeroTest, siteOf, termsGate, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
+// @ts-expect-error — plain ESM script, no type declarations by design
+import { classifyCapture, readCapture } from "../../../scripts/capture-check.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { parseUrlList } from "../../../scripts/render-watch.mjs";
 
@@ -207,6 +211,229 @@ describe("queue-zero-test --js — a line for the JavaScript-capable render", ()
         /tiktok\.com/,
       );
     }
+  });
+});
+
+/**
+ * The --js --terms-shell route (research/channel-loop/RULING-2026-10-06-robots-and-terms.md 3(2), ruling 6.10 row 21 (c)):
+ * a terms page the plain GET saw as a JavaScript shell (kind K4) may be rendered in js mode once, as a reading act, and
+ * only when the plain capture of the same URL is on disk, capture-check's own classifier grades it js-shell, its meta
+ * says robots allowed or none, the site's terms are unread (TERMS_PENDING or NO_TERMS) and no js capture of the slug
+ * was ever made or queued. Every fixture capture is written to this suite's own temp dir, never to research/rendered.
+ */
+describe("queue-zero-test --js --terms-shell — the once-only js render of a shell terms page (ruling 6.10 row 21 (c))", () => {
+  const dir = mkdtempSync(join(tmpdir(), "terms-shell-"));
+  afterAll(() => rmSync(dir, { recursive: true, force: true }));
+  const SHA = "bca20850aa6a3ddf1162f7b1a9a18639bbffd7b47c9418f31a00d277ebb27f4f";
+  // The Israel Post shape: a title, an empty app root, a Radware connector and an invisible reCAPTCHA script.
+  const SHELL = '<!doctype html><html><head><title>Terms of use</title><script>window.__uzdbm_1="x";</script>' +
+    '<script src="https://www.google.com/recaptcha/api.js?render=k"></script><script src="/static/app.js"></script></head>' +
+    '<body><div id="root"></div></body></html>';
+  const CHALLENGE = "<html><head><title>Just a moment...</title></head><body><p>Checking the site connection.</p></body></html>";
+  const SHORT = "<html><head><title>Terms</title></head><body><p>Terms of use.</p><p>Coming soon.</p></body></html>";
+  const LONG = `<html><body><p>${"These terms govern the site. ".repeat(60)}</p></body></html>`;
+  const textOf = (html: string) => html.replace(/<script\b[\s\S]*?<\/script>/g, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  function capture(slug: string, url: string, { html = SHELL, robots = "allowed" as string | null, status = 200 as number | null, error = null as string | null, extra = {} as Record<string, unknown>, name = slug } = {}) {
+    writeFileSync(join(dir, `${name}.html`), html);
+    writeFileSync(join(dir, `${name}.txt`), `${textOf(html)}\n`);
+    const meta: Record<string, unknown> = {
+      url,
+      slug: name,
+      fetchedAt: "2026-09-30T13:40:17.304Z",
+      status,
+      contentType: "text/html",
+      byteLength: html.length,
+      sha256: SHA,
+      error,
+      bodyPath: `research/rendered/${name}.html`,
+      textPath: `research/rendered/${name}.txt`,
+      // robots: null writes a meta with no robots reading at all, as every capture before 30.9 has.
+      ...(robots === null ? {} : { robots, robotsUrl: `${new URL(url).origin}/robots.txt` }),
+      ...extra,
+    };
+    writeFileSync(join(dir, `${name}.meta.json`), `${JSON.stringify(meta, null, 2)}\n`);
+  }
+  const V = {
+    "pending.example": { verdict: "TERMS_PENDING", note: "terms unread: whether they bar automated access is unknown" },
+    "shellsite.example": { verdict: "NO_TERMS", note: "shell: the terms page answered 200 with a React shell (capture-check js-shell)" },
+    "filed.example": { verdict: "NO_TERMS", note: "filed refusal-type on 30.9 and corrected: a React shell, not a challenge page" },
+    "refusal.example": { verdict: "TERMS_PENDING", note: "refusal-type since 30.9: the Terms answered 403" },
+    "deferred.example": { verdict: "NO_TERMS", note: "deferred to www.gov.il: its terms defer site use to gov.il's" },
+    "ok.example": { verdict: "NOT_BARRED" },
+    "gumroad.com": { verdict: "NO_TERMS", note: "shell: a fixture that says so" },
+  };
+  // The fixtures: a js-shell (one per kind of site), a bot-challenge, a short page, a read page, a failed fetch, a
+  // missing capture, a robots-disallowed one, one from before robots.txt was read, and two already rendered in js.
+  capture("terms-pending", "https://pending.example/terms");
+  capture("terms-shellsite", "https://shellsite.example/legal", { robots: "none" });
+  capture("terms-filed", "https://filed.example/terms");
+  capture("terms-refusal", "https://refusal.example/terms");
+  capture("terms-deferred", "https://deferred.example/terms");
+  capture("terms-ok", "https://ok.example/terms");
+  capture("terms-unknown", "https://unknown.example/terms");
+  capture("terms-gumroad", "https://gumroad.com/terms");
+  capture("pending-shell", "https://pending.example/terms");
+  capture("terms-challenge", "https://pending.example/terms", { html: CHALLENGE });
+  capture("terms-short", "https://pending.example/terms", { html: SHORT });
+  capture("terms-long", "https://pending.example/terms", { html: LONG });
+  capture("terms-forbidden", "https://pending.example/terms", { status: 403, error: "HTTP 403 Forbidden" });
+  capture("terms-disallowed", "https://pending.example/terms", {
+    status: null,
+    error: "robots.txt disallows this URL for MehudakRenderWatch (https://pending.example/robots.txt)",
+    robots: "disallowed",
+  });
+  capture("terms-unreachable", "https://pending.example/terms", { robots: "unreachable" });
+  capture("terms-norobots", "https://pending.example/terms", { robots: null });
+  capture("terms-nohtml", "https://pending.example/terms");
+  rmSync(join(dir, "terms-nohtml.html"));
+  capture("terms-rendered", "https://pending.example/terms", { extra: { renderedWith: "chromium", networkIdle: true } });
+  capture("terms-frozenjs", "https://pending.example/terms");
+  capture("terms-frozenjs", "https://pending.example/terms", {
+    name: "terms-frozenjs-2026-10-01",
+    extra: { renderedWith: "chromium", networkIdle: false, frozen: { on: "2026-10-02", from: "research/rendered/terms-frozenjs.meta.json", commit: "abc1234", why: "x" } },
+  });
+  // A frozen copy of the plain shell itself (3(2)(iv)): same bytes, no renderedWith.
+  capture("terms-pending", "https://pending.example/terms", {
+    name: "terms-pending-2026-09-30",
+    extra: { frozen: { on: "2026-10-06", from: "research/rendered/terms-pending.meta.json", commit: "abc1234", why: "plain GET saw a shell", flagged: "js-shell" } },
+  });
+  // Another slug that merely starts the same way is not a copy of terms-pending.
+  capture("terms-pending-rates", "https://pending.example/rates", { extra: { renderedWith: "chromium" } });
+
+  const URLS_TXT = [
+    "# research/rendered/urls.txt — a fixture",
+    "# research/channel-loop/ZERO-TESTS.md row 1 — pending.example's terms (5.10.2026).",
+    "https://pending.example/terms\tterms-pending",
+    "# research/channel-loop/ZERO-TESTS.md row 2 — shellsite.example's terms (30.9.2026).",
+    "# retired (tick 31: a React shell; its terms stay unread) — https://shellsite.example/legal\tterms-shellsite",
+    "",
+  ].join("\n");
+  const go = (over: Record<string, unknown>) =>
+    queueTermsShell({ urls: URLS_TXT, url: "https://pending.example/terms", slug: "terms-pending", date: "6.10.2026", verdicts: V, dir, ...over });
+  const refuses = (over: Record<string, unknown>, why: RegExp) => expect(() => go(over)).toThrow(why);
+
+  it("queues a TERMS_PENDING site's shell: the js line under the plain one, which it supersedes, citing the ruling and the sha256 prefix", () => {
+    const out = go({});
+    const lines = out.urls.split("\n");
+    const at = lines.indexOf("https://pending.example/terms\tterms-pending\tjs");
+    expect(at).toBe(4);
+    expect(lines[2]).toBe(`# superseded by the js line below (${TERMS_SHELL_RULING}) — https://pending.example/terms\tterms-pending`);
+    expect(lines[3]).toBe(out.comment);
+    expect(out.comment.startsWith("# ruling 6.10 row 21 (c), once-only js render of a shell terms page (")).toBe(true);
+    expect(out.comment).toContain(`sha256 ${SHA.slice(0, 12)}`);
+    expect(out.sha256Prefix).toBe(SHA.slice(0, 12));
+    expect(out.comment).toContain("research/rendered/terms-pending ");
+    expect(out.comment).toMatch(/\(6\.10\.2026\)\.$/);
+    expect(out.line).toBe("https://pending.example/terms\tterms-pending\tjs");
+    expect(parseUrlList(out.urls)).toEqual([{ url: "https://pending.example/terms", slug: "terms-pending", lineNumber: 5, js: true }]);
+    // The frozen copy of the plain shell is found by its bytes; terms-pending-rates is another slug.
+    expect(out.frozen).toEqual(["terms-pending-2026-09-30.meta.json"]);
+    // The ZERO-TESTS row's own line is now the js line.
+    expect(overrideLines(out.urls, 1, 1).lines).toEqual(["https://pending.example/terms\tterms-pending\tjs"]);
+    // Everything else in the list is as it was.
+    expect(out.urls.replace(/\n# superseded[^\n]*\n# ruling 6\.10[^\n]*\n/, "\n").replace("\tterms-pending\tjs", "\tterms-pending")).toBe(URLS_TXT);
+  });
+
+  it("queues a NO_TERMS shell site (note kind \"shell\") under its retired line, and the gate keeps that js line active", () => {
+    const out = go({ url: "https://shellsite.example/legal", slug: "terms-shellsite" });
+    const lines = out.urls.split("\n");
+    expect(lines[4]).toBe("# retired (tick 31: a React shell; its terms stay unread) — https://shellsite.example/legal\tterms-shellsite");
+    expect(lines[5]).toMatch(/^# ruling 6\.10 row 21 \(c\).*robots none\) is js-shell by scripts\/capture-check\.mjs; shellsite\.example is NO_TERMS\./);
+    expect(lines[6]).toBe("https://shellsite.example/legal\tterms-shellsite\tjs");
+    expect(out.frozen).toEqual([]);
+    expect(termsGate("https://shellsite.example/legal", "terms-shellsite", V, { js: true })).toMatchObject({ ok: true, termsShell: true });
+    // applyVerdicts reads the line's flag: the js line stays; the fixture's plain pending line stays too.
+    expect(applyVerdicts(out.urls, V).paused).toEqual([]);
+    expect(overrideLines(out.urls, 2, 2).lines).toEqual(["https://shellsite.example/legal\tterms-shellsite\tjs"]);
+  });
+
+  it("appends the line when the URL has no line in the list", () => {
+    const out = go({ urls: "# a list\nhttps://ok.example/a\tok-a\n" });
+    expect(out.urls.endsWith(`\nhttps://ok.example/a\tok-a\n${out.comment}\nhttps://pending.example/terms\tterms-pending\tjs\n`)).toBe(true);
+  });
+
+  it("uses capture-check's own classifier, on the plain capture", () => {
+    expect(classifyCapture(readCapture("terms-pending", dir)).kind).toBe("js-shell");
+    expect(go({}).evidence).toBe(classifyCapture(readCapture("terms-pending", dir)).evidence);
+    // What the classifier says decides: told a read page is a shell, the route would queue it.
+    expect(go({ slug: "terms-long", urls: "# a list\n", classify: () => ({ kind: "js-shell", evidence: "told so" }) }).evidence).toBe("told so");
+  });
+
+  it("refuses a slug that does not start terms-, whatever else holds", () => {
+    refuses({ slug: "pending-shell" }, /refuses pending-shell: the slug must start terms- \(3\(2\)\(iii\)\)/);
+  });
+
+  it("refuses a capture capture-check grades anything but js-shell: bot-challenge, short, ok, status", () => {
+    refuses({ slug: "terms-challenge" }, /grades the plain capture bot-challenge \(.*Cloudflare challenge page.*\), not js-shell/);
+    refuses({ slug: "terms-short" }, /grades the plain capture short \(/);
+    refuses({ slug: "terms-long" }, /grades the plain capture ok \(/);
+    refuses({ slug: "terms-forbidden" }, /grades the plain capture status \(/);
+  });
+
+  it("refuses a missing plain capture, a meta without its HTML, and a capture of another URL", () => {
+    refuses({ slug: "terms-missing" }, /no plain capture at research\/rendered\/terms-missing\.meta\.json with its terms-missing\.html/);
+    refuses({ slug: "terms-nohtml" }, /no plain capture at research\/rendered\/terms-nohtml\.meta\.json/);
+    refuses({ url: "https://pending.example/terms?lang=en" }, /is of "https:\/\/pending\.example\/terms", not https:\/\/pending\.example\/terms\?lang=en/);
+  });
+
+  it("refuses a capture robots.txt did not let through: disallowed, unreachable, or never read (before 30.9)", () => {
+    refuses({ slug: "terms-disallowed" }, /the plain capture's meta says robots "disallowed", not "allowed" or "none" \(3\(2\)\(ii\)\)/);
+    refuses({ slug: "terms-unreachable" }, /says robots "unreachable"/);
+    refuses({ slug: "terms-norobots" }, /says robots null/);
+  });
+
+  it("is once only: refuses a js capture of the slug, live or frozen, and a js line for it, queued or retired", () => {
+    refuses({ slug: "terms-rendered" }, /an earlier js capture of terms-rendered exists \(terms-rendered\.meta\.json: renderedWith set\)/);
+    refuses({ slug: "terms-frozenjs" }, /an earlier js capture of terms-frozenjs exists \(terms-frozenjs-2026-10-01\.meta\.json/);
+    expect(jsCapturesOf("terms-pending", dir)).toEqual([]);
+    const queued = go({}).urls;
+    refuses({ urls: queued }, /urls\.txt line 5 is already a js line for terms-pending \(active or commented out\): the js render is once only/);
+    const retired = queued.replace("\nhttps://pending.example/terms\tterms-pending\tjs", "\n# retired (read 7.10) — https://pending.example/terms\tterms-pending\tjs");
+    refuses({ urls: retired }, /already a js line for terms-pending/);
+  });
+
+  it("refuses a site whose terms are read or barred, one with no verdict, and a note of another kind", () => {
+    refuses({ url: "https://ok.example/terms", slug: "terms-ok" }, /ok\.example is NOT_BARRED in research\/channel-loop\/terms-verdicts\.json, not TERMS_PENDING or NO_TERMS/);
+    refuses({ url: "https://unknown.example/terms", slug: "terms-unknown" }, /unknown\.example is without a verdict/);
+    refuses({ url: "https://refusal.example/terms", slug: "terms-refusal" }, /refusal\.example's note opens "refusal-type", another kind than K4 shell/);
+    refuses({ url: "https://deferred.example/terms", slug: "terms-deferred" }, /note opens "deferred"/);
+    refuses({ url: "https://filed.example/terms", slug: "terms-filed" }, /filed\.example is NO_TERMS, but its note does not open with the kind word "shell"/);
+    refuses({ url: "https://gumroad.com/terms", slug: "terms-gumroad" }, /the terms gate refuses https:\/\/gumroad\.com\/terms: gumroad\.com is in TERMS_BARRED/);
+  });
+
+  it("refuses an active line of the same URL under another slug", () => {
+    refuses({ urls: `${URLS_TXT}https://pending.example/terms\tpending-terms-again\n` }, /an active urls\.txt line already fetches https:\/\/pending\.example\/terms/);
+  });
+});
+
+describe("termsGate and the js flag (ruling 6.10 row 21 (c) 3(2))", () => {
+  const V = {
+    "shellsite.example": { verdict: "NO_TERMS", note: "shell: a React shell" },
+    "filed.example": { verdict: "NO_TERMS", note: "filed refusal-type and corrected" },
+    "pending.example": { verdict: "TERMS_PENDING", note: "terms unread" },
+  };
+
+  it("passes a K4 shell site's js terms- line, and nothing else of the site", () => {
+    expect(isShellTermsVerdict(V["shellsite.example"])).toBe(true);
+    expect(isShellTermsVerdict(V["filed.example"])).toBe(false);
+    expect(isShellTermsVerdict({ verdict: "TERMS_PENDING", note: "shell: x" })).toBe(false);
+    expect(termsGate("https://shellsite.example/legal", "terms-shellsite", V, { js: true })).toMatchObject({ ok: true, verdict: "NO_TERMS", termsShell: true });
+    const plain = termsGate("https://shellsite.example/legal", "terms-shellsite", V);
+    expect(plain).toMatchObject({ ok: false, verdict: "NO_TERMS" });
+    expect(plain.why).toMatch(/only its terms page \(a terms- slug\), once, as a js line queued by --js --terms-shell/);
+    expect(termsGate("https://shellsite.example/pricing", "shellsite-pricing", V, { js: true }).ok).toBe(false);
+    expect(termsGate("https://filed.example/terms", "terms-filed", V, { js: true }).ok).toBe(false);
+  });
+
+  it("leaves a TERMS_PENDING site's terms line passing with or without the flag, as before", () => {
+    expect(termsGate("https://pending.example/terms", "terms-pending", V).ok).toBe(true);
+    expect(termsGate("https://pending.example/terms", "terms-pending", V, { js: true }).ok).toBe(true);
+    expect(termsGate("https://pending.example/pricing", "pending-pricing", V, { js: true }).ok).toBe(false);
+  });
+
+  it("is read from each line's own flag by applyVerdicts", () => {
+    const list = "https://shellsite.example/legal\tterms-shellsite\tjs\nhttps://shellsite.example/terms\tterms-shellsite-2\n";
+    expect(applyVerdicts(list, V).paused).toEqual(["terms-shellsite-2"]);
   });
 });
 

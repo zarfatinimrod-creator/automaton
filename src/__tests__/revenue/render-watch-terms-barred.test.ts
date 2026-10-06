@@ -334,8 +334,9 @@ describe("PATH_LIMITS: posthog.com lines only under /docs/ or /tutorials/ (tick 
 
   it("leaves no active urls.txt line that the terms gate refuses", () => {
     const v = verdicts();
-    const entries = parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string }[];
-    expect(entries.filter((e) => !termsGate(e.url, e.slug, v).ok).map((e) => e.slug)).toEqual([]);
+    const entries = parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string; js?: boolean }[];
+    // The js flag is the line's: a K4 shell site's once-only js terms line passes only with it (ruling 6.10 row 21 (c)).
+    expect(entries.filter((e) => !termsGate(e.url, e.slug, v, { js: e.js === true }).ok).map((e) => e.slug)).toEqual([]);
   });
 
   it("pauses a path-limited line in its own words, not as terms unread", () => {

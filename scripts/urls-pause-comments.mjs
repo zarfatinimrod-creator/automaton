@@ -83,7 +83,7 @@ const PAUSED = new RegExp(
 );
 
 /** Any terms pause ("terms unread" or "terms audit"), for the un-pause listing: the URL and slug at the end. */
-const TERMS_PAUSED = /^# paused \(terms\b.*\s(https?:\/\/\S+)\s+([a-z0-9][a-z0-9._-]*)(?:\s+js)?\s*$/;
+const TERMS_PAUSED = /^# paused \(terms\b.*\s(https?:\/\/\S+)\s+([a-z0-9][a-z0-9._-]*)(?:\s+(js))?\s*$/;
 
 /** The comment itself, before its last " — " (the URL, slug and flags follow it). */
 const head = (line) => line.slice(0, line.lastIndexOf(" — "));
@@ -167,8 +167,8 @@ export function syncPauseComments(urls, verdicts, { today, keep = KEEP_AS_IS } =
     }
     const t = TERMS_PAUSED.exec(lines[i]);
     if (t) {
-      const [, url, slug] = t;
-      const gate = termsGate(url, slug, verdicts);
+      const [, url, slug, flag] = t;
+      const gate = termsGate(url, slug, verdicts, { js: flag === "js" });
       if (gate.ok && !keep.has(gate.site)) unpause.push({ line: i + 1, site: gate.site, verdict: gate.verdict, slug, url });
     }
   }

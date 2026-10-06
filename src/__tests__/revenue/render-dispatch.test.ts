@@ -45,6 +45,9 @@ const VERDICTS = {
     "met.example": { verdict: "CONDITIONAL_MET", source: "test", checked: "2026-10-06" },
     "open.example": { verdict: "NOT_BARRED", source: "test", checked: "2026-10-06" },
     "barred.example": { verdict: "BARRED", source: "test: its terms bar automated access", checked: "2026-10-06" },
+    // Ruling 6.10 row 21 (c): a TERMS_PENDING site, and a NO_TERMS site whose terms page is a shell (kind K4).
+    "pending.example": { verdict: "TERMS_PENDING", source: "test", checked: "2026-10-06", note: "terms unread" },
+    "shell.example": { verdict: "NO_TERMS", source: "test", checked: "2026-10-06", note: "shell: the terms page is a React shell" },
   },
 };
 
@@ -336,6 +339,13 @@ describe("render-dispatch: refused before any gh call", () => {
     refused(w, `https://unknown.example/rules${T}prize-unknown\n`, /unknown\.example has no verdict/);
   });
 
+  it("a K4 shell site's terms line without the js flag (its one render is a js render), and its other pages", () => {
+    const w = world();
+    const r = refused(w, `https://shell.example/legal${T}terms-shell\n`, /terms gate refuses/);
+    expect(r.err).toMatch(/line 1: shell\.example: shell\.example is NO_TERMS, shell: only its terms page \(a terms- slug\), once, as a js line queued by --js --terms-shell/);
+    refused(w, `https://shell.example/pricing${T}shell-pricing${T}js\n`, /terms gate refuses/);
+  });
+
   it("a line with no slug, and a usage error (exit 2)", () => {
     const w = world();
     refused(w, "https://met.example/rules\n", /no slug/);
@@ -343,6 +353,26 @@ describe("render-dispatch: refused before any gh call", () => {
     expect(run(w, [w.lines, REF, "--wait-seconds", "soon"]).code).toBe(2);
     expect(run(w, [join(w.base, "missing.txt"), REF]).code).toBe(2);
     expect(calls(w)).toEqual([]);
+  });
+});
+
+describe("render-dispatch: a line queued by queue-zero-test --js --terms-shell (ruling 6.10 row 21 (c))", () => {
+  it("passes step 1 — render-watch's parser and termsGate with the line's js flag — and is dispatched as it is", () => {
+    const w = world();
+    // The two lines the route writes: a NO_TERMS shell site's terms page and a TERMS_PENDING site's, each with js.
+    const lines = [
+      "# ruling 6.10 row 21 (c), once-only js render of a shell terms page (a fixture's comment)",
+      `https://shell.example/legal${T}terms-shell${T}js`,
+      `https://pending.example/terms${T}terms-pending${T}js`,
+      "",
+    ].join("\n");
+    writeFileSync(w.lines, lines);
+    const r = dispatch(w, "--no-wait");
+    expect(r.code, r.all).toBe(0);
+    expect(r.err).toMatch(/\[1\/7\] render-watch --needs-browser: exit 0 \(js=true\)/);
+    expect(r.err).toMatch(/\[1\/7\] terms gate: exit 0/);
+    expect(JSON.parse(readFileSync(join(w.base, "gh-body.json"), "utf8"))).toEqual({ ref: REF, inputs: { urls: lines } });
+    expect(r.out).toContain("run 4242 https://github.com/fixture-owner/fixture-repo/actions/runs/4242");
   });
 });
 
