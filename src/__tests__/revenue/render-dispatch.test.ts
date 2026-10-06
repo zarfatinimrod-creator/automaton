@@ -362,7 +362,10 @@ describe("render-dispatch: the run, the wait and the merge", () => {
     const r = run(w, [w.lines, REF, "--gh", w.stub], { STUB_NO_NEW_RUN: "1", RENDER_DISPATCH_FIND_SECONDS: "1" }, 15_000);
     expect(r.code, r.all).toBe(1);
     expect(r.err).toMatch(/\[3\/7\] no run of render-watch\.yml on loop-branch .* within 1 s/);
-    expect(count(w, "list-calls")).toBeGreaterThanOrEqual(2);
+    // The deadline is checked in whole seconds, so a 1 s window holds one listing or two depending on where in the
+    // second the dispatch fell (CI's Node 20 runner saw one; this machine usually sees two). What is bounded, and
+    // asserted: it listed at least once after the dispatch, stopped with exit 1, polled no run and fetched nothing.
+    expect(count(w, "list-calls")).toBeGreaterThanOrEqual(1);
     expect(count(w, "run-polls")).toBe(0);
     expect(git(w.checkout, "rev-parse", `origin/${REF}`)).toBe(w.start);
   });
