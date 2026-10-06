@@ -530,6 +530,9 @@ describe("termsGate and the js flag (ruling 6.10 row 21 (c) 3(2))", () => {
   const meta = (slug: string, body: string) => writeFileSync(join(dir, `${slug}.meta.json`), body);
   meta("terms-shellsite", JSON.stringify({ url: "https://shellsite.example/legal", status: 200, robots: "allowed" }));
   meta("terms-filed", JSON.stringify({ url: "https://filed.example/terms", status: 200, robots: "allowed" }));
+  // A capture of another page of the shell site, from before its verdict: its own meta names its URL, so only the
+  // terms- prefix keeps a js line of it out.
+  meta("shellsite-pricing", JSON.stringify({ url: "https://shellsite.example/pricing", status: 200, robots: "allowed" }));
   meta("terms-nourl", JSON.stringify({ status: 200 }));
   meta("terms-broken", "{ not json");
 

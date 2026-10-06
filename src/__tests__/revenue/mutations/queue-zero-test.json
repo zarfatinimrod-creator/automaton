@@ -254,5 +254,16 @@
     "replace": "if (false) throw new Error(\"--terms-shell and --terms are two routes",
     "test": "src/__tests__/revenue/queue-zero-test.test.ts",
     "note": "tick 54 review fix 4: --terms-shell accepted beside --terms"
+  },
+  {
+    "id": "T54-R-I",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "if (js && String(slug).startsWith(\"terms-\") && isShellTermsVerdict(entry))",
+    "replace": "if (js && isShellTermsVerdict(entry))",
+    "test": [
+      "src/__tests__/revenue/queue-zero-test.test.ts",
+      "src/__tests__/revenue/render-dispatch.test.ts"
+    ],
+    "note": "tick 54 review R-I: termsGate passes a js line of a shell site whatever its slug (a pre-verdict capture of another page names its own URL)"
   }
 ]
