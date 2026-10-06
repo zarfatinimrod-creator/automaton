@@ -527,9 +527,12 @@ describe("scripts/sim-tree.sh: stopped by a signal", () => {
     const spaced = join(tmp, "with space");
     mkdirSync(spaced);
     const pidFile = join(tmp, "..", "command.pid");
+    // No SIM_TREE from outside: when this file runs inside a sim tree (a mutation plan), a mutant that does not set it
+    // would hand the command the outer tree's, and the command would write there.
+    const { SIM_TREE: _outer, ...outside } = process.env;
     const c = spawn("bash", [SCRIPT, "--", "bash", "-c", script], {
       cwd: repo,
-      env: { ...process.env, ...gitEnv, TMPDIR: spaced, PID_FILE: pidFile, ...env },
+      env: { ...outside, ...gitEnv, TMPDIR: spaced, PID_FILE: pidFile, ...env },
     });
     const out = { stderr: "" };
     c.stderr.on("data", (d) => (out.stderr += d));
@@ -568,7 +571,8 @@ describe("scripts/sim-tree.sh: stopped by a signal", () => {
   it("waits for what the command does on TERM before it reports the tree kept and exits", async () => {
     // The command takes a second to clean up on TERM (mutate.mjs restores the file it mutated), then writes in the tree.
     const s = await started(
-      'echo $$ > "$PID_FILE"; sleep 30 </dev/null >/dev/null 2>&1 & k=$!; trap \'sleep 1; kill $k; touch "$SIM_TREE/late"; exit 143\' TERM; wait',
+      // `late` is relative: the command's working directory is the tree.
+      "echo $$ > \"$PID_FILE\"; sleep 30 </dev/null >/dev/null 2>&1 & k=$!; trap 'sleep 1; kill $k; touch late; exit 143' TERM; wait",
     );
     s.c.kill("SIGTERM");
     expect(await s.exited).toEqual({ code: 143, signal: null });
