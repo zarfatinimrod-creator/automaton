@@ -45,13 +45,11 @@
 #      NOTE line on stderr for each slug none of whose capture files the merged commits changed: render-watch keeps an
 #      unchanged page's capture (and its fetchedAt) as it was, and leaves a js line it skipped (no browser) untouched,
 #      so such a capture may be older than this run; the run's log says which. It does not change the exit code.
-#   7. an address report per capture file (<slug>.txt, .html, .json, .xml, read as UTF-8): how many masks render-watch
-#      wrote ([redacted:email], with the domain's kind when it kept one) and how many raw address-shaped strings remain
-#      (a local part, then @, %40, a script escape \u0040 / \x40, a character reference &#64; / &#x40; / &commat;, or a
-#      look-alike at sign U+FF20 / U+FE6B, then a domain that is not a file name; letters, marks and digits of any
-#      script count, so an accented local part or an internationalised domain is found too), each counted by domain
-#      kind (domainKind, scripts/remask-captures.mjs). Kinds and counts only, never an address or a domain. A raw count
-#      above 0 is a WARNING line on stderr; it does not change the exit code.
+#   7. an address report per capture file (<slug>.txt, .html, .json, .xml): `node scripts/address-kinds.mjs` on them,
+#      from research/rendered (so each is named <slug>.<ext>): how many masks render-watch wrote, by the kind of the
+#      domain it kept, how many raw address-shaped strings remain outside the forms the masker leaves by design, by
+#      form, domain kind and local-part role, and the by-design forms (its header says which). Kinds and counts only,
+#      never an address or a domain. A raw count above 0 is a WARNING line on stderr; it does not change the exit code.
 #
 # Everything runs in the checkout this file is in: its scripts, its origin, its research/rendered.
 #
@@ -160,50 +158,6 @@ run = json.load(sys.stdin)
 print(run.get("status") or "-", run.get("conclusion") or "-")
 PY
 
-# Step 7: masks and raw address-shaped strings per capture file, by domain kind; never an address or a domain.
-read -r -d '' REPORT_JS <<'JS' || true
-const [root, ...slugs] = process.argv.slice(1);
-const { existsSync, readFileSync } = await import("node:fs");
-const { join } = await import("node:path");
-const { pathToFileURL } = await import("node:url");
-const { domainKind } = await import(pathToFileURL(join(root, "scripts", "remask-captures.mjs")).href);
-// An @ as a capture may hold one: plain, percent-encoded, script-escaped, a character reference, a look-alike.
-const AT = "(?:@|%40|\\\\[uU]0040|\\\\[xX]40|&#0*64;?|&#[xX]0*40;?|&commat;|\uFF20|\uFE6B)";
-// Letters, marks and digits of any script: an accented local part or an internationalised domain is an address too.
-const W = "\\p{L}\\p{M}\\p{N}";
-const LOCAL = `[${W}._%+-]`;
-const DOMAIN = `((?:[${W}-]+\\.)+[\\p{L}\\p{M}][${W}-]{1,62})`;
-const MASK = new RegExp(`\\[redacted:email\\](?:${AT}${DOMAIN})?`, "gu");
-const RAW = new RegExp(`(?<!${LOCAL})${LOCAL}+${AT}${DOMAIN}(?![${W}-])`, "gu");
-const FILE_NAME = /\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?)$/i;
-const tally = (kinds) => [...kinds].sort(([a], [b]) => (a < b ? -1 : 1)).map(([k, n]) => `${k} ${n}`).join(", ");
-const said = (n, kinds) => `${n}${n ? ` (${tally(kinds)})` : ""}`;
-for (const slug of slugs) {
-  for (const ext of ["txt", "html", "json", "xml"]) {
-    const file = join(root, "research", "rendered", `${slug}.${ext}`);
-    if (!existsSync(file)) continue;
-    const text = readFileSync(file, "utf8");
-    const masks = new Map();
-    const raw = new Map();
-    let m = 0;
-    let r = 0;
-    for (const hit of text.matchAll(MASK)) {
-      const kind = hit[1] ? domainKind(hit[1]) : "no domain kept";
-      masks.set(kind, (masks.get(kind) ?? 0) + 1);
-      m += 1;
-    }
-    for (const hit of text.matchAll(RAW)) {
-      if (FILE_NAME.test(hit[1])) continue;
-      const kind = domainKind(hit[1]);
-      raw.set(kind, (raw.get(kind) ?? 0) + 1);
-      r += 1;
-    }
-    console.log(`${slug}.${ext}: masked ${said(m, masks)}; raw ${said(r, raw)}`);
-    if (r) console.error(`render-dispatch: WARNING: ${slug}.${ext} holds ${r} address-shaped string(s) the mask did not take (${tally(raw)}): read them before the capture is cited`);
-  }
-}
-JS
-
 # ---- 1. validate ----------------------------------------------------------------------------------------------------
 rc=0; urls_lines="$(node --input-type=module -e "$COUNT_JS" "$lines_file")" || rc=$?
 [ "$rc" -eq 0 ] || die 1 "[1/7] could not count the URL lines of $lines_file (node exit $rc)"
@@ -309,10 +263,15 @@ cc=0; node "$ROOT/scripts/capture-check.mjs" "${slug_list[@]}" || cc=$?
 log "[6/7] capture-check: exit $cc (0 every capture reads as a page, 3 some are flagged: the reader judges)"
 
 # ---- 7. address report ----------------------------------------------------------------------------------------------
-log "[7/7] address report: masks and raw address-shaped strings by domain kind (kinds and counts only)"
-rc=0; node --input-type=module -e "$REPORT_JS" "$ROOT" "${slug_list[@]}" || rc=$?
-log "[7/7] address report: exit $rc"
-[ "$rc" -eq 0 ] || die 1 "[7/7] the address report failed"
+files=()
+for s in "${slug_list[@]}"; do
+  for ext in txt html json xml; do [ ! -f "$ROOT/research/rendered/$s.$ext" ] || files+=("$s.$ext"); done
+done
+log "[7/7] address report: node scripts/address-kinds.mjs <the capture files> (kinds and counts only)"
+rc=0
+if [ "${#files[@]}" -gt 0 ]; then (cd "$ROOT/research/rendered" && node "$ROOT/scripts/address-kinds.mjs" "${files[@]}") || rc=$?; fi
+log "[7/7] address report: exit $rc (0 no raw address-shaped string, 3 some remain: the files are named above)"
+[ "$rc" -eq 0 ] || [ "$rc" -eq 3 ] || die 1 "[7/7] the address report failed"
 
 case "$cc" in
   0 | 3) exit "$cc" ;;
