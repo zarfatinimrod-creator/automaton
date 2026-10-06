@@ -35,6 +35,7 @@ describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
       "mutate.json",
       "prize-apply-reading.json",
       "prize-dispatch.json",
+      "queue-zero-test.json",
       "remask-captures.json",
       "render-dispatch.json",
       "render-watch.json",
