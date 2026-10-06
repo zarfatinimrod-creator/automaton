@@ -61,6 +61,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 
   | Plan | Entries | Full run |
   | --- | --- | --- |
+  | `robots-verdict.json` | 4 | 13 (tick 54 terms-read builder, in its worktree, alone; the test file takes about 2 s a run) |
   | `page-views.json` | 5 | 23 (tick 54 builder, inside sim-tree.sh, alone; the two test files take about 2 s a run) |
   | `prize-dispatch.json` | 28 | 69 |
   | `render-watch.json` | 53 | 117 |
