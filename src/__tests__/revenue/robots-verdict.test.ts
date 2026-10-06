@@ -420,4 +420,27 @@ describe("robots-verdict CLI", () => {
     )).toBe(true);
     expect(before).not.toContain("research/rendered/robots-eurocontrol.txt");
   });
+
+  it("declines agenthon.net on the committed files since tick 57: set again after its third terms read, so it is already NO_TERMS_ROBOTS_OK", () => {
+    // TERMS_PENDING from tick 55 (a terms link found after its tick-54 verdict) until its last two terms documents were read
+    // in tick 57; then NO_TERMS, exhaustive-negative, and, on the main thread's word, applied with --urls
+    // research/measurements/ai-allowed-events.urls.txt on the 6.10 capture, the source repointed to its frozen copy
+    // (src/__tests__/revenue/prize-terms-audit.test.ts, "tick 57, third round", re-derives it). Run again dry, it declines.
+    const verdictsFile = join(ROOT, "research", "channel-loop", "terms-verdicts.json");
+    const before = readFileSync(verdictsFile, "utf8");
+    for (const urls of [join(ROOT, "research", "measurements", "ai-allowed-events.urls.txt"), join(ROOT, "research", "rendered", "urls.txt")]) {
+      const got = spawnSync(process.execPath, [SCRIPT, "agenthon.net", "--urls", urls], { encoding: "utf8" });
+      expect(got.status).toBe(3);
+      expect(got.stdout.split("\n")[0]).toBe("robots-verdict: agenthon.net (NO_TERMS_ROBOTS_OK)");
+      expect(got.stdout).toContain("no change: agenthon.net is already NO_TERMS_ROBOTS_OK");
+    }
+    expect(readFileSync(verdictsFile, "utf8")).toBe(before);
+    const entry = JSON.parse(before).sites["agenthon.net"];
+    expect([entry.verdict, entry.checked, entry.copying]).toEqual(["NO_TERMS_ROBOTS_OK", "2026-10-06", "unread"]);
+    expect(entry.note.startsWith("exhaustive-negative: ruled by the main thread (tick 57): ")).toBe(true);
+    expect(entry.source.startsWith(
+      "robots.txt read at research/rendered/robots-agenthon-2026-10-06.txt (https://www.agenthon.net/robots.txt, fetched 2026-10-06T07:15:41.847Z, sha256 54048ccab842): all 1 queued path allowed for MehudakRenderWatch (scripts/robots-verdict.mjs); ruling research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v); NO_TERMS before: research/rendered/terms-agenthon-licensing-2026-10-06.txt (",
+    )).toBe(true);
+    expect(before).not.toContain("research/rendered/robots-agenthon.txt");
+  });
 });

@@ -1,0 +1,313 @@
+Agenthon 2026 — Data & Software Licensing Policy
+
+Agenthon
+
+Home
+About
+Compete
+Guides
+
+Past Events
+
+2025
+2024
+
+Sign In
+Sign Up
+
+Agenthon Submissions Deadline: October 12th, 23:59 AoE
+
+(October 13th at 7:59 AM New York, October 13th at 12:59 PM London, October 13th at 7:59 PM Singapore)
+
+Announcing Competition Awards!
+
+Data & Software Licensing Policy
+
+Version 2026-08-17 · Agenthon 2026 — NeurIPS 2026 Competition Track · AH26-POL-04
+
+Policy set: Official Competition Rules ·
+Terms of Participation ·
+Privacy Notice ·
+Data & Software Licensing Policy
+
+This Policy separates the terms that apply to Organizer-provided data, public starter code,
+private benchmark materials, third-party resources, participant submissions, and winner
+reproducibility releases.
+
+Core principle. A software license, a dataset license, a submission
+license, and a winner reproducibility obligation are distinct. The resource-specific license or
+data-use agreement controls for that resource.
+
+1. Scope and precedence
+
+This Policy explains the licensing and use restrictions for resources used in Agenthon 2026.
+Where a repository, dataset, model, API, or other asset includes its own license, data-use
+agreement, access terms, or notice, those resource-specific terms control for that asset.
+
+The Terms of Participation control the limited license
+granted by participants to the Organizers. Mandatory law and signed agreements control where
+applicable.
+
+2. Resource categories
+
+Resource type
+Default treatment
+
+Public practice repositories / starter code
+
+Governed by the LICENSE file and notices distributed with the repository. If no
+license is stated, no open-source permission should be assumed.
+
+Public Competition datasets
+
+Governed by the dataset-specific license or data-use notice supplied with the files
+or on the Competition Site.
+
+Third-party data, models, software, and APIs
+
+The original provider’s terms apply. Agenthon does not grant rights it does not
+own.
+
+Private test and evaluation materials
+
+Confidential and competition-restricted; no general right to inspect, copy, retain,
+redistribute, reverse engineer, or publish.
+
+Participant submissions
+
+Owned by participants and private by default, subject only to the limited Competition
+license in the Terms .
+
+Confirmed-winner reproducibility package
+
+Published separately by a winning team accepting a prize. Participant-authored code
+uses an OSI-approved license; the private submission and third-party components do not
+automatically become public.
+
+Scores and benchmark-level results
+
+May be published by the Organizers in leaderboards, scientific reporting, and the
+historical record.
+
+3. Organizer-provided public software and data
+
+Each public repository should contain a clear LICENSE file and relevant third-party
+notices. That license governs copying, modification, redistribution, and reuse; this Policy
+does not replace it.
+
+Examples, baselines, smoke scorers, schemas, and participant utilities may be reused
+outside the Competition only to the extent their published license permits.
+
+Each dataset or corpus should identify its source, permitted purpose, redistribution
+status, citation or attribution requirements, and any access, retention, or deletion
+conditions.
+
+Open data licenses govern open reuse. Competition-only or restricted data may be used
+only for the stated purpose and may not be redistributed, published, re-identified, or
+retained beyond the applicable terms.
+
+Privacy, confidentiality, market-data, exchange, publisher, contractual, and database
+restrictions continue during and after the Competition. Data access does not grant trademark
+or logo rights.
+
+4. Private test and evaluation materials
+
+Private-test units, hidden labels, oracle solutions, final scoring logic, canary registries,
+audit materials, non-public manifests, and equivalent evaluation assets are confidential
+Competition materials. Participants receive no general license to inspect or reuse them.
+
+Do not access or extract private-test materials outside the authorized scoring
+interface.
+
+Do not retain, reproduce, publish, redistribute, reconstruct, or share private-test
+content inadvertently exposed through an error.
+
+Stop accessing and promptly report suspected exposure or leakage to
+[redacted:email]@agenthon.net . Good-faith reporting is
+encouraged.
+
+The Organizers may preserve private evaluation materials for audit, scientific analysis, or
+benchmark maintenance, subject to applicable rights and governance restrictions.
+
+5. External software, models, and services
+
+Open-source libraries, pretrained models, public research code, and other software may be
+used only when permitted by the track and underlying license.
+
+Participants must comply with copyleft, attribution, notices, source-disclosure,
+acceptable-use, model-license, export-control, and other requirements.
+
+A container must not redistribute a component contrary to its license. If use is allowed
+but redistribution is not, the team must follow an approved deployment or acquisition
+path.
+
+Commercial or proprietary tools and services are allowed only where track instructions
+permit and where their use is compatible with evaluation and reproducibility
+requirements.
+
+External runtime network access is prohibited unless the evaluation environment expressly
+provides it.
+
+6. External data and information cutoffs
+
+Public external data may be used only if the track permits it, the participant has lawful
+access, and the data comply with any cutoff or embargo.
+
+Private employer or customer data, purchased data with non-transferable restrictions,
+confidential sponsor or Question Partner data, and information obtained through privileged
+access are prohibited unless expressly authorized with documented permission.
+
+Information after a track’s as-of date may not be used even if it becomes public
+during development.
+
+Derived features, embeddings, retrieval indexes, caches, fine-tuned weights, and
+synthetic data can carry leakage from prohibited sources and must independently comply.
+
+7. Resource and provenance declaration
+
+Prize-eligible teams, and any others specified by track instructions, must provide a
+declaration sufficient to understand and lawfully reproduce the material inputs to the
+submission. The declaration should identify, as applicable:
+
+datasets and corpora, including source, version/date, access conditions, and license or
+data-use terms;
+
+pretrained or fine-tuned models, versions, providers, model licenses, and material
+training/update dates relevant to a cutoff;
+
+major libraries/frameworks and their licenses;
+
+commercial tools, APIs, hosted services, or proprietary dependencies used in development
+or required for reproduction;
+
+human-curated resources, manual labels, purchased data, or third-party
+contributions;
+
+AI-agent or language-model tools used materially where disclosure is required by track or
+NeurIPS policy; and
+
+known redistribution restrictions and the proposed lawful reproduction path.
+
+8. Participant submissions — private by default
+
+Participants retain ownership of participant-authored Submission Materials. The Organizers
+receive only the limited license in the Terms to operate,
+evaluate, privately verify, report, secure, and promote the Competition. Submission does not
+place code under an open-source license or authorize public release.
+
+Ordinary submissions remain private unless the participant independently publishes them or
+the winner-release rule applies to a separate reproducibility package.
+
+9. Three-stage reproducibility and winner release
+
+Stage
+Licensing consequence
+
+1 – Private submission
+
+No public license is required merely to enter, receive a score, or appear in the
+final ranking.
+
+2 – Private verification
+
+A prize candidate confidentially supplies source, configuration, provenance, and
+other materials needed to reproduce and audit the result. The package remains non-public
+and unlicensed to the public.
+
+3 – Winner public release
+
+After winning status is confirmed, a team accepting the prize publishes
+participant-authored reproducibility code under an OSI-approved license, ordinarily
+Apache-2.0, MIT, BSD-3-Clause, or another approved compatible license.
+
+The public package should include code, build/run instructions, dependencies,
+configuration, and sufficient documentation to reproduce the method in a compatible
+environment.
+
+It may be a cleaned public repository and need not be the exact private container or
+verification package.
+
+Secrets and third-party software, datasets, models, weights, or artifacts need not be
+published or relicensed when the team lacks the right to do so.
+
+A non-redistributable dependency must be documented with lawful acquisition,
+deterministic build steps, a permitted substitute, or another approved reproduction
+path.
+
+The original Organizer-held submission remains private unless separately authorized. A
+team may not select a license that purports to grant rights in third-party material it does
+not control.
+
+Failure to complete the public release may forfeit the prize but does not transfer
+ownership of the private submission.
+
+10. Model weights, artifacts, publications, and citation
+
+Public release of model weights or large artifacts is required only when the track or
+prize rules expressly require it and the participant has the right to release them.
+
+The default winner obligation is sufficient participant-authored code and documentation,
+not automatic publication of the original private container, secrets, proprietary
+dependencies, or every artifact.
+
+If no reasonable and lawful reproduction path exists, the Organizers may determine that
+the result is not prize-eligible.
+
+Participants should cite Agenthon and underlying datasets/software as requested in the
+relevant documentation when publishing research based on Competition resources.
+
+The Organizers may publish leaderboard data, benchmark-level statistics, aggregate
+failure analyses, and other Competition results under the
+Official Rules and Terms .
+Publication of a participant-authored paper or non-public technical report requires author
+permission.
+
+Dataset embargoes, publication restrictions, citation requirements, and provider
+approvals continue after the Competition.
+
+11. Security, privacy, compatibility, and no implied rights
+
+Do not include personal data, credentials, confidential client or employer information,
+regulated data, or unnecessary secrets in repositories or containers.
+
+If a track uses sensitive data, its terms must specify governance, permitted purpose,
+re-identification restrictions, retention/deletion, and publication constraints. Personal
+data is handled under the Privacy Notice .
+
+Participants are responsible for license compatibility in submissions and public
+releases.
+
+Neither participation nor this Policy grants patent, trademark, database, market-data, or
+third-party content rights except where an applicable license expressly does so. No rights
+are granted by implication or estoppel.
+
+12. Changes and contact
+
+The Organizers may update this Policy to clarify resource terms, correct licensing mistakes,
+add newly released resources, or address legal or security issues. Material changes affecting a
+currently permitted resource will be announced and, where practicable, applied prospectively. A
+resource-specific license or signed data-use agreement controls over this general Policy.
+
+Licensing, data-use, and reproducibility questions:
+[redacted:email]@agenthon.net . Additional published contacts:
+[redacted:email]@sqa-us.org and
+[redacted:email]@cewit.org . Raise material license questions before
+incorporating a resource into a final submission.
+
+Alphathon presents Agenthon 2026
+
+Organized by
+SQA &middot;
+CEWIT ,
+Stony Brook University
+
+About
+Compete
+Past Events
+Rules
+Terms
+Privacy
+Licensing
+Contact
+
+Copyright &copy; 2026: agenthon.net. All rights reserved.
