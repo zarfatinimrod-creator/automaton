@@ -83,12 +83,15 @@
  * UTC) and before any dispatch (research/rendered/README.md): dry, then --apply when a site changed, a commit of the copies
  * and the file, then scripts/verify.sh. The tests that hold what ticks 45 to 57 left read the verdicts as they stood before
  * any re-check (beforeRechecks, with the 18 entries of 5c980e3 in src/__tests__/revenue/fixtures/
- * terms-verdicts-5c980e3-robots-ok.json), so a refresh or a revert leaves them green. Measured on a copy of the store for all
- * 18 sites at once (tick 58 review fix), what else needs a hand edit: after a revert, the urls-pause-comments --fix above;
- * after a refresh or a revert of eurocontrol.int or agenthon.net, the mutation plan's T57-D and T57B-D entries whose find
- * text the rewrite moved (src/__tests__/revenue/mutations/robots-verdict.json; mutation-plans.test.ts names them: T57-D2,
- * D5, D6 and T57B-D2 after a refresh, T57-D1, T57B-D1 and T57B-D2 after a revert), retargeted at the entry's text now or
- * dropped with a line in the tick's log. Nothing else turned red.
+ * terms-verdicts-5c980e3-robots-ok.json), so a refresh or a revert leaves them green: measured on copies of the store (tick
+ * 58 review fix), a refresh, a revert or a 200 turned 404 of the 16 other sites leaves scripts/verify.sh at exit 0. Of
+ * eurocontrol.int and agenthon.net, whose tick-57 records the tests and the mutation plan hold by their exact text, it does
+ * not: after a refresh, src/__tests__/revenue/mutations/robots-verdict.json's T57-D2, T57-D5, T57-D6 and T57B-D2 no longer
+ * apply (mutation-plans.test.ts names them); after a revert and the urls-pause-comments --fix above, T57-D1, T57B-D1,
+ * T57B-D2, T57-U1, T57B-U1 and T57B-U3 no longer apply, and prize-terms-audit.test.ts's pins of the two sites' pause
+ * comments ("verdict as of 6.10.2026): <site> is NO_TERMS_ROBOTS_OK in ...") fail in seven tests of its tick-45, 55, 56 and
+ * 57 blocks. The tick retargets each entry at the text it holds now (or drops it, with a line in its log) and reads those
+ * seven pins back to the comment as it stood before the revert, as the tick-55 to 57 fixtures did for earlier changes.
  * Dry run by default: one line per site with its outcome (and, for refresh and revert, each queued path's answer, the
  * copy it would freeze and the sentence it would add), then a totals line. --apply freezes and writes
  * terms-verdicts.json through serializeVerdicts. It never fetches anything. Exit codes: 0 — something was (or, dry,
@@ -470,8 +473,9 @@ function frozenProblem(cite, frozen) {
  * on disk with no commit (a test's directory). Always the live meta: sourceVersion's failed-fetch fallback (a 404 or a
  * 5xx meta beside the body an earlier 200 left on disk, which render-watch does not delete) hands back that older read
  * page, which is right for a page a decision quotes and wrong here, where the answer itself is what is judged. Then the
- * version is the live meta and the files it names (namedFiles: the stale body stays out), as the commit that last wrote
- * them stored them (the working tree, which sourceVersion has found clean).
+ * version is the files on disk (the working tree, which sourceVersion has found clean), named by the commit that last
+ * wrote the meta: a failed fetch's meta names no body, and planCopy keeps only the meta and the files it names
+ * (namedFiles), so the stale body stays out of the copy.
  */
 export function liveVersion(renderedDir, slug) {
   const dir = resolve(renderedDir);
@@ -482,10 +486,9 @@ export function liveVersion(renderedDir, slug) {
   const version = sourceVersion(root, slug);
   const live = diskFiles(slug, dir);
   if (version.files.get("meta.json")?.equals(live.get("meta.json"))) return version;
-  const files = namedFiles(live);
-  const rels = [...files.keys()].map((ext) => `${RENDERED_REL}/${slug}.${ext}`);
-  const wrote = spawnSync("git", ["--no-optional-locks", "-C", root, "log", "-1", "--format=%h", "--", ...rels], { encoding: "utf8" });
-  return { commit: wrote.status === 0 ? wrote.stdout.trim() || null : null, files, note: null };
+  const meta = `${RENDERED_REL}/${slug}.meta.json`;
+  const wrote = spawnSync("git", ["--no-optional-locks", "-C", root, "log", "-1", "--format=%h", "--", meta], { encoding: "utf8" });
+  return { commit: wrote.status === 0 ? wrote.stdout.trim() || null : null, files: live, note: null };
 }
 
 const extOf = (path) => (typeof path === "string" ? (CAPTURE_EXTS.find((ext) => ext !== "meta.json" && path.endsWith(`.${ext}`)) ?? null) : null);

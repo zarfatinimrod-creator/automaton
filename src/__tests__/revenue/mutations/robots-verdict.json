@@ -634,17 +634,9 @@
     "note": "tick 58 review, blocking: liveVersion keeps sourceVersion's failed-fetch fallback, so a 200 that became a 404 beside its old body (>= MIN_TERMS_TEXT) is 'refreshed' onto the old 200 copy, the note gaining '→ HTTP 404' on every run"
   },
   {
-    "id": "T58-FX2-fallback-stale-body",
-    "file": "scripts/robots-verdict.mjs",
-    "find": "  const files = namedFiles(live);",
-    "replace": "  const files = live;",
-    "test": "src/__tests__/revenue/robots-verdict.test.ts",
-    "note": "tick 58 review fix: the live version after a fallback takes the stale body a failed fetch left beside the meta"
-  },
-  {
     "id": "T58-FX3-fallback-commit-head",
     "file": "scripts/robots-verdict.mjs",
-    "find": "\"log\", \"-1\", \"--format=%h\", \"--\", ...rels]",
+    "find": "\"log\", \"-1\", \"--format=%h\", \"--\", meta]",
     "replace": "\"log\", \"-1\", \"--format=%h\"]",
     "test": "src/__tests__/revenue/robots-verdict.test.ts",
     "note": "tick 58 review fix: the copy names HEAD, not the commit that last wrote the live meta"

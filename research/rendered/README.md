@@ -373,10 +373,9 @@ verdict), then queue the line. A line for a site with no verdict fails CI, and s
   changed, 3 when nothing did. After `--apply`: commit the new copies and the file, run
   `node scripts/urls-pause-comments.mjs --fix` after a revert (a paused line naming the site's verdict names a stale
   one), then `scripts/verify.sh`. The tests of ticks 45 to 57 read the verdicts as they stood before any re-check
-  (`beforeRechecks`, fixture `src/__tests__/revenue/fixtures/terms-verdicts-5c980e3-robots-ok.json`), so they stay green;
-  a refresh or a revert of eurocontrol.int or agenthon.net also moves the find text of a few `T57-D`/`T57B-D` entries of
-  `src/__tests__/revenue/mutations/robots-verdict.json`, which `mutation-plans.test.ts` names (the list, measured, is in
-  the script's header).
+  (`beforeRechecks`, fixture `src/__tests__/revenue/fixtures/terms-verdicts-5c980e3-robots-ok.json`), so they stay green
+  for 16 of the 18 sites; a refresh or a revert of eurocontrol.int or agenthon.net, whose tick-57 records the tests and the
+  mutation plan hold by their exact text, still needs hand edits (the measured list is in the script's header).
 - **googlesource.com** left `TERMS_BARRED` for CONDITIONAL_MET: its one condition was robots.txt
   (`research/colony-sweep/scouts/risk-governance--automation-tos.md:106`), and its line (`sweep2-google-vrp-faq`) is
   active again. `google.com` stays barred: YouTube's terms bar the Help pages outright.
