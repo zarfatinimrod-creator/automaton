@@ -408,9 +408,10 @@ describe("the prize-event terms read of 6.10 (tick 54): devpost.com, zindi.afric
   ];
   const verdicts = () => JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites;
 
-  it("lists the three last, each citing the frozen copy's line, whose words it quotes", () => {
+  it("lists the three before kaggle.com, the last, each citing the frozen copy's line, whose words it quotes", () => {
     const domains = (TERMS_BARRED as { domain: string }[]).map((b) => b.domain);
-    expect(domains.slice(-3)).toEqual(BARRED_54.map((b) => b.domain));
+    // kaggle.com joined after them the same day, on its terms page's once-only js render (the describe below).
+    expect(domains.slice(-4)).toEqual([...BARRED_54.map((b) => b.domain), "kaggle.com"]);
     for (const { domain, file, line, words } of BARRED_54) {
       const b = (TERMS_BARRED as { domain: string; why: string }[]).find((x) => x.domain === domain)!;
       expect(b.why, domain).toContain(`${file}:${line}`);
@@ -465,5 +466,68 @@ describe("the prize-event terms read of 6.10 (tick 54): devpost.com, zindi.afric
     // The gate says so for any line on those hosts.
     expect(termsGate("https://datahub.devpost.com/?ref=mlcontests", "x", v).why).toMatch(/^devpost\.com is in TERMS_BARRED: /);
     expect(termsGate("https://zindi.world/competitions/x", "x", v).why).toMatch(/^zindi\.world is in TERMS_BARRED: /);
+  });
+});
+
+/**
+ * Tick 54, later (6.10.2026): kaggle.com's terms page was a JavaScript shell to the plain GET (kind K4), so ruling 6.10
+ * row 21 (c) 3(2) let it be rendered once in js mode; the render (a3cb438) came back as Kaggle's Terms of Use, frozen as
+ * research/rendered/terms-kaggle-2026-10-06-a3cb438 and read by an Opus reader and an adversarial Opus verifier. The main
+ * thread ruled kaggle.com BARRED on three grounds: crawling or scraping any page by manual or automated means (:77),
+ * copying or publishing Content without its owner's prior consent (:87), and internal, personal, non-commercial use only
+ * (:70). Its js terms line is retired, and every Kaggle page, the competition pages included, is refused.
+ */
+describe("the once-only js render of 6.10 (tick 54): kaggle.com", () => {
+  const FROZEN = "research/rendered/terms-kaggle-2026-10-06-a3cb438.txt";
+  const CLAUSES: { line: number; words: string }[] = [
+    { line: 77, words: "“Crawls,” “scrapes,” or “spiders” any page, data, or portion of or relating to the Services or Content (through use of manual or automated means)" },
+    { line: 87, words: "for any purpose any Content not owned by you, (i) without the prior consent of the owner of that Content" },
+  ];
+  const verdicts = () => JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites;
+  const entry = () => (TERMS_BARRED as { domain: string; why: string }[]).find((x) => x.domain === "kaggle.com")!;
+
+  it("lists kaggle.com last, citing the frozen copy of the js render at the line whose words it quotes", () => {
+    const domains = (TERMS_BARRED as { domain: string }[]).map((b) => b.domain);
+    expect(domains.at(-1)).toBe("kaggle.com");
+    const b = entry();
+    expect(b.why).toContain(`${FROZEN}:77`);
+    expect(b.why).toContain("(:87)");
+    expect(b.why).toContain("rendered once in js mode under ruling 6.10 row 21 (c) 3(2)");
+    expect(b.why).toContain("terms read 6.10, tick 54");
+    const lines = readFileSync(FROZEN, "utf8").split("\n");
+    for (const { line, words } of CLAUSES) expect(lines[line - 1], `:${line}`).toContain(words);
+    expect(b.why).toContain(CLAUSES[0].words);
+    // A frozen copy: its meta names itself, the live capture it came from and the render's commit; js-rendered.
+    const meta = JSON.parse(readFileSync(FROZEN.replace(/\.txt$/, ".meta.json"), "utf8"));
+    expect([meta.slug, meta.frozen.from, meta.frozen.commit, meta.renderedWith, meta.status]).toEqual([
+      "terms-kaggle-2026-10-06-a3cb438",
+      "research/rendered/terms-kaggle.meta.json",
+      "a3cb438",
+      "chromium",
+      200,
+    ]);
+  });
+
+  it("bars www.kaggle.com and every other Kaggle host, plain or js, and nothing that only contains the name", () => {
+    for (const h of ["kaggle.com", "www.kaggle.com", "WWW.Kaggle.COM.", "storage.kaggle.com"]) expect(termsBarred(h), h).not.toBeNull();
+    for (const h of ["notkaggle.com", "kaggle.com.example.org", "kaggle.io"]) expect(termsBarred(h), h).toBeNull();
+    expect(() => parseUrlList("https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2?ref=mlcontests\tkaggle-arc\n")).toThrow(/kaggle\.com.*terms/);
+    expect(() => parseUrlList("https://www.kaggle.com/terms\tterms-kaggle\tjs\n")).toThrow(/terms-kaggle-2026-10-06-a3cb438\.txt:77/);
+  });
+
+  it("agrees with the verdicts file, and leaves only the retired js terms line of the site in urls.txt", () => {
+    const v = verdicts();
+    expect(v["kaggle.com"].verdict).toBe("BARRED");
+    expect(v["kaggle.com"].copying).toBe("barred");
+    expect(v["kaggle.com"].note).toMatch(/^BARRED on access and copying: /);
+    expect(v["kaggle.com"].note).toContain("TERMS_BARRED in scripts/render-watch.mjs holds kaggle.com since 6.10");
+    const text = readFileSync("research/rendered/urls.txt", "utf8");
+    const lines = text.split("\n").filter((l) => /(^|[/.])kaggle\.com\//.test(l.replace(/^# .* — /, "")));
+    expect(lines).toEqual([
+      "# retired (6.10.2026: rendered once in js mode under ruling 6.10 row 21 (c) 3(2); read, kaggle.com BARRED — see TERMS_BARRED in scripts/render-watch.mjs) — https://www.kaggle.com/terms\tterms-kaggle\tjs",
+    ]);
+    // The gate says so for any line on the site, its terms page in js mode included.
+    expect(termsGate("https://www.kaggle.com/competitions/build-arena-human-ai-colleberation-engineering-challenge?ref=mlcontests", "x", v).why).toMatch(/^kaggle\.com is in TERMS_BARRED: /);
+    expect(termsGate("https://www.kaggle.com/terms", "terms-kaggle", v, { js: true }).ok).toBe(false);
   });
 });

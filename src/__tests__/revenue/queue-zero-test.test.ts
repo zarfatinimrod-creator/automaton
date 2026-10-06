@@ -798,3 +798,57 @@ describe("the terms gate and robots.txt (ruling 30.9 16(d) D2(v))", () => {
     expect(nevo.every((e) => new URL(e.url).pathname === "/robots.txt")).toBe(true);
   });
 });
+
+/**
+ * Tick 54 (6.10.2026): the two once-only js renders ran (queued c058238, rendered a3cb438), and both js lines are retired
+ * in research/rendered/urls.txt with their js flag kept: kaggle.com's terms were read and are BARRED, and Israel Post
+ * answered the render 403 (refusal-type). What must hold against the real store: the route, run as the command line with
+ * --dry-run, refuses a second --terms-shell for either slug and names the retired line, and urls.txt stays byte for byte.
+ */
+describe("queue-zero-test --terms-shell against the real store: once only, after the 6.10 renders (tick 54)", () => {
+  const SCRIPT = join(resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", ".."), "scripts", "queue-zero-test.mjs");
+  const RETIRED: { slug: string; url: string; line: string; captures: string[] }[] = [
+    {
+      slug: "terms-kaggle",
+      url: "https://www.kaggle.com/terms",
+      line: "# retired (6.10.2026: rendered once in js mode under ruling 6.10 row 21 (c) 3(2); read, kaggle.com BARRED — see TERMS_BARRED in scripts/render-watch.mjs) — https://www.kaggle.com/terms\tterms-kaggle\tjs",
+      captures: ["terms-kaggle-2026-10-06-a3cb438.meta.json", "terms-kaggle.meta.json"],
+    },
+    {
+      slug: "terms-israel-post",
+      url: "https://doar.israelpost.co.il/content/term-of-use/",
+      line: "# retired (6.10.2026: rendered once in js mode under ruling 6.10 row 21 (c) 3(3); the site answered 403, refusal-type, 16(d) D2(iv)) — https://doar.israelpost.co.il/content/term-of-use/\tterms-israel-post\tjs",
+      captures: ["terms-israel-post.meta.json"],
+    },
+  ];
+
+  it("holds each retired js line once, in its form, and no active line of either slug", () => {
+    const lines = readFileSync(URLS, "utf8").split("\n");
+    const active = parseUrlList(lines.join("\n")) as { slug: string; url: string }[];
+    for (const r of RETIRED) {
+      expect(lines.filter((l) => l === r.line), r.slug).toHaveLength(1);
+      // The one js line of the slug, active or commented out (Israel Post's plain line of 30.9 stays retired above it).
+      expect(lines.filter((l) => l.endsWith(`\t${r.slug}\tjs`)), r.slug).toEqual([r.line]);
+      expect(active.filter((e) => e.slug === r.slug || e.url === r.url), r.slug).toEqual([]);
+      // The second barrier: the js captures of the slug, live and frozen (renderedWith set).
+      expect(jsCapturesOf(r.slug), r.slug).toEqual(r.captures);
+    }
+  });
+
+  it("refuses --js --terms-shell --dry-run for either slug, naming the retired line, and writes nothing", () => {
+    for (const r of RETIRED) {
+      const before = readFileSync(URLS);
+      const n = before.toString("utf8").split("\n").indexOf(r.line) + 1;
+      expect(n, r.slug).toBeGreaterThan(0);
+      const out = spawnSync(process.execPath, [SCRIPT, "--js", "--terms-shell", "--url", r.url, "--slug", r.slug, "--dry-run"], { encoding: "utf8", timeout: 60_000 });
+      expect(out.status, out.stderr).toBe(1);
+      expect(out.stdout).toBe("");
+      expect(out.stderr.trim()).toBe(
+        `queue-zero-test: --terms-shell refuses ${r.slug}: urls.txt line ${n} is already a js line for ${r.slug} (active or commented out): the js render is once only (3(2)(vi))`,
+      );
+      expect(readFileSync(URLS).equals(before), r.slug).toBe(true);
+      // The module says the same without the command line.
+      expect(() => queueTermsShell({ urls: before.toString("utf8"), url: r.url, slug: r.slug, date: "6.10.2026" }), r.slug).toThrow(`urls.txt line ${n} is already a js line for ${r.slug}`);
+    }
+  });
+});
