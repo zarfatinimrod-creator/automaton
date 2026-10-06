@@ -11,6 +11,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `freeze-capture.json` | `scripts/freeze-capture.mjs` | `freeze-capture.test.ts` (+ `remask-captures`, `frozen-citations`) | ticks 38, 50 |
 | `loop-edit.json` | `scripts/loop-edit.mjs` | `loop-edit.test.ts` | tick 43 |
 | `mutate.json` | `scripts/mutate.mjs` (`--check`) | `mutate.test.ts` | tick 51 |
+| `page-views.json` | `src/revenue/page-views.ts` (`evaluatePageViewGates`, the domain period: `RULING-2026-10-06-domain-clock` fold 5) | `page-views.test.ts`, `page-views-reader.test.ts` | tick 54 |
 | `prize-apply-reading.json` | `scripts/prize-apply-reading.mjs` | `prize-apply-reading.test.ts` | tick 52 |
 | `prize-dispatch.json` | `scripts/prize-dispatch.mjs`, `src/revenue/ai-allowed-events.ts` | `prize-dispatch.test.ts` | tick 47 |
 | `remask-captures.json` | `scripts/remask-captures.mjs` (+ `freeze-capture.mjs`'s `maskedMeta`) | `remask-captures.test.ts` | ticks 49, 50 |
@@ -59,6 +60,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 
   | Plan | Entries | Full run |
   | --- | --- | --- |
+  | `page-views.json` | 5 | 23 (tick 54 builder, inside sim-tree.sh, alone; the two test files take about 2 s a run) |
   | `prize-dispatch.json` | 28 | 69 |
   | `render-watch.json` | 53 | 117 |
   | `freeze-capture.json` | 23 | 171 |

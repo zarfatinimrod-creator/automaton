@@ -90,6 +90,8 @@ const LIVE_MENTIONS: Record<string, string> = {
   "research/breadth/scouts/automation-marketplaces.json apify-store-accessibility": "a scout's output, naming the watched listing",
   "research/breadth/verify/verdicts.json apify-store-accessibility": "a verifier's output, naming the watched listing",
   "research/faceless-youtube/LICENCE-IGO-DECISION.md unesco-uis-databrowser-terms": "a urls.txt line the note proposed: the slug a render writes",
+  "research/channel-loop/RULING-2026-10-06-robots-and-terms.md robots-nevo": "the weekly probe the ruling keeps running, and its live meta (what the runner saw)",
+  "research/channel-loop/RULING-2026-10-06-robots-and-terms.md terms-kaggle": "the live shell capture the once-only js route (decision 3) re-renders",
   // The 4.10 row-18 ruling named amo-add-on-policies while urls.txt:331 was still active; its fold retired that line
   // (ruling §3 rule 1), so the slug is no longer an active capture and its entry here went with it.
   ...Object.fromEntries(
