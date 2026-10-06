@@ -28,15 +28,17 @@
 # checkout's node_modules. Tools write there on their own too: vitest keeps its results cache in node_modules/.vite.
 # `git status` of the checkout cannot see any of it (node_modules is ignored).
 #
-# Stopped by a signal (INT, TERM, HUP or PIPE) once the tree exists: the command is sent TERM, the tree is kept, its path
-# and the quoted removal command are printed (to a stderr that is still open), and the exit is 128 + the signal's number
-# (130, 143, 129, 141). The command runs in the background under `wait` so the trap runs when the signal arrives, not
+# Stopped by a signal (INT, TERM, HUP or PIPE) once the tree exists: the command is sent TERM and waited for, the tree is
+# kept, its path and the quoted removal command are printed (to a stderr that is still open), and the exit is 128 + the
+# signal's number (130, 143, 129, 141). The wait is for what the command does on TERM (mutate.mjs restores the file it
+# mutated and stops its test runner), so nothing still writes in the tree once the hint is printed; it is bounded by
+# SIM_TREE_STOP_SECONDS (default 10), after which the command is sent KILL, and that is said. The command runs in the background under `wait` so the trap runs when the signal arrives, not
 # when the command would have ended; its standard input is passed on (`<&0`). The traps are set before the command
 # starts, so it keeps the default response to SIGINT: a Ctrl-C at a terminal reaches it as well as sim-tree.
 #
 # Exit: the command's own exit code; 2 a refusal, with nothing created: not inside a git repository, an unknown ref,
 # an empty, existing (a dangling link included) or uncreatable --dir, a tree path inside the repository, no command
-# after --, or a bad option. (A command that itself
+# after --, a bad option, or a SIM_TREE_STOP_SECONDS that is not a whole number. (A command that itself
 # exits 2 is told apart by the "sim-tree: the command exited 2" line.) A step that fails while the tree is being built
 # (archive, init, commit, link) removes the half-built tree and exits with that step's code; the command never runs.
 set -euo pipefail
@@ -45,6 +47,8 @@ usage='usage: scripts/sim-tree.sh [--ref <ref>] [--keep] [--dir <path>] -- <cmd>
 refuse() { echo "sim-tree: $*" >&2; echo "$usage" >&2; exit 2; }
 
 ref=HEAD; keep=0; dir=""; dashdash=0
+stop_seconds="${SIM_TREE_STOP_SECONDS:-10}"
+[[ "$stop_seconds" =~ ^[0-9]+$ ]] || refuse "SIM_TREE_STOP_SECONDS is not a whole number of seconds: $stop_seconds"
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --ref) [ "$#" -ge 2 ] || refuse "--ref needs a value"; ref="$2"; shift 2 ;;
@@ -103,7 +107,21 @@ child=""
 stopped() {
   # A second signal while stopping is not acted on; the hint on a closed stderr fails quietly instead of raising SIGPIPE.
   trap '' INT TERM HUP PIPE
-  if [ -n "$child" ]; then kill -TERM "$child" 2>/dev/null || true; fi
+  if [ -n "$child" ]; then
+    kill -TERM "$child" 2>/dev/null || true
+    # Until the command has done what it does on TERM, at most stop_seconds; then KILL.
+    local polls=0
+    while kill -0 "$child" 2>/dev/null; do
+      if [ "$polls" -ge $((stop_seconds * 10)) ]; then
+        kill -KILL "$child" 2>/dev/null || true
+        echo "sim-tree: the command did not stop within ${stop_seconds} s of TERM; sent it KILL" >&2 || true
+        break
+      fi
+      polls=$((polls + 1))
+      sleep 0.1
+    done
+    wait "$child" 2>/dev/null || true
+  fi
   echo "sim-tree: stopped by SIG$1; kept $tree; remove it with: rm -rf -- $q" >&2 || true
   exit $((128 + $2))
 }

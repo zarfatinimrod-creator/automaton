@@ -3,7 +3,7 @@
  * prize-apply-reading — write a reading workflow's verdicts into research/measurements/ai-allowed-events.md.
  *
  *   node scripts/prize-apply-reading.mjs <workflow-output.json>... [--table <md>] [--rendered <dir>] [--apply]
- *        [--no-tests] [--json <out>]
+ *        [--overwrite] [--no-tests] [--json <out>]
  *
  * Defaults: --table research/measurements/ai-allowed-events.md, --rendered research/rendered (where a clause cell's
  * `research/rendered/<file>` pointers are looked up).
@@ -21,25 +21,40 @@
  *
  * THE KEY. The event's url field up to its first whitespace (the workflow may write a note after the URL, "(site:
  * VERDICT, ...)"). It must equal exactly one table row's Event URL cell, `<url>`, compared whole (never a prefix or a
- * substring): a key matching no row or two rows is refused with exit 2, naming the key and the count. Two items for
- * one key, in one output or across several, are both refused.
+ * substring): a key matching no row or two rows is refused with exit 2, naming the key and the count. Rows are the
+ * lines parseAiAllowedTable reads (under a quarter's heading or "Kept outside the window"); a row-shaped line in any
+ * other section is not one. Two items for one key, in one output or across several, are both refused.
  *
  * THE CHECKS, on every item before anything is written (one refused item refuses the run, and nothing is written):
  *   - finalGrade is RENDERED, BLOCKED, NONE or SNIPPET; finalQualifies is yes, no or empty, and empty unless the grade
- *     is RENDERED
- *   - the clause cell has no unescaped "|" (an escaped "\|" is kept as written) and no newline; any other run of
- *     whitespace becomes one space, and the cell is trimmed (the hand helper's rule)
- *   - no address in it in any form: a plain one (any @ between word characters), a percent-encoded @, a script escape
- *     (\u0040, \x40), a character reference (&#64;, &#x40;) or a mask ([redacted:email], with or without a domain): a
- *     cell names kinds of address, never one. A refusal names the form, never the text
- *   - every pointer `research/rendered/<file>[:<line>[-<line>]]` names a render-watch capture (<slug>.txt, .html,
- *     .pdf, .json or .xml; never urls.txt or a .meta.json) that exists in --rendered with its <slug>.meta.json beside
- *     it, and each line number is between 1 and the file's last line
+ *     is RENDERED. A RENDERED row needs yes or no, and a clause that names at least one capture (the table's step 3:
+ *     a RENDERED row without them would be written unsettled)
+ *   - the clause cell is not empty (whatever the grade, a reading says what it read or why it could not), has no
+ *     unescaped "|" (an escaped "\|" is kept as written) and no newline; any other run of whitespace becomes one
+ *     space, and the cell is trimmed (the hand helper's rule)
+ *   - no address in it in any form: a plain one (an @ between letters, marks or digits of any script, so an accented
+ *     local part or an internationalised domain too), a percent-encoded @ (%40, or the look-alikes' %EF%BC%A0 and
+ *     %EF%B9%AB), a script escape (\u0040, \x40, \u{40}), a character reference (&#64; or &#x40;, with or without the
+ *     semicolon, &commat;, and the look-alikes' references), a look-alike at sign (fullwidth U+FF20, small U+FE6B) or a
+ *     mask ([redacted:email], with or without a domain): a cell names kinds of address, never one. A refusal names
+ *     the form, never the text
+ *   - every pointer `research/rendered/<file>[:<lines>]` names a render-watch capture (<slug>.txt, .html, .pdf, .json
+ *     or .xml; never urls.txt or a .meta.json) that exists in --rendered with its <slug>.meta.json beside it. <lines>
+ *     is a line, a range (`3-7`, or with an en dash) or a comma-separated list of them (`3, 7-9`); every number in it
+ *     is between 1 and the file's last line, and a range does not end before it starts
  *
  * WHAT IT WRITES. Only the last three cells of each matched row (AI clause, Grade, Qualifies): the row is rebuilt as
  * "| " + its cells joined by " | " + " |", as the weekly job writes it, and every other byte of the file is kept (line
- * endings, CRLF included, the final newline, every other row, the Hebrew and the header). A cell that already holds
- * the value is not a change, so applying the same output twice changes nothing the second time.
+ * endings, CRLF included, the final newline, every other row, the Hebrew and the header). A table that mixes CRLF and
+ * LF line endings is refused (exit 1): which one a rebuilt row should end with is not knowable. A cell that already
+ * holds the value is not a change, so applying the same output twice changes nothing the second time.
+ *
+ * CELLS A ROW ALREADY HOLDS. A row with any of its three cells filled was graded by an earlier reading or by hand, and
+ * an older output must not undo a later edit (tick 52: the tick-49 RoboSyn output would have reverted the clause the
+ * main thread extended in tick 51). Replacing such cells with different ones is a replacement: a dry run shows it in
+ * the diff, marks the item "replaces the cells the row holds (--apply needs --overwrite)" and says so on stderr;
+ * --apply refuses it (exit 1, nothing written) unless --overwrite is given. Cells equal to the ones held are not a
+ * change at all.
  *
  * DRY RUN (the default): prints the unified diff of the table (zero lines of context, as the hand helper's difflib
  * did) and one line per item, `<key> → <grade>/<qualifies>; N pointers checked (M files); <change>; row <state>`, then
@@ -53,8 +68,9 @@
  * state, the reasons it was refused) whether or not the run is refused; it is the summary, not the table.
  *
  * Exit codes: 0 nothing to change, or applied (and the tests passed); 3 a dry run that would change something; 2 a key
- * matching no row or more than one (nothing written); 1 a usage or read error, a table the job did not write, or a
- * refused item (nothing written); with --apply, otherwise the test command's own code.
+ * matching no row or more than one (nothing written); 1 a usage or read error, a table the job did not write (or one
+ * that mixes line endings), a refused item, or a replacement without --overwrite under --apply (nothing written); with
+ * --apply, otherwise the test command's own code.
  *
  * It imports src/revenue/ai-allowed-events.ts: Node 22.18 and later strip the types themselves; on Node 20 run it as
  * `node --import tsx scripts/prize-apply-reading.mjs ...`.
@@ -84,14 +100,17 @@ export const QUALIFIES = new Set(["yes", "no", ""]);
 /** Address forms a cell must not hold, each with the words a refusal uses (never the text it matched). */
 export const ADDRESS_FORMS = [
   ["a masked address (render-watch's mask): a cell names kinds of address, never one", /\[redacted:email\]/i],
-  ["an address-shaped string (an @ between word characters)", /[A-Za-z0-9._%+-]@[A-Za-z0-9-]/],
-  ["a percent-encoded @", /%40/i],
-  ["a script-escaped @ (\\u0040 or \\x40)", /\\u0040|\\x40/i],
-  ["a character reference for @ (&#64; or &#x40;)", /&#0*64;|&#x0*40;/i],
+  // Letters, marks and digits of any script: an accented local part or an internationalised domain is an address too.
+  ["an address-shaped string (an @ between word characters)", /[\p{L}\p{M}\p{N}._%+-]@[\p{L}\p{M}\p{N}-]/u],
+  ["a percent-encoded @ (%40, or a look-alike's %EF%BC%A0 or %EF%B9%AB)", /%40|%EF%BC%A0|%EF%B9%AB/i],
+  ["a script-escaped @ (\\u0040, \\x40 or \\u{40})", /\\u0040|\\x40|\\u\{0*40\}/i],
+  // A browser reads &#64 without its semicolon too.
+  ["a character reference for @ (&#64;, &#x40;, &commat; or a look-alike's)", /&#0*(?:64|65312|65131)(?![0-9])|&#x0*(?:40|ff20|fe6b)(?![0-9a-f])|&commat;/i],
+  ["a look-alike @ (fullwidth U+FF20 or small U+FE6B)", /[\uFF20\uFE6B]/u],
 ];
 
-/** A capture pointer with its optional line or line range, as a session writes it in a clause cell. */
-const POINTER_RE = /research\/rendered\/([A-Za-z0-9][A-Za-z0-9._-]*)(?::(\d+)(?:[-–](\d+))?)?/g;
+/** A capture pointer with its optional lines (a line, a range, or a comma-separated list of them), as a session writes it. */
+const POINTER_RE = /research\/rendered\/([A-Za-z0-9][A-Za-z0-9._-]*)(?::(\d+(?:[-–]\d+)?(?:,[ \t]*\d+(?:[-–]\d+)?)*))?/g;
 /** A file render-watch writes as a capture (rowState's rule): <slug>.<txt|html|pdf|json|xml>. */
 const CAPTURE_FILE_RE = /^([A-Za-z0-9][A-Za-z0-9._-]*)\.(txt|html|pdf|json|xml)$/;
 
@@ -115,12 +134,35 @@ export function splitRow(line) {
   return cells;
 }
 
-/** The key of a row line, or null: its Event URL cell `<url>`, on a line of eight cells. */
-function rowKey(line) {
-  if (!line.startsWith("| ") || !line.includes("<http")) return null;
-  const cells = splitRow(line);
-  if (cells.length !== 8) return null;
-  return /^<([^<>\s]+)>$/.exec(cells[3])?.[1] ?? null;
+/** The sections whose table lines are rows (parseAiAllowedTable's ROW_SECTION, src/revenue/ai-allowed-events.ts). */
+const ROW_SECTION = /^## (?:\d{4}-Q[1-4]\b|Kept outside the window\b)/;
+
+/**
+ * The line index of every row, by its key (the Event URL cell `<url>`): lines of eight cells under a row section, as
+ * parseAiAllowedTable reads them; a row-shaped line in another section is not a row. Throws when the count differs
+ * from the parser's, so the two rules cannot drift apart unseen.
+ */
+function rowLines(lines, parsedRows) {
+  const at = new Map();
+  let inRows = false;
+  let found = 0;
+  lines.forEach((line, i) => {
+    if (line.startsWith("## ")) {
+      inRows = ROW_SECTION.test(line);
+      return;
+    }
+    if (!inRows || !line.startsWith("| ") || !line.includes("<http")) return;
+    const cells = splitRow(line);
+    if (cells.length !== 8) return;
+    const key = /^<([^<>\s]+)>$/.exec(cells[3])?.[1];
+    if (!key) return;
+    found += 1;
+    at.set(key, [...(at.get(key) ?? []), i]);
+  });
+  if (found !== parsedRows.length) {
+    throw new Error(`the table's rows are not the ones its parser reads (${found} found here, ${parsedRows.length} parsed)`);
+  }
+  return at;
 }
 
 /** The items of one output file's JSON. Throws on any other shape. */
@@ -160,12 +202,15 @@ export function checkPointers(clause, rendered) {
       continue;
     }
     files.add(name);
-    const lines = [m[2], m[3]].filter((v) => v !== undefined).map(Number);
-    if (lines.length === 0) continue;
+    if (m[2] === undefined) continue;
     const count = lineCount(path);
-    for (const n of lines) {
-      if (n < 1) problems.push(`research/rendered/${name}: line ${n} (lines are counted from 1)`);
-      else if (n > count) problems.push(`research/rendered/${name}: line ${n} is past the end (${count} lines)`);
+    for (const part of m[2].split(/,[ \t]*/)) {
+      const [from, to] = part.split(/[-–]/).map(Number);
+      if (to !== undefined && to < from) problems.push(`research/rendered/${name}: the range ${from}-${to} ends before it starts`);
+      for (const n of to === undefined ? [from] : [from, to]) {
+        if (n < 1) problems.push(`research/rendered/${name}: line ${n} (lines are counted from 1)`);
+        else if (n > count) problems.push(`research/rendered/${name}: line ${n} is past the end (${count} lines)`);
+      }
     }
   }
   return { pointers, files: files.size, problems };
@@ -204,11 +249,16 @@ export function checkItem(it, rendered) {
     if (/[\r\n]/.test(clause)) problems.push("the clause cell holds a newline");
     if (/(?<!\\)\|/.test(clause)) problems.push('the clause cell holds an unescaped "|" (write "\\|")');
     for (const [form, re] of ADDRESS_FORMS) if (re.test(clause)) problems.push(`the clause cell holds ${form}`);
+    if (clause.trim() === "") problems.push("the clause cell is empty: a reading says what it read, or why it could not");
     const p = checkPointers(clause, rendered);
     problems.push(...p.problems);
     summary.pointers = p.pointers;
     summary.files = p.files;
+    if (grade === "RENDERED" && p.pointers === 0 && clause.trim() !== "") {
+      problems.push("a RENDERED clause names no capture (research/rendered/<slug>.txt...): it was not read from one");
+    }
   }
+  if (grade === "RENDERED" && qualifies === "") problems.push("a RENDERED row needs yes or no in Qualifies (the table's step 3)");
   summary.grade = typeof grade === "string" ? grade : null;
   summary.qualifies = typeof qualifies === "string" ? qualifies : null;
   summary.clause = typeof clause === "string" ? clause.replace(/\s+/g, " ").trim() : null;
@@ -253,11 +303,12 @@ function main(argv) {
       table: { type: "string", default: TABLE },
       rendered: { type: "string", default: RENDERED },
       apply: { type: "boolean", default: false },
+      overwrite: { type: "boolean", default: false },
       "no-tests": { type: "boolean", default: false },
       json: { type: "string" },
     },
   });
-  if (positionals.length === 0) throw new Error("usage: node scripts/prize-apply-reading.mjs <workflow-output.json>... [--table <md>] [--rendered <dir>] [--apply] [--no-tests] [--json <out>]");
+  if (positionals.length === 0) throw new Error("usage: node scripts/prize-apply-reading.mjs <workflow-output.json>... [--table <md>] [--rendered <dir>] [--apply] [--overwrite] [--no-tests] [--json <out>]");
   const table = values.table;
   const rendered = values.rendered;
 
@@ -274,15 +325,12 @@ function main(argv) {
 
   const text = readFileSync(table, "utf8");
   const nl = text.includes("\r\n") ? "\r\n" : "\n";
-  parseAiAllowedTable(text); // throws on a table the job did not write
+  if (nl === "\r\n" && /(?:^|[^\r])\n/.test(text)) throw new Error(`${table} mixes CRLF and LF line endings: which one a rewritten row ends with is not knowable`);
+  const rows = parseAiAllowedTable(text); // throws on a table the job did not write
   const lines = text.split(nl);
 
   // Which lines each key matches, and how many items name it.
-  const at = new Map();
-  lines.forEach((line, i) => {
-    const key = rowKey(line);
-    if (key !== null) at.set(key, [...(at.get(key) ?? []), i]);
-  });
+  const at = rowLines(lines, rows);
   const named = new Map();
   for (const it of items) named.set(it.key, (named.get(it.key) ?? 0) + 1);
   let keyProblem = false;
@@ -298,31 +346,40 @@ function main(argv) {
 
   // The new lines: only the three cells of each matched row; everything else byte for byte.
   const out = [...lines];
-  const rows = parseAiAllowedTable(text);
   for (const it of items) {
     it.change = false;
+    it.replaces = false;
     it.state = null;
     if (it.problems.length) continue;
     const i = at.get(it.key)[0];
     const cells = splitRow(lines[i]);
+    const held = cells.slice(5, 8).some((c) => c !== "");
     cells[5] = it.clause;
     cells[6] = it.grade;
     cells[7] = it.qualifies;
     out[i] = `| ${cells.join(" | ")} |`;
     it.change = out[i] !== lines[i];
+    it.replaces = it.change && held;
     const row = rows.find((r) => r.url === it.key);
     const captureExists = (rel) => existsSync(join(rendered, rel.replace(/^research\/rendered\//, "")));
     const state = rowState({ ...row, clause: it.clause, grade: it.grade, qualifies: it.qualifies }, captureExists);
     it.state = state.state;
     it.reasons = state.reasons ?? [];
   }
+  // A replacement of cells a row holds is refused under --apply unless --overwrite; a dry run only shows it.
+  if (values.apply && !values.overwrite) {
+    for (const it of items) {
+      if (it.replaces) it.problems.push("the row already holds other cells (an earlier reading's, or a hand edit): run without --apply to see the diff; --overwrite replaces them");
+    }
+  }
   const refused = items.filter((it) => it.problems.length);
   const changed = items.filter((it) => it.change).length;
+  const replacing = items.filter((it) => it.replaces).length;
   const next = out.join(nl);
 
   if (values.json) {
-    const summary = items.map(({ source, index, key, event, grade, qualifies, gradeVerdict, readerGrade, pointers, files, change, state, reasons, problems }) => ({
-      source, index, key, event, grade, qualifies, gradeVerdict, readerGrade, pointers, files, change, state, reasons: reasons ?? [], refused: problems,
+    const summary = items.map(({ source, index, key, event, grade, qualifies, gradeVerdict, readerGrade, pointers, files, change, replaces, state, reasons, problems }) => ({
+      source, index, key, event, grade, qualifies, gradeVerdict, readerGrade, pointers, files, change, replaces, state, reasons: reasons ?? [], refused: problems,
     }));
     writeFileSync(values.json, `${JSON.stringify({ table, applied: values.apply && refused.length === 0, changed: refused.length ? 0 : changed, items: summary }, null, 2)}\n`);
   }
@@ -338,13 +395,16 @@ function main(argv) {
     const state = it.state === "unsettled" ? `unsettled: ${it.reasons.join("; ")}` : it.state;
     console.log(
       `${it.key} → ${it.grade}/${it.qualifies}; ${it.pointers} pointer${it.pointers === 1 ? "" : "s"} checked (${it.files} file${it.files === 1 ? "" : "s"}); ` +
-        `${it.change ? "changes the row" : "the row already holds these cells"}; row ${state}` +
+        `${it.replaces ? `replaces the cells the row holds (${values.overwrite ? "--overwrite given" : "--apply needs --overwrite"})` : it.change ? "changes the row" : "the row already holds these cells"}; row ${state}` +
         `${it.gradeVerdict ? `; verifier ${it.gradeVerdict}` : ""}`,
     );
   }
 
   if (!values.apply) {
     console.log(changed ? `prize-apply-reading: ${changed} row(s) would change (a dry run; --apply writes them)` : "prize-apply-reading: nothing to change");
+    if (replacing && !values.overwrite) {
+      console.error(`prize-apply-reading: ${replacing} row(s) already hold other cells: --apply refuses them unless --overwrite (read the diff above first)`);
+    }
     return changed ? 3 : 0;
   }
 

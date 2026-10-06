@@ -15,7 +15,8 @@ import { afterAll, describe, expect, it } from "vitest";
  *   - nothing is dispatched (no gh call at all) for an empty file, a line render-watch's parser refuses, or a line
  *     whose site the terms gate refuses;
  *   - the dispatch body is {"ref": <ref>, "inputs": {"urls": <the file, byte for byte>}};
- *   - the run is the one on <ref> created at or after the dispatch; the wait stops when it completes, and anything
+ *   - the run is the one on <ref> created at or after the dispatch (less a clock allowance) that was not listed before
+ *     it, whichever way the local clock is off; finding it is bounded; the wait stops when it completes, and anything
  *     but success fails; a run that never completes times out naming the run;
  *   - a dirty checkout or another branch is fetched, never merged (exit 4); --no-wait neither waits nor fetches;
  *   - the final exit is capture-check's (0 or 3), and the address report names kinds and counts, never an address.
@@ -61,6 +62,20 @@ const LOCAL = ["fixture", "person"].join(".");
 const DOMAIN = ["dept", "example", "edu"].join(".");
 const ADDRESS = [LOCAL, DOMAIN].join("@");
 const MASK = ["[redacted:email]", DOMAIN].join("@");
+// An asset name has the shape of an address and is not one.
+const ASSET = ["logo", "2x.png"].join("@");
+// The forms an address takes in a capture besides the plain one: encoded, escaped, look-alike, outside ASCII.
+const FORMS = [
+  [LOCAL, DOMAIN].join("%" + "40"),
+  [LOCAL, DOMAIN].join("&#" + "64;"),
+  [LOCAL, DOMAIN].join("&#x" + "40;"),
+  [LOCAL, DOMAIN].join("&" + "commat;"),
+  [LOCAL, DOMAIN].join("\\" + "u0040"),
+  [LOCAL, DOMAIN].join("\uFF20"),
+  [LOCAL, DOMAIN].join("\uFE6B"),
+  ["jos", "\u00e9", "@", DOMAIN].join(""),
+  [LOCAL, "@", "\u00fc", DOMAIN].join(""),
+];
 
 /** A capture as render-watch stores one: meta, html body, extracted text. `words` sets the text's length. */
 function capture(dir: string, slug: string, url: string, extra: string, words = 300) {
@@ -101,11 +116,18 @@ case "$*" in
     date -u +%s > "$d/dispatched-at"
     exit "\${STUB_DISPATCH_EXIT:-0}" ;;
   *"/runs?per_page=5&event=workflow_dispatch"*)
-    t=$(cat "$d/dispatched-at"); k=$(bump list-calls)
-    old='{"id":4141,"html_url":"'"$url"'/4141","created_at":"'"$(iso $((t - 3600)))"'","head_branch":"'"$STUB_REF"'","status":"completed","conclusion":"success"}'
-    other='{"id":4343,"html_url":"'"$url"'/4343","created_at":"'"$(iso "$t")"'","head_branch":"main","status":"queued","conclusion":null}'
-    new='{"id":4242,"html_url":"'"$url"'/4242","created_at":"'"$(iso "$t")"'","head_branch":"'"$STUB_REF"'","status":"queued","conclusion":null}'
-    if [ "$k" -lt 2 ]; then echo '{"total_count":2,"workflow_runs":['"$other,$old"']}'; else echo '{"total_count":3,"workflow_runs":['"$other,$new,$old"']}'; fi ;;
+    # Before the dispatch: the runs already there. After it: the new run appears on the second listing (not the first),
+    # unless STUB_NO_NEW_RUN. STUB_SKEW is GitHub's clock less the local one; STUB_OLD_AGE how long before the
+    # dispatch the older run on the ref was created.
+    if [ -f "$d/dispatched-at" ]; then t=$(cat "$d/dispatched-at"); k=$(bump list-calls); else t=$(date -u +%s); k=0; bump before-calls > /dev/null; [ "\${STUB_BEFORE_EXIT:-0}" = 0 ] || exit "$STUB_BEFORE_EXIT"; fi
+    s=\${STUB_SKEW:-0}
+    old='{"id":4141,"html_url":"'"$url"'/4141","created_at":"'"$(iso $((t - \${STUB_OLD_AGE:-3600} + s)))"'","head_branch":"'"$STUB_REF"'","status":"completed","conclusion":"success"}'
+    other='{"id":4343,"html_url":"'"$url"'/4343","created_at":"'"$(iso $((t + s)))"'","head_branch":"main","status":"queued","conclusion":null}'
+    new='{"id":4242,"html_url":"'"$url"'/4242","created_at":"'"$(iso $((t + s)))"'","head_branch":"'"$STUB_REF"'","status":"queued","conclusion":null}'
+    # main's run 4343 is new too (dispatched by someone else after this dispatch): it must not be taken for this one.
+    if [ "$k" -eq 0 ]; then echo '{"total_count":1,"workflow_runs":['"$old"']}'
+    elif [ "$k" -lt 2 ] || [ "\${STUB_NO_NEW_RUN:-0}" = 1 ]; then echo '{"total_count":2,"workflow_runs":['"$other,$old"']}'
+    else echo '{"total_count":3,"workflow_runs":['"$other,$new,$old"']}'; fi ;;
   *"/actions/runs/4242"*)
     k=$(bump run-polls)
     if [ "\${STUB_NEVER_COMPLETE:-0}" = 1 ] || [ "$k" -lt 2 ]; then
@@ -123,7 +145,7 @@ let made = 0;
  * REF holding the scripts, the fixture terms verdicts and research/rendered/urls.txt, and an origin REF one commit
  * ahead of the checkout with the dispatched slugs' captures (the commit render-watch.yml would push). A stub gh.
  */
-function world(opts: { short?: boolean; raw?: boolean } = {}) {
+function world(opts: { short?: boolean; raw?: boolean; forms?: boolean; oldCapture?: boolean } = {}) {
   made += 1;
   const base = join(scratch, `case-${made}`);
   const bare = join(base, "remote", "fixture-owner", "fixture-repo.git");
@@ -143,6 +165,8 @@ function world(opts: { short?: boolean; raw?: boolean } = {}) {
   // The weekly list: what an empty urls input would make render-watch fetch instead.
   writeFileSync(join(seed, "research", "rendered", "urls.txt"), `https://open.example/weekly${T}weekly-page\n`);
   writeFileSync(join(seed, "notes.md"), "a tracked file\n");
+  // A capture from an earlier run that the "workflow's" commit below does not change.
+  if (opts.oldCapture) capture(join(seed, "research", "rendered"), "prize-open-old", "https://open.example/old", "An older page.");
   git(seed, "add", "-A");
   git(seed, ...who, "commit", "-q", "-m", "scripts");
   git(seed, "push", "-q", bare, `HEAD:refs/heads/${REF}`);
@@ -150,8 +174,9 @@ function world(opts: { short?: boolean; raw?: boolean } = {}) {
   git(base, "clone", "-q", "-b", REF, bare, checkout);
 
   const rendered = join(seed, "research", "rendered");
-  capture(rendered, "prize-met-rules", "https://met.example/rules", `Write to ${MASK} for the rules.${opts.raw ? ` Or to ${ADDRESS}.` : ""}`);
-  capture(rendered, "prize-open-faq", "https://open.example/faq", "No address here.", opts.short ? 20 : 300);
+  const forms = opts.forms ? ` ${FORMS.map((f) => `Or ${f} .`).join(" ")}` : "";
+  capture(rendered, "prize-met-rules", "https://met.example/rules", `Write to ${MASK} for the rules.${opts.raw ? ` Or to ${ADDRESS}.` : ""}${forms}`);
+  capture(rendered, "prize-open-faq", "https://open.example/faq", `No address here; the logo is ${ASSET}.`, opts.short ? 20 : 300);
   git(seed, "add", "-A");
   git(seed, ...who, "commit", "-q", "-m", "render: 2 page(s) changed [skip ci]");
   git(seed, "push", "-q", bare, `HEAD:refs/heads/${REF}`);
@@ -165,11 +190,11 @@ function world(opts: { short?: boolean; raw?: boolean } = {}) {
 }
 
 type World = ReturnType<typeof world>;
-function run(w: World, args: string[], env: Record<string, string> = {}) {
+function run(w: World, args: string[], env: Record<string, string> = {}, timeout = 60_000) {
   const r = spawnSync("bash", [join(w.checkout, "scripts", "render-dispatch.sh"), ...args], {
     cwd: w.checkout,
     encoding: "utf8",
-    timeout: 60_000,
+    timeout,
     env: {
       ...process.env,
       ...gitEnv,
@@ -195,8 +220,10 @@ describe("render-dispatch: a dispatch that goes through", () => {
     expect(r.code, r.all).toBe(0);
     expect(JSON.parse(readFileSync(join(w.base, "gh-body.json"), "utf8"))).toEqual({ ref: REF, inputs: { urls: LINES } });
     const c = calls(w);
-    expect(c[0]).toBe(`api -X POST repos/fixture-owner/fixture-repo/actions/workflows/render-watch.yml/dispatches --input ${c[0].split(" ").at(-1)}`);
-    expect(c.filter((l) => l.includes("/runs?per_page=5&event=workflow_dispatch"))).toHaveLength(2);
+    // The runs already there are listed before the dispatch, so none of them can be taken for its run.
+    expect(c[0]).toBe("api repos/fixture-owner/fixture-repo/actions/workflows/render-watch.yml/runs?per_page=5&event=workflow_dispatch");
+    expect(c[1]).toBe(`api -X POST repos/fixture-owner/fixture-repo/actions/workflows/render-watch.yml/dispatches --input ${c[1].split(" ").at(-1)}`);
+    expect(c.filter((l) => l.includes("/runs?per_page=5&event=workflow_dispatch"))).toHaveLength(3);
     // The run on the ref created at or after the dispatch: not main's (4343) and not the older one (4141).
     expect(r.out).toContain("run 4242 https://github.com/fixture-owner/fixture-repo/actions/runs/4242");
     // The wait stops at the first "completed".
@@ -214,6 +241,7 @@ describe("render-dispatch: a dispatch that goes through", () => {
     const r = dispatch(w);
     expect(r.code, r.all).toBe(0);
     expect(r.out).toContain("prize-met-rules.txt: masked 1 (organisation or university 1); raw 0");
+    // The asset name (<name>@2x.png) is a file name, not an address.
     expect(r.out).toContain("prize-open-faq.txt: masked 0; raw 0");
     expect(r.err).not.toMatch(/WARNING/);
 
@@ -224,6 +252,35 @@ describe("render-dispatch: a dispatch that goes through", () => {
     expect(s.err).toMatch(/WARNING: prize-met-rules\.txt holds 1 address-shaped string/);
     expect(s.all).not.toContain(ADDRESS);
     expect(s.all).not.toContain(LOCAL);
+
+    // Every other form is counted too: encoded, escaped, look-alike, and outside ASCII.
+    const all = world({ forms: true });
+    const t = dispatch(all);
+    expect(t.code, t.all).toBe(0);
+    expect(t.out).toContain(`prize-met-rules.txt: masked 1 (organisation or university 1); raw ${FORMS.length} (organisation or university ${FORMS.length})`);
+    expect(t.err).toMatch(new RegExp(`WARNING: prize-met-rules\\.txt holds ${FORMS.length} address-shaped string`));
+    for (const f of [...FORMS, LOCAL, "jos\u00e9"]) expect(t.all).not.toContain(f);
+  });
+
+  it("the body is the file's bytes: CRLF, text outside ASCII and no final newline are sent as they are", () => {
+    const w = world();
+    const crlf = `# caf\u00e9 lines\r\nhttps://met.example/rules${T}prize-met-rules\r\nhttps://open.example/faq${T}prize-open-faq${T}js`;
+    writeFileSync(w.lines, crlf);
+    const r = dispatch(w, "--no-wait");
+    expect(r.code, r.all).toBe(0);
+    const body = readFileSync(join(w.base, "gh-body.json"), "utf8");
+    expect(JSON.parse(body)).toEqual({ ref: REF, inputs: { urls: readFileSync(w.lines, "utf8") } });
+    expect(JSON.parse(body).inputs.urls).toBe(crlf);
+  });
+
+  it("says which slugs the merged commits did not change (an unchanged page, or a line the run skipped)", () => {
+    const w = world({ oldCapture: true });
+    writeFileSync(w.lines, `${LINES}https://open.example/old${T}prize-open-old\n`);
+    const r = dispatch(w);
+    expect(r.code, r.all).toBe(0);
+    expect(r.err).toMatch(/\[6\/7\] NOTE: prize-open-old: no capture file of it changed in the merged commits/);
+    expect(r.err).not.toMatch(/prize-met-rules: no capture file/);
+    expect(r.err).not.toMatch(/prize-open-faq: no capture file/);
   });
 
   it("exits with capture-check's 3 when a capture is flagged", () => {
@@ -238,7 +295,7 @@ describe("render-dispatch: a dispatch that goes through", () => {
     const w = world();
     const r = run(w, [w.lines, REF]);
     expect(r.code, r.all).toBe(0);
-    expect(calls(w)[0]).toMatch(/^api -X POST .*\/dispatches --input /);
+    expect(calls(w)[1]).toMatch(/^api -X POST .*\/dispatches --input /);
   });
 });
 
@@ -257,6 +314,11 @@ describe("render-dispatch: refused before any gh call", () => {
     const w = world();
     refused(w, "", /no URL line/);
     refused(w, "# only a comment\n\n", /no URL line/);
+    // What JavaScript's trim() removes and grep's [[:space:]] does not: the workflow's input would trim to nothing.
+    refused(w, "\uFEFF\n", /no URL line/);
+    refused(w, "\u00a0\n", /no URL line/);
+    refused(w, "\uFEFF# a comment\n", /no URL line/);
+    refused(w, "\u2028\n\u00a0\u00a0\n", /no URL line/);
   });
 
   it("a line render-watch's parser refuses: not a URL, a duplicate slug, an unknown flag, a barred host", () => {
@@ -295,6 +357,31 @@ describe("render-dispatch: the run, the wait and the merge", () => {
     expect(git(w.checkout, "rev-parse", `origin/${REF}`)).toBe(w.start);
   });
 
+  it("finding the run is bounded: no new run on the ref within RENDER_DISPATCH_FIND_SECONDS fails, naming the ref", () => {
+    const w = world();
+    const r = run(w, [w.lines, REF, "--gh", w.stub], { STUB_NO_NEW_RUN: "1", RENDER_DISPATCH_FIND_SECONDS: "1" }, 15_000);
+    expect(r.code, r.all).toBe(1);
+    expect(r.err).toMatch(/\[3\/7\] no run of render-watch\.yml on loop-branch .* within 1 s/);
+    expect(count(w, "list-calls")).toBeGreaterThanOrEqual(2);
+    expect(count(w, "run-polls")).toBe(0);
+    expect(git(w.checkout, "rev-parse", `origin/${REF}`)).toBe(w.start);
+  });
+
+  it("the local clock running behind GitHub's: the older run on the ref, created 'after' the local time, is not taken", () => {
+    const w = world();
+    const r = run(w, [w.lines, REF, "--gh", w.stub], { STUB_SKEW: "600", STUB_OLD_AGE: "60" });
+    expect(r.code, r.all).toBe(0);
+    expect(r.out).toContain("run 4242 https://github.com/fixture-owner/fixture-repo/actions/runs/4242");
+    expect(r.out).not.toContain("run 4141");
+  });
+
+  it("the local clock running ahead of GitHub's (within the allowance): the new run is still found", () => {
+    const w = world();
+    const r = run(w, [w.lines, REF, "--gh", w.stub], { STUB_SKEW: "-60" });
+    expect(r.code, r.all).toBe(0);
+    expect(r.out).toContain("run 4242 https://github.com/fixture-owner/fixture-repo/actions/runs/4242");
+  });
+
   it("a run that does not conclude success fails, and nothing is fetched", () => {
     const v = world();
     const f = run(v, [v.lines, REF, "--gh", v.stub], { STUB_CONCLUSION: "failure" });
@@ -313,12 +400,22 @@ describe("render-dispatch: the run, the wait and the merge", () => {
     expect(git(w.checkout, "rev-parse", "HEAD")).toBe(w.start);
   });
 
+  it("listing the runs before the dispatch fails: nothing is dispatched", () => {
+    const w = world();
+    const r = run(w, [w.lines, REF, "--gh", w.stub], { STUB_BEFORE_EXIT: "1" });
+    expect(r.code, r.all).toBe(1);
+    expect(r.err).toMatch(/\[2\/7\] listing the runs failed; nothing dispatched/);
+    expect(calls(w)).toHaveLength(1);
+    expect(calls(w)[0]).toMatch(/\/runs\?per_page=5&event=workflow_dispatch$/);
+  });
+
   it("a failed dispatch stops there", () => {
     const w = world();
     const r = run(w, [w.lines, REF, "--gh", w.stub], { STUB_DISPATCH_EXIT: "1" });
     expect(r.code, r.all).toBe(1);
     expect(r.err).toMatch(/the dispatch failed/);
-    expect(calls(w)).toHaveLength(1);
+    expect(calls(w)).toHaveLength(2);
+    expect(calls(w)[1]).toMatch(/\/dispatches --input /);
   });
 
   it("a dirty checkout is fetched, not merged: exit 4, the edit kept", () => {

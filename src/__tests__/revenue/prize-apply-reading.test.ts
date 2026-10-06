@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { basename, delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
-import { buildAiAllowedTable, parseAiAllowedTable } from "../../revenue/ai-allowed-events.js";
+import { buildAiAllowedTable, parseAiAllowedTable, rowState } from "../../revenue/ai-allowed-events.js";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as prize-dispatch.mjs)
 import { PRIZE_TESTS } from "../../../scripts/prize-apply-reading.mjs";
 
@@ -33,7 +33,10 @@ const committedRows = parseAiAllowedTable(committed);
 const urlCount = new Map<string, number>();
 for (const r of committedRows) urlCount.set(r.url, (urlCount.get(r.url) ?? 0) + 1);
 const unique = committedRows.filter((r) => urlCount.get(r.url) === 1);
-const [A, B] = unique;
+// A and B are rows no session has graded yet (the script refuses to replace cells a row holds unless --overwrite);
+// G is one a session graded, for the cases about replacing cells.
+const [A, B] = unique.filter((r) => r.clause === "" && r.grade === "" && r.qualifies === "");
+const G = unique.find((r) => r.clause !== "" && r.grade === "RENDERED");
 
 const CAPTURE = "prize-fixture-aaaa1111";
 const P = `research/rendered/${CAPTURE}.txt`;
@@ -90,9 +93,10 @@ const changedLines = (before: string, after: string, nl = "\n") => {
 const lineOf = (text: string, url: string) => text.split("\n").findIndex((l) => l.includes(`| <${url}> |`));
 
 describe("prize-apply-reading: the cells it writes", () => {
-  it("has two rows with a URL no other row shares to work on", () => {
+  it("has two ungraded rows and one graded row with a URL no other row shares to work on", () => {
     expect(A).toBeDefined();
     expect(B).toBeDefined();
+    expect(G).toBeDefined();
   });
 
   it("a dry run prints the diff and a summary line, exits 3 and writes nothing; --apply writes RENDERED/no", () => {
@@ -113,7 +117,17 @@ describe("prize-apply-reading: the cells it writes", () => {
     const row = rowOf(after, A.url);
     expect([row.clause, row.grade, row.qualifies]).toEqual([CLAUSE, "RENDERED", "no"]);
     expect(changedLines(committed, after)).toEqual([lineOf(committed, A.url)]);
-    expect(done.out).toMatch(/row states: graded \d+, awaiting \d+, unsettled \d+/);
+    // The row states are those of the table it wrote (A moved from awaiting to graded), counted as rowState counts them.
+    const states = (text: string) => {
+      const rows = parseAiAllowedTable(text);
+      const exists = (rel: string) => existsSync(join(f.rendered, rel.replace(/^research\/rendered\//, "")));
+      const n: Record<string, number> = { graded: 0, awaiting: 0, unsettled: 0, "same-event": 0 };
+      for (const row of rows) n[rowState(row, exists, rows.some((o) => o !== row && o.url === row.url && o.name === row.name)).state] += 1;
+      return n;
+    };
+    const [was, now] = [states(committed), states(after)];
+    expect([now.graded, now.awaiting]).toEqual([was.graded + 1, was.awaiting - 1]);
+    expect(done.out).toContain(`row states: graded ${now.graded}, awaiting ${now.awaiting}, unsettled ${now.unsettled}, same-event ${now["same-event"]}\n`);
   });
 
   it("keeps the header, every other row and the final newline byte for byte", () => {
@@ -187,6 +201,54 @@ describe("prize-apply-reading: the cells it writes", () => {
   });
 });
 
+describe("prize-apply-reading: cells a row already holds are replaced only with --overwrite", () => {
+  const other = `Silent on AI-built entries: "a later reading." (${P}:5).`;
+
+  it("a dry run shows the replacement and says --apply needs --overwrite (exit 3); --apply refuses it, writing nothing", () => {
+    const f = fixture();
+    const out = output(f.dir, [item(G.url, { clause: other })]);
+    const dry = apply(f, [out]);
+    expect(dry.code, dry.all).toBe(3);
+    expect(dry.out).toContain(`-| ${G.name} |`);
+    expect(dry.out).toContain(`+| ${G.name} |`);
+    expect(dry.out).toMatch(/replaces the cells the row holds \(--apply needs --overwrite\)/);
+    expect(dry.err).toMatch(/1 row\(s\) already hold other cells: --apply refuses them unless --overwrite/);
+    expect(readFileSync(f.table, "utf8")).toBe(committed);
+
+    const r = apply(f, [out], "--apply", "--no-tests");
+    expect(r.code, r.all).toBe(1);
+    expect(r.err).toContain(G.url);
+    expect(r.err).toMatch(/the row already holds other cells .*--overwrite replaces them/);
+    expect(r.err).toMatch(/nothing written/);
+    expect(readFileSync(f.table, "utf8")).toBe(committed);
+  });
+
+  it("one replacement refuses the whole --apply: an ungraded row beside it is not written either", () => {
+    const f = fixture();
+    const r = apply(f, [output(f.dir, [item(A.url), item(G.url, { clause: other })])], "--apply", "--no-tests");
+    expect(r.code, r.all).toBe(1);
+    expect(readFileSync(f.table, "utf8")).toBe(committed);
+  });
+
+  it("--apply --overwrite replaces them, and only that row's three cells", () => {
+    const f = fixture();
+    const r = apply(f, [output(f.dir, [item(G.url, { clause: other })])], "--apply", "--overwrite", "--no-tests");
+    expect(r.code, r.all).toBe(0);
+    const after = readFileSync(f.table, "utf8");
+    const row = rowOf(after, G.url);
+    expect([row.clause, row.grade, row.qualifies]).toEqual([other, "RENDERED", "no"]);
+    expect(changedLines(committed, after)).toEqual([lineOf(committed, G.url)]);
+  });
+
+  it("cells equal to the ones the row holds are not a replacement: --apply without --overwrite exits 0", () => {
+    const f = fixture();
+    const same = { clause: G.clause, grade: G.grade, qualifies: G.qualifies };
+    const r = run([output(f.dir, [item(G.url, same)]), "--table", f.table, "--rendered", RENDERED, "--apply", "--no-tests"]);
+    expect(r.code, r.all).toBe(0);
+    expect(readFileSync(f.table, "utf8")).toBe(committed);
+  });
+});
+
 describe("prize-apply-reading: what it refuses, writing nothing", () => {
   const refused = (f: ReturnType<typeof fixture>, items: unknown[], code = 1) => {
     const r = apply(f, [output(f.dir, items)], "--apply", "--no-tests");
@@ -248,6 +310,18 @@ describe("prize-apply-reading: what it refuses, writing nothing", () => {
     expect(refused(f, [item(A.url, { grade: "SNIPPET", qualifies: "yes" })]).err).toMatch(/empty unless the grade is RENDERED/);
   });
 
+  it("a RENDERED row needs yes or no, and a clause that names a capture; no grade takes an empty clause", () => {
+    const f = fixture();
+    expect(refused(f, [item(A.url, { qualifies: "" })]).err).toMatch(/a RENDERED row needs yes or no in Qualifies/);
+    expect(refused(f, [item(A.url, { clause: "Silent on AI-built entries." })]).err).toMatch(/a RENDERED clause names no capture/);
+    expect(refused(f, [item(A.url, { clause: "   " })]).err).toMatch(/the clause cell is empty/);
+    expect(refused(f, [item(A.url, { grade: "BLOCKED", clause: "" })]).err).toMatch(/the clause cell is empty/);
+    // A BLOCKED row says why the page was not read; it need not cite a capture.
+    const ok = apply(f, [output(f.dir, [item(A.url, { grade: "BLOCKED", clause: "The rules page asks for a sign-in." })])], "--apply", "--no-tests");
+    expect(ok.code, ok.all).toBe(0);
+    expect(rowOf(readFileSync(f.table, "utf8"), A.url).grade).toBe("BLOCKED");
+  });
+
   it("a clause with an unescaped pipe, or a newline", () => {
     const f = fixture();
     expect(refused(f, [item(A.url, { clause: `a | b (${P}:1)` })]).err).toMatch(/unescaped "\|"/);
@@ -266,6 +340,18 @@ describe("prize-apply-reading: what it refuses, writing nothing", () => {
       ["[redacted:email]", /a masked address/],
       [[local, domain].join("\\" + "x40"), /script-escaped/],
       [[local, domain].join("&#" + "64;"), /character reference/],
+      [[local, domain].join("&#" + "64"), /character reference/],
+      [[local, domain].join("&#x" + "0040;"), /character reference/],
+      [[local, domain].join("&" + "commat;"), /character reference/],
+      [[local, domain].join("\\u{" + "40}"), /script-escaped/],
+      // Outside ASCII: a local part that ends in a letter with an accent, a domain that starts with one or with a digit,
+      // and the look-alike at signs (fullwidth and small), raw and percent-encoded.
+      [["jos", "\u00e9", "@", domain].join(""), /an @ between word characters/],
+      [[local, "@", "\u00fc", domain].join(""), /an @ between word characters/],
+      [[local, "@", "1", domain].join(""), /an @ between word characters/],
+      [[local, domain].join("\uFF20"), /look-alike @/],
+      [[local, domain].join("\uFE6B"), /look-alike @/],
+      [[local, domain].join("%" + "EF%BC%A0"), /a percent-encoded @/],
     ];
     for (const [address, kind] of forms) {
       const r = refused(f, [item(A.url, { clause: `Write to ${address} for the rules (${P}:1).` })]);
@@ -283,6 +369,8 @@ describe("prize-apply-reading: what it refuses, writing nothing", () => {
       [`${P}:11`, /line 11 is past the end \(10 lines\)/],
       [`${P}:0`, /line 0/],
       [`${P}:3-12`, /line 12 is past the end/],
+      [`${P}:9-2`, /the range 9-2 ends before it starts/],
+      [`${P}:2, 99`, /line 99 is past the end/],
       ["research/rendered/urls.txt", /not a capture/],
       [`research/rendered/${CAPTURE}.meta.json`, /not a capture/],
     ];
@@ -298,6 +386,39 @@ describe("prize-apply-reading: what it refuses, writing nothing", () => {
     const f = fixture();
     const r = refused(f, [item(A.url), item(B.url, { clause: "a | b" })]);
     expect(r.err).toContain(B.url);
+  });
+
+  it("a table the job did not write (a row of seven cells in a quarter section), or one that mixes line endings", () => {
+    const f = fixture();
+    const lines = committed.split("\n");
+    const at = lineOf(committed, B.url);
+    lines[at] = lines[at].replace(/ \| [^|]*\|$/, " |");
+    const broken = lines.join("\n");
+    writeFileSync(f.table, broken);
+    const r = apply(f, [output(f.dir, [item(A.url)])], "--apply", "--no-tests");
+    expect(r.code, r.all).toBe(1);
+    expect(r.err).toMatch(/has 7 cells, not 8/);
+    expect(readFileSync(f.table, "utf8")).toBe(broken);
+
+    const g = fixture();
+    const mixed = committed.replace("\n", "\r\n");
+    writeFileSync(g.table, mixed);
+    const m = apply(g, [output(g.dir, [item(A.url)])], "--apply", "--no-tests");
+    expect(m.code, m.all).toBe(1);
+    expect(m.err).toMatch(/mixes CRLF and LF line endings/);
+    expect(readFileSync(g.table, "utf8")).toBe(mixed);
+  });
+
+  it("a row-shaped line outside the row sections is not a row: the key still matches the one row", () => {
+    const f = fixture();
+    const copy = committed.split("\n")[lineOf(committed, A.url)];
+    const withNotes = `${committed}${committed.endsWith("\n") ? "" : "\n"}\n## Notes\n\n${copy}\n`;
+    writeFileSync(f.table, withNotes);
+    const r = apply(f, [output(f.dir, [item(A.url)])], "--apply", "--no-tests");
+    expect(r.code, r.all).toBe(0);
+    const after = readFileSync(f.table, "utf8");
+    expect(rowOf(after, A.url).grade).toBe("RENDERED");
+    expect(after.endsWith(`## Notes\n\n${copy}\n`)).toBe(true);
   });
 
   it("an output that is neither an array nor {result: [...]}, or not JSON", () => {
@@ -382,7 +503,7 @@ describe("prize-apply-reading: the committed table's own cells change nothing", 
 });
 
 describe("the instrument's text names the script as the way a reading's cells are applied", () => {
-  it("step 3 of the template and of the committed md name `node scripts/prize-apply-reading.mjs <output.json> --apply`", () => {
+  it("step 3 of the template and of the committed md name the dry run, then `node scripts/prize-apply-reading.mjs <output.json> --apply`", () => {
     const built = buildAiAllowedTable({
       events: [],
       measuredAt: "2026-10-05T00:00:00Z",
@@ -395,6 +516,9 @@ describe("the instrument's text names the script as the way a reading's cells ar
     for (const text of [built.markdown, committed]) {
       const step3 = text.split(/\r?\n/).find((l) => l.startsWith("3. "));
       expect(step3).toContain("`node scripts/prize-apply-reading.mjs <output.json> --apply`");
+      // The dry run comes first: --apply on an older output would otherwise undo a later edit unseen.
+      expect(step3).toContain("`node scripts/prize-apply-reading.mjs <output.json>` first, a dry run that prints the diff and writes nothing");
+      expect(step3).toContain("unless given `--overwrite`, cells that would replace the ones a row already holds");
     }
   });
 });

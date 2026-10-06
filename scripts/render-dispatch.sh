@@ -17,7 +17,9 @@
 #
 # The steps, in order; each prints what it does and its command's exit code to stderr:
 #   1. validate: refuse a file with no URL line (an empty `urls` input makes render-watch fetch the whole of
-#      research/rendered/urls.txt); then render-watch's own parser must accept the lines
+#      research/rendered/urls.txt), counted by render-watch's own rule (a leading BOM dropped, each line trimmed with
+#      JavaScript's trim(), so a file of BOMs, no-break spaces or line separators has none); then render-watch's own
+#      parser must accept the lines
 #      (RENDER_WATCH_URLS=<the file> node scripts/render-watch.mjs --needs-browser, which also says whether a js line
 #      needs the browser); then every line needs a slug and a site that passes termsGate (scripts/queue-zero-test.mjs,
 #      the gate scripts/prize-dispatch.mjs applies), or it is refused with the gate's reason. Nothing is dispatched
@@ -25,22 +27,31 @@
 #   2. dispatch: the body {"ref": <ref>, "inputs": {"urls": <the file>}} is written by python3 (never by hand), and
 #      POSTed with `gh api -X POST repos/<owner>/<repo>/actions/workflows/render-watch.yml/dispatches --input <body>`;
 #      owner and repo are read from `git remote get-url origin` of this checkout.
-#   3. find the run: `gh api '.../render-watch.yml/runs?per_page=5&event=workflow_dispatch'` until a run on <ref>
-#      created at or after the moment before the dispatch appears (every RENDER_DISPATCH_FIND_POLL_SECONDS, default 5,
-#      for at most RENDER_DISPATCH_FIND_SECONDS, default 120); its id and URL go to stdout. (A run someone else
-#      dispatched on the same ref in the same seconds would be taken for this one; the concurrency group serialises them.)
+#   3. find the run: the same runs list is read once before the dispatch (step 2), and its run ids are set aside. Then
+#      `gh api '.../render-watch.yml/runs?per_page=5&event=workflow_dispatch'` until a run on <ref> appears that was
+#      not among them and was created at or after the moment before the dispatch, less RENDER_DISPATCH_CLOCK_SKEW_SECONDS
+#      (default 120: a local clock that runs ahead of GitHub's by less than that still finds the run, and one that runs
+#      behind cannot take an older run, which was listed before the dispatch); every RENDER_DISPATCH_FIND_POLL_SECONDS,
+#      default 5, for at most RENDER_DISPATCH_FIND_SECONDS, default 120. Its id and URL go to stdout. (A run someone
+#      else dispatched on the same ref in the same seconds would be taken for this one; the concurrency group
+#      serialises them.)
 #   4. wait, unless --no-wait: poll the run every RENDER_DISPATCH_POLL_SECONDS (default 20) until it is completed, at
 #      most --wait-seconds; a conclusion other than success fails (exit 1), and so does the time running out, naming
 #      the run.
 #   5. `git fetch origin <ref>`, then `git merge --ff-only origin/<ref>` only when this checkout is on <ref> with no
 #      uncommitted change to a tracked file. Otherwise the fetch result is printed and the script stops with exit 4,
 #      for the merge to be done by hand. (Never `git stash`: commit first.)
-#   6. `node scripts/capture-check.mjs <slugs>`: its table on stdout; 3 only flags (the reader judges).
-#   7. an address report per capture file (<slug>.txt, .html, .json, .xml): how many masks render-watch wrote
-#      ([redacted:email], with the domain's kind when it kept one) and how many raw address-shaped strings remain (a
-#      local part and @, %40 or a script escape \u0040 / \x40 before a domain that is not a file name), each counted by
-#      domain kind (domainKind, scripts/remask-captures.mjs). Kinds and counts only, never an address or a domain. A
-#      raw count above 0 is a WARNING line on stderr; it does not change the exit code.
+#   6. `node scripts/capture-check.mjs <slugs>`: its table on stdout; 3 only flags (the reader judges). Before it, a
+#      NOTE line on stderr for each slug none of whose capture files the merged commits changed: render-watch keeps an
+#      unchanged page's capture (and its fetchedAt) as it was, and leaves a js line it skipped (no browser) untouched,
+#      so such a capture may be older than this run; the run's log says which. It does not change the exit code.
+#   7. an address report per capture file (<slug>.txt, .html, .json, .xml, read as UTF-8): how many masks render-watch
+#      wrote ([redacted:email], with the domain's kind when it kept one) and how many raw address-shaped strings remain
+#      (a local part, then @, %40, a script escape \u0040 / \x40, a character reference &#64; / &#x40; / &commat;, or a
+#      look-alike at sign U+FF20 / U+FE6B, then a domain that is not a file name; letters, marks and digits of any
+#      script count, so an accented local part or an internationalised domain is found too), each counted by domain
+#      kind (domainKind, scripts/remask-captures.mjs). Kinds and counts only, never an address or a domain. A raw count
+#      above 0 is a WARNING line on stderr; it does not change the exit code.
 #
 # Everything runs in the checkout this file is in: its scripts, its origin, its research/rendered.
 #
@@ -59,6 +70,7 @@ WORKFLOW=render-watch.yml
 POLL="${RENDER_DISPATCH_POLL_SECONDS:-20}"
 FIND_POLL="${RENDER_DISPATCH_FIND_POLL_SECONDS:-5}"
 FIND_SECONDS="${RENDER_DISPATCH_FIND_SECONDS:-120}"
+SKEW="${RENDER_DISPATCH_CLOCK_SKEW_SECONDS:-120}"
 
 wait_seconds=1200; no_wait=0; gh=gh; positional=()
 while [ "$#" -gt 0 ]; do
@@ -75,6 +87,7 @@ lines_file="${positional[0]}"; ref="${positional[1]}"
 [[ "$wait_seconds" =~ ^[0-9]+$ ]] || usage_error "--wait-seconds is not a whole number of seconds: $wait_seconds"
 for v in "$POLL" "$FIND_POLL"; do [[ "$v" =~ ^[0-9]+(\.[0-9]+)?$ ]] || usage_error "a poll interval is not a number of seconds: $v"; done
 [[ "$FIND_SECONDS" =~ ^[0-9]+$ ]] || usage_error "RENDER_DISPATCH_FIND_SECONDS is not a whole number: $FIND_SECONDS"
+[[ "$SKEW" =~ ^[0-9]+$ ]] || usage_error "RENDER_DISPATCH_CLOCK_SKEW_SECONDS is not a whole number: $SKEW"
 { [ -f "$lines_file" ] && [ -r "$lines_file" ]; } || usage_error "no readable file: $lines_file"
 git check-ref-format "refs/heads/$ref" || usage_error "not a branch name: $ref"
 
@@ -112,14 +125,30 @@ if (refused) process.exit(1);
 console.log(slugs.join("\n"));
 JS
 
-# Step 3: the first run on the ref created at or after the dispatch, as "<id> <url>", or nothing.
+# Step 1: the number of URL lines, by render-watch's rule (parseUrlList and resolveListText): a leading BOM dropped,
+# each line trimmed with trim() (BOM, no-break space and line separators included), comments and blank lines skipped.
+read -r -d '' COUNT_JS <<'JS' || true
+const { readFileSync } = await import("node:fs");
+const lines = readFileSync(process.argv[1], "utf8").replace(/^\uFEFF/, "").split(/\r?\n/);
+console.log(lines.filter((raw) => raw.trim() !== "" && !raw.trim().startsWith("#")).length);
+JS
+
+# Step 2: the ids of the runs already listed, comma-separated.
+read -r -d '' IDS_PY <<'PY' || true
+import json, sys
+print(",".join(str(run["id"]) for run in json.load(sys.stdin).get("workflow_runs") or []))
+PY
+
+# Step 3: the first run on the ref that was not listed before the dispatch and was created at or after the dispatch
+# less the clock allowance, as "<id> <url>", or nothing.
 read -r -d '' PICK_PY <<'PY' || true
 import json, sys
-from datetime import datetime
+from datetime import datetime, timedelta
 when = lambda s: datetime.fromisoformat(s.replace("Z", "+00:00"))
-since, ref = when(sys.argv[1]), sys.argv[2]
+since, ref = when(sys.argv[1]) - timedelta(seconds=int(sys.argv[3])), sys.argv[2]
+known = {int(i) for i in sys.argv[4].split(",") if i}
 for run in json.load(sys.stdin).get("workflow_runs") or []:
-    if run.get("head_branch") == ref and when(run.get("created_at", "")) >= since:
+    if run.get("head_branch") == ref and run.get("id") not in known and when(run.get("created_at", "")) >= since:
         print(run["id"], run.get("html_url", ""))
         break
 PY
@@ -138,10 +167,14 @@ const { existsSync, readFileSync } = await import("node:fs");
 const { join } = await import("node:path");
 const { pathToFileURL } = await import("node:url");
 const { domainKind } = await import(pathToFileURL(join(root, "scripts", "remask-captures.mjs")).href);
-const AT = "(?:@|%40|\\\\[uU]0040|\\\\[xX]40)";
-const DOMAIN = "((?:[A-Za-z0-9-]+\\.)+[A-Za-z]{2,63})";
-const MASK = new RegExp(`\\[redacted:email\\](?:${AT}${DOMAIN})?`, "g");
-const RAW = new RegExp(`(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]+${AT}${DOMAIN}(?![A-Za-z0-9-])`, "g");
+// An @ as a capture may hold one: plain, percent-encoded, script-escaped, a character reference, a look-alike.
+const AT = "(?:@|%40|\\\\[uU]0040|\\\\[xX]40|&#0*64;?|&#[xX]0*40;?|&commat;|\uFF20|\uFE6B)";
+// Letters, marks and digits of any script: an accented local part or an internationalised domain is an address too.
+const W = "\\p{L}\\p{M}\\p{N}";
+const LOCAL = `[${W}._%+-]`;
+const DOMAIN = `((?:[${W}-]+\\.)+[\\p{L}\\p{M}][${W}-]{1,62})`;
+const MASK = new RegExp(`\\[redacted:email\\](?:${AT}${DOMAIN})?`, "gu");
+const RAW = new RegExp(`(?<!${LOCAL})${LOCAL}+${AT}${DOMAIN}(?![${W}-])`, "gu");
 const FILE_NAME = /\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?)$/i;
 const tally = (kinds) => [...kinds].sort(([a], [b]) => (a < b ? -1 : 1)).map(([k, n]) => `${k} ${n}`).join(", ");
 const said = (n, kinds) => `${n}${n ? ` (${tally(kinds)})` : ""}`;
@@ -149,7 +182,7 @@ for (const slug of slugs) {
   for (const ext of ["txt", "html", "json", "xml"]) {
     const file = join(root, "research", "rendered", `${slug}.${ext}`);
     if (!existsSync(file)) continue;
-    const text = readFileSync(file, "latin1");
+    const text = readFileSync(file, "utf8");
     const masks = new Map();
     const raw = new Map();
     let m = 0;
@@ -172,7 +205,8 @@ for (const slug of slugs) {
 JS
 
 # ---- 1. validate ----------------------------------------------------------------------------------------------------
-urls_lines="$(grep -cvE '^[[:space:]]*(#|$)' "$lines_file" || true)"
+rc=0; urls_lines="$(node --input-type=module -e "$COUNT_JS" "$lines_file")" || rc=$?
+[ "$rc" -eq 0 ] || die 1 "[1/7] could not count the URL lines of $lines_file (node exit $rc)"
 [ "$urls_lines" -gt 0 ] || die 1 "[1/7] $lines_file has no URL line (only comments or blank lines): nothing to dispatch (an empty urls input would make render-watch fetch all of research/rendered/urls.txt)"
 log "[1/7] validate $urls_lines line(s) with render-watch's parser: RENDER_WATCH_URLS=<$lines_file> node scripts/render-watch.mjs --needs-browser"
 rc=0; mode="$(RENDER_WATCH_URLS="$(cat "$lines_file")" node "$ROOT/scripts/render-watch.mjs" --needs-browser)" || rc=$?
@@ -198,6 +232,11 @@ with open(sys.argv[2], encoding="utf-8", newline="") as f:
 json.dump({"ref": sys.argv[1], "inputs": {"urls": urls}}, sys.stdout)' "$ref" "$lines_file" > "$body" || rc=$?
 log "[2/7] python3 (body): exit $rc"
 [ "$rc" -eq 0 ] || die 1 "[2/7] could not build the dispatch body; nothing dispatched"
+log "[2/7] the runs already there, so none of them is taken for this dispatch's: $gh api '$WORKFLOW/runs?per_page=5&event=workflow_dispatch'"
+rc=0; listed="$("$gh" api "$api/runs?per_page=5&event=workflow_dispatch")" || rc=$?
+log "[2/7] gh api (runs before the dispatch): exit $rc"
+[ "$rc" -eq 0 ] || die 1 "[2/7] listing the runs failed; nothing dispatched"
+known="$(python3 -I -c "$IDS_PY" <<< "$listed")" || die 1 "[2/7] the runs list is not the JSON gh api returns; nothing dispatched"
 since="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 log "[2/7] dispatch: $gh api -X POST repos/<origin>/actions/workflows/$WORKFLOW/dispatches --input <body> (ref $ref, at $since)"
 rc=0; "$gh" api -X POST "$api/dispatches" --input "$body" >&2 || rc=$?
@@ -205,13 +244,13 @@ log "[2/7] gh api (dispatch): exit $rc"
 [ "$rc" -eq 0 ] || die 1 "[2/7] the dispatch failed; no run was started"
 
 # ---- 3. find the run ------------------------------------------------------------------------------------------------
-log "[3/7] find the run: $gh api '$WORKFLOW/runs?per_page=5&event=workflow_dispatch', a run on $ref created at or after $since (at most ${FIND_SECONDS} s)"
+log "[3/7] find the run: $gh api '$WORKFLOW/runs?per_page=5&event=workflow_dispatch', a run on $ref not listed before the dispatch (${known:-none listed}), created at or after $since less ${SKEW} s for the clocks (at most ${FIND_SECONDS} s)"
 deadline=$(( $(date +%s) + FIND_SECONDS )); run=""
 while :; do
   rc=0; runs="$("$gh" api "$api/runs?per_page=5&event=workflow_dispatch")" || rc=$?
   log "[3/7] gh api (runs): exit $rc"
   [ "$rc" -eq 0 ] || die 1 "[3/7] listing the runs failed; the dispatch was sent, so find its run by hand"
-  run="$(python3 -I -c "$PICK_PY" "$since" "$ref" <<< "$runs")" || die 1 "[3/7] the runs list is not the JSON gh api returns"
+  run="$(python3 -I -c "$PICK_PY" "$since" "$ref" "$SKEW" "$known" <<< "$runs")" || die 1 "[3/7] the runs list is not the JSON gh api returns"
   [ -z "$run" ] || break
   [ "$(date +%s)" -lt "$deadline" ] || die 1 "[3/7] no run of $WORKFLOW on $ref created at or after $since within ${FIND_SECONDS} s; find it by hand"
   sleep "$FIND_POLL"
@@ -254,11 +293,17 @@ fi
 if [ -n "$(git -C "$ROOT" status --porcelain --untracked-files=no)" ]; then
   die 4 "[5/7] the checkout has uncommitted changes: not merging; commit them, then git merge --ff-only origin/$ref"
 fi
+merged_from="$(git -C "$ROOT" rev-parse HEAD)"
 rc=0; git -C "$ROOT" merge --ff-only "origin/$ref" >&2 || rc=$?
 log "[5/7] git merge --ff-only origin/$ref: exit $rc"
 [ "$rc" -eq 0 ] || die 4 "[5/7] not a fast-forward: merge origin/$ref by hand"
 
 # ---- 6. capture-check -----------------------------------------------------------------------------------------------
+for s in "${slug_list[@]}"; do
+  if [ -z "$(git -C "$ROOT" diff --name-only "$merged_from" HEAD -- "research/rendered/$s.*")" ]; then
+    log "[6/7] NOTE: $s: no capture file of it changed in the merged commits (an unchanged page keeps its capture, and so does a js line the run skipped: its log says which)"
+  fi
+done
 log "[6/7] node scripts/capture-check.mjs ${slug_list[*]}"
 cc=0; node "$ROOT/scripts/capture-check.mjs" "${slug_list[@]}" || cc=$?
 log "[6/7] capture-check: exit $cc (0 every capture reads as a page, 3 some are flagged: the reader judges)"
