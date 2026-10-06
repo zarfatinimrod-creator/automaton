@@ -1198,7 +1198,10 @@ describe(".github/workflows/render-watch.yml — the browser only when a js line
   it("runs capture-check on the captures this run stored, between the fetch and the commit, into the job summary", () => {
     const check = named(CHECK);
     expect(check.name).toMatch(/\(capture-check\)$/);
-    expect(index(check)).toBe(index(named("Fetch the pages")) + 1);
+    // Between the fetch and the check, only the upload of the copying-barred pages' bodies (ruling 6.10 row 21 (d) 4(3);
+    // render-watch.test.ts holds that step), which writes nothing under research/.
+    expect(index(named("Keep the bodies of copying-barred pages out of the tree"))).toBe(index(named("Fetch the pages")) + 1);
+    expect(index(check)).toBe(index(named("Fetch the pages")) + 2);
     expect(index(named("Commit the fetched pages"))).toBe(index(check) + 1);
     expect(check.run).toMatch(/^node scripts\/capture-check\.mjs --changed --summary >> "\$GITHUB_STEP_SUMMARY" \\\n/);
     // Runs exactly when the commit step does (no `if`), with nothing interpolated and no token.

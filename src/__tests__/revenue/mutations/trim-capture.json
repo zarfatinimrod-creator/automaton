@@ -1,0 +1,154 @@
+[
+  {
+    "id": "T56-T1",
+    "file": "scripts/trim-capture.mjs",
+    "find": "export const CONTEXT = 2;",
+    "replace": "export const CONTEXT = 1;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: one line of context either side instead of the ruling's two"
+  },
+  {
+    "id": "T56-T2",
+    "file": "scripts/trim-capture.mjs",
+    "find": "if (last && a <= last[1] + 1) last[1] = Math.max(last[1], b);",
+    "replace": "if (last && a <= last[1]) last[1] = Math.max(last[1], b);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: kept ranges that touch are no longer merged"
+  },
+  {
+    "id": "T56-T3",
+    "file": "scripts/trim-capture.mjs",
+    "find": "return lines.map((line, i) => (keep(i + 1) ? line : \"\")).join(\"\\n\");",
+    "replace": "return lines.map((line, i) => (keep(i + 1) ? line : line)).join(\"\\n\");",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: no line is emptied, the full text stays in the tree"
+  },
+  {
+    "id": "T56-T4",
+    "file": "scripts/trim-capture.mjs",
+    "find": "if (state === \"barred\") barred.push({ slug, site });",
+    "replace": "if (state === \"barred\" || state === \"unread\") barred.push({ slug, site });",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: an unread site is trimmed as if barred (unread is neither allowed nor barred, decision 4(2))"
+  },
+  {
+    "id": "T56-T5",
+    "file": "scripts/trim-capture.mjs",
+    "find": "else if (state === \"no-field\") refusals.push(",
+    "replace": "else if (state === \"no-field-x\") refusals.push(",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a site entry with no copying field is no longer refused (decision 4(5))"
+  },
+  {
+    "id": "T56-T6",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    if (isText || kept.length) {",
+    "replace": "    if (true) {",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: an uncited body stays in the tree (emptied) instead of leaving it"
+  },
+  {
+    "id": "T56-T7",
+    "file": "scripts/trim-capture.mjs",
+    "find": "        recordFiles(dir, p.slug);",
+    "replace": "        void p.slug;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: FROZEN.sha256 does not follow a trimmed frozen copy"
+  },
+  {
+    "id": "T56-T8",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    log(`${apply ? \"trimmed\" : \"would trim\"} ${p.slug} (",
+    "replace": "    log(`${apply ? \"would trim\" : \"trimmed\"} ${p.slug} (",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: the dry run says it trimmed (a mutation that makes the dry run write cannot be kept: the real-store dry-run test would then write the checkout, and mutate.mjs stops with exit 4; the fixture dry-run test holds that nothing is written)"
+  },
+  {
+    "id": "T56-T9",
+    "file": "scripts/trim-capture.mjs",
+    "find": "for (const slug of slugsOnLine) for (const r of refs) out.get(slug).push(",
+    "replace": "for (const slug of []) for (const r of refs) out.get(slug).push(",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a bare :N the scanner gives another name on a line naming the capture is emptied"
+  },
+  {
+    "id": "T56-T10",
+    "file": "scripts/trim-capture.mjs",
+    "find": "      if (active.has(c.slug)) continue;",
+    "replace": "      if (false) continue;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: the bare :N on a line naming an ACTIVE capture is kept in it (an active capture is never cited by line)"
+  },
+  {
+    "id": "T56-T11",
+    "file": "scripts/trim-capture.mjs",
+    "find": "const blanked = resolved.filter((c) => c.how === \"cited\" && !stray(c) && !inside(c));",
+    "replace": "const blanked = [];",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a trimmed capture cited later at an emptied line is not refused"
+  },
+  {
+    "id": "T56-T12",
+    "file": "scripts/trim-capture.mjs",
+    "find": "if (bodyPath && files.has(bodyPath) !== Boolean(t.body.inTree))",
+    "replace": "if (false)",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a full body back beside a trimmed meta passes as already trimmed"
+  },
+  {
+    "id": "T56-T13",
+    "file": "scripts/trim-capture.mjs",
+    "find": "if (!isText && cited.length && !TEXT_BODIES.has(ext)) throw",
+    "replace": "if (false) throw",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a binary body cited by line is trimmed as if it were text"
+  },
+  {
+    "id": "T56-T14",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  if (status.stdout.trim()) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a capture with uncommitted changes is trimmed, its block naming a commit that does not hold those bytes"
+  },
+  {
+    "id": "T56-T15",
+    "file": "scripts/trim-capture.mjs",
+    "find": "else if (named.length && state === \"allowed\") log(",
+    "replace": "else if (named.length && state === \"allowed-x\") log(",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a named capture of an allowed site is refused instead of nothing to do"
+  },
+  {
+    "id": "T56-T16",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  return totals.trim ? 0 : 3;",
+    "replace": "  return 0;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: nothing to do is exit 0, not 3"
+  },
+  {
+    "id": "T56-T17",
+    "file": "scripts/trim-capture.mjs",
+    "find": "          captureCheck = classifyCapture(readCapture(slug, dir)).kind;",
+    "replace": "          captureCheck = \"short\";",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: the block does not record capture-check's kind of the full capture"
+  },
+  {
+    "id": "T56-T18",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  if (t && ext === \"txt\" && t.lineCount != null) return t.fullSha256;",
+    "replace": "  if (false) return t.fullSha256;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: fullSha256Of hashes the trimmed .txt instead of reading the full hash from the block"
+  },
+  {
+    "id": "T56-T19",
+    "file": "scripts/trim-capture.mjs",
+    "find": "const blanked = resolved.filter((c) => c.how === \"cited\" && !stray(c) && !inside(c));",
+    "replace": "const blanked = resolved.filter((c) => c.how === \"cited\" && !inside(c));",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 sim-tree proof: a re-run refuses a trimmed capture over a reference past its end (indiebook-terms.txt:724 on the real store), so the trim is not idempotent"
+  }
+]

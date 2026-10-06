@@ -52,8 +52,8 @@
  * A second --apply changes nothing (the mask does not match its own output). Exit 0.
  *
  * It refuses (exit 1, nothing written): a directory under no git repository; a meta naming a bodyPath or textPath that
- * does not exist, or that is not JSON; a meta it would rewrite whose bytes are not that JSON as render-watch writes it;
- * a mask that would move a line; a frozen file FROZEN.sha256 does not record, or records with other bytes than are on
+ * does not exist (a body a trimmed meta says left the tree is not one: scripts/trim-capture.mjs), or that is not JSON;
+ * a meta it would rewrite whose bytes are not that JSON as render-watch writes it; a mask that would move a line; a frozen file FROZEN.sha256 does not record, or records with other bytes than are on
  * disk; and with --apply, uncommitted changes (or untracked files) among the files of the captures it would touch,
  * FROZEN.sha256 included when it would be rewritten: the earlier bytes must be in git history.
  *
@@ -215,7 +215,9 @@ export function planRemask({ dir, only = null, except = [], redact = redactSecre
     const parts = [];
     const bodyName = meta.bodyPath ? basename(meta.bodyPath) : null;
     const textName = meta.textPath ? basename(meta.textPath) : null;
-    if (bodyName) parts.push({ role: "body", name: bodyName, contentType: meta.contentType });
+    // A trimmed capture's body left the tree (ruling 6.10 row 21 (d), scripts/trim-capture.mjs); its meta keeps bodyPath.
+    const bodyLeft = meta.trimmed?.body?.inTree === false;
+    if (bodyName && !bodyLeft) parts.push({ role: "body", name: bodyName, contentType: meta.contentType });
     if (textName && textName !== bodyName) parts.push({ role: "text", name: textName, contentType: "text/plain" });
     for (const ext of CAPTURE_EXTS) {
       const name = `${slug}.${ext}`;

@@ -37,6 +37,8 @@ import {
 } from "../../../scripts/robots-verdict.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { syncPauseComments } from "../../../scripts/urls-pause-comments.mjs";
+// @ts-expect-error — plain ESM script, no type declarations by design
+import { fullSha256Of } from "../../../scripts/trim-capture.mjs";
 
 /**
  * Tick 45 (5.10.2026): the terms audit of the prize-event sites, step 0 of the rules-page reading (logs/CHANNEL_LOOP.md
@@ -624,6 +626,8 @@ type Capture = {
     bodyPath: string | null;
     error: string | null;
     frozen?: { on: string; from: string; commit: string | null; why: string };
+    /** A capture of a copying-barred site after scripts/trim-capture.mjs (ruling 6.10 row 21 (d)). */
+    trimmed?: { body?: { inTree?: boolean } | null };
   };
   body: string | null;
 };
@@ -1911,13 +1915,17 @@ describe("tick 54: the terms read on 6.10", () => {
       expect(meta.frozen?.commit, site).toBe(RENDER);
       expect(meta.fetchedAt.slice(0, 10), site).toBe(FROZEN_ON);
       expect(meta.status, site).toBe(200);
-      const body = readFileSync(meta.bodyPath!);
-      expect(createHash("sha256").update(body).digest("hex"), site).toBe(meta.sha256);
-      expect(readFileSync(`research/rendered/${frozen}.txt`), site).toEqual(readFileSync(`research/rendered/${slug}.txt`));
+      // The full bytes: the files' own hashes, or, for a copy of a site whose terms bar copying, the hashes the trimmed block
+      // records (ruling 6.10 row 21 (d): scripts/trim-capture.mjs keeps only the cited lines in the tree).
+      expect(fullSha256Of("research/rendered", frozen, "html"), site).toBe(meta.sha256);
+      expect(fullSha256Of("research/rendered", frozen, "txt"), site).toBe(fullSha256Of("research/rendered", slug, "txt"));
       // No urls.txt line names it (freeze-capture.mjs's own rule: no word of any line is the slug); since tick 55 the comment
       // of eurocontrol.int's Disclaimers line cites its .html by file and line, a path and not a slug a render would write.
       expect(listedNames(urlsTxt).has(frozen), site).toBe(false);
-      for (const ext of ["txt", "html", "meta.json"]) expect(manifest, `${frozen}.${ext}`).toContain(`  ${frozen}.${ext}\n`);
+      for (const ext of ["txt", "meta.json"]) expect(manifest, `${frozen}.${ext}`).toContain(`  ${frozen}.${ext}\n`);
+      // The body is recorded while it is in the tree; a trimmed copy's left it unless a line of it is cited.
+      expect(manifest.includes(`  ${frozen}.html\n`), `${frozen}.html`).toBe(existsSync(`research/rendered/${frozen}.html`));
+      expect(existsSync(`research/rendered/${frozen}.html`) || meta.trimmed?.body?.inTree === false, `${frozen}.html`).toBe(true);
       // The decisive words at the cited line, and in the note beside the citation.
       expect(lines[line - 1], `${site} :${line}`).toContain(words);
       expect(v[site].note, site).toContain(`research/rendered/${frozen}.txt:${line}`.replace(`:${line}`, site === "virtualembryo.ai" ? ":12-13" : `:${line}`));
@@ -2247,10 +2255,11 @@ describe("tick 54: the shell terms pages rendered once (6.10)", () => {
       undefined,
     ]);
     expect([meta.url, meta.status, meta.renderedWith, meta.fetchedAt]).toEqual(["https://www.kaggle.com/terms", 200, "chromium", "2026-10-06T09:48:50.939Z"]);
-    expect(createHash("sha256").update(readFileSync(meta.bodyPath)).digest("hex")).toBe(meta.sha256);
+    // The full bytes' hashes (a trimmed copy's from its block, ruling 6.10 row 21 (d): scripts/trim-capture.mjs).
+    expect(fullSha256Of("research/rendered", JS_FROZEN, "html")).toBe(meta.sha256);
     // The live capture is that render, byte for byte; its line is retired, so no render rewrites it either.
     const txt = readFileSync(`research/rendered/${JS_FROZEN}.txt`);
-    expect(txt.equals(readFileSync("research/rendered/terms-kaggle.txt"))).toBe(true);
+    expect(fullSha256Of("research/rendered", JS_FROZEN, "txt")).toBe(fullSha256Of("research/rendered", "terms-kaggle", "txt"));
     expect(txt.toString("utf8").split("\n").length - 1).toBe(167);
     expect(classifyCapture(readCapture(JS_FROZEN)).kind).toBe("ok");
     // The plain shell's copy, frozen --allow-flagged before the render, is what the plain GET saw.
@@ -2258,7 +2267,8 @@ describe("tick 54: the shell terms pages rendered once (6.10)", () => {
     expect(classifyCapture(readCapture(PLAIN_FROZEN)).kind).toBe("js-shell");
     for (const slug of [JS_FROZEN, PLAIN_FROZEN]) {
       expect(urlsTxt.includes(slug), slug).toBe(false);
-      for (const ext of ["txt", "html", "meta.json"]) expect(manifest, `${slug}.${ext}`).toContain(`  ${slug}.${ext}\n`);
+      for (const ext of ["txt", "meta.json"]) expect(manifest, `${slug}.${ext}`).toContain(`  ${slug}.${ext}\n`);
+      expect(manifest.includes(`  ${slug}.html\n`), `${slug}.html`).toBe(existsSync(`research/rendered/${slug}.html`));
     }
   });
 

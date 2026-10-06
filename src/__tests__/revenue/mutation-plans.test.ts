@@ -44,6 +44,7 @@ describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
       "render-watch.json",
       "robots-verdict.json",
       "sim-tree.json",
+      "trim-capture.json",
     ]) {
       expect(PLANS).toContain(name);
     }

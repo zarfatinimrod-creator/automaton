@@ -47,6 +47,14 @@
  * strings it masks (or, in a dry run, would mask), and the text --cited prints for a DRIFTED range (taken from git
  * history) is masked the same way before it is printed.
  *
+ * TRIMMED COPIES (6.10.2026, ruling 6.10 row 21 (d), scripts/trim-capture.mjs). A capture of a site whose terms bar
+ * copying keeps only its meta, with a `trimmed` block, and the lines a decision cites: a .txt of the same line count, the
+ * body out of the tree (or, cited by line, kept at those lines only). This understands one: it refuses to freeze a
+ * trimmed capture (its emptied lines would be frozen as if read; freeze the full capture from the commit the block names,
+ * then trim the copy); checkManifest holds a recorded trimmed copy to its block (the .txt's line count, the body in the
+ * tree only when the block says so), FROZEN.sha256 holding the trimmed bytes; and --cited takes a trimmed copy for the
+ * version whose full .txt and body hash to what its block records (sameCapture), so it is reused, never re-frozen in full.
+ *
  * RECORD ONE. --record <frozen-slug> writes an existing frozen copy's files into FROZEN.sha256 (a copy frozen by hand).
  *
  * FREEZE WHAT IS CITED. --cited finds the citations that matter (activeCitations) in the decision-bearing files
@@ -370,6 +378,13 @@ export function planFreeze({ slug, files, dir, urlsText, date, on, commit = null
     throw new Error(`${slug}.meta.json is not JSON: ${err.message}`);
   }
   if (meta.frozen) throw new Error(`${slug} is already a frozen copy (frozen ${meta.frozen.on} from ${meta.frozen.from}); freeze the live capture instead`);
+  if (meta.trimmed) {
+    throw new Error(
+      `${slug} is trimmed (${meta.trimmed.on}, ruling 6.10 row 21 (d)): the tree keeps only its cited lines, and a copy would ` +
+        `freeze emptied lines as if read. Freeze the full capture (its full bytes: ${meta.trimmed.fullBytesIn ?? "git history"}; ` +
+        "--from-commit for a commit), then run scripts/trim-capture.mjs on the copy",
+    );
+  }
 
   const row = classifyFiles(slug, files);
   if (row.kind === "unreadable") throw new Error(`${slug} cannot be read as a capture: ${row.evidence}`);
@@ -475,10 +490,30 @@ export function recordFiles(dir, frozenSlug) {
   return files.size;
 }
 
+/** The extension of a capture file's path (render-watch's bodyPath), or null. */
+const extOfPath = (path) => (typeof path === "string" ? CAPTURE_EXTS.find((ext) => ext !== "meta.json" && path.endsWith(`.${ext}`)) ?? null : null);
+
+/**
+ * A trimmed copy against its block (scripts/trim-capture.mjs): its .txt has the lines the block records, and its body is in
+ * the tree exactly when the block says so. The problems, one string each.
+ */
+export function trimmedProblems(dir, slug, trimmed) {
+  const problems = [];
+  const txt = join(dir, `${slug}.txt`);
+  if (trimmed.lineCount != null && (!existsSync(txt) || readFileSync(txt, "utf8").split("\n").length !== trimmed.lineCount)) {
+    problems.push(`${slug}.txt does not have the ${trimmed.lineCount} lines its trimmed block records`);
+  }
+  const bodyExt = extOfPath(trimmed.body?.path);
+  if (bodyExt && bodyExt !== "txt" && existsSync(join(dir, `${slug}.${bodyExt}`)) !== Boolean(trimmed.body.inTree)) {
+    problems.push(`${slug}.${bodyExt} is ${trimmed.body.inTree ? "not in the tree, which its trimmed block says keeps its cited lines" : "in the tree, which its trimmed block says it left"}`);
+  }
+  return problems;
+}
+
 /**
  * Checks FROZEN.sha256 against dir: the problems, one string each ([] when it holds). Every recorded file exists with
  * its hash; every recorded slug's meta is a frozen copy that names itself; every file of a recorded or frozen copy on
- * disk is recorded.
+ * disk is recorded; a recorded trimmed copy holds to its block (trimmedProblems).
  */
 export function checkManifest(dir) {
   const problems = [];
@@ -505,6 +540,7 @@ export function checkManifest(dir) {
     for (const ext of CAPTURE_EXTS) {
       if (existsSync(join(dir, `${slug}.${ext}`)) && !manifest.has(`${slug}.${ext}`)) problems.push(`${slug}.${ext} is not recorded in ${MANIFEST}`);
     }
+    if (meta?.trimmed) problems.push(...trimmedProblems(dir, slug, meta.trimmed));
   }
   return problems;
 }
@@ -591,16 +627,16 @@ const BACKTICK_RE = new RegExp(`${NOT_BEFORE}\`([a-z0-9][a-z0-9._-]*)\`\\.(${EXT
 const ELLIPSIS_RE = new RegExp(`…(/)?([a-z0-9._-]*[a-z0-9])(?:\\.(${EXTS_RE})${EXT_END})?${OWN_LINES}`, "g");
 /** `.html:4`, `*.meta.json:5`: an extension and a line of the capture the sentence is about. */
 const EXT_REF_RE = new RegExp(`(?<![A-Za-z0-9_-])\\*?\\.(${EXTS_RE})${EXT_END}${OWN_LINES}`, "g");
-/** A bare line reference: `:97`, :366-380, :12–14. */
-const BARE_RE = /(?<![A-Za-z0-9_./-]):L?(\d+)(?:[-–]L?(\d+))?(?!\d)/g;
+/** A bare line reference: `:97`, :366-380, :12–14. Exported for scripts/trim-capture.mjs, which keeps them too. */
+export const BARE_RE = /(?<![A-Za-z0-9_./-]):L?(\d+)(?:[-–]L?(\d+))?(?!\d)/g;
 /** A line reference in words: "line 12", "lines 2-56", "html line 137". */
-const WORD_RE = /(?<![A-Za-z0-9_.-])(?:(html|HTML|txt|TXT)\s+)?[Ll]ines?\s+(\d+)(?:\s*[-–]\s*(\d+))?(?!\d|[.,]\d)/g;
+export const WORD_RE = /(?<![A-Za-z0-9_.-])(?:(html|HTML|txt|TXT)\s+)?[Ll]ines?\s+(\d+)(?:\s*[-–]\s*(\d+))?(?!\d|[.,]\d)/g;
 /**
  * A named line reference that is not a capture's (PAT:173, urls.txt:111, CHANNEL_LOOP.md:150, html:338): a bare :N
  * after one belongs to it, not to a capture cited earlier on the line. The name ends in a letter, so a time
  * (2026-09-29T11:30:37Z) is not one.
  */
-const NAMED_RE = /(?<![A-Za-z0-9_./-])[A-Za-z0-9_./-]*[A-Za-z_]:\d+(?:-\d+)?/g;
+export const NAMED_RE = /(?<![A-Za-z0-9_./-])[A-Za-z0-9_./-]*[A-Za-z_]:\d+(?:-\d+)?/g;
 /**
  * Another file named without a line (a note, a script, research/channel-loop/terms-verdicts.json): a bare :N after it
  * is its line. A capture named the same way is marked first, so this only takes what is no capture.
@@ -1075,15 +1111,31 @@ const where = (c) => `${c.file}:${c.fileLine} ${c.text}${c.lines.length ? ` [${r
 
 /**
  * Whether two captures are one version: the same files, byte for byte, the metas the same apart from name, "frozen" and
- * the day of a re-mask (remasked.on).
+ * the day of a re-mask (remasked.on). A trimmed copy is the version whose full files hash to what its block records.
  */
 function sameCapture(copy, copySlug, files, slug) {
-  if (copy.size !== files.size || ![...files.keys()].every((ext) => copy.has(ext))) return false;
-  for (const [ext, bytes] of files) if (ext !== "meta.json" && !copy.get(ext).equals(bytes)) return false;
+  let trimmed = null;
+  try {
+    trimmed = JSON.parse(copy.get("meta.json").toString("utf8")).trimmed ?? null;
+  } catch {
+    return false;
+  }
+  if (trimmed) {
+    // A trimmed copy (scripts/trim-capture.mjs): the version's full .txt and body hash to what its block records.
+    const bodyExt = extOfPath(trimmed.body?.path);
+    const others = [...files.keys()].filter((ext) => ext !== "meta.json" && ext !== "txt" && ext !== bodyExt);
+    if (others.length || files.has("txt") !== (trimmed.fullSha256 != null) || (bodyExt && !files.has(bodyExt))) return false;
+    if (files.has("txt") && sha256(files.get("txt")) !== trimmed.fullSha256) return false;
+    if (bodyExt && sha256(files.get(bodyExt)) !== trimmed.body.sha256) return false;
+  } else {
+    if (copy.size !== files.size || ![...files.keys()].every((ext) => copy.has(ext))) return false;
+    for (const [ext, bytes] of files) if (ext !== "meta.json" && !copy.get(ext).equals(bytes)) return false;
+  }
   try {
     const a = JSON.parse(copy.get("meta.json").toString("utf8"));
     const b = JSON.parse(files.get("meta.json").toString("utf8"));
     delete a.frozen;
+    delete a.trimmed;
     a.slug = slug;
     a.bodyPath = rewritePath(a.bodyPath, copySlug, slug);
     a.textPath = rewritePath(a.textPath, copySlug, slug);

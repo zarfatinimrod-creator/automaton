@@ -19,7 +19,7 @@ Per URL, three files:
 |---|---|
 | `<slug>.html` / `.json` / `.pdf` / `.xml` / `.txt` / `.bin` | the raw response body, extension chosen from the `Content-Type` |
 | `<slug>.txt` | for HTML: a plain-text extraction — scripts, styles and tags stripped, whitespace collapsed. For a PDF: the output of `pdftotext -layout` on the stored `.pdf`, made on the runner (page breaks kept as form feeds). This is the file to read and grep |
-| `<slug>.meta.json` | `url`, `fetchedAt`, `status`, `contentType`, `byteLength`, `sha256`, `bodyPath`, `textPath`, `changed`, `firstFetch`, `previousSha256`, `truncated`, `error` — and, for a PDF whose text could not be extracted, `textError` saying why; for a line flagged `js`, `renderedWith` (`"chromium"`) and `networkIdle` (below); since 30.9, `robots` and `robotsUrl`: what the host's robots.txt said about the URL on the fetch that wrote the meta (below) |
+| `<slug>.meta.json` | `url`, `fetchedAt`, `status`, `contentType`, `byteLength`, `sha256`, `bodyPath`, `textPath`, `changed`, `firstFetch`, `previousSha256`, `truncated`, `error` — and, for a PDF whose text could not be extracted, `textError` saying why; for a line flagged `js`, `renderedWith` (`"chromium"`) and `networkIdle` (below); since 30.9, `robots` and `robotsUrl`: what the host's robots.txt said about the URL on the fetch that wrote the meta (below); since 6.10, for a site whose terms bar copying, `trimmed` ("Trimmed copies", below) |
 
 ## Three things about these files that are easy to get wrong
 
@@ -172,6 +172,48 @@ it prints for a DRIFTED range, which it reads from git history.
   line, names one where `LIVE_MENTIONS` does not say the live page is meant, cites a line past the end of a frozen
   copy, or when `FROZEN.sha256` and the copies on disk disagree. A frozen copy is a record:
   `scripts/robots-verdict.mjs` skips frozen `robots-` copies and reads the live one.
+
+## Trimmed copies: what stays of a page whose terms bar copying
+
+`research/channel-loop/RULING-2026-10-06-robots-and-terms.md` decision 4 (ruling 6.10 row 21 (d)): a capture from a site
+whose read terms bar copying, reproducing, distributing or publishing its content does not stay here in full. The site
+list is the `copying` field of `research/channel-loop/terms-verdicts.json` (`barred`, `allowed`, `unread`; `unread` is
+not `allowed`, and only `barred` is trimmed). What stays of such a capture, live or frozen:
+
+- its `.meta.json`, every field as it was (`sha256` is the full body's hash, the verification hash), with a `trimmed`
+  block appended: `on`, `ruling`, `site`, `keptLines`, `fullSha256`/`fullByteLength`/`lineCount` of the full `.txt`,
+  `body` (`sha256`, `byteLength`, `lineCount`, `keptLines`, `inTree`), `cited` (which file:line keeps each line),
+  `captureCheck` (capture-check's kind of the whole capture), `fullBytesIn` (where the full bytes are) and `history`;
+- a `.txt` of the **same line count**, the cited lines and two either side verbatim and every other line empty, so a
+  citation by line still names the same line;
+- no body, unless a decision-bearing file cites a line of the body itself (`<slug>.html:50`): then the body stays the way
+  the `.txt` does, cited lines only. A frozen copy's lines in `FROZEN.sha256` are of the trimmed files.
+
+**The full bytes are in git history** (the commit `fullBytesIn` names: `git show <commit>:research/rendered/<slug>.html`);
+whether to rewrite public history is the owner's decision, with the §6 public/private one. A page of such a site that the
+weekly run fetches after the route below never lands here in full at all: its body, full text and plain meta go to a
+workflow artifact (`render-watch-barred-<run id>-<attempt>`, kept 90 days; `fullBytesIn` and `trimmed.artifact` name it),
+and the tree gets the meta and an emptied `.txt`. To read one: download the run's artifact (Actions, the run, Artifacts),
+read the page there, and write the quotation and its line into the research file, which is how a read becomes a finding
+anyway. (On a public repository a signed-in GitHub user with read access can download a run's artifacts: the artifact
+keeps the body out of the tree and out of history for 90 days, it is not private by itself.)
+
+- `node scripts/trim-capture.mjs [<slug>...]` is a dry run: per capture of a copying-barred site, the site and its field,
+  the cited lines found and in which files, the lines kept and the bytes removed, then the totals and what was not
+  reached (allowed, unread, no verdict entry). It never prints a capture's text. `--apply` writes. Exit 0 would trim /
+  trimmed, 3 nothing to do (a second run over a trimmed store), 1 a refusal with nothing written: a barred site's entry
+  with no `copying` field, a named capture of an unread site or of one with no entry, a binary body cited by line, a
+  capture with uncommitted changes, a trimmed capture cited later at a line its trim emptied. The citations are
+  freeze-capture's scanner's, every form, plus every bare `:N`, "line N" and `html:N` on a decision-file line that names
+  a capture no active line names (the scanner gives some of those to another name on the line; the trim keeps them
+  rather than blank a line a note reads). A range that covers more than half its file is kept and printed as `wide`.
+- `freeze-capture.mjs` refuses to freeze a trimmed capture (freeze the full one from the commit `fullBytesIn` names,
+  then trim the copy); `checkManifest` (the frozen-citations guard) holds a trimmed frozen copy to its block; `--cited`
+  takes a trimmed copy for the version whose full hashes its block records. `capture-check.mjs` reads a trimmed capture
+  (its body is not a missing file) and reports the kind it had whole, or `trimmed` for one the artifact route stored.
+  `remask-captures.mjs` does not look for a body the block says left.
+- Simulate before running it on the repository: `scripts/sim-tree.sh -- sh -c 'node scripts/trim-capture.mjs --apply &&
+  scripts/verify.sh'` (the full revenue suite on the trimmed copy is the acceptance test).
 
 ## Adding a URL
 

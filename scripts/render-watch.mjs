@@ -97,7 +97,31 @@
  *     never thrown; the run still exits 0. Its meta has no sha256 and no bodyPath;
  *     after a PDF capture it keeps that capture's text state (above)
  *   - the process exits non-zero only when the script itself is broken: a
- *     malformed URL list, a duplicate slug, an unwritable output directory
+ *     malformed URL list, a duplicate slug, an unwritable output directory, or a
+ *     terms-verdicts.json it cannot read (below)
+ *   - a page of a site whose terms bar copying ("copying": "barred" in
+ *     research/channel-loop/terms-verdicts.json, read once per run; the site or any
+ *     subdomain of it) never lands in the tree in full (RULING-2026-10-06-robots-and-terms.md
+ *     decision 4(3), ruling 6.10 row 21 (d)). When it changed, its body, its full text and
+ *     its plain meta go to the artifact directory (RENDER_WATCH_ARTIFACT_DIR, which the
+ *     workflow uploads as one artifact per run, retention 90 days, named
+ *     RENDER_WATCH_ARTIFACT_NAME: `render-watch-barred-<run id>-<attempt>`), and the tree
+ *     gets the meta (sha256 and every usual field) with a `trimmed` block in
+ *     scripts/trim-capture.mjs's shape that names the artifact, and, for a page with a text,
+ *     a .txt of the same line count with every line emptied (a fresh capture has no
+ *     cited line; a reader fetches the artifact, reads, and writes the quotation and its
+ *     line into the research file, research/rendered/README.md "Trimmed copies"). An older
+ *     full body of the slug is removed from the tree, and so is its old text when the meta
+ *     claimed it. A page that did not change writes nothing, as always: a full copy stored
+ *     before this route stays until scripts/trim-capture.mjs trims it. The route covers
+ *     every content type alike; a PDF's text is extracted from the artifact's copy (no
+ *     hand-extraction handling: no barred site serves a PDF today, a stated limit). A
+ *     stated fact for the decider, not checked from this container: the ruling calls the
+ *     artifact "private to the repository's collaborators"; GitHub's documentation says a
+ *     signed-in user with read access can download a run's artifacts, which on a public
+ *     repository is any signed-in user. The route keeps the body out of the tree and out
+ *     of git history, for 90 days; it does not by itself make the artifact private.
+ *     The count goes to the workflow as `barred` (it decides whether the upload step runs)
  *
  * BODY SIZE IS CAPPED AT 5 MB (MAX_BYTES below). The cap is applied while the
  * body streams in, so a larger page is never fully downloaded; what is stored is
@@ -194,6 +218,7 @@ import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -561,6 +586,87 @@ export function isTikTokHost(hostname) {
     .toLowerCase()
     .replace(/\.+$/, "");
   return host === "tiktok.com" || host.endsWith(".tiktok.com");
+}
+
+// ---------------------------------------------------------------------------
+// Sites whose terms bar copying: the artifact route (ruling 6.10 row 21 (d), decision 4(3))
+// ---------------------------------------------------------------------------
+
+/** The terms verdicts: each site's "copying" field ("barred" | "allowed" | "unread"), decision 4(2). */
+export const DEFAULT_VERDICTS = join(REPO_ROOT, "research", "channel-loop", "terms-verdicts.json");
+
+/** The ruling the route and scripts/trim-capture.mjs both name in a meta's trimmed block. */
+export const COPYING_RULING = "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))";
+
+/** How long the workflow keeps the artifact (decision 4(3): 90-day retention). */
+export const ARTIFACT_RETENTION_DAYS = 90;
+
+/** The artifact directory's default outside a workflow run (the workflow sets RENDER_WATCH_ARTIFACT_DIR). */
+export const DEFAULT_ARTIFACT_DIR = join(tmpdir(), "render-watch-barred");
+
+/** The sites a verdicts file's { sites } marks "copying": "barred", sorted. */
+export function copyingBarredSites(sites) {
+  return Object.keys(sites ?? {})
+    .filter((site) => sites[site]?.copying === "barred")
+    .sort();
+}
+
+/**
+ * Read the copying-barred sites from terms-verdicts.json. Throws when the file cannot be read or has no "sites": the run
+ * must not store a page it cannot judge, so a broken verdicts file stops it before any fetch (like a malformed list).
+ */
+export function readCopyingBarred(path = DEFAULT_VERDICTS, readFile = readFileSync) {
+  let parsed;
+  try {
+    parsed = JSON.parse(readFile(path, "utf8"));
+  } catch (error) {
+    throw new Error(`render-watch cannot read the copying field of ${path}: ${error.message}`);
+  }
+  if (!parsed?.sites || typeof parsed.sites !== "object") throw new Error(`render-watch cannot read the copying field of ${path}: no "sites"`);
+  return copyingBarredSites(parsed.sites);
+}
+
+/** The copying-barred site a host is (or is a subdomain of; the longest that matches), or null. Case and trailing dot ignored. */
+export function copyingBarredSite(hostname, barred) {
+  const host = String(hostname ?? "")
+    .toLowerCase()
+    .replace(/\.+$/, "");
+  const hits = (barred ?? []).filter((site) => host === site || host.endsWith(`.${site}`));
+  return hits.sort((a, b) => b.length - a.length)[0] ?? null;
+}
+
+/** A text with every line emptied: the same number of "\n"-separated lines, nothing of the page. */
+export function emptiedLines(text) {
+  return "\n".repeat(String(text).split("\n").length - 1);
+}
+
+/**
+ * The trimmed block of a capture the route kept out of the tree, in scripts/trim-capture.mjs's shape: nothing is cited
+ * yet (a fresh capture), so no line is kept; the full text's and the body's hashes; and where the full bytes are (the
+ * artifact, not git history).
+ */
+export function routeTrimmed({ site, on, slug, bodyExt, body, text, artifact }) {
+  const files = [`${slug}.meta.json`, `${slug}.${bodyExt}`, ...(text && bodyExt !== "txt" ? [`${slug}.txt`] : [])];
+  const lines = (bytes) => bytes.toString("utf8").split("\n").length;
+  return {
+    on,
+    ruling: COPYING_RULING,
+    site,
+    copying: "barred",
+    keptLines: [],
+    context: 2,
+    fullSha256: text ? sha256(text) : null,
+    fullByteLength: text ? text.length : null,
+    lineCount: text ? lines(text) : null,
+    body: { path: `research/rendered/${slug}.${bodyExt}`, sha256: sha256(body), byteLength: body.length, lineCount: lines(body), keptLines: [], inTree: false },
+    cited: [],
+    captureCheck: null,
+    fullBytesIn:
+      `workflow artifact ${artifact.name}${artifact.run ? ` (run ${artifact.run})` : ""}: ${files.join(", ")}, ` +
+      `kept ${ARTIFACT_RETENTION_DAYS} days; never in the tree or in git history`,
+    history: "The full bytes were never committed: they are in the workflow artifact named above until it expires.",
+    artifact: { name: artifact.name, run: artifact.run ?? null, retentionDays: ARTIFACT_RETENTION_DAYS, files },
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -2155,8 +2261,9 @@ export function unclaimedTextNote(ownTextPath, storedPdf) {
 export async function storeCapture(
   entry,
   result,
-  { outDir, now = () => new Date().toISOString(), extractPdfText = runPdftotext } = {},
+  { outDir, now = () => new Date().toISOString(), extractPdfText = runPdftotext, copying = null, artifactDir = DEFAULT_ARTIFACT_DIR, artifact = { name: "render-watch-barred-local", run: null } } = {},
 ) {
+  if (copying && result.bytes) return storeBarredCapture(entry, result, { outDir, now, extractPdfText, site: copying, artifactDir, artifact });
   const previousMeta = readPreviousMeta(outDir, entry.slug);
   let fetchedAt = now();
 
@@ -2289,6 +2396,83 @@ export async function storeCapture(
   return { meta, bytesChanged };
 }
 
+/** The extensions a body can be stored under (extensionFor), each of which the route removes from the tree. */
+const BODY_EXTS = ["html", "json", "pdf", "xml", "txt", "bin"];
+
+/**
+ * The route for a page of a copying-barred site (decision 4(3); the header comment): the body, its full text and its
+ * plain meta to artifactDir, and to outDir only the meta with a trimmed block and an emptied .txt of the same line count.
+ * Nothing at all when nothing material changed. Returns { meta, bytesChanged, barred: true } (meta as written to outDir).
+ */
+export async function storeBarredCapture(entry, result, { outDir, now = () => new Date().toISOString(), extractPdfText = runPdftotext, site, artifactDir = DEFAULT_ARTIFACT_DIR, artifact }) {
+  const previousMeta = readPreviousMeta(outDir, entry.slug);
+  const masked = redactSecrets(result.bytes, result.contentType);
+  const body = masked.bytes;
+  const hash = sha256(body);
+  const bodyExt = extensionFor(result.contentType);
+  const bodyPath = `research/rendered/${entry.slug}.${bodyExt}`;
+  const ownTextPath = `research/rendered/${entry.slug}.txt`;
+  const renderedWith = result.renderedWith ?? null;
+  const networkIdle = renderedWith ? (result.networkIdle ?? null) : null;
+  const bytesChanged = bodyChanged(previousMeta, { sha256: hash, status: result.status, error: result.error, renderedWith });
+  const meta = (fields) =>
+    buildMeta({
+      url: entry.url,
+      slug: entry.slug,
+      status: result.status,
+      contentType: result.contentType,
+      byteLength: body.length,
+      sha256: hash,
+      previousMeta,
+      truncated: result.truncated,
+      error: result.error,
+      bodyPath,
+      renderedWith,
+      networkIdle,
+      robots: result.robots ?? null,
+      robotsUrl: result.robotsUrl ?? null,
+      ...fields,
+    });
+  // The same bytes as the stored meta: nothing is written, here or in the artifact (a trimmed capture stays as it is).
+  if (!bytesChanged) return { meta: { ...meta({ fetchedAt: previousMeta.fetchedAt ?? now() }), changed: false }, bytesChanged, barred: true };
+
+  const fetchedAt = now();
+  mkdirSync(artifactDir, { recursive: true });
+  writeFileSync(join(artifactDir, basename(bodyPath)), body);
+  let text = null;
+  let textError = null;
+  let redacted = masked.count;
+  if (isHtml(result.contentType)) {
+    const t = redactSecrets(Buffer.from(`${extractText(body.toString("utf8"))}\n`, "utf8"), "text/plain");
+    text = t.bytes;
+    redacted += t.count;
+  } else if (isPdf(result.contentType)) {
+    try {
+      const t = redactSecrets(Buffer.from(String(await extractPdfText(join(artifactDir, basename(bodyPath)))), "utf8"), "text/plain");
+      text = t.bytes;
+      redacted += t.count;
+    } catch (error) {
+      textError = describePdfTextError(error);
+    }
+  } else if (bodyExt === "txt") {
+    text = body;
+  }
+  // The meta as the plain route writes it (the artifact's copy: capture-check --dir reads it whole), then the tree's.
+  const full = meta({ fetchedAt, textPath: text && bodyExt !== "txt" ? ownTextPath : null, textError, redacted });
+  full.changed = true;
+  if (text && bodyExt !== "txt") writeFileSync(join(artifactDir, `${entry.slug}.txt`), text);
+  writeFileSync(join(artifactDir, `${entry.slug}.meta.json`), `${JSON.stringify(full, null, 2)}\n`);
+  const treeMeta = { ...full, trimmed: routeTrimmed({ site, on: fetchedAt.slice(0, 10), slug: entry.slug, bodyExt, body, text, artifact }) };
+  // An older full copy of the slug leaves the tree: every body file, and the text when the meta claimed it.
+  for (const ext of BODY_EXTS) {
+    if (ext === "txt" && !(previousMeta?.textPath === ownTextPath || previousMeta?.bodyPath === ownTextPath)) continue;
+    rmSync(join(outDir, `${entry.slug}.${ext}`), { force: true });
+  }
+  if (text) writeFileSync(join(outDir, `${entry.slug}.txt`), emptiedLines(text.toString("utf8")));
+  writeFileSync(metaPathFor(outDir, entry.slug), `${JSON.stringify(treeMeta, null, 2)}\n`);
+  return { meta: treeMeta, bytesChanged, barred: true };
+}
+
 // ---------------------------------------------------------------------------
 // main
 // ---------------------------------------------------------------------------
@@ -2333,7 +2517,7 @@ export function resolveListText(env, readFile = readFileSync, listPath = DEFAULT
  * robots.txt before the browser is asked for it (or even launched); a robots-only probe
  * line is that host's robots.txt itself, from the same one fetch per host.
  */
-async function captureEntry(entry, { js, robots, fetchImpl, outDir, deps, summaryLines }) {
+async function captureEntry(entry, { js, robots, fetchImpl, outDir, deps, summaryLines, barredSites = [], artifactDir, artifact }) {
   let result;
   if (entry.robotsProbe) {
     result = await robots.probe(entry.url);
@@ -2354,7 +2538,7 @@ async function captureEntry(entry, { js, robots, fetchImpl, outDir, deps, summar
       if (result.skipped) {
         process.stdout.write(`SKIPPED     ${entry.slug}  js mode: ${result.skipped}\n            ${entry.url}\n`);
         summaryLines.push(`- \`${entry.slug}\` — SKIPPED (js mode): ${result.skipped}`);
-        return { changed: 0, failed: 0, skippedJs: 1 };
+        return { changed: 0, failed: 0, skippedJs: 1, barred: 0 };
       }
     }
     // renderWithBrowser says which robots.txt governed the page it stored or the hop it refused; a refusal of the
@@ -2364,9 +2548,14 @@ async function captureEntry(entry, { js, robots, fetchImpl, outDir, deps, summar
     result = await fetchOne(entry, { fetchImpl, robots });
   }
 
-  const { meta, bytesChanged } = await storeCapture(entry, result, {
+  // A copying-barred site's page goes to the artifact, not the tree (decision 4(3); the header comment).
+  const copying = copyingBarredSite(hostOf(entry.url), barredSites);
+  const { meta, bytesChanged, barred } = await storeCapture(entry, result, {
     outDir,
     extractPdfText: deps.extractPdfText,
+    copying,
+    artifactDir,
+    artifact,
   });
   const hash = meta.sha256;
   const byteLength = meta.byteLength;
@@ -2380,7 +2569,15 @@ async function captureEntry(entry, { js, robots, fetchImpl, outDir, deps, summar
 
   if (!meta.changed) {
     process.stdout.write(`unchanged   ${entry.slug}  sha256=${hash ? hash.slice(0, 12) : "-"}  ${entry.url}\n${textNote}`);
-    return { changed: 0, failed, skippedJs: 0 };
+    return { changed: 0, failed, skippedJs: 0, barred: 0 };
+  }
+  if (barred) {
+    process.stdout.write(
+      `${meta.firstFetch ? "new        " : "CHANGED    "} ${entry.slug}  ${byteLength} bytes  ${result.contentType ?? "unknown type"}  ` +
+        `[copying barred: ${copying}; body to the artifact ${artifact.name}, meta and emptied text to the tree]\n            ${entry.url}\n${textNote}`,
+    );
+    summaryLines.push(`- \`${entry.slug}\` — ${byteLength} bytes, ${result.contentType}; copying barred (${copying}): the body is in the artifact \`${artifact.name}\`, not the tree`);
+    return { changed: 1, failed, skippedJs: 0, barred: 1 };
   }
 
   const state = result.error
@@ -2398,7 +2595,7 @@ async function captureEntry(entry, { js, robots, fetchImpl, outDir, deps, summar
       `${bytesChanged ? "" : " (bytes unchanged; text extraction only)"}` +
       `${meta.textError ? `; no PDF text: ${meta.textError}` : ""}`,
   );
-  return { changed: 1, failed, skippedJs: 0 };
+  return { changed: 1, failed, skippedJs: 0, barred: 0 };
 }
 
 /**
@@ -2426,10 +2623,15 @@ export async function main(argv = process.argv.slice(2), env = process.env, deps
   }
 
   mkdirSync(options.outDir, { recursive: true });
+  // The sites whose terms bar copying, once per run, before any fetch (a verdicts file it cannot read stops the run).
+  const barredSites = deps.copyingBarred ?? readCopyingBarred(deps.verdictsPath ?? DEFAULT_VERDICTS);
+  const artifactDir = env.RENDER_WATCH_ARTIFACT_DIR || deps.artifactDir || DEFAULT_ARTIFACT_DIR;
+  const artifact = { name: env.RENDER_WATCH_ARTIFACT_NAME || "render-watch-barred-local", run: env.GITHUB_RUN_ID || null };
 
   let changedCount = 0;
   let failedCount = 0;
   let skippedJs = 0;
+  let barredCount = 0;
   const summaryLines = [];
   const delayMs = deps.delayMs ?? DELAY_MS;
   // One fetch for the whole run: robots.txt and pages alike go through it, so a stub in deps stubs both.
@@ -2442,10 +2644,11 @@ export async function main(argv = process.argv.slice(2), env = process.env, deps
   try {
     for (const [index, entry] of entries.entries()) {
       if (index > 0) await sleep(delayMs);
-      const counts = await captureEntry(entry, { js, robots, fetchImpl, outDir: options.outDir, deps, summaryLines });
+      const counts = await captureEntry(entry, { js, robots, fetchImpl, outDir: options.outDir, deps, summaryLines, barredSites, artifactDir, artifact });
       changedCount += counts.changed;
       failedCount += counts.failed;
       skippedJs += counts.skippedJs;
+      barredCount += counts.barred;
     }
   } finally {
     await js.close();
@@ -2454,7 +2657,8 @@ export async function main(argv = process.argv.slice(2), env = process.env, deps
   // Said only when it happened, so a plain run's log reads exactly as it always did. The cause (not
   // installed, not started, or stopped mid-run) is on each SKIPPED line above; this names none of them.
   const skippedNote =
-    skippedJs > 0 ? ` ${skippedJs} js line(s) skipped: the browser was unavailable (the SKIPPED lines say why).` : "";
+    (skippedJs > 0 ? ` ${skippedJs} js line(s) skipped: the browser was unavailable (the SKIPPED lines say why).` : "") +
+    (barredCount > 0 ? ` ${barredCount} page(s) of copying-barred sites kept out of the tree: their bodies are in ${artifactDir} for the artifact ${artifact.name}.` : "");
   process.stdout.write(
     `\nrender-watch: ${entries.length} URL(s), ${changedCount} changed, ${failedCount} could not be fetched.${skippedNote}\n`,
   );
@@ -2462,7 +2666,8 @@ export async function main(argv = process.argv.slice(2), env = process.env, deps
   // The workflow fails the run on this, after its commit step, so the plain captures still land.
   if (env.GITHUB_OUTPUT) {
     try {
-      appendFileSync(env.GITHUB_OUTPUT, `js_skipped=${skippedJs}\n`);
+      // barred only when there were some (the upload step's condition), so a run without them writes what it always did.
+      appendFileSync(env.GITHUB_OUTPUT, `js_skipped=${skippedJs}\n${barredCount > 0 ? `barred=${barredCount}\n` : ""}`);
     } catch {
       /* the log line above still says it */
     }

@@ -41,6 +41,11 @@
  *                  cube of the size. A capture's HTML is a stranger's, so the CLI checks each one on a worker thread
  *                  it can stop.
  *   unreadable     (the CLI's) the capture could not be read: no meta, a meta that is not JSON, a file it names missing.
+ *   trimmed        the meta has a `trimmed` block (ruling 6.10 row 21 (d): scripts/trim-capture.mjs, or render-watch's
+ *                  route for a copying-barred site) and no kind from before the trim: only cited lines are in the tree,
+ *                  and the evidence says where the full bytes are (git history, or the workflow artifact). A capture
+ *                  trim-capture trimmed keeps the kind capture-check gave it whole (the block's captureCheck), with the
+ *                  trim named in the evidence; a body the trim removed is not a missing file.
  * "Too little text" is fewer than queue-zero-test's MIN_TERMS_TEXT characters, counted in the text
  * queue-zero-test's readTermsCapture reads: <slug>.txt. The evidence says whose text that is: the fetcher's (the meta's
  * textPath), the body itself (a plain-text capture), or a .txt the meta does not name (the hand extractions beside
@@ -166,6 +171,14 @@ export function classifyCapture({ meta, text, html, textFrom = "fetcher" }) {
   if (meta?.error != null || !Number.isInteger(status) || status < 200 || status > 299) {
     return { kind: "status", evidence: statusEvidence(meta, text) };
   }
+  if (meta?.trimmed && typeof meta.trimmed === "object") {
+    const t = meta.trimmed;
+    const kept = (Array.isArray(t.keptLines) ? t.keptLines : []).reduce((n, [a, b]) => n + b - a + 1, 0);
+    const where =
+      `trimmed ${t.on} (ruling 6.10 row 21 (d)): ${kept} of ${t.lineCount ?? 0} text lines kept in the tree, the body ` +
+      `${t.body?.inTree ? "kept at its cited lines only" : "out of it"}; the full bytes: ${t.fullBytesIn ?? "git history"}`;
+    return t.captureCheck ? { kind: t.captureCheck, evidence: `${where}; capture-check's kind before the trim` } : { kind: "trimmed", evidence: where };
+  }
   const type = String(meta?.contentType ?? "").split(";")[0].trim() || "no content type";
   const isHtml = /html/i.test(type) || /\.html?$/i.test(meta?.bodyPath ?? "");
   const isPdf = /pdf/i.test(type);
@@ -211,9 +224,10 @@ export function readCapture(slug, dir = RENDERED) {
   const metaPath = join(dir, `${slug}.meta.json`);
   if (!existsSync(metaPath)) throw new Error(`no capture: ${metaPath} does not exist`);
   const meta = JSON.parse(readFileSync(metaPath, "utf8"));
-  const named = (path) => {
+  const named = (path, trimmedAway = false) => {
     if (path == null) return null;
     const file = join(dir, basename(path));
+    if (!existsSync(file) && trimmedAway) return null;
     if (!existsSync(file)) throw new Error(`capture ${slug} is incomplete: its meta names ${path}, which is not in ${dir}`);
     return readFileSync(file, "utf8");
   };
@@ -225,7 +239,8 @@ export function readCapture(slug, dir = RENDERED) {
     textFrom = meta.bodyPath != null && basename(meta.bodyPath) === `${slug}.txt` ? "body" : "beside";
   }
   const isHtml = /html/i.test(String(meta.contentType ?? "")) || /\.html?$/i.test(meta.bodyPath ?? "");
-  return { meta, text, textFrom, html: isHtml ? named(meta.bodyPath) : null };
+  // A trimmed capture's body left the tree on purpose (its meta keeps bodyPath, and says where the full bytes are).
+  return { meta, text, textFrom, html: isHtml ? named(meta.bodyPath, meta.trimmed?.body?.inTree === false) : null };
 }
 
 /**
