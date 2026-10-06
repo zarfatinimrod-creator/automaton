@@ -19,7 +19,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `remask-run.json` | `scripts/remask-run.sh` | `remask-run.test.ts` | tick 53 |
 | `render-dispatch.json` | `scripts/render-dispatch.sh` | `render-dispatch.test.ts` | ticks 52, 54 |
 | `render-watch.json` | `scripts/render-watch.mjs` (the address mask; the User-Agent and `UA_CONTACT`, tick 54; kaggle.com's `TERMS_BARRED` entry, tick 54 shell-terms review; the copying-barred artifact route, tick 56, and its review fixes: a failed fetch keeps the trimmed block, a redirect into a copying-barred site stores nothing) | `render-watch.test.ts` (+ `render-watch-robots.test.ts` for the T54-U entries, `render-watch-terms-barred.test.ts` and `prize-terms-audit.test.ts` for the T54-TB entries, `render-watch-js.test.ts` and `trim-capture.test.ts` for some T56-RW entries) | ticks 48, 50, 54, 56 |
-| `robots-verdict.json` | `scripts/robots-verdict.mjs` (`judgeSite` keeps every field it does not set; `serializeVerdicts`' one field order, copying after note) | `robots-verdict.test.ts` | tick 54 |
+| `robots-verdict.json` | `scripts/robots-verdict.mjs` (`judgeSite` keeps every field it does not set; `serializeVerdicts`' one field order, copying after note); since tick 57 also the data its eurocontrol.int verdict rests on (`terms-verdicts.json`: the verdict word, the frozen-copy source, the waiver in the note, copying, ansperformance.eu's parenthetical; the audit note's counts and lines, ZERO-TESTS row 265, a pause comment in `urls.txt`, the tick-56 fixture) | `robots-verdict.test.ts` (+ `prize-terms-audit.test.ts` for the T57 entries) | ticks 54, 57 |
 | `sim-tree.json` | `scripts/sim-tree.sh` | `sim-tree.test.ts` | ticks 51, 52 |
 | `trim-capture.json` | `scripts/trim-capture.mjs` (ruling 6.10 row 21 (d), decision 4; the review fixes: a capture refused alone, the route's remedy, kept bytes, `wide`, the guard's seam) | `trim-capture.test.ts` | tick 56 |
 
@@ -63,9 +63,9 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 
   | Plan | Entries | Full run |
   | --- | --- | --- |
-  | `robots-verdict.json` | 4 | 13 (tick 54 terms-read builder, in its worktree, alone; the test file takes about 2 s a run) |
   | `page-views.json` | 5 | 23 (tick 54 builder, inside sim-tree.sh, alone; the two test files take about 2 s a run) |
   | `prize-dispatch.json` | 28 | 69 |
+  | `robots-verdict.json` | 22 | 126 (tick 57 builder, in sim-tree.sh, alone, the tree's setup included; the T57 entries run `prize-terms-audit.test.ts`, about 3-5 s a run); 13 with the first 4 (tick 54 terms-read builder, in its worktree, alone; the test file takes about 2 s a run) |
   | `loop-edit.json` | 46 | 188, 191 |
   | `queue-zero-test.json` | 32 | 194 (tick 54 review fixer, in sim-tree.sh, alone; 169 with the first 31; the builder's 16: 108, and 133 beside `render-watch.json`'s and `render-dispatch.json`'s new entries) |
   | `address-kinds.json` | 22 | 198 (tick 53 fixer, beside the whole revenue suite; the builder's 17 entries: 156) |

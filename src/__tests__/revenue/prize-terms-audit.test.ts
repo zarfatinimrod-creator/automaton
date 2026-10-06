@@ -353,11 +353,13 @@ const RULINGS_SECTION = [
  * whose heading now says what its one probe is, "Robots probe captured, robots verdict not yet run" (the 12:05 weekly run
  * of 6.10 captured it, and the script was run on it dry only): `probe` is "unjudged" for a captured probe of a site in
  * UNJUDGED_PROBES, which the fifth group ("Probed 6.10, NO_TERMS_ROBOTS_OK not set", the probes the script was run on and
- * declined) does not hold. The fourth group keeps agenthon.net. The counts test reads the groups six times, with the
- * verdicts as they are, as tick55() gives them (after the terms links were found, before the second terms read), as
- * tick54() gives them (after the js render, before the terms links were found), as jsReadBefore() gives them (after the
- * terms read, before the js render), as termsReadBefore() gives them (after the robots verdicts, before the terms read)
- * and as tick45() gives them, and the note states all six.
+ * declined) does not hold. The fourth group keeps agenthon.net. Tick 57 applied the script to that capture (R1's
+ * repository grep waived): eurocontrol.int is NO_TERMS_ROBOTS_OK, in the second group, and the sixth is empty, its heading
+ * kept. The counts test reads the groups seven times, with the verdicts as they are, as tick56() gives them (after the
+ * second terms read, before eurocontrol.int's robots verdict; its probe "unjudged"), as tick55() gives them (after the
+ * terms links were found, before the second terms read), as tick54() gives them (after the js render, before the terms
+ * links were found), as jsReadBefore() gives them (after the terms read, before the js render), as termsReadBefore()
+ * gives them (after the robots verdicts, before the terms read) and as tick45() gives them, and the note states all seven.
  */
 type Probe = "captured" | "queued" | "unjudged" | null;
 /**
