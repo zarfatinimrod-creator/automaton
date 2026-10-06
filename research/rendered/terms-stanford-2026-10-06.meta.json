@@ -21,5 +21,244 @@
     "from": "research/rendered/terms-stanford.meta.json",
     "commit": "5f4853a",
     "why": "A dated copy of the render-watch capture of terms-stanford as commit 5f4853a stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keep pointing at the lines the terms reading of 6.10 (tick 54: one Opus reader, one adversarial Opus verifier, the main thread's verdict) rests on. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-stanford stays in urls.txt, paused after the reading."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "stanford.edu",
+    "copying": "barred",
+    "keptLines": [
+      [
+        10,
+        19
+      ],
+      [
+        41,
+        47
+      ],
+      [
+        52,
+        57
+      ],
+      [
+        73,
+        77
+      ],
+      [
+        82,
+        86
+      ],
+      [
+        94,
+        101
+      ],
+      [
+        107,
+        111
+      ],
+      [
+        123,
+        127
+      ],
+      [
+        205,
+        209
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "fd937499973d3d4170cea58443b687e25b681062a39ac5e1a08f885fcee85029",
+    "fullByteLength": 12297,
+    "lineCount": 221,
+    "body": {
+      "path": "research/rendered/terms-stanford-2026-10-06.html",
+      "sha256": "48c4c45e134be29e58d0f24dc8b8659f3d46457ada7fe323d3aa93a1ec305186",
+      "byteLength": 351829,
+      "lineCount": 1,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          12,
+          13
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          14,
+          14
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936",
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          16,
+          16
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936",
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          17,
+          17
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936",
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          43,
+          43
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          45,
+          45
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936",
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          54,
+          54
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936",
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          55,
+          55
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936",
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          75,
+          75
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936",
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          84,
+          84
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936",
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          96,
+          96
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1935",
+          "research/channel-loop/terms-verdicts.json:668"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          97,
+          97
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936",
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1935",
+          "research/channel-loop/terms-verdicts.json:789",
+          "research/channel-loop/terms-verdicts.json:670"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          99,
+          99
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1935",
+          "research/channel-loop/terms-verdicts.json:789",
+          "research/channel-loop/terms-verdicts.json:670"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          109,
+          109
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1936",
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          125,
+          125
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1935",
+          "research/channel-loop/ZERO-TESTS.md:248",
+          "research/channel-loop/terms-verdicts.json:670",
+          "research/channel-loop/terms-verdicts.json:789"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          207,
+          207
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:670"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 5579160670471c6e2cddf3d223f6bd9d53ba0dc1 (git show 5579160670471c6e2cddf3d223f6bd9d53ba0dc1:research/rendered/terms-stanford-2026-10-06.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

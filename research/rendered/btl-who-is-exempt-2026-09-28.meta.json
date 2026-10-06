@@ -25,5 +25,58 @@
     "from": "research/rendered/btl-who-is-exempt.meta.json",
     "commit": "25deca3",
     "why": "A dated copy of the render-watch capture of btl-who-is-exempt as commit 25deca3 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/measurements/step2-cost.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug btl-who-is-exempt stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "btl.gov.il",
+    "copying": "barred",
+    "keptLines": [
+      [
+        361,
+        365
+      ],
+      [
+        541,
+        545
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "3e28bf89ec7d9f9d045ecadafb63973815a0d858b2c2ae3dfe93b586fb66f806",
+    "fullByteLength": 15366,
+    "lineCount": 560,
+    "body": {
+      "path": "research/rendered/btl-who-is-exempt-2026-09-28.html",
+      "sha256": "0fa69e92bff65d0909cf89f9f2dfcd65226c9ddb18097d6fedf024cf61b9f169",
+      "byteLength": 149384,
+      "lineCount": 2096,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          363,
+          363
+        ],
+        "by": [
+          "research/measurements/step2-cost.md:95"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          543,
+          543
+        ],
+        "by": [
+          "research/measurements/step2-cost.md:94"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/btl-who-is-exempt-2026-09-28.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

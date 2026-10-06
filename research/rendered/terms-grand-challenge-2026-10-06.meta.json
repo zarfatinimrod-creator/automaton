@@ -22,5 +22,209 @@
     "from": "research/rendered/terms-grand-challenge.meta.json",
     "commit": "5f4853a",
     "why": "A dated copy of the render-watch capture of terms-grand-challenge as commit 5f4853a stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keep pointing at the lines the terms reading of 6.10 (tick 54: one Opus reader, one adversarial Opus verifier, the main thread's verdict) rests on. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-grand-challenge stays in urls.txt, paused after the reading."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "grand-challenge.org",
+    "copying": "barred",
+    "keptLines": [
+      [
+        32,
+        38
+      ],
+      [
+        48,
+        58
+      ],
+      [
+        74,
+        81
+      ],
+      [
+        101,
+        111
+      ],
+      [
+        120,
+        126
+      ],
+      [
+        148,
+        152
+      ],
+      [
+        162,
+        166
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "56128df03343160b6e9637bb840606342be8f31c8d982456f2408c76aebc19a7",
+    "fullByteLength": 14534,
+    "lineCount": 204,
+    "body": {
+      "path": "research/rendered/terms-grand-challenge-2026-10-06.html",
+      "sha256": "2bcc9577f089f4acbe614167bbb74cf66d9d9c22bf87075263f5aa8652f6485e",
+      "byteLength": 29970,
+      "lineCount": 524,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          34,
+          34
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1934",
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          36,
+          36
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1934",
+          "research/channel-loop/terms-verdicts.json:278"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          50,
+          50
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1934",
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          54,
+          54
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1934",
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          56,
+          56
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1934",
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          76,
+          76
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1934",
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          79,
+          79
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          103,
+          103
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          106,
+          106
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          109,
+          109
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          122,
+          122
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1934",
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          124,
+          124
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1934",
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          150,
+          150
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1934",
+          "research/channel-loop/ZERO-TESTS.md:246",
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          164,
+          164
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1934",
+          "research/channel-loop/terms-verdicts.json:280"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 5579160670471c6e2cddf3d223f6bd9d53ba0dc1 (git show 5579160670471c6e2cddf3d223f6bd9d53ba0dc1:research/rendered/terms-grand-challenge-2026-10-06.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

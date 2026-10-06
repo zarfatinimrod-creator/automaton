@@ -1,0 +1,305 @@
+Agenthon 2026 — Terms of Participation
+
+Agenthon
+
+Home
+About
+Compete
+Guides
+
+Past Events
+
+2025
+2024
+
+Sign In
+Sign Up
+
+Agenthon Submissions Deadline: October 12th, 23:59 AoE
+
+(October 13th at 7:59 AM New York, October 13th at 12:59 PM London, October 13th at 7:59 PM Singapore)
+
+Announcing Competition Awards!
+
+Terms of Participation
+
+Version 2026-08-17 · Agenthon 2026 — NeurIPS 2026 Competition Track · AH26-POL-02
+
+Policy set: Official Competition Rules ·
+Terms of Participation ·
+Privacy Notice ·
+Data & Software Licensing Policy
+
+These Terms govern the legal relationship between participants and the Organizers, including
+participant ownership, the limited operational license, confidentiality of non-public
+submissions, third-party rights, platform use, prizes, disclaimers, liability, and governing
+law.
+
+Core commitment. Participants keep ownership of their work. The Organizers
+receive only the limited rights needed to operate, secure, verify, report, and preserve the
+scientific record of the Competition.
+
+1. Agreement and organizers
+
+These Terms of Participation (“Terms”) apply to Agenthon 2026 (the
+“Competition”). By registering, accessing the competition environment, or
+submitting, you agree to these Terms, the
+Official Competition Rules , the
+Privacy Notice , the
+Data & Software Licensing Policy , applicable track
+instructions, and relevant platform terms.
+
+The Competition is organized by the Society of Quantitative Analysts (SQA) and CEWIT at
+Stony Brook University (the “Organizers”), subject to applicable institutional
+approvals. Track leads, Question Partners, sponsors, evaluators, providers, and volunteers may
+assist without acquiring ownership of participant submissions merely because of that role.
+
+If you participate as part of a team, these Terms apply to you individually. The team
+captain may act for the team on operational matters but may not transfer another member’s
+intellectual-property rights without authorization.
+
+2. Eligibility, accounts, and platform terms
+
+Eligibility, team structure, conflicts, sanctions compliance, conduct, and prize conditions
+are governed primarily by the Official Competition Rules .
+
+You must provide accurate registration information, protect credentials, and comply with
+reasonable identity, eligibility, authorship, or prize-verification requests.
+
+Competition activity may use third-party platforms or compute environments. Their terms and
+privacy practices may also apply. As between you and the Organizers, these Terms govern the
+Organizers’ rights to your submission to the extent the Organizers have authority to do
+so.
+
+3. Participant ownership
+
+You keep ownership of your submission. Participation does not assign your
+intellectual property to the Organizers, sponsors, Question Partners, infrastructure providers,
+or NeurIPS.
+
+As between you and the Organizers, you retain all right, title, and interest you lawfully
+hold in participant-authored source code, models, methods, documentation, reports, and other
+original submission materials (“Submission Materials”). Third-party components
+remain governed by their original licenses and terms.
+
+4. Limited license to operate and report the Competition
+
+By submitting, you grant the Organizers a non-exclusive, worldwide, royalty-free license,
+limited to the period and scope reasonably necessary to operate, secure, verify, report, and
+preserve the scientific record of the Competition, to:
+
+host, copy, execute, and technically adapt Submission Materials for the designated
+evaluation environment;
+
+score, audit, security-test, investigate integrity, and reproduce results for
+verification;
+
+maintain leaderboards and publish scores, ranks, gate outcomes, and benchmark-level
+analyses;
+
+prepare Competition reports, presentations, and archival records; and
+
+promote Agenthon using public team and submission information, such as team name, project
+title, approved public summary, score, and rank.
+
+This license does not transfer ownership and does not authorize the Organizers to publicly
+release non-public code, containers, model artifacts, or private verification materials; use a
+non-public submission to train a general-purpose model; sell or license participant technology;
+or use the submission for unrelated commercial or research purposes without separate
+permission.
+
+Published leaderboard facts, approved public summaries, and aggregate scientific results may
+remain in the permanent Competition record. The underlying non-public submission remains
+confidential subject to the retention and legal exceptions described in the
+Privacy Notice .
+
+5. Confidentiality and access
+
+Non-public Submission Materials, including ordinary submissions and private
+prize-verification packages, are competition-confidential. Ranking, finalist status, or winning
+status does not by itself waive that confidentiality.
+
+Access is limited to Organizers, designated track leads/evaluators, platform or
+infrastructure providers, and other persons reasonably necessary for scoring, security,
+integrity, or verification, subject to appropriate handling obligations.
+
+Sponsors and Question Partners do not receive non-public submissions merely because they
+support Agenthon.
+
+A third party may access non-public materials only when assigned a necessary evaluation,
+verification, security, or scientific-analysis function and only to the extent reasonably
+required.
+
+The Organizers may disclose information where legally required, after taking reasonable
+steps to limit disclosure where permitted.
+
+Do not include trade secrets, credentials, unnecessary personal data, or information that
+cannot lawfully be shared with those needed to evaluate the Competition.
+
+6. Public information and publicity
+
+The Organizers may publish team name, track participation, score, rank, and leaderboard
+information. For finalists and winners, they may also publish registered member names,
+affiliations, prize information, and approved public method summaries, as described in the
+Official Competition Rules and
+Privacy Notice .
+
+Photography and recording. The in-person final and associated events may be
+photographed and recorded. By attending in person, you consent to appearing in photographs and
+recordings that may be published on Agenthon’s websites (agenthon.net, sqa-us.org,
+cewit.org) and social channels. If you prefer not to be photographed, tell the organizers at
+the event and we will make reasonable efforts not to feature you. Notice will also be posted at
+the venue. Identifiable photographs and recordings are otherwise handled under the
+Privacy Notice .
+
+Participation does not create an employment, partnership, agency, sponsorship,
+investment-advisory, client, or fiduciary relationship, and does not guarantee employment,
+investment, publication, or commercial opportunity.
+
+7. Third-party rights and participant warranties
+
+You represent that you have sufficient rights to submit and permit evaluation of all
+included components. You are responsible for software, dataset, model, API, content, patent,
+confidentiality, employment, and other restrictions that apply to your work.
+
+Do not submit material that infringes intellectual-property, privacy, publicity,
+confidentiality, or other rights.
+
+Do not represent employer-owned or third-party material as exclusively yours.
+
+You remain responsible for attribution, notices, source-disclosure, copyleft,
+model-license, data-use, and other conditions.
+
+The license granted to the Organizers extends only to rights you can lawfully grant and
+does not override third-party terms.
+
+8. Three-stage submission and reproducibility model
+
+Stage
+Treatment
+
+1 – Private submission
+
+Ordinary submissions remain non-public and are used only to operate, score, secure,
+audit, and scientifically report the Competition.
+
+2 – Private verification
+
+A provisional prize candidate confidentially supplies the source, configuration,
+provenance, and other materials reasonably needed to reproduce and audit the
+result.
+
+3 – Winner public release
+
+After winning status is confirmed, a team accepting the prize publishes
+participant-authored reproducibility code under an OSI-approved license. The original
+private submission remains non-public unless separately released.
+
+Participants need not relicense third-party software, data, models, weights, credentials, or
+other material they do not own. A permitted non-redistributable dependency must be identified
+with a lawful reproduction path. Failure of private verification may affect ranking or prize
+eligibility; failure of a confirmed winner to complete the public release may affect prize
+payment or acceptance. Neither transfers ownership.
+
+9. Competition materials, privacy, and event requirements
+
+The Competition Site, logos, private-test materials, oracle answers, hidden scoring logic,
+canary registries, audit materials, and other Organizer or third-party materials remain owned
+by their respective rights holders. Public code and data may be governed by separate licenses
+identified with the resource; no license is granted by implication.
+
+Personal data is processed under the Agenthon Privacy
+Notice . The Organizers do not sell participant personal data or non-public submissions and
+do not use them to train general-purpose AI models.
+
+Physical participation in a NeurIPS event is separately subject to NeurIPS registration,
+credentials, admission, Code of Conduct, safety, security, venue, travel, and immigration
+requirements. Finalist or winner status does not itself provide a badge, admission, visa, or
+travel support.
+
+10. Prizes and no financial advice
+
+Prizes, if any, are governed by the Official Competition
+Rules and announced prize terms. Potential winners may need to establish identity,
+eligibility, authorship, private reproducibility, tax status, and payment details.
+
+Taxes and personal reporting are the winner’s responsibility, subject to legally
+required withholding or reporting. Prize payment may be withheld until a confirmed winner
+completes an announced public-release requirement.
+
+The Competition is for research, education, and benchmarking. Datasets, outputs, scores,
+example strategies, simulated results, and submissions are not investment, trading, legal, tax,
+accounting, or other professional advice. Past or simulated performance does not guarantee
+future results.
+
+11. Availability, security, disclaimers, and liability
+
+The Competition Site, platforms, datasets, evaluation environment, and Organizer-provided
+materials are offered subject to technical limitations. The Organizers may quarantine unsafe
+submissions, correct evaluation defects, extend deadlines, or modify, suspend, or cancel the
+Competition when reasonably necessary for fairness, security, legal compliance, or scientific
+validity.
+
+To the maximum extent permitted by law, the Competition and Organizer-provided materials are
+provided “as is” and “as available,” without
+warranties of uninterrupted availability, error-free operation, merchantability, fitness for a
+particular purpose, or non-infringement. Nothing excludes rights or warranties that cannot
+lawfully be excluded.
+
+To the maximum extent permitted by law, the Organizers and persons acting on their behalf
+are not liable for indirect, incidental, consequential, special, exemplary, or punitive
+damages, or for lost profits, opportunity, data, or business interruption arising from
+participation. Nothing limits liability that cannot legally be limited.
+
+To the extent permitted by law, you are responsible for third-party claims arising directly
+from materials submitted in violation of Section 7 or from intentional misconduct. Any
+reimbursement obligation is limited to losses reasonably attributable to that violation and
+does not apply to claims caused by unauthorized Organizer use.
+
+12. Governing law, disputes, changes, and miscellaneous
+
+These Terms are governed by the laws of New York, USA, without regard to conflict-of-law
+rules, except where mandatory law provides otherwise. Any dispute arising out of or relating to
+these Terms or the Competition shall be resolved by binding arbitration administered by the
+American Arbitration Association under its Consumer Arbitration Rules, before a single
+arbitrator, seated in New York, New York, conducted in English. Judgment on the award may be
+entered in any court of competent jurisdiction. If the arbitration provision is found
+unenforceable or inapplicable to you or to a particular dispute, or if you are a consumer whose
+local law guarantees access to your home courts, such dispute shall instead be resolved
+exclusively in the state and federal courts located in New York County, New York, and the
+parties consent to personal jurisdiction there — provided that nothing in these Terms
+deprives you of any mandatory rights or protections under the laws of your country of
+residence.
+
+The Organizers may update these Terms for legal requirements, material platform changes,
+security issues, or clear drafting defects. Material changes will be dated and announced. They
+will not retroactively take ownership or materially broaden use of a non-public submission
+without consent unless required by law.
+
+If a provision is unenforceable, the remaining provisions remain effective to the extent
+permitted. Failure to enforce once is not a waiver. Headings are for readability and do not
+limit meaning. These Terms and the related Competition documents constitute the agreement
+concerning the Competition, subject to mandatory law and any separately signed agreement.
+
+Questions about these Terms:
+[redacted:email]@agenthon.net . Additional published contacts:
+[redacted:email]@sqa-us.org and
+[redacted:email]@cewit.org .
+
+Alphathon presents Agenthon 2026
+
+Organized by
+SQA &middot;
+CEWIT ,
+Stony Brook University
+
+About
+Compete
+Past Events
+Rules
+Terms
+Privacy
+Licensing
+Contact
+
+Copyright &copy; 2026: agenthon.net. All rights reserved.

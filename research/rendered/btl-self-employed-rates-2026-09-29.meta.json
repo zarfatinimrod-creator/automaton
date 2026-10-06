@@ -25,5 +25,44 @@
     "from": "research/rendered/btl-self-employed-rates.meta.json",
     "commit": "f9a41c6",
     "why": "A dated copy of the render-watch capture of btl-self-employed-rates as commit f9a41c6 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/TERMS-AUDIT-2026-09-29.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug btl-self-employed-rates stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "btl.gov.il",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": "1715be8a7aafee8cc4951c1c62341e894841163c4315b4d8e1e6c41db6db0f41",
+    "fullByteLength": 11485,
+    "lineCount": 547,
+    "body": {
+      "path": "research/rendered/btl-self-employed-rates-2026-09-29.html",
+      "sha256": "1dfa857f2d34142965fc7c11bf504e854941abc91e6522ae8a3b6d4e725abf75",
+      "byteLength": 153099,
+      "lineCount": 2132,
+      "keptLines": [
+        [
+          1997,
+          2001
+        ]
+      ],
+      "inTree": true
+    },
+    "cited": [
+      {
+        "file": "html",
+        "lines": [
+          1999,
+          1999
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:38"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/btl-self-employed-rates-2026-09-29.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

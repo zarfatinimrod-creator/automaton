@@ -19,5 +19,87 @@
     "from": "research/rendered/worksheets4kids-home.meta.json",
     "commit": "5490706",
     "why": "A dated copy of the render-watch capture of worksheets4kids-home as commit 5490706 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/measurements/hebrew-teacher-sites.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug worksheets4kids-home stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "worksheets4kids.co.il",
+    "copying": "barred",
+    "keptLines": [
+      [
+        179,
+        183
+      ],
+      [
+        236,
+        240
+      ],
+      [
+        324,
+        328
+      ],
+      [
+        333,
+        337
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "141dde7b8c861e987045773c1a0059e334d67ff67c1607da39e0dd6ef72092f0",
+    "fullByteLength": 5825,
+    "lineCount": 342,
+    "body": {
+      "path": "research/rendered/worksheets4kids-home-2026-09-28.html",
+      "sha256": "e883f6c3297905c81d85cde856f24eaca1003a86be76530e4b52222705b65970",
+      "byteLength": 115266,
+      "lineCount": 942,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          181,
+          181
+        ],
+        "by": [
+          "research/measurements/hebrew-teacher-sites.md:42"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          238,
+          238
+        ],
+        "by": [
+          "research/measurements/hebrew-teacher-sites.md:42",
+          "research/measurements/hebrew-teacher-sites.md:43"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          326,
+          326
+        ],
+        "by": [
+          "research/measurements/hebrew-teacher-sites.md:44"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          335,
+          335
+        ],
+        "by": [
+          "research/measurements/hebrew-teacher-sites.md:45"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 1d25e6ee962bd00cab9d056c148c4e1a2c8e35b8 (git show 1d25e6ee962bd00cab9d056c148c4e1a2c8e35b8:research/rendered/worksheets4kids-home-2026-09-28.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

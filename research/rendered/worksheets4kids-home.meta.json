@@ -15,5 +15,28 @@
   "changed": true,
   "firstFetch": false,
   "previousSha256": "a1a72283db365514911721f99e8f3b05261142d2bb83c612aacc61e0c93ad24f",
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "worksheets4kids.co.il",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": "141dde7b8c861e987045773c1a0059e334d67ff67c1607da39e0dd6ef72092f0",
+    "fullByteLength": 5825,
+    "lineCount": 342,
+    "body": {
+      "path": "research/rendered/worksheets4kids-home.html",
+      "sha256": "ff99e33fef581bfa17e61a13618bc1f6aafcaf91629c27a9000fe07a1b65e0a9",
+      "byteLength": 115363,
+      "lineCount": 943,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 364bf71a84e7fe6e5e2bd1f44cb35cbc6c608b99 (git show 364bf71a84e7fe6e5e2bd1f44cb35cbc6c608b99:research/rendered/worksheets4kids-home.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }

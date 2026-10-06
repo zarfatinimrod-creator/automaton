@@ -25,5 +25,28 @@
     "from": "research/rendered/apify-store-accessibility.meta.json",
     "commit": "a65a5b2",
     "why": "A dated copy of the render-watch capture of apify-store-accessibility as commit a65a5b2 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/measurements/eaa-occupancy.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug apify-store-accessibility stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "apify.com",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": null,
+    "fullByteLength": null,
+    "lineCount": null,
+    "body": {
+      "path": "research/rendered/apify-store-accessibility-2026-09-07.json",
+      "sha256": "6d190ccecd93eb4b039a7e1c09c0dfd457ac7a884fbef36e9ed792bb09e5bb01",
+      "byteLength": 3027642,
+      "lineCount": 64641,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit b339013bdf924e2eac91fff7d4d203d687622816 (git show b339013bdf924e2eac91fff7d4d203d687622816:research/rendered/apify-store-accessibility-2026-09-07.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

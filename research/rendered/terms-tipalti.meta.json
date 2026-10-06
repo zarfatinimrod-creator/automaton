@@ -19,5 +19,83 @@
   "changed": true,
   "firstFetch": true,
   "previousSha256": null,
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "tipalti.com",
+    "copying": "barred",
+    "keptLines": [
+      [
+        221,
+        225
+      ],
+      [
+        249,
+        257
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "be8eb3cf99ef9d81d6fa8881a84c2e4ded269b9808b9f0a1356dc5dcc5f68a62",
+    "fullByteLength": 5949,
+    "lineCount": 438,
+    "body": {
+      "path": "research/rendered/terms-tipalti.html",
+      "sha256": "efccb9d0c8611abd7426ad0452afdffa59c19e7534edc50885f97c07a2bc836e",
+      "byteLength": 166718,
+      "lineCount": 1132,
+      "keptLines": [
+        [
+          836,
+          840
+        ]
+      ],
+      "inTree": true
+    },
+    "cited": [
+      {
+        "file": "html",
+        "lines": [
+          838,
+          838
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:256"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          223,
+          223
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:256"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          251,
+          251
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:256"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          255,
+          255
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:256"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit b339013bdf924e2eac91fff7d4d203d687622816 (git show b339013bdf924e2eac91fff7d4d203d687622816:research/rendered/terms-tipalti.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }

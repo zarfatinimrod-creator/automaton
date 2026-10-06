@@ -19,5 +19,157 @@
   "changed": true,
   "firstFetch": false,
   "previousSha256": "53a34ce2499d1433977d644f58c4d86d1500e11fa4442033f82acf9aea062293",
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "indiebook.co.il",
+    "copying": "barred",
+    "keptLines": [
+      [
+        27,
+        271
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "3f7d2a23a84a2e8eecb6ca8b187632ae5945a4a8cd136a1b660e1dcf1ab03c54",
+    "fullByteLength": 47188,
+    "lineCount": 298,
+    "body": {
+      "path": "research/rendered/indiebook-terms.html",
+      "sha256": "4936c9c4945857d3067f6082e3c4d6f8e5617b251569bc1ff2d364b9611b1934",
+      "byteLength": 592320,
+      "lineCount": 995,
+      "keptLines": [
+        [
+          810,
+          814
+        ]
+      ],
+      "inTree": true
+    },
+    "cited": [
+      {
+        "file": "html",
+        "lines": [
+          812,
+          812
+        ],
+        "by": [
+          "research/measurements/indiebook.md:108"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          29,
+          269
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:461",
+          "research/measurements/indiebook.md:108"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          47,
+          47
+        ],
+        "by": [
+          "research/owner-asks/brand-mailbox-questions.md:182",
+          "research/owner-asks/questions.json:90"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          85,
+          85
+        ],
+        "by": [
+          "research/channel-loop/SITTING-2026-09-29-BRIEF.md:406"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          85,
+          97
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-09-29-lines.md:396"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          95,
+          97
+        ],
+        "by": [
+          "research/channel-loop/SITTING-2026-09-29-BRIEF.md:406"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          127,
+          127
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-09-29-loop.md:176",
+          "research/channel-loop/RULING-2026-09-29-loop.md:476",
+          "research/channel-loop/SITTING-2026-09-29-BRIEF.md:113",
+          "research/channel-loop/SITTING-2026-09-29-BRIEF.md:256"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          133,
+          133
+        ],
+        "by": [
+          "research/owner-asks/brand-mailbox-questions.md:191"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          165,
+          165
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:129"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          167,
+          167
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:129"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          169,
+          169
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-09-30-video.md:129",
+          "research/channel-loop/SITTING-2026-09-30-BRIEF.md:308",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:18",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:129"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/indiebook-terms.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }

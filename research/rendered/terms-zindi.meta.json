@@ -16,5 +16,28 @@
   "changed": true,
   "firstFetch": true,
   "previousSha256": null,
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "zindi.africa",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": "e25ba556ebd2a765f529268d2b157901208899f7f69b5866f2e55e794b686ceb",
+    "fullByteLength": 16167,
+    "lineCount": 115,
+    "body": {
+      "path": "research/rendered/terms-zindi.html",
+      "sha256": "a773397a77fa641915c6990b376aa438b3defc1c61f960f6cb8e5a3d57fec5ef",
+      "byteLength": 36956,
+      "lineCount": 131,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 5f4853a66b0a64709e8db9f6681651308915196a (git show 5f4853a66b0a64709e8db9f6681651308915196a:research/rendered/terms-zindi.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }

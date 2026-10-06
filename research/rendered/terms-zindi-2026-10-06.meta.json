@@ -22,5 +22,149 @@
     "from": "research/rendered/terms-zindi.meta.json",
     "commit": "5f4853a",
     "why": "A dated copy of the render-watch capture of terms-zindi as commit 5f4853a stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keep pointing at the lines the terms reading of 6.10 (tick 54: one Opus reader, one adversarial Opus verifier, the main thread's verdict) rests on. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-zindi stays in urls.txt, paused after the reading."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "zindi.africa",
+    "copying": "barred",
+    "keptLines": [
+      [
+        10,
+        17
+      ],
+      [
+        45,
+        49
+      ],
+      [
+        66,
+        76
+      ],
+      [
+        89,
+        93
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "e25ba556ebd2a765f529268d2b157901208899f7f69b5866f2e55e794b686ceb",
+    "fullByteLength": 16167,
+    "lineCount": 115,
+    "body": {
+      "path": "research/rendered/terms-zindi-2026-10-06.html",
+      "sha256": "a773397a77fa641915c6990b376aa438b3defc1c61f960f6cb8e5a3d57fec5ef",
+      "byteLength": 36956,
+      "lineCount": 131,
+      "keptLines": [
+        [
+          48,
+          52
+        ]
+      ],
+      "inTree": true
+    },
+    "cited": [
+      {
+        "file": "html",
+        "lines": [
+          50,
+          50
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1933",
+          "research/channel-loop/terms-verdicts.json:876"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          12,
+          12
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1933",
+          "research/channel-loop/terms-verdicts.json:874"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          14,
+          14
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1933",
+          "research/channel-loop/terms-verdicts.json:876"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          15,
+          15
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1933",
+          "research/channel-loop/terms-verdicts.json:876"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          47,
+          47
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1933",
+          "research/channel-loop/terms-verdicts.json:876"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          68,
+          68
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1933",
+          "research/channel-loop/ZERO-TESTS.md:247",
+          "research/channel-loop/terms-verdicts.json:876"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          69,
+          69
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:876"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          74,
+          74
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1933",
+          "research/channel-loop/terms-verdicts.json:876"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          91,
+          91
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:876"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 5579160670471c6e2cddf3d223f6bd9d53ba0dc1 (git show 5579160670471c6e2cddf3d223f6bd9d53ba0dc1:research/rendered/terms-zindi-2026-10-06.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

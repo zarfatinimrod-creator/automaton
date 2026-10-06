@@ -200,5 +200,53 @@
       "src/__tests__/revenue/frozen-citations.test.ts"
     ],
     "note": "tick 38 N1: no note marks (a citation of the note itself is read as one of a capture)"
+  },
+  {
+    "id": "T56-F1",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "  if (meta.trimmed) {\n    throw new Error(",
+    "replace": "  if (false) {\n    throw new Error(",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a trimmed capture is frozen, emptied lines and all"
+  },
+  {
+    "id": "T56-F2",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "    if (meta?.trimmed) problems.push(...trimmedProblems(dir, slug, meta.trimmed));",
+    "replace": "    if (false) problems.push(...trimmedProblems(dir, slug, meta.trimmed));",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: checkManifest does not hold a trimmed copy to its block"
+  },
+  {
+    "id": "T56-F3",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "if (bodyExt && bodyExt !== \"txt\" && existsSync(join(dir, `${slug}.${bodyExt}`)) !== Boolean(trimmed.body.inTree)) {",
+    "replace": "if (false) {",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a trimmed copy's body missing (or back) passes checkManifest's block check"
+  },
+  {
+    "id": "T56-F4",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "    if (files.has(\"txt\") && sha256(files.get(\"txt\")) !== trimmed.fullSha256) return false;",
+    "replace": "    if (false) return false;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: --cited reuses a trimmed copy for a version whose .txt differs"
+  },
+  {
+    "id": "T56-F5",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "    delete a.trimmed;",
+    "replace": "    void a;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 build: a trimmed copy is never the version it was trimmed from (its block makes the metas differ), so --cited would freeze it again in full"
+  },
+  {
+    "id": "T56-F6",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "(meta.trimmed.fullBytesIn == null || /^commit [0-9a-f]+\\b/.test(String(meta.trimmed.fullBytesIn))",
+    "replace": "(true",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 56 review fixer: freeze-capture tells a route capture to be frozen from a commit that does not exist (review finding 3)"
   }
 ]

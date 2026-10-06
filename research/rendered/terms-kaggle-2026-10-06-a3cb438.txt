@@ -1,37 +1,37 @@
-Terms of Use | Kaggle
 
-menu
-Skip to
+
+
+
 content
 
 Create
 search ​
 
-explore
 
-Home
 
-emoji_events
 
-Competitions
 
-leaderboard
 
-Benchmarks
 
-smart_toy
 
-Game Arena
+
+
+
+
+
+
+
+
 
 code
 
 Data Hub
 
-expand_more
 
-format_list_bulleted
 
-More
+
+
+
 
 expand_more
 
@@ -39,15 +39,15 @@ menu
 Skip to
 content
 
-search ​
 
-Sign In Register
 
-Kaggle uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic.
-Learn more
-OK, Got it.
 
-Terms
+
+
+
+
+
+
 
 Version
 June 22, 2025 (active)
@@ -78,10 +78,10 @@ Is harmful, threatening, harassing, defamatory, obscene, or otherwise objectiona
 Copies or stores any significant portion of the Content;
 Decompiles, reverse engineers, or otherwise attempts to obtain the source code or underlying ideas or information of or relating to the Services.
 Processes or stores any data that is subject to the International Traffic in Arms Regulations maintained by the U.S. Department of State.
-Engages in cryptomining or otherwise encourages, requests or allows any form of cryptomining.
-Violates these Terms.
 
-You represent, warrant and agree that for any Content or User Submission uploaded to the Service, you have taken appropriate steps to minimize the risk of the Content or User Submission being used by third parties to generate material used to support or facilitate violent extremism or child sexual exploitation.
+
+
+
 Without limitation to any other remedies available to Kaggle, a violation of any of the foregoing is grounds for termination of your right to use or access the Services. We reserve the right to remove any Content or User Submissions from the Services at any time, in particular for the reasons mentioned above (including if someone alleges you contributed that Content in violation of these Terms), and without prior notice.
 What are my rights in Kaggle?
 The materials displayed or performed or available on or through the Services, including text, graphics, data, articles, photos, images, illustrations, and User Submissions (collectively, the “Content”), are protected by copyright and other intellectual property laws. You promise to abide by all copyright notices, trademark rules, information, and restrictions contained in any Content you access through the Services, and you won’t use, copy, reproduce, modify, translate, publish, broadcast, transmit, distribute, perform, upload, display, license, sell or otherwise exploit for any purpose any Content not owned by you, (i) without the prior consent of the owner of that Content or (ii) in a way that violates someone else’s (including Kaggle’s) rights.
@@ -89,8 +89,8 @@ You understand that Kaggle owns the Services. You won’t modify, publish, trans
 The Services may allow you to copy or download certain Content; please remember that just because this functionality exists, doesn’t mean that all the restrictions above don’t apply — they do!
 A notice for U.S. Federal Agency Users: The Services were developed solely at private expense and are commercial computer software and related documentation within the meaning of the applicable Federal Acquisition Regulations and their agency supplements.
 If you’re an EEA-based consumer of digital content or services and you’ve agreed to these Terms, then EEA consumer laws provide you with a legal guarantee. Under this guarantee, we’re liable for any lack of conformity that you discover: within two years of the one-time supply of digital content or services; or
-at any time during the “continuous” supply of digital content or services.
-Your national laws may provide an even longer guarantee. Your rights under these legal guarantees aren’t limited by any other commercial guarantees that we provide. If you want to make a guarantee claim, please contact customer support [redacted:email]@kaggle.com .
+
+
 
 Who is responsible for what I see and do on the Services?
 Any information or Content publicly posted or privately transmitted through the Services is the sole responsibility of the person from whom such Content originated, and you access all such information and Content at your own risk. We aren’t liable for any errors or omissions in such information, outputs, or Content, or for any damages or loss you might suffer in connection with it. We cannot control and have no duty to take any action regarding how you may interpret and use the Content or what actions you may take as a result of having been exposed to the Content, and you release us from all liability for you having acquired or not acquired Content through the Services. We can’t guarantee the identity of any users with whom you interact in using the Services and are not responsible for which users gain access to the Services.
@@ -120,14 +120,14 @@ If you are a Participant User and submit an entry to a Competition (“Competiti
 If you and Kaggle agree (separate from these Terms) that Kaggle will assist you in setting up and managing your Competition, then in addition to the licenses stated above you also grant Kaggle a royalty-free, perpetual, irrevocable, and worldwide license to set up and manage your Competition, including your User Submissions for the Competition. Kaggle will have no liability regarding the applicable Competition, Content or User Submissions and these Terms will apply, except if you and Kaggle have executed a separate written agreement governing competitions or services ("Existing Agreement"), in which case the Existing Agreement will govern the Competition.
 What if I see something on the Services that infringes my copyright?
 If you think someone is infringing your intellectual property rights, you can send us notice of the infringement and we’ll take appropriate action. For example, we may suspend service for repeat copyright infringers as described in our Copyright Help Center .
-Will Kaggle ever change the Services?
-We’re always trying to improve the Services, so they may change over time.
-As part of the continual evolution of our Services, we make modifications such as adding or removing features and functionalities, increasing or decreasing usage limits, and offering new digital content or services or discontinuing old ones. We may also change our Service for these other reasons:
-to adapt to new technologies
-to reflect increases or decreases in the number of people who use a particular service
-to respond to key changes in the licenses and partnerships we have with others
-to prevent abuse or harm
-to address legal, regulatory, or security issues
+
+
+
+
+
+
+
+
 
 In particular, we sometimes make legally-required updates, which are modifications that keep digital content or services in conformity with the law. We make these updates to our Services, and goods for safety or security reasons, and to make sure they meet the quality standards that you expect, such as those described in our guarantee. We may automatically install updates that address significant safety or security risks. For other updates, you can choose whether you want them installed.
 If a modification negatively affects your ability to access or use our Services, or if we stop offering a service all together, we’ll provide you with reasonable advance notice by email, including a description of the changes, when they’ll take place, and your right to end your contract with us if our modifications create more than a minor negative impact. We maintain a rigorous product research program, so before we change or stop offering a service, we carefully consider your interests as a user, your reasonable expectations, and the potential impact on you and others. We only change or stop offering services for valid reasons. We’ll also give you an opportunity to export your Content from your Account at Kaggle Support, except in urgent situations such as preventing abuse or harm, responding to legal requirements, or addressing security and operability issues.
@@ -136,32 +136,32 @@ The Kaggle Services may be available at no cost or we may charge a monetary fee 
 Certain of our Services may be subject to monetary payments now or in the future (the “Paid Services”). Please see our Paid Services page for a description of the current Paid Services. Please note that any payment terms presented to you in the process of using or signing up for a Paid Service are deemed part of these Terms.
 Any no-cost trial or other promotion that provides access to a Paid Service must be used within the specified time of the trial. You must stop using a Paid Service before the end of the trial period to avoid being charged for that Paid Service. If you cancel before the end of the trial period and are inadvertently charged for a Paid Service, please contact us through Kaggle Support.
 What if I want to stop using Kaggle?
-If you do not have any active Competitions that you are hosting, then you’re free to stop using the Service at any time; please refer to our Privacy Policy , as well as the licenses above, to understand how we treat information you provide to us after you have stopped using our Services. If you are hosting active Competitions then you should complete the Competitions, in full, before you stop using the Services.
-Kaggle is also free to terminate (or suspend access to) your use of the Services or your account, in particular if your use is in breach of these Terms or any applicable laws. Kaggle has the sole right to decide whether you are in violation of any of the restrictions in these Terms.
-Account termination may result in destruction of any Content associated with your account, so keep that in mind before you decide to terminate your account.
-Provisions that, by their nature, should survive termination of these Terms will survive termination. By way of example, all of the following will survive termination: any obligation you have to pay us or indemnify us, any limitations on our liability, any terms regarding ownership or intellectual property rights, and terms regarding disputes between us.
-Withdrawal
-Right of Withdrawal. If you’re an EEA-based consumer, then starting on May 28, 2022, you have the right to withdraw from this contract within 14 days without giving any reason.
-The withdrawal period will expire after 14 days from the day of the conclusion of the contract.
-To exercise the right of withdrawal, you must inform us (Google LLC, Kaggle, 1600 Amphitheatre Parkway, Mountain View, California 94043 USA, [redacted:email]@kaggle.com) of your decision to withdraw from this contract by an unequivocal statement (e.g. a letter sent by post or e-mail). You may use the attached model withdrawal form, but it is not obligatory. You can also electronically fill in and submit the model withdrawal form or any other unequivocal statement on our website . If you use this option, we will communicate to you an acknowledgement of receipt of such a withdrawal on a durable medium (e.g. by e-mail) without delay.
-To meet the withdrawal deadline, it is sufficient for you to send your communication concerning your exercise of the right of withdrawal before the withdrawal period has expired.
-Effects of withdrawal. If you withdraw from this contract, we shall reimburse to you all payments received from you, including the costs of delivery (with the exception of the supplementary costs resulting from your choice of a type of delivery other than the least expensive type of standard delivery offered by us), without undue delay and in any event not later than 14 days from the day on which we are informed about your decision to withdraw from this contract. We will carry out such reimbursement using the same means of payment as you used for the initial transaction, unless you have expressly agreed otherwise; in any event, you will not incur any fees as a result of such reimbursement.
-Model withdrawal form. (complete and return this form only if you wish to withdraw from the contract)
-— To Google LLC, Kaggle, 1600 Amphitheatre Parkway, Mountain View, California 94043 USA, [redacted:email]@kaggle.com:
-— I hereby give notice that I withdraw from my contract of sale for the provision of the following service, _____________
-— Ordered on, _____________
-— Name of consumer, _____________
-— Address of consumer, _____________
-— Signature of consumer (only if this form is notified on paper), _____________
-— Date _____________
-What else do I need to know?
-Warranty Disclaimer . Neither Kaggle nor its licensors or suppliers makes any representations or warranties concerning any Content contained in or accessed through the Services (including Competitions), and we will not be responsible or liable for the accuracy, copyright compliance, legality, or decency of material contained in or accessed through the Services. We (and our licensors and suppliers) make no representations or warranties regarding suggestions or recommendations of services or products offered or purchased through the Services. Products and services purchased or offered (whether or not following such recommendations and suggestions) through the Services are provided “AS IS” and without any warranty of any kind from Kaggle or others (unless, with respect to such others only, provided expressly and unambiguously in writing by a designated third party for a specific product). THE SERVICES AND CONTENT ARE PROVIDED BY KAGGLE (AND ITS LICENSORS AND SUPPLIERS) ON AN “AS-IS” BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR THAT USE OF THE SERVICES WILL BE UNINTERRUPTED OR ERROR-FREE. SOME STATES DO NOT ALLOW LIMITATIONS ON HOW LONG AN IMPLIED WARRANTY LASTS, SO THE ABOVE LIMITATIONS MAY NOT APPLY TO YOU.
-Limitation of Liability . TO THE FULLEST EXTENT ALLOWED BY APPLICABLE LAW, UNDER NO CIRCUMSTANCES AND UNDER NO LEGAL THEORY (INCLUDING TORT, CONTRACT, NEGLIGENCE, STRICT LIABILITY, OR OTHERWISE) WILL KAGGLE (OR ITS LICENSORS OR SUPPLIERS) BE LIABLE TO YOU OR TO ANY OTHER PERSON FOR (A) ANY INDIRECT, SPECIAL OR INCIDENTAL DAMAGES OF ANY KIND, INCLUDING DAMAGES FOR LOST PROFITS, LOSS OF GOODWILL, WORK STOPPAGE, ACCURACY OF RESULTS, OR COMPUTER FAILURE OR MALFUNCTION, OR (B) ANY AMOUNT, IN THE AGGREGATE, IN EXCESS OF THE GREATER OF (I) $100 OR (II) THE AMOUNTS PAID BY YOU TO KAGGLE IN CONNECTION WITH THE SERVICES IN THE TWELVE (12) MONTH PERIOD PRECEDING THIS APPLICABLE CLAIM, OR (C) ANY MATTER BEYOND OUR REASONABLE CONTROL. SOME STATES DO NOT ALLOW THE EXCLUSION OR LIMITATION OF CERTAIN DAMAGES, SO THE ABOVE LIMITATION AND EXCLUSIONS MAY NOT APPLY TO YOU.
-Indemnity . To the fullest extent allowed by applicable law, you will defend, indemnify and hold Kaggle, its affiliates, officers, agents, employees, and partners harmless from and against any and all claims, liabilities, damages (actual and consequential), losses and expenses (including attorneys’ fees) arising from or in any way related to any third party claims (including from other users) relating to (a) your submissions to the Services including any Content, User Submissions or Competitions, (b) your use of the Services (including any actions taken by a third party using your account), and (c) your violation of these Terms.
-Assignment . You may not assign, delegate or transfer these Terms or your rights or obligations hereunder, or your Services account, in any way (by operation of law or otherwise) without Kaggle’s prior written consent. We may transfer, assign, or delegate these Terms and our rights and obligations without consent.
-Compliance . In accordance with Article 13 under the Digital Services Act, Kaggle has appointed Google Ireland Limited, a company incorporated and operating under the laws of Ireland, registered number 368047 and located at Gordon House, Barrow Street, Dublin, Ireland as its legal representative for the services offered to users in the EEA which come in scope of the Digital Services Act. For questions, please contact: [redacted:email]@google.com
-About These Terms
-These Terms control the relationship between Kaggle and you. They do not create any third party beneficiary rights.
-If you do not comply with these Terms, and we don’t take action right away, this doesn’t mean that we are giving up any rights that we may have (such as taking action in the future).
-If it turns out that a particular term is not enforceable, this will not affect any other part of the Terms.
-The laws of California, USA, excluding California’s conflict of laws rules, will apply to any disputes arising out of or relating to these Terms or the Services. All claims arising out of or relating to these Terms or the Services will be litigated exclusively in the federal or state courts of Santa Clara County, California, USA, and you and Kaggle consent to personal jurisdiction in those courts.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

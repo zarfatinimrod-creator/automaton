@@ -19,5 +19,103 @@
   "changed": true,
   "firstFetch": false,
   "previousSha256": "663625ee0261265683b5249d7808ff05c238ad6dfc143e10f9b7689d949fd46b",
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "indiebook.co.il",
+    "copying": "barred",
+    "keptLines": [
+      [
+        33,
+        43
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "4926368b4846731f1fcb1e40f21ab1bde2bb0c2ce4e66c671817745d2398da2e",
+    "fullByteLength": 6307,
+    "lineCount": 70,
+    "body": {
+      "path": "research/rendered/indiebook-sell-a-book.html",
+      "sha256": "7ce86a21f2ad39724ab41b7507734d8fa4f0ad908ae9f704bc09174d6078c4bd",
+      "byteLength": 540736,
+      "lineCount": 852,
+      "keptLines": [
+        [
+          721,
+          744
+        ]
+      ],
+      "inTree": true
+    },
+    "cited": [
+      {
+        "file": "html",
+        "lines": [
+          723,
+          742
+        ],
+        "by": [
+          "research/measurements/indiebook.md:107"
+        ]
+      },
+      {
+        "file": "html",
+        "lines": [
+          730,
+          730
+        ],
+        "by": [
+          "research/measurements/indiebook.md:107",
+          "research/owner-asks/questions.json:90"
+        ]
+      },
+      {
+        "file": "html",
+        "lines": [
+          735,
+          735
+        ],
+        "by": [
+          "research/measurements/indiebook.md:107",
+          "research/owner-asks/brand-mailbox-questions.md:180",
+          "research/owner-asks/questions.json:90"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          35,
+          35
+        ],
+        "by": [
+          "research/owner-asks/brand-mailbox-questions.md:188"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          39,
+          39
+        ],
+        "by": [
+          "research/owner-asks/brand-mailbox-questions.md:190"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          41,
+          41
+        ],
+        "by": [
+          "research/owner-asks/brand-mailbox-questions.md:179",
+          "research/owner-asks/questions.json:90"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/indiebook-sell-a-book.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }
