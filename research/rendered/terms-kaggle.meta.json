@@ -18,5 +18,28 @@
   "changed": true,
   "firstFetch": false,
   "previousSha256": "82280c1ad2298b4f1cea327b5b82d4ea7de0b35a482598aa41c3c4248102dbeb",
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "kaggle.com",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": "764b95493e0bc8ae52dd68a6c281ccc515e120f73c3505ee759c5302248c2c21",
+    "fullByteLength": 37031,
+    "lineCount": 168,
+    "body": {
+      "path": "research/rendered/terms-kaggle.html",
+      "sha256": "719939ca6df6bf4ec6057d30c79db57e701ee847ea99b6d1ad2744e2af9ff10b",
+      "byteLength": 62237,
+      "lineCount": 112,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit a3cb438500cb961b8a0d8fa8de67130bbe12825c (git show a3cb438500cb961b8a0d8fa8de67130bbe12825c:research/rendered/terms-kaggle.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }

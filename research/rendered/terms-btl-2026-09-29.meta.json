@@ -25,5 +25,90 @@
     "from": "research/rendered/terms-btl.meta.json",
     "commit": "20c7304",
     "why": "A dated copy of the render-watch capture of terms-btl as commit 20c7304 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/TERMS-AUDIT-2026-09-29.md, research/channel-loop/terms-verdicts.json keep pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-btl stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "btl.gov.il",
+    "copying": "barred",
+    "keptLines": [
+      [
+        288,
+        315
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "2942fe9f2adf1ef4ab1cee8309d8781383c53ebcabf029b6bb4c53a801942459",
+    "fullByteLength": 14299,
+    "lineCount": 508,
+    "body": {
+      "path": "research/rendered/terms-btl-2026-09-29.html",
+      "sha256": "edd6980fd5fc53eef76ea5ebfa85c03d0cc3647a80763ac4bd81d8ab443a4abc",
+      "byteLength": 154998,
+      "lineCount": 2100,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          290,
+          290
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:191"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          293,
+          313
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:22"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          299,
+          299
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:307",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:191",
+          "research/channel-loop/terms-verdicts.json:110"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          301,
+          301
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:308",
+          "research/channel-loop/terms-verdicts.json:110"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          303,
+          303
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:306",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:191",
+          "research/channel-loop/terms-verdicts.json:108",
+          "research/channel-loop/terms-verdicts.json:110"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/terms-btl-2026-09-29.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

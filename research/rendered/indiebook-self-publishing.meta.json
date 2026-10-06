@@ -19,5 +19,28 @@
   "changed": true,
   "firstFetch": false,
   "previousSha256": "7dfc8e7893c0079ee48648f3e2109bf7463dcb8cfb54a29e77381750ed0f9592",
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "indiebook.co.il",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": "76f375fa003e336b35cc6df073d964ce8ca4adc873d3a7bc9aad35be41bfffa5",
+    "fullByteLength": 6594,
+    "lineCount": 136,
+    "body": {
+      "path": "research/rendered/indiebook-self-publishing.html",
+      "sha256": "d3047f7a64b07c7d5f746863669f37b7cd4f5627c2753eb8358c6cb8c3d7280b",
+      "byteLength": 557503,
+      "lineCount": 1047,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/indiebook-self-publishing.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }

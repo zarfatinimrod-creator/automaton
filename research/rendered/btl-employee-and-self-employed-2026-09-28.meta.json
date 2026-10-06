@@ -25,5 +25,54 @@
     "from": "research/rendered/btl-employee-and-self-employed.meta.json",
     "commit": "b35e3dc",
     "why": "A dated copy of the render-watch capture of btl-employee-and-self-employed as commit b35e3dc stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/measurements/step2-cost.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug btl-employee-and-self-employed stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "btl.gov.il",
+    "copying": "barred",
+    "keptLines": [
+      [
+        345,
+        351
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "8e1f800f7a8cc0d40ce53388badef7537423c180de13b307b198e616b0ea0776",
+    "fullByteLength": 9332,
+    "lineCount": 530,
+    "body": {
+      "path": "research/rendered/btl-employee-and-self-employed-2026-09-28.html",
+      "sha256": "14768170fac291b07d3188a08cc82dae849d985453838ce5255ada328ad0f54b",
+      "byteLength": 132035,
+      "lineCount": 2097,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          347,
+          347
+        ],
+        "by": [
+          "research/measurements/step2-cost.md:57"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          348,
+          349
+        ],
+        "by": [
+          "research/measurements/step2-cost.md:58"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/btl-employee-and-self-employed-2026-09-28.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

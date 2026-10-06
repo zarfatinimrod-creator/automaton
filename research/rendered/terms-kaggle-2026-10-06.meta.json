@@ -31,5 +31,28 @@
       "kind": "js-shell",
       "evidence": "21 characters of text, fewer than 1000; empty app root \"<div id=\\\"root\\\"> </div>\"; also reCAPTCHA \"google.com/recaptcha/enterprise.js\""
     }
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "kaggle.com",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": "738eb97ba11372308ee59f22107f69fb98defce5078a03141f27dc45cddb0ba5",
+    "fullByteLength": 22,
+    "lineCount": 2,
+    "body": {
+      "path": "research/rendered/terms-kaggle-2026-10-06.html",
+      "sha256": "39cadffa3bf06aa0a1a5d95a2099b4ed4f9a85bd0c57846e53b6949743ac9565",
+      "byteLength": 5973,
+      "lineCount": 135,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "captureCheck": "js-shell",
+    "fullBytesIn": "commit c0582384847c4f27939397dd636caa1229baff98 (git show c0582384847c4f27939397dd636caa1229baff98:research/rendered/terms-kaggle-2026-10-06.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

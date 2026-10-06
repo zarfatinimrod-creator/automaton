@@ -25,5 +25,71 @@
     "from": "research/rendered/btl-self-employed-rates.meta.json",
     "commit": "3d5772b",
     "why": "A dated copy of the render-watch capture of btl-self-employed-rates as commit 3d5772b stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/measurements/step2-cost.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug btl-self-employed-rates stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "btl.gov.il",
+    "copying": "barred",
+    "keptLines": [
+      [
+        364,
+        382
+      ],
+      [
+        408,
+        414
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "03c9d3e9de22c6ca26973917ef9301fc5c6e7bbcb49eebd06bcc44d94890b4fd",
+    "fullByteLength": 12266,
+    "lineCount": 616,
+    "body": {
+      "path": "research/rendered/btl-self-employed-rates-2026-09-27.html",
+      "sha256": "08d5f9814439687e62fd67df37f6c20c1d18cfe16905f8f281a8ee4bf0def209",
+      "byteLength": 153008,
+      "lineCount": 2131,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          366,
+          380
+        ],
+        "by": [
+          "research/measurements/step2-cost.md:27",
+          "research/measurements/step2-cost.md:79"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          410,
+          410
+        ],
+        "by": [
+          "research/measurements/step2-cost.md:25",
+          "research/measurements/step2-cost.md:61",
+          "research/measurements/step2-cost.md:79"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          412,
+          412
+        ],
+        "by": [
+          "research/measurements/step2-cost.md:27"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/btl-self-employed-rates-2026-09-27.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

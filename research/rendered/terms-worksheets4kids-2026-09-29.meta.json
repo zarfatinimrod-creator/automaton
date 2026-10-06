@@ -19,5 +19,87 @@
     "from": "research/rendered/terms-worksheets4kids.meta.json",
     "commit": "20c7304",
     "why": "A dated copy of the render-watch capture of terms-worksheets4kids as commit 20c7304 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/TERMS-AUDIT-2026-09-29.md, research/channel-loop/terms-verdicts.json keep pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-worksheets4kids stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "worksheets4kids.co.il",
+    "copying": "barred",
+    "keptLines": [
+      [
+        183,
+        209
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "4f4f86a4a16bb93fb076d2188632e6e6ffdd3503d91a4edeb8490f5ebc8ae77b",
+    "fullByteLength": 8903,
+    "lineCount": 321,
+    "body": {
+      "path": "research/rendered/terms-worksheets4kids-2026-09-29.html",
+      "sha256": "75bc6fd637343ba379c7bbbf3d0c3ce222d1d8cdbe205ef45f6e9db0c314b70e",
+      "byteLength": 96150,
+      "lineCount": 705,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          185,
+          185
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:242"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          185,
+          205
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:22"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          193,
+          193
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:242"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          195,
+          195
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-10-06-robots-and-terms.md:303",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:242",
+          "research/channel-loop/terms-verdicts.json:820",
+          "research/channel-loop/terms-verdicts.json:822"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          207,
+          207
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:242"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit b92b62c9b8aacdeb11a5171854f6ee4efc4c3c4a (git show b92b62c9b8aacdeb11a5171854f6ee4efc4c3c4a:research/rendered/terms-worksheets4kids-2026-09-29.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

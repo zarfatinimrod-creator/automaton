@@ -25,5 +25,46 @@
     "from": "research/rendered/btl-not-working-rates.meta.json",
     "commit": "3d5772b",
     "why": "A dated copy of the render-watch capture of btl-not-working-rates as commit 3d5772b stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/measurements/step2-cost.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug btl-not-working-rates stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "btl.gov.il",
+    "copying": "barred",
+    "keptLines": [
+      [
+        345,
+        354
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "48146912f73948db65ef8a9855090eb11d0e0f554793f99f3e4c05cc46a12640",
+    "fullByteLength": 11811,
+    "lineCount": 592,
+    "body": {
+      "path": "research/rendered/btl-not-working-rates-2026-09-27.html",
+      "sha256": "681ba627412a6825584c55b7bd902f53c8f674112c0ffaf18b0f104edb96567e",
+      "byteLength": 144981,
+      "lineCount": 2098,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          347,
+          352
+        ],
+        "by": [
+          "research/measurements/step2-cost.md:21",
+          "research/measurements/step2-cost.md:77",
+          "research/measurements/step2-cost.md:116"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/btl-not-working-rates-2026-09-27.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

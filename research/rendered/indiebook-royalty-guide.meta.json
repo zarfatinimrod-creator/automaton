@@ -19,5 +19,89 @@
   "changed": true,
   "firstFetch": false,
   "previousSha256": "3ab2d6e626345772f4349380e3917046228d84c03ba612427ba11dc07513c862",
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "indiebook.co.il",
+    "copying": "barred",
+    "keptLines": [
+      [
+        33,
+        37
+      ],
+      [
+        67,
+        75
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "3596b8c58a2c15aa78fcf2fcd00628b2a7648562493ba0e76d148de14e094bab",
+    "fullByteLength": 9177,
+    "lineCount": 108,
+    "body": {
+      "path": "research/rendered/indiebook-royalty-guide.html",
+      "sha256": "d81e2c900686ac0860c8b334962b8975121f9d48311f2dd4cffc8b289dffe213",
+      "byteLength": 545083,
+      "lineCount": 873,
+      "keptLines": [
+        [
+          736,
+          740
+        ]
+      ],
+      "inTree": true
+    },
+    "cited": [
+      {
+        "file": "html",
+        "lines": [
+          738,
+          738
+        ],
+        "by": [
+          "research/measurements/indiebook.md:26"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          35,
+          35
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-09-29-loop.md:289",
+          "research/channel-loop/RULING-2026-09-29-loop.md:471",
+          "research/channel-loop/SITTING-2026-09-29-BRIEF.md:253",
+          "research/owner-asks/brand-mailbox-questions.md:188"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          69,
+          69
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-09-29-loop.md:281",
+          "research/channel-loop/RULING-2026-09-29-loop.md:472",
+          "research/channel-loop/SITTING-2026-09-29-BRIEF.md:253"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          73,
+          73
+        ],
+        "by": [
+          "research/channel-loop/RULING-2026-09-29-loop.md:279",
+          "research/channel-loop/RULING-2026-09-29-loop.md:473"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/indiebook-royalty-guide.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }

@@ -25,5 +25,44 @@
     "from": "research/rendered/btl-not-working-rates.meta.json",
     "commit": "f9a41c6",
     "why": "A dated copy of the render-watch capture of btl-not-working-rates as commit f9a41c6 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/TERMS-AUDIT-2026-09-29.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug btl-not-working-rates stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "btl.gov.il",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": "267f4a2bcb1f9bf49b8fc5ad1e682b02a54f7f18fa258e9ff69a3accfc280766",
+    "fullByteLength": 11030,
+    "lineCount": 523,
+    "body": {
+      "path": "research/rendered/btl-not-working-rates-2026-09-29.html",
+      "sha256": "f2591660f40c2c589ed7649c6fee07b5c3d1a06d9882a4f61a258fefc3677ece",
+      "byteLength": 144894,
+      "lineCount": 2097,
+      "keptLines": [
+        [
+          1962,
+          1966
+        ]
+      ],
+      "inTree": true
+    },
+    "cited": [
+      {
+        "file": "html",
+        "lines": [
+          1964,
+          1964
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:38"
+        ]
+      }
+    ],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit f9370dfa356d4d5f705fd81014d8c5a4ad0073c2 (git show f9370dfa356d4d5f705fd81014d8c5a4ad0073c2:research/rendered/btl-not-working-rates-2026-09-29.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

@@ -1,73 +1,73 @@
-Terms of service - Devpost
 
-Join a hackathon
 
-Devpost
-Participate in our public hackathons
 
-Hackathons
-Projects
 
-Devpost for Teams
-Access your company’s private hackathons
 
-Log in
 
-Host a hackathon
 
-Devpost
-Grow your developer ecosystem and promote your platform
 
-Host a public hackathon
 
-Devpost for Teams
-Drive innovation, collaboration, and retention within your organization
 
-Host an internal hackathon
 
-By use case
 
-AI hackathons
-Customer hackathons
-Employee hackathons
-Public hackathons
 
-Resources
 
-Blog
-Insights into hackathon planning and participation
 
-Customer stories
-Inspiration from peers and other industry leaders
 
-Planning guides
-Best practices for planning online and in-person hackathons
 
-Webinars & events
-Upcoming events and on-demand recordings
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Help desk
 Common questions and support documentation
 
 Run a hackathon
 
-Join a hackathon
 
-Devpost
-Participate in our public hackathons
+
+
+
 
 Hackathons
 Projects
 
 Devpost for Teams
-Access your company’s private hackathons
+
 
 Log in
 
 Host a hackathon
 
-Devpost
-Grow your developer ecosystem and promote your platform
+
+
 
 Host a public hackathon
 
@@ -76,36 +76,36 @@ Drive innovation, collaboration, and retention within your organization
 
 Host an internal hackathon
 
-By use case
-AI hackathons
-Customer hackathons
-Employee hackathons
+
+
+
+
 Public hackathons
 
 Resources
 
 Blog
-Insights into hackathon planning and participation
 
-Customer stories
-Inspiration from peers and other industry leaders
 
-Planning guides
-Best practices for planning online and in-person hackathons
 
-Webinars & events
-Upcoming events and on-demand recordings
 
-Help desk
-How to use Devpost and Devpost for Teams
 
-Devpost terms of service
 
-HIGHLIGHTS
-Devpost users can create profiles, share software projects they have worked on, and create and participate in online and in-person hackathons.
-Content you post on the site or submit to a hackathon should be accurate, your own work, and respectful and decent towards others.
-When you participate in a hackathon on our site, you must comply with Devpost’s terms as well as any rules posted for the hackathon.
-Hackathon organizers must be fair, post hackathon rules or guidelines, and award any prizes advertised on their hackathon site.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 LEGALESE
 The Devpost Terms of Service for Hackathons apply to people and organizations using the Devpost website, www.devpost.com , (the “Site”) to create profiles, share software projects they have worked on, and create and participate in online and in-person hackathons where eligible participants can enter software that meets hackathon requirements (the “Service”). The Site is owned and operated by Devpost, Inc. (“Devpost”). Please read the terms and conditions below. They are important and govern your use of our Site.
@@ -114,10 +114,10 @@ The Devpost Terms of Service for Employers apply to companies and their employee
 By using and/or visiting our Site, you agree to the terms and conditions outlined in this Agreement and accompanying Privacy Policy (collectively the “Agreement”). If you do not agree to the Agreement, you should not use the Site.
 We may revise this Agreement at any time by posting an update to the Site. Your continued use of our Site after a posted change of this Agreement means that you agree to be bound by the changes, so please check the Agreement regularly for any changes.
 You affirm that you are at least the age of majority where you reside, or an emancipated minor, or possess legal parental or guardian consent, and are fully able and competent to enter into the terms, conditions, obligations, affirmations, representations, and warranties set forth in this Agreement. You also affirm that you are able to abide by and comply with this Agreement.
-Our Site is not intended for children under thirteen. You affirm that you are at least thirteen years of age. If you are under thirteen years of age, then please do not use the Site. (Although Devpost does not knowingly accept registrations from users under the age of thirteen, minors can still enter and win Hackathons by having their parents or guardians register for Devpost on their behalf.)
-THE SECTIONS BELOW TITLED “BINDING ARBITRATION” AND “CLASS ACTION WAIVER” CONTAIN A BINDING ARBITRATION AGREEMENT AND CLASS ACTION WAIVER. THEY AFFECT YOUR LEGAL RIGHTS. PLEASE READ THEM.
-2. SUMMARY OF SERVICE AND DEFINITIONS
-Devpost is a platform that enables certain users (“Makers”) to create profiles of their skills and work related to software development, and describe software projects they have worked on by submitting their software, updates, contributions or other materials on the Site. Other users (“Posters”) can post hackathons (“Hackathons”) to motivate Makers to create new software, or enter existing software, that meets requirements stated on the Site.
+
+
+
+
 Below are some definitions of terms used throughout these Agreement.
 “Content” means various content including, but not limited to, videos, photographs, images, artwork, graphics, audio clips, comments, data, text, software, scripts, source code, other material and information, and associated trademarks and copyrightable works, that the Service makes accessible through the Site, email, and other media.
 “Users” means Posters, Makers, and other visitors to the Site and users of the Service who have the ability to contribute, add, create, upload, submit, distribute, facilitate the distribution of, collect, post, or otherwise make accessible Content.
@@ -129,122 +129,122 @@ Below are some definitions of terms used throughout these Agreement.
 “Hackathon Website” means the specific Hackathon website where you enter a Submission and access the Hackathon Content.
 “Official Rules” means the Hackathon-specific terms and conditions posted on the Hackathon Website.
 “Submission Period” means the period during which Makers may submit Submissions, as specified in the applicable Hackathon Website or Official Rules.
-“Intellectual Property Rights” means copyrights, trademarks, trade secrets, patents, logos, designs, promotional materials, web pages, source codes, drawings, illustrations, slogans, representations, and any and all other proprietary rights.
-3. USERNAME AND PASSWORD
-To access certain restricted sections of our Site you will be required to sign up for a Devpost account. You agree that the confidentiality of your username and password are your responsibility. You agree to accept responsibility for all activities that occur under your username and password and to notify us immediately if you believe there has been any unauthorized use of your account or other breach of security.
-We reserve the right to suspend or terminate any User account, and to reclaim or re-assign usernames without any liability to you. Usernames are displayed publicly on the Site. You agree not to create a username that is obscene or offensive to others, or impersonates any person or entity, or falsely states or otherwise misrepresents your affiliation with a person or entity. We reserve the right to reclaim usernames associated with accounts that are inactive for more than six months. We may also reclaim usernames on behalf of organizations or individuals, if they hold legal claim or trademark on those usernames.
-4. CODE OF CONDUCT AND RESPONSIBILITY FOR USER CONTENT
-All Users agree to post or make available content (including any User Profile, Software, Submission, or Hackathon Content) and otherwise use the Site in a manner that:
-Complies with all applicable laws and regulations including federal, state, or local laws;
-Provides accurate information about you and any organization with which you have a current or past affiliation;
-Accurately represents your work and gives credit to others when appropriate or required; and
+
+
+
+
+
+
+
+
+
 Respects others’ Intellectual Property Rights.
 
 All Users agree NOT to post or make available content (including any User Profile, Software, Submission or Hackathon Content) or otherwise use the Site in a manner that:
 Misrepresents your identity, or your current or past work, education, skills, or qualifications;
 Misrepresents any entity or organization;
-Impersonates any person or entity, including, but not limited to a Devpost employee, or falsely states or otherwise misrepresents your affiliation with any person or entity;
-Uses or attempts to use another User’s account;
-Discloses information about another person or entity, including your employer, that is confidential, or that you are not authorized to disclose;
-Is harmful, threatening, abusive, harassing, defamatory, derogatory, libelous, invasive of another’s privacy, harmful to minors in any way, or hateful toward an individual or group of individuals based on religion, gender, sexual orientation, race, ethnicity, age, or disability;
-Depicts hatred, is in bad taste, incites violence or is likely to incite violence, contains excessive vulgar or obscene language or excessive violence, contains pornography, obscenity or sexual activity;
-Violates any law or regulation, including federal, state, or local laws;
-Infringes any patent, trademark, trade secret, copyright or other proprietary rights of any party, or violates any contractual or fiduciary obligation;
-Substantially duplicates Software or a Submission, or other User Content previously entered on the Site or in the same Hackathon (by you or another Maker);
-Constitutes or contains “affiliate marketing;” “link referral code;” “junk mail;” “spam;” “chain letters;” “pyramid schemes;” unsolicited commercial advertising; or any other form of excessive, repetitive, and/or unsolicited messages to other users;
-Contains malware such as software viruses, worms, or any other computer code, files or programs designed to interrupt, destroy or limit the functionality of any computer software or hardware or telecommunications equipment;
-Discloses personal information about another person such as their email address, telephone number, address (street or box number), or social security number;
+
+
+
+
+
+
+
+
+
+
+
 Disrupts the normal flow of dialogue with an excessive amount of content to the Site, or otherwise negatively affects other users’ ability to use the Site;
 Constitutes excessive use of site features, inconsistent with the intent and purpose of the Site, and/or placing an undue burden on the Services, including but not limited to excessive following of other Users, excessive liking of User Content, and/or excessive registrations for Hackathons or other events on the Site;
 Uses manual or automated software, devices, scripts robots, or other means or processes to access, “scrape,” “crawl” or “spider” the Site, User Content (including User Profiles and Team Pages), or any related data or information;
 Employs misleading email addresses, or forged headers or otherwise manipulated identifiers in order to disguise the origin of content transmitted through the Site;
 Disparages another person, Poster, or Devpost; or
-Contains any other content or constitutes any other action, which in the sole judgment of Devpost or a Poster, is inappropriate or inconsistent with the purpose of the Site.
 
-Without limiting the foregoing, you understand that all User Content posted on, transmitted through, or linked from the Site, is the sole responsibility of the person or entity from which such User Content originated. You understand that Devpost does not control, and is not responsible for User Content made available through the Site, and that by using the Site, you may be exposed to User Content that is offensive, indecent, inaccurate, misleading, or otherwise objectionable. Devpost makes no representation or warranty as to the accuracy, completeness or authenticity of the information contained in any User Content.
-Devpost does not and cannot review all User Content or other communications and materials posted to or created by Users accessing the Site, and is not in any manner responsible for the content of these communications and materials. You acknowledge that by providing you with the ability to view and distribute User Content and other communications and materials on the site, Devpost is merely acting as a passive conduit for such distribution and is not undertaking any obligation or liability relating to any contents or activities on the Site. However, Devpost reserves the right to block or remove communications or materials that it determines to be in violation of the Code of Conduct.
-You are solely responsible for any User Content contributed by you. User Content will not be treated as confidential. Unless otherwise specified, or if an option does not exist on the Site to hide or restrict access to specific User Content, you should assume that such User Content will be displayed publicly. If the Site provides you with the option to do so, you are responsible for indicating what User Content is shared publicly or shared with Posters. We reserve the right to edit or delete any User Content without notice, in whole or in part, at our sole discretion. See Section 8 for details on the Digital Millennium Copyright Act.
-Violation of any of this Section 4 may result in the removal of some or all of your User Content (including User Profile Content, Software, Hackathon Content and Submissions), disqualification from a Hackathon, removal or reversal of some or all of your displayed actions taken on the Site, including but not limited to actions to follow another User, like User Content, and/or register for a Hackathon or other event on the Site; and/or termination of your Devpost account at the sole discretion of Devpost and/or a Poster (where applicable).
+
+
+
+
+
 You acknowledge that we shall have the right (but not the obligation) in our sole discretion to pre-screen, refuse, or move any Content that is submitted to the Site. You agree that you must evaluate, and bear all risks associated with, the use of any Content, including any reliance on the accuracy, completeness, or usefulness of such Content.
 5. PARTICIPATION IN A HACKATHON
 Participation in a Hackathon on our Site, including entering Submissions, is governed by this Agreement and the Official Rules posted on the Hackathon Website. Official Rules are the responsibility of the Poster. If there is any inconsistency between the terms of this Agreement and the Official Rules of a Hackathon, the Official Rules will prevail, but for that Hackathon only.
 A. Hackathon Registration & Submission
 You must first create a Devpost account and register on the Hackathon Website to be able to enter a Hackathon. You need to follow all instructions stated on the Site in order to register.
-(i) Hackathon Submission Drafts & Modifications
-Prior to the end of a Submission Period, you may save draft versions of your Submission on the Site to your portfolio before submitting the Software to the Hackathon for evaluation. Once the Submission Period has ended, you may not make any changes or alterations to your Submission, but you may continue to update the project in your portfolio.
-A Poster may permit you to modify part of your Submission after the Submission Period for the purpose of removing material that potentially infringes a third party mark or right, discloses personally identifiable information, or is otherwise inappropriate. The modified Submission must remain substantively the same as the original Submission with the only modification being what the Poster permits.
-(ii) Team and Organization Representatives
-If a team or organization is entering a Hackathon, they must appoint and authorize one individual (the “Representative”) to represent, act, and enter a Submission, on their behalf. The Representative must meet the eligibility requirements for the Hackathon specified in the Official Rules.
-By entering a Submission on the Site on behalf of a team or organization, you represent and warrant that you are the Representative authorized to act on behalf of your team or organization.
-If there is a dispute over the identity of a Maker in a Hackathon on the Site, the email address used to enter the Hackathon and the person or entity assigned to that email address will be used to determine the Maker. The Poster and Devpost are not responsible for resolving any dispute between individuals or entities over the identity of the Maker. In the event of such a dispute, they may disqualify the disputed Submission and/or suspend or withdraw a prize.
-(iii) Responsibility for Hackathon Submissions
-You are solely responsible for confirming that your Submission is complete and for making and storing copies or drafts of it. The Poster is not responsible for confirming the accuracy or completeness of a Submission as received. The Poster and Devpost are not responsible for incomplete, late, misdirected, damaged, lost, illegible, or incomprehensible Submissions or for address or email address changes of the Makers or Representatives. Proof of sending or submitting will not be deemed to be proof of receipt by a Poster or Devpost.
-If Devpost and/or a Poster determines that your Submission has not been received, or has been erroneously deleted, lost, destroyed or corrupted, you may request the opportunity to resubmit your Submission. However, you must make such a request promptly after you know or should have known there was a problem. Your request will be handled at the sole discretion of the Poster and/or Devpost.
+
+
+
+
+
+
+
+
+
+
 B. Determining Eligibility & Display of Submissions
 The Poster has the right to require additional information. They also have the right to access any software application that is part of your Submission, in person or via any other reasonable manner, to verify that the software application functions and operates as described in other parts of your Submission, or to verify your role in creating the software. Failure by a Maker to respond or provide the additional information or access may result in disqualification of the Submission by the Poster.
 Submissions may be posted on the Hackathon Website or elsewhere on the Site before or after being screened or tested by the Poster for compliance with the Official Rules. Posting of a Submission to the Site or Hackathon Website does not mean that the Submission is eligible. A Submission may be disqualified after it has been publically displayed.
 C. Public Voting
 Hackathons on the Site may include public voting. Public voting for a Hackathon will take place during a voting period specified on the Hackathon Website. The Poster has the right to extend the voting period at any time for any reason.
-If public voting is used to determine winners, those winners will be selected based on the highest number of verified votes received on the Site during the voting period. Verified vote counts will be determined by Devpost and/or the Poster. If there is a tie between two or more Submissions, the winner will be determined by the Poster.
-Public voting is open to any person with a verified Devpost account. Each person is limited to one vote per Submission and may only vote using one account. Makers may not directly or indirectly offer or pay any monetary or other form of consideration in exchange for a vote.
-You may not use any manual or automated vote process or methods, or multiple e-mail addresses, to circumvent the one-vote limit per person per Submission. Doing so will subject all of your votes to disqualification. The Poster may also disqualify a Maker, if the Maker receives multiple or irregular votes from the same user or users, receives votes in a manner that indicates manual, automated or other vote manipulation, or attempts to compensate voters.
-If the voting process fails to operate properly or appears to be tampered with or tainted with errors, fraud or unfair practices, the Poster has the right to determine any public voting prize winners by using non-suspect votes, or by any other means they deem appropriate. If no alternative means of determining a public voting winner prize is available or selected, the Poster may terminate any prize related to public voting without designating a winner.
-The Poster and Devpost are not responsible for, and are not required to count any vote which, in their judgment, is incomplete, late, misdirected, damaged, unlawful or illicit. This includes votes secured in breach of the voting rules above, as well as those lost for technical reasons, or otherwise in violation of this Agreement or the Official Rules.
-D. Entry Conditions
-By entering a Hackathon on the Hackathon Website, you (and, if you are entering on behalf of a team or organization, each participating members) agree(s) to the following:
-(i) The relationship between you, the Maker, and the Poster and Devpost, is not a confidential, fiduciary, or other special relationship.
-(ii) You will be bound by and comply with this Agreement and the Official Rules and the decisions of the Poster, Devpost, and/or the Hackathon judges which are binding and final in all matters relating to the Hackathon.
-E. Publicity
-By participating in a Hackathon on the Site you consent to the use of personal information about you, if you are a winner, by the Poster, Devpost, and third parties acting on their behalf. Such personal information includes, but is not limited to, your name, likeness, photograph, voice, opinions, comments and hometown and country of residence. It may be used in any existing or newly created media, worldwide without further payment or consideration or right of review, unless prohibited by law. Authorized use includes advertising and promotional purposes. The duration of your consent is for a period of three years following the conclusion of the Hackathon. This consent applies, as applicable, to all members a Maker’s team or organization which participated in the winning Submission.
-F. General Conditions applicable to Hackathons
-Posters and Devpost reserve the right, in their sole discretion, to cancel, suspend and/or modify a Hackathon, or any part of it, in the event of a technical failure, fraud, or any other factor or event that was not anticipated or is not within their control.
-Posters and Devpost reserve the right in their sole discretion to disqualify any individual or Maker they find to be:
-actually, or presenting the appearance of, tampering with the entry process or the operation of a Hackathon;
-acting in violation of this Agreement or the Official Rules, or in a manner that is inappropriate, unsportsmanlike, and/or not in the best interests of the Hackathon; or
-violating any applicable law or regulation.
 
-Any attempt by any person to undermine the proper conduct of a Hackathon may be a violation of criminal and civil law. If a Poster or Devpost suspects that such an attempt has been made or is threatened, they may take appropriate action, including but not limited to requiring a Maker to cooperate with an investigation and referral to criminal and civil law enforcement authorities.
-If there is any discrepancy or inconsistency between the terms and conditions of the Official Rules and disclosures or other statements contained in any Hackathon materials, including the Submission form, Hackathon Website, advertising (including television, print, radio or online ads), the terms and conditions of the Official Rules shall prevail.
-The terms and conditions of Official Rules may change at any time, including the rights or obligations of the Maker and the Poster. The Poster will post the terms and conditions of the amended Official Rules on the Hackathon Website.
-To the fullest extent permitted by law, any amendment will become effective at the time specified in the posting of the amended Official Rules or, if no time is specified, the time of posting.
-If at any time prior to a Hackathon deadline, a Maker or prospective Maker believes that any Official Rule is or may be unclear or ambiguous, they must submit a written request for clarification to the Poster.
-A Poster and/or Devpost’s failure to enforce any term of this Agreement or the Official Rules shall not constitute a waiver of that provision. If any provision of any Official Rules is or becomes illegal or unenforceable in any jurisdiction whose laws or regulations apply to you, the remainder of the Official Rules, including the rule affected, shall remain unaffected and valid, to the fullest extent permitted by law, The illegal or unenforceable provision shall be replaced by a valid and enforceable provision that comes closest and best reflects the Poster’s intention in a legal and enforceable manner with respect to the invalid or unenforceable provision.
-G. Hackathon Disputes
-By entering a Hackathon on the Site, you agree that, to the fullest extent permitted by law:
-(i) any and all disputes, claims and causes of action arising out of or connected with the Hackathon, or any prizes awarded, other than those concerning the administration of the Hackathon or the determination of winners, shall be resolved individually, without resort to any form of class action;
-(ii) any and all disputes, claims and causes of action arising out of or connected with the Hackathon, or any prizes awarded, shall be resolved exclusively by the courts with jurisdiction at the Poster’s location, indicated in the Official Rules, and you consent to the exclusive jurisdiction and venue of such courts; and
-(iii) under no circumstances will you be entitled to, and you hereby waive all rights to claim, any punitive, incidental and consequential damages and any and all rights to have damages multiplied or otherwise increased.
-Some jurisdictions do not allow the limitations or exclusion of liability for incidental or consequential damages, so the above may not apply to you.
-All issues and questions concerning the construction, validity, interpretation and enforceability of a Hackathon’s Official Rules, or the rights and obligations of you, the Maker, or the Poster in connection with the Hackathon, shall be governed by, and construed in accordance with, the laws of the country, province, state, and/or territory in which the Poster is located (as indicated in the Official Rules), without giving effect to any choice of law or conflict of law rules (whether of the Poster’s jurisdiction or any other jurisdiction), which would cause the application of the laws of any jurisdiction other than those of the Poster’s jurisdiction.
-6. POSTING A HACKATHON ON THE SITE
-Devpost reserves the right to approve any Hackathon Content before it is posted on the Site. We may refuse any User the right to post Hackathon Content, if we deem that the Hackathon Content is incomplete, misleading, inappropriate, or inconsistent with the purpose of the Site or Service.
-A. Hackathon Content Requirements
-Posters agree that any Hackathon Content will be accurate and will not violate the Code of Conduct outlined above in Section 4. By posting a Hackathon on the Site, you represent, warrant, and agree that your Hackathon Content meets these requirements.
-Posting of a Hackathon on our Site does not guarantee the Poster any exclusivity with respect to the subject matter, and all Hackathon Content will be made available to Users of the Site on a non-exclusive basis.
-B. Poster Obligations
-By posting Hackathon Content on our Site and using the Service, Posters agree to:
-Be fair and impartial towards other Users, which includes but is not limited to allowing members of any race, religion, or gender to participate in your Hackathon. Devpost may allow hackathons on the platform that are exclusive to one or more specific races, religions, or genders if Devpost deems the hackathon to be in support of a positive effort such as from an underrepresented community, a single-gender school, or other at Devpost's sole discretion;
-Include Official Rules that outline the terms and conditions of participation in the Hackathon;
-Adhere to such Official Rules and be consistent in their application; and
-Award any prizes promoted on the Site.
-Post a prize value that represents the real taxable cash value associated with the prize. The cash value associated with a prize must be posted within the individual prize description and cash value.
-Note: Posters must be prepared to withhold and prepare the proper tax paperwork when posting a Prize with a cash value. Posters are responsible for consulting a tax professional to determine what prize items should not count towards a winner’s taxable income (product trials, discounts, subscriptions, etc.). ‍
 
-Utilize prize value multipliers only when the prize value is associated with a real sum cash value. Participation prizes, such as stickers and merchandise or trials/subscriptions, should not use prize value multipliers to increase the total prize value disproportionately from the real sum cash value.
-Use the in-person hackathon license option only if the following are true:
-Individuals are in-person at the specified location or locations.
-AND
-The official Devpost submission period must be limited solely to the hackathon’s active, competitive window.
 
-Use the student hackathon license option only if the following are true:
-The hackathon eligibility is limited to individuals who are students at a recognized educational institution.
-AND
-The Poster is a student at or otherwise represents a recognized educational institution.
-AND
-The submission period should be no longer than one week.
 
-C. Poster Responsibility for Legal Compliance
-Posters are solely responsible for compliance with applicable laws and regulations regarding the administration of their Hackathon and awarding of prizes, use or acquisition of any Submissions received from Makers, or the transfer to Makers of any technologies in which the Poster may be involved, including without limitation, import/export requirements, and Devpost will have no responsibility or liability thereto.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 7. INTELLECTUAL PROPERTY RIGHTS
 A. Devpost Content
 The Site contains various information in the form of data, text, graphics, and other materials from Devpost and our third party licensors (the “Devpost Content”). You acknowledge that this Site and various elements contained therein are protected by Intellectual Property Rights, and that these worldwide rights are valid and protected in all forms, media, and technologies existing now and hereinafter developed. You also acknowledge that the Devpost Content is and shall remain the property of Devpost or its licensors. You agree to comply with all intellectual property laws and you shall not encumber any interest in, or assert any rights to, the Devpost Content. You may not modify, transmit, participate in the sale or transfer of, or create derivative works based on any Devpost Content, in whole or in part.
@@ -252,94 +252,94 @@ The trademarks, service marks, trade names and logos (collectively, the “Trade
 All rights are reserved. Unauthorized copying or use of any Devpost Content or Intellectual Property Rights without the express written consent of Devpost is strictly prohibited.
 B. User Content
 Devpost will not have any ownership rights over your User Content. However, Devpost needs the following licenses to operate the Site and perform and market the Service on your behalf, on behalf of our other Users, and on our own behalf.
-(i) General User Content
-Except as provided below with respect to Team Page Content, Hackathon Content, Software, and Submissions, you hereby grant to us an irrevocable, perpetual, non-exclusive, transferable, royalty-free, fully paid, worldwide license (with the right to sublicense) to use, copy, transmit, reproduce, adapt, modify, publicly perform, publicly display, reformat, translate, excerpt (in whole or in part), create collective works and derivative works, and distribute your User Content for any purpose, commercial, advertising, or otherwise, in any media or distribution method (now known or later developed).
-(ii) Hackathon Content
-Posters have and shall retain sole and exclusive title and ownership of all Hackathon Content and all Intellectual Property Rights relating thereto. By posting Hackathon Content on the Site, Posters grant to Devpost a non-exclusive, worldwide, royalty-free license to use, distribute, display and reproduce the Hackathon Content in order to perform the Service.
-(iii) Software and Submissions
-Makers have and shall retain sole and exclusive title and ownership of all Software and Submissions, and all Intellectual Property Rights relating thereto, unless: (a) the Official Rules of a Hackathon state clearly that the Maker will be required to transfer property of the Submission and all Intellectual Property Rights relating thereto to the Poster as a requirement of the Hackathon; AND (b) an award is paid or made by the Poster of the Hackathon to such Maker.
-By entering Software or a Submission on our Site, you grant to Devpost, and in the case of a Submission, the Poster and any third parties acting on the Poster’s behalf, a royalty-free, non-exclusive, worldwide perpetual license to display publicly and use for promotional purposes the Software or Submission, in perpetuity. This license includes posting or linking to Software or the Submission on this Site, the Poster’s and partners’ websites and applications (in the case of a Submission), and display and promotion of the Software or Submission in any other media, worldwide.
-You represent and warrant that Devpost, and where applicable, the Poster and Hackathon partners, are free to use your Software or Submission in the manner described above, as provided or as modified by Devpost, without obtaining permission or license from any third party and without any compensation to you.
-Your Software or Submission must: (a) be your (or your team or organization’s) original work product; (b) be solely owned by you, your team, or your organization with no other person or entity having any right or interest in it; and (c) not violate the intellectual property rights or other rights including but not limited to copyright, trademark, patent, contract, and/or privacy rights, of any other person or entity. By entering Software or a Submission to a Hackathon on the Site you represent, warrant, and agree that your Software or Submission meets these requirements.
-8. NO WARRANTIES; LIMITATION OF LIABILITY
-Devpost has no special relationship with or fiduciary duty to you. You acknowledge that Devpost has no control over, and no duty to take any action regarding: which users gain access to the Site; what effects the User Content or Devpost Content may have on the users; how users may interpret the User Content or Devpost Content; or what actions users may take as a result of having been exposed to the User Content or Devpost Content.
-Although Devpost and the Site will make reasonable efforts to store and preserve the material residing on the Site, neither Devpost nor the Site is responsible or liable in any way for the failure to store, preserve or access User Content or other materials you transmit or archive on the Site. You are strongly urged to take measures to preserve copies of any data, material, content or information you post or upload on the Site. You are solely responsible for creating back-ups of your User Content.
-THE SERVICES, CONTENT, SITE AND ANY SOFTWARE OR OTHER PRODUCTS OR SERVICES OFFERED HEREUNDER ARE PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING THAT THE USE OF THE SITE WILL (A) BE TIMELY, UNINTERRUPTED OR ERROR-FREE OR OPERATE IN COMBINATION WITH ANY OTHER HARDWARE, SOFTWARE, SYSTEM OR DATA; (B) MEET YOUR REQUIREMENTS OR EXPECTATIONS; (C) BE FREE FROM ERRORS, OR THAT DEFECTS WILL BE CORRECTED; (D) BE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.
-WE DISCLAIM ALL WARRANTIES, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT OF THIRD PARTIES’ RIGHTS AND ANY WARRANTIES ARISING FROM A COURSE OF DEALING, COURSE OF PERFORMANCE, OR USAGE OF TRADE. IN CONNECTION WITH ANY WARRANTY, CONTRACT, OR COMMON LAW TORT CLAIMS, WE SHALL NOT BE LIABLE FOR (I) INCIDENTAL OR CONSEQUENTIAL DAMAGES, LOST PROFITS, OR DAMAGES RESULTING FROM THE USE OR INABILITY TO ACCESS AND USE THE WEBSITE OR THE CONTENT, OR (II) DIRECT DAMAGES IN EXCESS OF AN AMOUNT EQUAL TO $100, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-By using this Site, you acknowledge that Devpost is not responsible or liable for any harm resulting from (1) use of the Site; (2) downloading information contained on the Site, including but not limited to downloads of content posted by users; (3) unauthorized disclosure of images, information or data that results from the upload, download or storage of content; or (4) the temporary or permanent inability to access or retrieve any content from the site, including, without limitation, harm caused by viruses, worms, Trojan horses, or any similar contamination or destructive program.
-In addition, no warranty is made as to the results that may be obtained from use of the Services to seek employment, or the accuracy, reliability, or content of any product, service or information provided through or in connection with the Services, including User Profiles and Team Pages. Devpost has no control over, and is not responsible for, the acts or omissions of Users, or the accuracy of User Profiles or Team Pages or other User Content posted by Users. Devpost hereby disclaims any and all warranties in respect of the Services, express or implied, including any warranties concerning the merchantability, fitness for any particular purpose, or use by a User or Employer.
-Devpost is not liable for any contracts, contractual obligations or any other obligations that may arise by statute or operation of law, resulting from any employment or commercial relationship, whether attempted or formalized, between Candidates and Employers.
-Some states do not allow limitations on how long an implied warranty lasts, so the above limitations may not apply to you.
-9. INDEMNITY
-You release, indemnify, defend and hold harmless Devpost, our parent, subsidiary, and affiliated companies, and all of their respective past and present officers, directors, members, managers, employees, agents, representatives affiliates, suppliers, successors and assigns (hereafter the “Released Parties”) from and against any and all claims, damages, losses, expenses, and liabilities (including without limitation reasonable fees and costs for attorneys and investigations), arising out of, based on, or in connection with (i) your misuse of the Site, Services or Content; (ii) a dispute with another User of our Site; (iii) your breach of this Agreement; (iv) your violation of any law or the rights of any third party, including intellectual property rights; (v) your User Content; (vi) your negligence resulting in damages of any kind to persons and property, (vii) defamation, slander, libel, violation of right of publicity, infringement of trademark, copyright or other intellectual property rights, property damage, or death or personal injury arising out of or relating to your use of the Site or Service.
-Without limiting the foregoing, the Released Parties shall have no liability in connection with:
-(i) any incorrect or inaccurate information caused by Devpost’s electronic or printing error, or by any of the equipment or programming associated with or utilized in the operation of the Site;
-(ii) technical failures of any kind, including, but not limited to malfunctions, interruptions, or disconnections in phone lines, internet connectivity or electronic transmission errors, or network hardware or software or failure of the Site;
-(iii) unauthorized human intervention in any part of the Site’s operation;
-(iv) technical or human error which may occur in the administration of the Site or Service; or
-(v) any injury or damage to persons or property which may be caused, directly or indirectly, in whole or in part, from your use of the Site or Service.
-10. DIGITAL MILLENNIUM COPYRIGHT ACT
-If you are a copyright owner or an agent thereof and believe that any content on this Site infringes upon your copyrights, you may submit a notification pursuant to the Digital Millennium Copyright Act by providing our Copyright Agent with the following information in writing:
-Identification of the work or material being infringed.
-Identification of the material that is claimed to be infringing, including its location, with sufficient detail so that Devpost is capable of finding and verifying its existence.
-Contact information about the notifying party (“Notifying Party”), including name, address, telephone number and email address.
-A statement that the Notifying Party has a good faith belief that the material is not authorized by the copyright owner, its agent or law.
-A statement made under penalty of perjury that the information provided in the notice is accurate and that the Notifying Party is authorized to make the complaint on behalf of the copyright owner.
-The Notifying Party’s physical or electronic signature.
 
-Devpost’s designated Copyright Agent to receive notifications of claimed infringement is:
-Copyright AgentDevpost, Inc.250 Broadway, 24th FloorNew York, NY 10007Email: [redacted:email]@devpost.com
-11. APPLICABLE LAW
-This Agreement shall be governed by the internal substantive laws of the State of New York, without respect to its conflict of laws principles.
-12. BINDING ARBITRATION
-In the event of a dispute arising under or relating to this Agreement, the Content, the Site or the Services (each, a “Dispute”), either party may elect to finally and exclusively resolve the dispute by binding arbitration governed by the Federal Arbitration Act (“FAA”). Any election to arbitrate, at any time, shall be final and binding on the other party. IF EITHER PARTY CHOOSES ARBITRATION, NEITHER PARTY SHALL HAVE THE RIGHT TO LITIGATE SUCH CLAIM IN COURT OR TO HAVE A JURY TRIAL. DISCOVERY AND APPEAL RIGHTS MAY ALSO BE LIMITED IN ARBITRATION. All disputes will be resolved before a neutral arbitrator, whose decision will be final except for a limited right of appeal under the FAA. Any court in New York County, New York may enforce the arbitrator’s award. The arbitration shall be administered by the Judicial Arbitration and Mediation Services (“JAMS”) pursuant to JAMS’ Streamlined Arbitration Rules and Procedures, if applicable, or otherwise pursuant to its Comprehensive Arbitration Rules and Procedures and in accordance with the Expedited Procedures in those Rules (the “JAMS Rules”). Such disputes will be resolved by the arbitrator as determined under the JAMS Rules. The arbitration may be conducted in person, through the submission of documents, by phone, or online. If conducted in person, the arbitration shall take place in New York County, New York. The parties may litigate in court to compel arbitration, to stay proceeding pending arbitration, or to confirm, modify, vacate, or enter judgment on the award entered by the arbitrator. In addition, we may litigate in court to seek injunctive relief.
-13. CLASS ACTION WAIVER
-You agree that any arbitration or proceeding shall be limited to the Dispute between us and you individually. To the full extent permitted by law, (i) no arbitration or proceeding shall be joined with any other; (ii) there is no right or authority for any Dispute to be arbitrated or resolved on a class action-basis or to utilize class action procedures; and (iii) there is no right or authority for any Dispute to be brought in a purported representative capacity on behalf of the general public or any other persons. YOU AGREE THAT YOU MAY BRING CLAIMS AGAINST US ONLY IN YOUR INDIVIDUAL CAPACITY AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING.
-14. SEVERABILITY
-If any provision of this Agreement is held to be invalid or unenforceable, such provision shall be deemed superseded by a valid enforceable provision that most closely matches the intent of the original provision and the remaining provisions shall be enforced.
-15. NON-WAIVER
-The failure of Devpost to exercise or enforce any right or provision of this Agreement shall not constitute a waiver of such right or provision.
-16. ASSIGNMENT
-You may not assign any of your rights under these Terms, and any such attempt will be void. Devpost may assign its rights to any of its affiliates or subsidiaries, or to any successor in interest of any business associated with the Service.
-17. TERMINATION
-Devpost reserves the right in its sole discretion to refuse, suspend, or terminate your account, your access to our Site or any portion of our Site without notice. We may terminate this Agreement, at our discretion without explanation and notice, though we will strive to provide a timely explanation in most cases. If you wish to terminate this Agreement, you may do so by notifying Devpost at any time and closing your account for the Service. Your notice should be sent in writing. Termination of the Agreement may result in the immediate deletion of any or all of your User Content. Devpost will not have any liability whatsoever to you for any suspension or termination, including for deletion of your User Content. All provisions of this Agreement which by their nature should survive termination shall survive termination, including, without limitation, ownership provisions, warranty disclaimers, indemnity and limitations of liability.
-18. ENTIRE AGREEMENT
-The Agreement constitutes the entire agreement between you and us with respect to your use of our Site and Service for seeking employment, and supersedes all prior or contemporaneous communications and proposals, whether electronic, oral or written, between you and us with respect to our Site and Service.
-If you are recruiting prospective employees for your company through Devpost or adding User content for such purpose, the Devpost Terms of Service for Employers also apply to your use of the Site and Service. If you are posting or participating in a hackathon on Devpost, the Devpost Terms of Service for Hackathons also apply to your use of the Site and Service.
-19. LINKS TO THIRD PARTY WEB SITES
-Our Site may contain links to third party websites. Any such links are provided for your convenience only. We do not control those websites, and we are not responsible for their contents or practices, including their privacy practices. We do not endorse the operators of those sites, nor do we endorse or make any representations with respect to the contents of those sites or any products offered on those sites.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 20. CONTACT US
 Questions or comments regarding our Site, including any reports of non-functioning links, should be submitted using our email address at [redacted:email]@devpost.com , or via U.S. mail to 250 Broadway, 24th Floor, New York, NY 10007.
 Last Updated: December 5, 2025
 
 Devpost
 
-About
-Careers
-Press
-Contact
-Help
 
-Hackathons
 
-Browse hackathons
-Explore projects
-Host a hackathon
-Hackathon guides
 
-Portfolio
 
-Your projects
-Your hackathons
-Settings
 
-Connect
 
-Twitter
-LinkedIn
-Discord
-Facebook
-Instagram
 
-© YYYY Devpost, Inc. All rights reserved.
-Community guidelines Security CA notice Privacy policy Terms of service
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

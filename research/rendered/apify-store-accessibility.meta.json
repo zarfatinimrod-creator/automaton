@@ -16,5 +16,28 @@
   "changed": true,
   "firstFetch": false,
   "previousSha256": "87d6d884d736098374b92229fa1e2f4cf8899962701ecab608d1892e9db56c39",
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "apify.com",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": null,
+    "fullByteLength": null,
+    "lineCount": null,
+    "body": {
+      "path": "research/rendered/apify-store-accessibility.json",
+      "sha256": "7243b4274b6d54f7d5f43ad706ecde3e748632be2826200a5d92753e0432d1dc",
+      "byteLength": 3036754,
+      "lineCount": 64673,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 364bf71a84e7fe6e5e2bd1f44cb35cbc6c608b99 (git show 364bf71a84e7fe6e5e2bd1f44cb35cbc6c608b99:research/rendered/apify-store-accessibility.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }

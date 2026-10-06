@@ -25,5 +25,28 @@
     "from": "research/rendered/apify-store-israel-all.meta.json",
     "commit": "815c2e5",
     "why": "A dated copy of the render-watch capture of apify-store-israel-all as commit 815c2e5 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/measurements/apify-visibility.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug apify-store-israel-all stays on the weekly watch."
+  },
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "apify.com",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": null,
+    "fullByteLength": null,
+    "lineCount": null,
+    "body": {
+      "path": "research/rendered/apify-store-israel-all-2026-09-28.json",
+      "sha256": "c031fd6d38afe0e99ac485a51cd1f9adab252e03e2c3e4d24284f5fd915e9c38",
+      "byteLength": 1709654,
+      "lineCount": 35887,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit b339013bdf924e2eac91fff7d4d203d687622816 (git show b339013bdf924e2eac91fff7d4d203d687622816:research/rendered/apify-store-israel-all-2026-09-28.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

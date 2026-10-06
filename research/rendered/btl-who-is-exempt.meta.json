@@ -16,5 +16,28 @@
   "changed": true,
   "firstFetch": false,
   "previousSha256": "65ca9d0b026cf17f5baa7a4ca3b475be0a5a36cf210fd2a67ff4125db3502920",
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "btl.gov.il",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": "b33b51dfc960719dc610c0f7cd9d2eeb77adf3ec8b24fe483a6fe8bc1f2e84dd",
+    "fullByteLength": 12103,
+    "lineCount": 342,
+    "body": {
+      "path": "research/rendered/btl-who-is-exempt.html",
+      "sha256": "9cea441843e21db3fe4eea962409233c1e8273eb7715ad4a5af6be91df3f879f",
+      "byteLength": 134411,
+      "lineCount": 1879,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 364bf71a84e7fe6e5e2bd1f44cb35cbc6c608b99 (git show 364bf71a84e7fe6e5e2bd1f44cb35cbc6c608b99:research/rendered/btl-who-is-exempt.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }

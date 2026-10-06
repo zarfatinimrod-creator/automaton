@@ -15,5 +15,28 @@
   "changed": true,
   "firstFetch": true,
   "previousSha256": null,
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-06",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "stanford.edu",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": "fd937499973d3d4170cea58443b687e25b681062a39ac5e1a08f885fcee85029",
+    "fullByteLength": 12297,
+    "lineCount": 221,
+    "body": {
+      "path": "research/rendered/terms-stanford.html",
+      "sha256": "48c4c45e134be29e58d0f24dc8b8659f3d46457ada7fe323d3aa93a1ec305186",
+      "byteLength": 351829,
+      "lineCount": 1,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 5f4853a66b0a64709e8db9f6681651308915196a (git show 5f4853a66b0a64709e8db9f6681651308915196a:research/rendered/terms-stanford.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }
