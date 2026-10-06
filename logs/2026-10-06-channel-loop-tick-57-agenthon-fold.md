@@ -184,3 +184,54 @@ would set agenthon.net to NO_TERMS_ROBOTS_OK (dry run; --apply writes .../resear
 - קריאת קובץ הקריאות (כ-58 אלף תווים) וסעיפי הערת הביקורת (שורות ארוכות מאוד): נחוץ.
 - ניסוח הסעיף החדש והבלוק החדש (הצמדות שלמות של שלוש פסקאות וקבוצה 4).
 - ריצת המוטציות (46 רשומות) ב-sim-tree, וריצת `verify.sh` המלאה.
+
+## Review fixes
+
+תיקוני ממצאי הביקורת האדברסרית (Opus fixer, אותו branch, אותו worktree). ממצא "fix" אחד, אפס "blocking"; מבין ממצאי ה-"note" תוקן
+אחד (שורה 266 ב-ZERO-TESTS, טריוויאלי ובטוח), והשאר נשארו כמו שהם, מהסיבות שלהלן.
+
+**Merge של הבסיס.** `origin/claude/new-session-j071dx` זז מ-`23e17e7` (בסיס ה-branch) ל-`c0bdbb4` (4 commits: קבצי הלולאה, מצב
+המושבה, שורה אחת ב-`ai-allowed-events.md`). `git merge-tree` היה נקי (exit 0), ומיזגתי עם `--no-ff` (בלי rebase, בלי stash):
+`13cbee2`. ה-`verify.sh` המלא שלהלן רץ על העץ הממוזג, כך שגם המיזוג נבדק.
+
+**ממצא ה-"fix" — שום בדיקה לא שמרה על "אין הפניה ל-agenthon.net ברשומה אחרת".** שתי מוטציות של המבקר שרדו: RV57B-X1 (משפט שקרי
+"agenthon.net, still TERMS_PENDING ..." בהערה של ansperformance.eu) ו-RV57B-X2 (", as agenthon.net's is" בהערה של adaptionlabs.ai).
+התיקון: בבלוק "tick 57, third round" ב-`prize-terms-audit.test.ts` בדיקה חדשה — אף רשומה מלבד זו של agenthon.net, ואף שדה ברמה
+העליונה (`_about`), אינם מכילים "agenthon" (בלי תלות ברישיות), ורשומת האתר כן; ובבתים הגולמיים של הקובץ מספר המופעים הוא 1 (המפתח)
+ועוד המופעים ברשומה. היום הנתונים נכונים (נבדק: אין הפניה כזו), ולכן הבדיקה עברה מיד; המוטציות הן ההוכחה שהיא תופסת.
+
+**ממצא "note" שתוקן — שורה 266 ב-ZERO-TESTS.** הסימון של טיק 56 בשורת ה-Terms אומר "agenthon.net stays TERMS_PENDING" (נכון לטיק 56).
+נוסף אחריו סימון מתוארך של טיק 57, כמו ששורה 242 של eurocontrol.int קיבלה סימונים בטיקים 55 ו-56, דרך `node scripts/loop-edit.mjs
+set-cell --row-key 266 --col 4 --append` (dry-run קודם, ואז כתיבה, exit 0; מספר התאים נשאר 4):
+`**6.10 (tick 57): the Data & Software Licensing Policy (row 268) and the Privacy Notice (row 269) were read, neither site terms; agenthon.net is NO_TERMS, exhaustive-negative, then NO_TERMS_ROBOTS_OK on its robots.txt (row 247), and this line stays paused as read.**`.
+בבדיקות: קבוע ברמת המודול `LATER_MARKS` (סימונים שנוספו לשורה אחרי סימון ה-READ שלה) ו-`marksSince()`; שתי הבדיקות שהצמידו את
+שורה 266 (בלוק "tick 55" בהצמדה שלמה עם `toBe`, ובלוק "tick 56" עם `endsWith`) מצמידות עכשיו את הסימון של טיק 56 ואחריו את החדש —
+ההצמדה לא נחלשה, היא התארכה. בבלוק "tick 57, third round" בדיקה חדשה מצמידה את הסימון: מיקומו אחרי סימון טיק 56, 4 תאים, אין בו
+TERMS_PENDING, השורות שהוא מזכיר (268, 269, 247) הן של האתר, הוא לא מצטט טווח שורות, ושורות 268 ו-269 מסתיימות בסימוני ה-READ
+שלהן. TDD: לפני העריכה ב-ZERO-TESTS שלוש הבדיקות האלה נכשלו (71 בדיקות, 3 נכשלו, exit 1); אחריה 71 מתוך 71 עברו.
+
+**ממצאי "note" שלא שונו.** (א) תנאי הפתיחה מחדש של המאמת (סעיף שימוש באתר שיימצא ב-/rules/ יפתח את הפסק מחדש) לא נוסף להערה:
+הפסיקה נשארת כפי שנכתבה, וזו החלטה של ה-thread הראשי. (ב) משפט הרובוטס המותנה בהערה — כמו התקדים של eurocontrol.int; לא שונה.
+(ג) סיבת ההשהיה ב-`urls.txt:806` ("the licensing and privacy pages are queued in tick 56") נכונה כהיסטוריה מתוארכת; שינוי שלה דורש
+שכתוב שורה ב-`urls.txt` בסקריפט ועדכון ה-fixture `READ2`, ואינו טריוויאלי. (ד) המשפט "the page has not been fetched" בפסקה של
+eurocontrol.int (טיק 57) שקרי מאז `23e17e7`, אבל הוא מחוץ ל-build הזה, נמצא כבר בבסיס, ומוצמד בבלוק אחר; ל-thread הראשי.
+(ה) ל-/rules/ אין שורה ברשימות הפרס, ולכן אין מה לשלוח; ל-thread הראשי. (ו) התיקייה `/tmp/verify.97XQBa` שהבונה השאיר נמצאת
+מחוץ לתיקיית ה-scratch שלי, והכללים מתירים למחוק רק אותה; לא נגעתי בה.
+
+**תוכנית המוטציות.** ל-`src/__tests__/revenue/mutations/robots-verdict.json` נוספו חמש רשומות (51 בסך הכל): `T57B-RV1` (RV57B-X1 של
+המבקר), `T57B-RV2` (RV57B-X2), `T57B-RV3` (הפניה ל-agenthon.net בפתיחת ה-`_about`, שאף בדיקה אחרת לא מצמידה), `T57B-RV4` (הסימון
+החדש בשורה 266 הוסר), `T57B-RV5` (בסימון החדש האתר שוב TERMS_PENDING). `--check`: 51 מתוך 51 יחולו, exit 0. ריצה מלאה ב-`scripts/sim-tree.sh` על `c3bbf69` (לצד ה-verify המלא): 51 הוחלו, 51 נהרגו, 0 שרדו,
+exit 0, 186 שניות. ריצת ביקורת ב-sim-tree על `13cbee2` (לפני התיקון) עם RV1 עד RV3 בלבד: 3 שרדו (exit 1), כלומר הן משחזרות את
+הממצא; על ה-HEAD הן נהרגות. (RV4 ו-RV5 נשענות על הסימון החדש בשורה 266, שאינו קיים לפני התיקון.)
+שורת `robots-verdict.json` ב-`mutations/README.md` עודכנה.
+
+**בדיקות.** `scripts/verify.sh` ממוקד (prize-terms-audit, robots-verdict, frozen-citations, mutation-plans, urls-pause-comments,
+prize-dispatch, queue-zero-test): exit 0 (typecheck 0; 7 קבצים, 260 בדיקות). `scripts/verify.sh` מלא על העץ הממוזג: exit 0 (typecheck 0;
+80 קבצים, 2734 עברו, 2 דולגו). `freeze-capture.mjs --cited`: exit 0 (0 ציטוטים לפי שורה של לכידה פעילה). `urls-pause-comments.mjs
+--check`: exit 0, עם `--today 6.10.2026` ובלעדיו (0 מיושנות). `queue-zero-test.mjs --apply-verdicts --dry-run`: exit 0, would pause 0.
+`prize-dispatch.mjs --skip-captured --why`: exit 0, 27 עוברות (23 אתרים), 66 נכשלות, 26 דולגו כלכודות (שורת דף הבית של agenthon.net
+ביניהן). grep השמות על כל הקבצים ששונו: לא הדפיס דבר (exit 1); אין כתובת בשורות שנוספו. TMPDIR כוון לתיקיית ה-scratch שלי בכל
+ריצה, והתיקייה נמחקה בסוף לפי הנתיב המילולי שלה.
+
+**אסימונים.** קריאת בלוק "tick 57, third round" (כ-450 שורות) והבלוקים שמצמידים את שורה 266; ריצת המוטציות (51) ב-sim-tree וה-verify
+המלא — הכבדים, ונחוצים.
