@@ -43,8 +43,9 @@
  * re-queues, once, a terms page the plain GET saw as a JavaScript shell, for a js render that reads it
  * (research/channel-loop/RULING-2026-10-06-robots-and-terms.md 3(2), ruling 6.10 row 21 (c): kind K4). The one
  * recursive case --js --terms refuses (a terms page cannot rest on itself), allowed only when all of these hold
- * (queueTermsShell): the slug starts terms-; no earlier js capture of that slug exists — no js line for it in
- * urls.txt, active or commented, and no meta of it or of a frozen copy of it with renderedWith (once only, 3(2)(vi));
+ * (queueTermsShell): the slug starts terms-; no earlier js render of that slug or of that URL under any slug exists —
+ * no js line for either in urls.txt, active or commented, no meta of either (live or frozen) with renderedWith, and no
+ * "shell: rendered once" record in the site's note (once only, 3(2)(vi));
  * the plain capture of the same URL exists (research/rendered/<slug>.meta.json and .html, the meta naming that URL);
  * its meta says robots "allowed" or "none"; scripts/capture-check.mjs's own classifier grades it js-shell (not
  * bot-challenge, not short, not status, not ok); the site is TERMS_PENDING or NO_TERMS and its note names no other
@@ -137,6 +138,20 @@ export function isShellTermsVerdict(entry) {
 }
 
 /**
+ * The URL research/rendered/<slug>.meta.json names — the plain capture a K4 js terms- line re-reads — or null when the
+ * slug is not a slug, the meta is missing or not JSON, or it names no URL. Never throws.
+ */
+export function plainCaptureUrl(slug, dir = RENDERED) {
+  if (!/^[a-z0-9][a-z0-9._-]*$/.test(String(slug))) return null;
+  try {
+    const url = JSON.parse(readFileSync(join(dir, `${slug}.meta.json`), "utf8"))?.url;
+    return typeof url === "string" ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * A robots-only probe: a slug starting robots- on a URL whose path is exactly /robots.txt, with no query
  * (render-watch fetches that file and nothing else from the host; research/rendered/README.md).
  */
@@ -193,9 +208,12 @@ export const PATH_LIMITS = {
  *
  * Since 6.10 (RULING-2026-10-06-robots-and-terms.md 3(2)): `js` is whether the line carries the js flag. A js terms-
  * line of a NO_TERMS site whose note opens "shell" (isShellTermsVerdict, kind K4) passes, with termsShell: true — the
- * once-only render queueTermsShell queues. A TERMS_PENDING site's terms- line passes with or without the flag, as before.
+ * once-only render queueTermsShell queues — and only on the URL of the slug's own plain capture
+ * (<dir>/<slug>.meta.json, research/rendered by default: plainCaptureUrl), the terms page the plain GET saw as a shell.
+ * Any other page of the site stays unread, whatever its slug says (3(3): "nothing else on it is fetched"). A
+ * TERMS_PENDING site's terms- line passes with or without the flag, as before.
  */
-export function termsGate(url, slug, verdicts, { js = false } = {}) {
+export function termsGate(url, slug, verdicts, { js = false, dir = RENDERED } = {}) {
   let parsed;
   try {
     parsed = new URL(url);
@@ -203,7 +221,7 @@ export function termsGate(url, slug, verdicts, { js = false } = {}) {
     return { ok: false, why: `not a URL: ${url}` };
   }
   const host = parsed.hostname.toLowerCase().replace(/\.+$/, "");
-  const gate = verdictGate(url, slug, host, verdicts, js);
+  const gate = verdictGate(url, slug, host, verdicts, js, dir);
   const limit = gate.ok && Object.hasOwn(PATH_LIMITS, gate.site) ? PATH_LIMITS[gate.site] : undefined;
   const hostOk = !limit?.hosts || limit.hosts.includes(host);
   if (limit && !(hostOk && limit.prefixes.some((p) => parsed.pathname.startsWith(p)))) {
@@ -214,7 +232,7 @@ export function termsGate(url, slug, verdicts, { js = false } = {}) {
 }
 
 /** termsGate before PATH_LIMITS: the barred list and the site's verdict. */
-function verdictGate(url, slug, host, verdicts, js) {
+function verdictGate(url, slug, host, verdicts, js, dir) {
   const barred = termsBarred(host);
   if (barred) return { ok: false, site: barred.domain, verdict: "BARRED", why: `${barred.domain} is in TERMS_BARRED: ${barred.why}` };
   const site = siteOf(host);
@@ -222,7 +240,17 @@ function verdictGate(url, slug, host, verdicts, js) {
   const verdict = entry?.verdict ?? null;
   if (verdict === "NO_TERMS_ROBOTS_OK" ? isRobotsOkVerdict(entry) : ACTIVE_VERDICTS.has(verdict)) return { ok: true, site, verdict };
   if (verdict === "TERMS_PENDING" && String(slug).startsWith("terms-")) return { ok: true, site, verdict };
-  if (js && String(slug).startsWith("terms-") && isShellTermsVerdict(entry)) return { ok: true, site, verdict, termsShell: true };
+  if (js && String(slug).startsWith("terms-") && isShellTermsVerdict(entry)) {
+    const plain = plainCaptureUrl(slug, dir);
+    if (plain === url) return { ok: true, site, verdict, termsShell: true };
+    const seen = plain === null ? "is missing or names no URL" : `is of ${plain}`;
+    return {
+      ok: false,
+      site,
+      verdict,
+      why: `${site} is NO_TERMS, shell: a js terms- line passes only on the URL of its own plain capture, the terms page the plain GET saw as a shell (research/rendered/${slug}.meta.json ${seen}, not ${url}); nothing else on the site is fetched (RULING-2026-10-06-robots-and-terms.md 3(2)-(3))`,
+    };
+  }
   if (isRobotsProbe(url, slug) && isExhaustiveNegative(entry)) return { ok: true, site, verdict };
   const why =
     verdict === null
@@ -242,16 +270,16 @@ function verdictGate(url, slug, host, verdicts, js) {
 /**
  * Comment out every active urls.txt line that fails the terms gate. Returns the new text and counts; the caller
  * writes it. A barred host's line says so, a line outside its site's PATH_LIMITS names that list, and any other
- * failing line names its site and verdict.
+ * failing line names its site and verdict. `dir` is where termsGate finds a K4 js terms- line's plain capture.
  */
-export function applyVerdicts(urls, verdicts) {
+export function applyVerdicts(urls, verdicts, { dir = RENDERED } = {}) {
   const lines = urls.split("\n");
   const paused = [];
   for (let i = 0; i < lines.length; i += 1) {
     const t = lines[i].trim();
     if (t === "" || t.startsWith("#")) continue;
     const [url, slug, flag] = t.split(/\s+/);
-    const gate = termsGate(url, slug ?? "", verdicts, { js: flag === "js" });
+    const gate = termsGate(url, slug ?? "", verdicts, { js: flag === "js", dir });
     if (gate.ok) continue;
     const head =
       gate.verdict === "BARRED" && termsBarred(new URL(url).hostname)
@@ -512,26 +540,56 @@ const SHELL_ROBOTS = new Set(["allowed", "none"]);
 /** The last two whitespace-separated fields of a urls.txt line, active or commented out: [url, slug] or [slug, flag]. */
 const tail = (line) => line.trim().split(/\s+/).slice(-2);
 
+/** Two URLs as the same page: equal once parsed (scheme and host case, a default port), else equal as written. */
+function sameUrl(a, b) {
+  try {
+    return new URL(a).href === new URL(b).href;
+  } catch {
+    return a === b;
+  }
+}
+
 /**
- * The metas of `slug` in `dir` that record a js render: <slug>.meta.json, and any frozen copy of it (a meta whose
- * frozen.from is research/rendered/<slug>.meta.json), with renderedWith set. Names, sorted.
+ * The js lines of a urls.txt text, active or commented out: { index, url, slug } for each line whose last field is the
+ * js flag (an active "URL<TAB>slug<TAB>js", or a comment ending "— URL<TAB>slug<TAB>js").
  */
-export function jsCapturesOf(slug, dir = RENDERED) {
+function jsLinesOf(lines) {
+  const out = [];
+  lines.forEach((l, index) => {
+    const fields = l.trim().split(/\s+/);
+    if (fields.length >= 3 && fields.at(-1) === "js") out.push({ index, url: fields.at(-3), slug: fields.at(-2) });
+  });
+  return out;
+}
+
+/**
+ * The metas in `dir` that record a js render (renderedWith set) of `slug` or of `url`: <slug>.meta.json, any frozen
+ * copy of it (a meta whose frozen.from is research/rendered/<slug>.meta.json), and, when `url` is given, any meta of
+ * that URL under whatever slug, live or frozen. Names, sorted.
+ */
+export function jsCapturesOf(slug, dir = RENDERED, { url } = {}) {
   if (!existsSync(dir)) return [];
   const from = `research/rendered/${slug}.meta.json`;
   return readdirSync(dir)
-    .filter((name) => name === `${slug}.meta.json` || (name.startsWith(`${slug}-`) && name.endsWith(".meta.json")))
+    .filter((name) => name.endsWith(".meta.json"))
     .filter((name) => {
+      const ofSlug = name === `${slug}.meta.json` || name.startsWith(`${slug}-`);
+      if (!ofSlug && url === undefined) return false;
       let meta;
       try {
         meta = JSON.parse(readFileSync(join(dir, name), "utf8"));
       } catch {
         return false;
       }
-      return (name === `${slug}.meta.json` || meta?.frozen?.from === from) && meta?.renderedWith != null;
+      const mine = name === `${slug}.meta.json` || meta?.frozen?.from === from;
+      const sameUrlAs = url !== undefined && typeof meta?.url === "string" && sameUrl(meta.url, url);
+      return (mine || sameUrlAs) && meta?.renderedWith != null;
     })
     .sort();
 }
+
+/** A note that records the once-only render (3(2)(vi): "shell: rendered once <date>, <what came back>"). */
+const RENDERED_ONCE = /\bshell:\s*rendered once\b/i;
 
 /** The frozen copies of `slug` in `dir` whose bytes are the live capture's (same sha256): names, sorted. */
 export function frozenCopiesOf(slug, sha256, dir = RENDERED) {
@@ -571,18 +629,17 @@ export function queueTermsShell({
   if (!slug.startsWith("terms-")) {
     throw why(`the slug must start terms- (3(2)(iii)): the route renders a site's own terms page and nothing else`);
   }
-  // Once only (3(2)(vi)): a js line for the slug, queued or retired, or a js capture of it, live or frozen.
+  // Once only (3(2)(vi)), for the slug and for the page under any slug: a js line, queued or retired, or a js capture,
+  // live or frozen. The note's record of the render is checked with the site's verdict below.
   const lines = urls.split("\n");
-  const jsLine = lines.findIndex((l) => {
-    const [s, flag] = tail(l);
-    return s === slug && flag === "js";
-  });
-  if (jsLine >= 0) {
-    throw why(`urls.txt line ${jsLine + 1} is already a js line for ${slug} (active or commented out): the js render is once only (3(2)(vi))`);
+  const jsLine = jsLinesOf(lines).find((j) => j.slug === slug || sameUrl(j.url, url));
+  if (jsLine) {
+    const whose = jsLine.slug === slug ? `for ${slug}` : `for ${jsLine.url} (as ${jsLine.slug})`;
+    throw why(`urls.txt line ${jsLine.index + 1} is already a js line ${whose} (active or commented out): the js render is once only (3(2)(vi))`);
   }
-  const rendered = jsCapturesOf(slug, dir);
+  const rendered = jsCapturesOf(slug, dir, { url });
   if (rendered.length) {
-    throw why(`an earlier js capture of ${slug} exists (${rendered.join(", ")}: renderedWith set): the js render is once only, and whatever came back was the answer (3(2)(vi))`);
+    throw why(`an earlier js capture of ${slug} or of ${url} exists (${rendered.join(", ")}: renderedWith set): the js render is once only, and whatever came back was the answer (3(2)(vi))`);
   }
   // The plain capture of the same URL (3(2)(i)).
   const metaPath = join(dir, `${slug}.meta.json`);
@@ -625,6 +682,9 @@ export function queueTermsShell({
   if (verdict !== "TERMS_PENDING" && verdict !== "NO_TERMS") {
     throw why(`${site} is ${verdict ?? "without a verdict"} in research/channel-loop/terms-verdicts.json, not TERMS_PENDING or NO_TERMS: the route reads terms that are unread`);
   }
+  if (RENDERED_ONCE.test(String(entry?.note ?? ""))) {
+    throw why(`${site}'s note records the once-only render ("shell: rendered once ..."): no second attempt in any mode (3(2)(vi))`);
+  }
   const kind = String(entry?.note ?? "").match(OTHER_KIND);
   if (kind) {
     throw why(`${site}'s note opens "${kind[1]}", another kind than K4 shell (3(1)): no js render of its terms page`);
@@ -632,7 +692,7 @@ export function queueTermsShell({
   if (verdict === "NO_TERMS" && !isShellTermsVerdict(entry)) {
     throw why(`${site} is NO_TERMS, but its note does not open with the kind word "shell" (K4, 3(1); the ruling's fold 2 writes the kind words), so termsGate would refuse the js line`);
   }
-  const gate = termsGate(url, slug, verdicts, { js: true });
+  const gate = termsGate(url, slug, verdicts, { js: true, dir });
   if (!gate.ok) throw why(`the terms gate refuses ${url}: ${gate.why}`);
   // An active line of the same URL under another slug would fetch the page twice.
   const twin = lines.find((l) => !l.trim().startsWith("#") && l.trim().split(/\s+/)[0] === url && tail(l)[1] !== slug && tail(l)[0] !== slug);

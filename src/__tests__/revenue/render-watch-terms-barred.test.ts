@@ -145,31 +145,57 @@ describe("terms-verdicts.json gates every active line (terms audit round 2)", ()
     }
   });
 
+  type Entry = { verdict: string; source?: string; note?: string } | undefined;
+  /** The URL research/rendered/<slug>.meta.json names: the plain capture a K4 js terms line re-reads. */
+  const plainUrl = (slug: string) => {
+    const p = `research/rendered/${slug}.meta.json`;
+    return existsSync(p) ? (JSON.parse(readFileSync(p, "utf8")) as { url?: string }).url : undefined;
+  };
+  /**
+   * Whether an active line may stay active, by this file's own reading of the verdicts (not termsGate's code).
+   * Since 30.9 (ruling 16(d) D2(iv)-(v)): NO_TERMS_ROBOTS_OK allows a line too, as scripts/robots-verdict.mjs writes
+   * it (a note opening exhaustive-negative, a source naming the script), and a robots- probe of /robots.txt is
+   * allowed for a NO_TERMS site whose note opens exhaustive-negative. Not for a TERMS_PENDING site: unread terms,
+   * no fetch but the terms page.
+   */
+  const mayBeActive = (e: { url: string; slug: string; js?: boolean }, entry: Entry, metaUrl: (slug: string) => string | undefined = plainUrl) => {
+    const v = entry?.verdict;
+    const probe = e.slug.startsWith("robots-") && new URL(e.url).pathname === "/robots.txt";
+    const exhaustiveNote = /^exhaustive-negative\b/.test(entry?.note ?? "");
+    const exhaustive = v === "NO_TERMS" && exhaustiveNote;
+    const robotsOk = v === "NO_TERMS_ROBOTS_OK" && exhaustiveNote && (entry?.source ?? "").includes("scripts/robots-verdict.mjs");
+    // Since 6.10 (RULING-2026-10-06-robots-and-terms.md 3(2)): a NO_TERMS site whose note opens "shell" (K4) may have
+    // its terms page active as a js line, the once-only render queue-zero-test --js --terms-shell queues — only on the
+    // URL of the slug's own plain capture, never another page of the site under a terms- slug (3(3): "nothing else on
+    // it is fetched").
+    const shellJs =
+      v === "NO_TERMS" && /^shell\b/.test(entry?.note ?? "") && e.slug.startsWith("terms-") && e.js === true && metaUrl(e.slug) === e.url;
+    return (
+      v === "NOT_BARRED" ||
+      v === "CONDITIONAL_MET" ||
+      robotsOk ||
+      (v === "TERMS_PENDING" && e.slug.startsWith("terms-")) ||
+      (probe && exhaustive) ||
+      shellJs
+    );
+  };
+
   it("lets a line be active only on a site whose terms allow it, or as a pending site's own terms page", () => {
-    // Since 30.9 (ruling 16(d) D2(iv)-(v)): NO_TERMS_ROBOTS_OK allows a line too, as scripts/robots-verdict.mjs writes
-    // it (a note opening exhaustive-negative, a source naming the script), and a robots- probe of /robots.txt is
-    // allowed for a NO_TERMS site whose note opens exhaustive-negative. Not for a TERMS_PENDING site: unread terms,
-    // no fetch but the terms page.
-    const bad = entries().filter((e) => {
-      const entry = verdicts[siteOf(new URL(e.url).hostname.toLowerCase())] as { verdict: string; source?: string; note?: string } | undefined;
-      const v = entry?.verdict;
-      const probe = e.slug.startsWith("robots-") && new URL(e.url).pathname === "/robots.txt";
-      const exhaustiveNote = /^exhaustive-negative\b/.test(entry?.note ?? "");
-      const exhaustive = v === "NO_TERMS" && exhaustiveNote;
-      const robotsOk = v === "NO_TERMS_ROBOTS_OK" && exhaustiveNote && (entry?.source ?? "").includes("scripts/robots-verdict.mjs");
-      // Since 6.10 (RULING-2026-10-06-robots-and-terms.md 3(2)): a NO_TERMS site whose note opens "shell" (K4) may have
-      // its terms page active as a js line, the once-only render queue-zero-test --js --terms-shell queues.
-      const shellJs = v === "NO_TERMS" && /^shell\b/.test(entry?.note ?? "") && e.slug.startsWith("terms-") && e.js === true;
-      return !(
-        v === "NOT_BARRED" ||
-        v === "CONDITIONAL_MET" ||
-        robotsOk ||
-        (v === "TERMS_PENDING" && e.slug.startsWith("terms-")) ||
-        (probe && exhaustive) ||
-        shellJs
-      );
-    });
+    const bad = entries().filter((e) => !mayBeActive(e, verdicts[siteOf(new URL(e.url).hostname.toLowerCase())] as Entry));
     expect(bad.map((e) => e.slug)).toEqual([]);
+  });
+
+  it("lets a K4 shell site's js terms- line stay active only on its plain capture's URL (ruling 6.10 row 21 (c) 3(3))", () => {
+    const shell: Entry = { verdict: "NO_TERMS", source: "test", note: "shell: a React shell" };
+    const metaUrl = (slug: string) => (slug === "terms-shell" ? "https://shell.example/legal" : undefined);
+    expect(mayBeActive({ url: "https://shell.example/legal", slug: "terms-shell", js: true }, shell, metaUrl)).toBe(true);
+    // The same line without the flag, another page under the terms page's slug or a new terms- slug, a slug with no
+    // plain capture, and a site whose note names another kind.
+    expect(mayBeActive({ url: "https://shell.example/legal", slug: "terms-shell" }, shell, metaUrl)).toBe(false);
+    expect(mayBeActive({ url: "https://shell.example/rates", slug: "terms-shell", js: true }, shell, metaUrl)).toBe(false);
+    expect(mayBeActive({ url: "https://shell.example/rates", slug: "terms-rates", js: true }, shell, metaUrl)).toBe(false);
+    expect(mayBeActive({ url: "https://shell.example/legal", slug: "terms-legal", js: true }, shell, metaUrl)).toBe(false);
+    expect(mayBeActive({ url: "https://shell.example/legal", slug: "terms-shell", js: true }, { ...shell, note: "refusal-type: 403" }, metaUrl)).toBe(false);
   });
 
   it("holds every NO_TERMS_ROBOTS_OK entry to what scripts/robots-verdict.mjs writes: an exhaustive-negative note, the script in its source", () => {

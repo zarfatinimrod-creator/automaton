@@ -1,9 +1,11 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as render-watch.mjs)
-import { MIN_TERMS_TEXT, TERMS_SHELL_RULING, applyVerdicts, isRobotsOkVerdict, isShellTermsVerdict, jsCapturesOf, loadVerdicts, overrideLines, queueTermsShell, queueZeroTest, siteOf, termsGate, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
+import { MIN_TERMS_TEXT, TERMS_SHELL_RULING, applyVerdicts, isRobotsOkVerdict, isShellTermsVerdict, jsCapturesOf, loadVerdicts, overrideLines, plainCaptureUrl, queueTermsShell, queueZeroTest, siteOf, termsGate, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { classifyCapture, readCapture } from "../../../scripts/capture-check.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
@@ -259,6 +261,11 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     "filed.example": { verdict: "NO_TERMS", note: "filed refusal-type on 30.9 and corrected: a React shell, not a challenge page" },
     "refusal.example": { verdict: "TERMS_PENDING", note: "refusal-type since 30.9: the Terms answered 403" },
     "deferred.example": { verdict: "NO_TERMS", note: "deferred to www.gov.il: its terms defer site use to gov.il's" },
+    "unanswered.example": { verdict: "TERMS_PENDING", note: "unanswered: the terms URL answered 404" },
+    "negative.example": { verdict: "NO_TERMS", note: "exhaustive-negative: a recorded search found no terms anywhere" },
+    "again.example": { verdict: "TERMS_PENDING", note: "terms unread" },
+    "onceshell.example": { verdict: "NO_TERMS", note: "shell: rendered once 7.10.2026, an empty render; the line is retired" },
+    "oncepending.example": { verdict: "TERMS_PENDING", note: "terms unread; shell: rendered once 7.10.2026, a challenge page" },
     "ok.example": { verdict: "NOT_BARRED" },
     "gumroad.com": { verdict: "NO_TERMS", note: "shell: a fixture that says so" },
   };
@@ -269,6 +276,18 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
   capture("terms-filed", "https://filed.example/terms");
   capture("terms-refusal", "https://refusal.example/terms");
   capture("terms-deferred", "https://deferred.example/terms");
+  capture("terms-unanswered", "https://unanswered.example/terms");
+  capture("terms-negative", "https://negative.example/terms");
+  capture("terms-onceshell", "https://onceshell.example/terms");
+  capture("terms-oncepending", "https://oncepending.example/terms");
+  // A second plain capture of a page whose js render was made under another slug, live (terms-first) and frozen.
+  capture("terms-again", "https://again.example/terms");
+  capture("terms-again2", "https://again.example/legal");
+  capture("terms-first", "https://again.example/terms", { extra: { renderedWith: "chromium", networkIdle: true } });
+  capture("terms-second", "https://again.example/legal", {
+    name: "terms-second-2026-10-07",
+    extra: { renderedWith: "chromium", frozen: { on: "2026-10-07", from: "research/rendered/terms-second.meta.json", commit: "abc1234", why: "x" } },
+  });
   capture("terms-ok", "https://ok.example/terms");
   capture("terms-unknown", "https://unknown.example/terms");
   capture("terms-gumroad", "https://gumroad.com/terms");
@@ -286,9 +305,10 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
   capture("terms-norobots", "https://pending.example/terms", { robots: null });
   capture("terms-nohtml", "https://pending.example/terms");
   rmSync(join(dir, "terms-nohtml.html"));
-  capture("terms-rendered", "https://pending.example/terms", { extra: { renderedWith: "chromium", networkIdle: true } });
-  capture("terms-frozenjs", "https://pending.example/terms");
-  capture("terms-frozenjs", "https://pending.example/terms", {
+  capture("terms-rendered", "https://pending.example/terms-rendered", { extra: { renderedWith: "chromium", networkIdle: true } });
+  capture("terms-frozenjs", "https://pending.example/terms-frozenjs");
+  // The slug's frozen js copy is of the URL the slug named before: found by frozen.from, not by the URL.
+  capture("terms-frozenjs", "https://pending.example/terms-frozenjs-old", {
     name: "terms-frozenjs-2026-10-01",
     extra: { renderedWith: "chromium", networkIdle: false, frozen: { on: "2026-10-02", from: "research/rendered/terms-frozenjs.meta.json", commit: "abc1234", why: "x" } },
   });
@@ -342,9 +362,9 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     expect(lines[5]).toMatch(/^# ruling 6\.10 row 21 \(c\).*robots none\) is js-shell by scripts\/capture-check\.mjs; shellsite\.example is NO_TERMS\./);
     expect(lines[6]).toBe("https://shellsite.example/legal\tterms-shellsite\tjs");
     expect(out.frozen).toEqual([]);
-    expect(termsGate("https://shellsite.example/legal", "terms-shellsite", V, { js: true })).toMatchObject({ ok: true, termsShell: true });
+    expect(termsGate("https://shellsite.example/legal", "terms-shellsite", V, { js: true, dir })).toMatchObject({ ok: true, termsShell: true });
     // applyVerdicts reads the line's flag: the js line stays; the fixture's plain pending line stays too.
-    expect(applyVerdicts(out.urls, V).paused).toEqual([]);
+    expect(applyVerdicts(out.urls, V, { dir }).paused).toEqual([]);
     expect(overrideLines(out.urls, 2, 2).lines).toEqual(["https://shellsite.example/legal\tterms-shellsite\tjs"]);
   });
 
@@ -384,13 +404,37 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
   });
 
   it("is once only: refuses a js capture of the slug, live or frozen, and a js line for it, queued or retired", () => {
-    refuses({ slug: "terms-rendered" }, /an earlier js capture of terms-rendered exists \(terms-rendered\.meta\.json: renderedWith set\)/);
-    refuses({ slug: "terms-frozenjs" }, /an earlier js capture of terms-frozenjs exists \(terms-frozenjs-2026-10-01\.meta\.json/);
+    refuses({ url: "https://pending.example/terms-rendered", slug: "terms-rendered" }, /an earlier js capture of terms-rendered or of https:\/\/pending\.example\/terms-rendered exists \(terms-rendered\.meta\.json: renderedWith set\)/);
+    refuses({ url: "https://pending.example/terms-frozenjs", slug: "terms-frozenjs" }, /an earlier js capture of terms-frozenjs or of .* exists \(terms-frozenjs-2026-10-01\.meta\.json/);
+    // By the slug alone, whatever URL the line names: the meta of the slug is its js capture.
+    refuses({ slug: "terms-rendered" }, /an earlier js capture of terms-rendered or of https:\/\/pending\.example\/terms exists \(terms-rendered\.meta\.json/);
     expect(jsCapturesOf("terms-pending", dir)).toEqual([]);
+    expect(jsCapturesOf("terms-pending", dir, { url: "https://pending.example/terms" })).toEqual([]);
     const queued = go({}).urls;
     refuses({ urls: queued }, /urls\.txt line 4 is already a js line for terms-pending \(active or commented out\): the js render is once only/);
     const retired = queued.replace("\nhttps://pending.example/terms\tterms-pending\tjs", "\n# retired (read 7.10) — https://pending.example/terms\tterms-pending\tjs");
     refuses({ urls: retired }, /already a js line for terms-pending/);
+  });
+
+  it("is once only for the page, not just the slug: a js render or js line of the same URL under another slug", () => {
+    const again = { url: "https://again.example/terms", slug: "terms-again", urls: "# a list\n" };
+    // The review's case (tick 54): the first js render, under terms-first, is on disk; a new plain capture of the same
+    // page under a new slug is still js-shell. Live, and frozen (terms-second-2026-10-07 of again.example/legal).
+    refuses(again, /an earlier js capture of terms-again or of https:\/\/again\.example\/terms exists \(terms-first\.meta\.json: renderedWith set\)/);
+    refuses({ ...again, url: "https://again.example/legal", slug: "terms-again2" }, /exists \(terms-second-2026-10-07\.meta\.json/);
+    expect(jsCapturesOf("terms-again", dir, { url: "https://again.example/terms" })).toEqual(["terms-first.meta.json"]);
+    expect(jsCapturesOf("terms-again", dir)).toEqual([]);
+    // A js line of the same page under another slug, retired or active (the URL compared as parsed: the host's case).
+    const retired = "# a list\n# retired (7.10: rendered once, empty) — https://pending.example/terms\tterms-old\tjs\n";
+    refuses({ urls: retired }, /urls\.txt line 2 is already a js line for https:\/\/pending\.example\/terms \(as terms-old\) \(active or commented out\)/);
+    refuses({ urls: "# a list\nhttps://PENDING.example/terms\tterms-old\tjs\n" }, /line 2 is already a js line for https:\/\/PENDING\.example\/terms \(as terms-old\)/);
+    // A plain line of the page under another slug is the twin check's, not this one's; a js line of another page is neither.
+    expect(go({ urls: "# a list\nhttps://pending.example/other\tterms-other\tjs\n" }).line).toBe("https://pending.example/terms\tterms-pending\tjs");
+  });
+
+  it("is once only by the note: a site whose note records \"shell: rendered once\" is refused, NO_TERMS or TERMS_PENDING", () => {
+    refuses({ url: "https://onceshell.example/terms", slug: "terms-onceshell" }, /onceshell\.example's note records the once-only render \("shell: rendered once \.\.\."\): no second attempt in any mode/);
+    refuses({ url: "https://oncepending.example/terms", slug: "terms-oncepending" }, /oncepending\.example's note records the once-only render/);
   });
 
   it("refuses a site whose terms are read or barred, one with no verdict, and a note of another kind", () => {
@@ -398,6 +442,8 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     refuses({ url: "https://unknown.example/terms", slug: "terms-unknown" }, /unknown\.example is without a verdict/);
     refuses({ url: "https://refusal.example/terms", slug: "terms-refusal" }, /refusal\.example's note opens "refusal-type", another kind than K4 shell/);
     refuses({ url: "https://deferred.example/terms", slug: "terms-deferred" }, /note opens "deferred"/);
+    refuses({ url: "https://unanswered.example/terms", slug: "terms-unanswered" }, /unanswered\.example's note opens "unanswered", another kind than K4 shell/);
+    refuses({ url: "https://negative.example/terms", slug: "terms-negative" }, /negative\.example's note opens "exhaustive-negative", another kind than K4 shell/);
     refuses({ url: "https://filed.example/terms", slug: "terms-filed" }, /filed\.example is NO_TERMS, but its note does not open with the kind word "shell"/);
     refuses({ url: "https://gumroad.com/terms", slug: "terms-gumroad" }, /the terms gate refuses https:\/\/gumroad\.com\/terms: gumroad\.com is in TERMS_BARRED/);
   });
@@ -407,34 +453,128 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
   });
 });
 
+/**
+ * The CLI of --terms-shell, run as a process on a copy: the script, the two it imports, a verdicts file and a
+ * research/rendered with urls.txt and one plain shell capture, in a temp dir (the script reads and writes the repository
+ * it sits in, so the real urls.txt is never touched). What must hold: no --js, no line (exit 1, urls.txt byte for byte);
+ * --terms beside it, refused; --dry-run prints the line and writes nothing; a real run writes it, and a second is refused.
+ */
+describe("queue-zero-test --terms-shell — the command line (ruling 6.10 row 21 (c))", () => {
+  const SCRIPTS = join(resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", ".."), "scripts");
+  const root = mkdtempSync(join(tmpdir(), "terms-shell-cli-"));
+  afterAll(() => rmSync(root, { recursive: true, force: true }));
+  mkdirSync(join(root, "scripts"));
+  mkdirSync(join(root, "research", "channel-loop"), { recursive: true });
+  mkdirSync(join(root, "research", "rendered"), { recursive: true });
+  for (const f of ["queue-zero-test.mjs", "capture-check.mjs", "render-watch.mjs"]) copyFileSync(join(SCRIPTS, f), join(root, "scripts", f));
+  writeFileSync(join(root, "research", "channel-loop", "terms-verdicts.json"), `${JSON.stringify({ sites: { "pending.example": { verdict: "TERMS_PENDING", source: "test", note: "terms unread" } } }, null, 2)}\n`);
+  const html = '<!doctype html><html><head><title>Terms</title><script src="/static/app.js"></script></head><body><div id="root"></div></body></html>';
+  const rendered = join(root, "research", "rendered");
+  writeFileSync(join(rendered, "terms-pending.html"), html);
+  writeFileSync(join(rendered, "terms-pending.txt"), "Terms\n");
+  writeFileSync(
+    join(rendered, "terms-pending.meta.json"),
+    `${JSON.stringify({ url: "https://pending.example/terms", slug: "terms-pending", fetchedAt: "2026-09-30T13:40:17.304Z", status: 200, contentType: "text/html", byteLength: html.length, sha256: "a".repeat(64), error: null, bodyPath: "research/rendered/terms-pending.html", textPath: "research/rendered/terms-pending.txt", robots: "allowed" }, null, 2)}\n`,
+  );
+  const URLS_FILE = join(rendered, "urls.txt");
+  const LIST = "# a list\n# research/channel-loop/ZERO-TESTS.md row 1 — pending.example's terms (5.10.2026).\nhttps://pending.example/terms\tterms-pending\n";
+  writeFileSync(URLS_FILE, LIST);
+  const cli = (...args: string[]) => {
+    const r = spawnSync(process.execPath, [join(root, "scripts", "queue-zero-test.mjs"), "--terms-shell", "--url", "https://pending.example/terms", "--slug", "terms-pending", "--date", "6.10.2026", ...args], { encoding: "utf8", timeout: 60_000 });
+    return { code: r.status, out: r.stdout, err: r.stderr };
+  };
+  const JS_LINE = "https://pending.example/terms\tterms-pending\tjs";
+
+  it("refuses --terms-shell without --js, and beside --terms, writing nothing", () => {
+    const noJs = cli();
+    expect(noJs.code, noJs.err).toBe(1);
+    expect(noJs.err).toMatch(/queue-zero-test: --terms-shell queues a js line: give --js with it/);
+    expect(noJs.out).toBe("");
+    const both = cli("--js", "--terms", "terms-other");
+    expect(both.code, both.err).toBe(1);
+    expect(both.err).toMatch(/--terms-shell and --terms are two routes/);
+    expect(readFileSync(URLS_FILE, "utf8")).toBe(LIST);
+  });
+
+  it("--dry-run prints the comment and the line and writes nothing; a real run writes them; a second is refused", () => {
+    const dry = cli("--js", "--dry-run");
+    expect(dry.code, dry.err).toBe(0);
+    expect(dry.out).toMatch(/^would queue terms-pending \(js, once only\): https:\/\/pending\.example\/terms\n# ruling 6\.10 row 21 \(c\), once-only js render of a shell terms page /);
+    expect(dry.out.trimEnd().endsWith(JS_LINE)).toBe(true);
+    expect(dry.err).toMatch(/the plain shell is not frozen yet/);
+    expect(readFileSync(URLS_FILE, "utf8")).toBe(LIST);
+
+    const real = cli("--js");
+    expect(real.code, real.err).toBe(0);
+    expect(real.out).toMatch(/^queued terms-pending \(js, once only\)/);
+    const after = readFileSync(URLS_FILE, "utf8");
+    expect(after.split("\n").slice(2, 4)).toEqual([real.out.split("\n")[1], JS_LINE]);
+    expect(after).not.toContain("https://pending.example/terms\tterms-pending\n");
+
+    const again = cli("--js");
+    expect(again.code, again.err).toBe(1);
+    expect(again.err).toMatch(/already a js line for terms-pending/);
+    expect(readFileSync(URLS_FILE, "utf8")).toBe(after);
+  });
+});
+
 describe("termsGate and the js flag (ruling 6.10 row 21 (c) 3(2))", () => {
   const V = {
     "shellsite.example": { verdict: "NO_TERMS", note: "shell: a React shell" },
     "filed.example": { verdict: "NO_TERMS", note: "filed refusal-type and corrected" },
     "pending.example": { verdict: "TERMS_PENDING", note: "terms unread" },
   };
+  // The plain captures the gate reads the terms page's URL from: only their metas matter here.
+  const dir = mkdtempSync(join(tmpdir(), "terms-gate-js-"));
+  afterAll(() => rmSync(dir, { recursive: true, force: true }));
+  const meta = (slug: string, body: string) => writeFileSync(join(dir, `${slug}.meta.json`), body);
+  meta("terms-shellsite", JSON.stringify({ url: "https://shellsite.example/legal", status: 200, robots: "allowed" }));
+  meta("terms-filed", JSON.stringify({ url: "https://filed.example/terms", status: 200, robots: "allowed" }));
+  meta("terms-nourl", JSON.stringify({ status: 200 }));
+  meta("terms-broken", "{ not json");
 
   it("passes a K4 shell site's js terms- line, and nothing else of the site", () => {
     expect(isShellTermsVerdict(V["shellsite.example"])).toBe(true);
     expect(isShellTermsVerdict(V["filed.example"])).toBe(false);
     expect(isShellTermsVerdict({ verdict: "TERMS_PENDING", note: "shell: x" })).toBe(false);
-    expect(termsGate("https://shellsite.example/legal", "terms-shellsite", V, { js: true })).toMatchObject({ ok: true, verdict: "NO_TERMS", termsShell: true });
-    const plain = termsGate("https://shellsite.example/legal", "terms-shellsite", V);
+    expect(termsGate("https://shellsite.example/legal", "terms-shellsite", V, { js: true, dir })).toMatchObject({ ok: true, verdict: "NO_TERMS", termsShell: true });
+    const plain = termsGate("https://shellsite.example/legal", "terms-shellsite", V, { dir });
     expect(plain).toMatchObject({ ok: false, verdict: "NO_TERMS" });
     expect(plain.why).toMatch(/only its terms page \(a terms- slug\), once, as a js line queued by --js --terms-shell/);
-    expect(termsGate("https://shellsite.example/pricing", "shellsite-pricing", V, { js: true }).ok).toBe(false);
-    expect(termsGate("https://filed.example/terms", "terms-filed", V, { js: true }).ok).toBe(false);
+    expect(termsGate("https://shellsite.example/pricing", "shellsite-pricing", V, { js: true, dir }).ok).toBe(false);
+    expect(termsGate("https://filed.example/terms", "terms-filed", V, { js: true, dir }).ok).toBe(false);
+  });
+
+  it("passes the js terms- line only on the URL of the slug's own plain capture: another page of the site stays unread (3(3))", () => {
+    // The review's case (tick 54): the registered-mail rate under a terms- slug of its own, with no plain capture.
+    const rates = termsGate("https://shellsite.example/rates/registered-mail", "terms-rates", V, { js: true, dir });
+    expect(rates).toMatchObject({ ok: false, site: "shellsite.example", verdict: "NO_TERMS" });
+    expect(rates.termsShell).toBeUndefined();
+    expect(rates.why).toMatch(/a js terms- line passes only on the URL of its own plain capture.*research\/rendered\/terms-rates\.meta\.json is missing or names no URL, not https:\/\/shellsite\.example\/rates\/registered-mail\); nothing else on the site is fetched/);
+    // Another page under the terms page's own slug, and a URL that differs from the capture's only by a query.
+    expect(termsGate("https://shellsite.example/rates", "terms-shellsite", V, { js: true, dir }).why).toMatch(/terms-shellsite\.meta\.json is of https:\/\/shellsite\.example\/legal, not https:\/\/shellsite\.example\/rates\)/);
+    expect(termsGate("https://shellsite.example/legal?x=1", "terms-shellsite", V, { js: true, dir }).ok).toBe(false);
+    // A meta with no URL, one that is not JSON, and a slug that is not one: refused, never thrown.
+    expect(termsGate("https://shellsite.example/legal", "terms-nourl", V, { js: true, dir }).ok).toBe(false);
+    expect(termsGate("https://shellsite.example/legal", "terms-broken", V, { js: true, dir }).ok).toBe(false);
+    expect(termsGate("https://shellsite.example/legal", "terms-x/../terms-shellsite", V, { js: true, dir }).ok).toBe(false);
+    expect(plainCaptureUrl("terms-x/../terms-shellsite", dir)).toBeNull();
+    expect(plainCaptureUrl("terms-shellsite", dir)).toBe("https://shellsite.example/legal");
+    expect([plainCaptureUrl("terms-nourl", dir), plainCaptureUrl("terms-broken", dir), plainCaptureUrl("terms-missing", dir)]).toEqual([null, null, null]);
+    // applyVerdicts pauses such a line, and keeps the real one.
+    const list = "https://shellsite.example/legal\tterms-shellsite\tjs\nhttps://shellsite.example/rates/registered-mail\tterms-rates\tjs\n";
+    expect(applyVerdicts(list, V, { dir }).paused).toEqual(["terms-rates"]);
   });
 
   it("leaves a TERMS_PENDING site's terms line passing with or without the flag, as before", () => {
-    expect(termsGate("https://pending.example/terms", "terms-pending", V).ok).toBe(true);
-    expect(termsGate("https://pending.example/terms", "terms-pending", V, { js: true }).ok).toBe(true);
-    expect(termsGate("https://pending.example/pricing", "pending-pricing", V, { js: true }).ok).toBe(false);
+    expect(termsGate("https://pending.example/terms", "terms-pending", V, { dir }).ok).toBe(true);
+    expect(termsGate("https://pending.example/terms", "terms-pending", V, { js: true, dir }).ok).toBe(true);
+    expect(termsGate("https://pending.example/pricing", "pending-pricing", V, { js: true, dir }).ok).toBe(false);
   });
 
   it("is read from each line's own flag by applyVerdicts", () => {
     const list = "https://shellsite.example/legal\tterms-shellsite\tjs\nhttps://shellsite.example/terms\tterms-shellsite-2\n";
-    expect(applyVerdicts(list, V).paused).toEqual(["terms-shellsite-2"]);
+    expect(applyVerdicts(list, V, { dir }).paused).toEqual(["terms-shellsite-2"]);
   });
 });
 

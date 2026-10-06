@@ -40,7 +40,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
-import { URLS, VERDICTS, termsGate } from "./queue-zero-test.mjs";
+import { RENDERED, URLS, VERDICTS, termsGate } from "./queue-zero-test.mjs";
 import { termsBarred } from "./render-watch.mjs";
 import { PAUSED_LINE } from "./robots-verdict.mjs";
 
@@ -129,10 +129,11 @@ export function todayNote(now = new Date()) {
 }
 
 /**
- * The new urls.txt text and what changed. Pure: `verdicts` is the `sites` object of terms-verdicts.json.
+ * The new urls.txt text and what changed. Pure but for termsGate's read of a K4 js terms- line's plain capture in
+ * `dir` (research/rendered by default): `verdicts` is the `sites` object of terms-verdicts.json.
  * Returns { text, changes, unresolved, kept, unpause }; line numbers are 1-based.
  */
-export function syncPauseComments(urls, verdicts, { today, keep = KEEP_AS_IS } = {}) {
+export function syncPauseComments(urls, verdicts, { today, keep = KEEP_AS_IS, dir = RENDERED } = {}) {
   if (!new RegExp(`^${DATE}$`).test(String(today ?? ""))) throw new Error(`--today must be D.M.YYYY, got ${today}`);
   const lines = urls.split("\n");
   const changes = [];
@@ -168,7 +169,7 @@ export function syncPauseComments(urls, verdicts, { today, keep = KEEP_AS_IS } =
     const t = TERMS_PAUSED.exec(lines[i]);
     if (t) {
       const [, url, slug, flag] = t;
-      const gate = termsGate(url, slug, verdicts, { js: flag === "js" });
+      const gate = termsGate(url, slug, verdicts, { js: flag === "js", dir });
       if (gate.ok && !keep.has(gate.site)) unpause.push({ line: i + 1, site: gate.site, verdict: gate.verdict, slug, url });
     }
   }

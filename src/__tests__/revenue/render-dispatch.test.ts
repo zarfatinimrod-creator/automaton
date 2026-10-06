@@ -148,7 +148,7 @@ let made = 0;
  * REF holding the scripts, the fixture terms verdicts and research/rendered/urls.txt, and an origin REF one commit
  * ahead of the checkout with the dispatched slugs' captures (the commit render-watch.yml would push). A stub gh.
  */
-function world(opts: { short?: boolean; raw?: boolean; forms?: boolean; oldCapture?: boolean } = {}) {
+function world(opts: { short?: boolean; raw?: boolean; forms?: boolean; oldCapture?: boolean; plainShell?: boolean } = {}) {
   made += 1;
   const base = join(scratch, `case-${made}`);
   const bare = join(base, "remote", "fixture-owner", "fixture-repo.git");
@@ -170,6 +170,9 @@ function world(opts: { short?: boolean; raw?: boolean; forms?: boolean; oldCaptu
   writeFileSync(join(seed, "notes.md"), "a tracked file\n");
   // A capture from an earlier run that the "workflow's" commit below does not change.
   if (opts.oldCapture) capture(join(seed, "research", "rendered"), "prize-open-old", "https://open.example/old", "An older page.");
+  // The plain capture of shell.example's terms page, which its once-only js line re-reads (ruling 6.10 row 21 (c) 3(2)):
+  // termsGate passes that line only on the URL this meta names.
+  if (opts.plainShell) capture(join(seed, "research", "rendered"), "terms-shell", "https://shell.example/legal", "", 2);
   git(seed, "add", "-A");
   git(seed, ...who, "commit", "-q", "-m", "scripts");
   git(seed, "push", "-q", bare, `HEAD:refs/heads/${REF}`);
@@ -340,10 +343,17 @@ describe("render-dispatch: refused before any gh call", () => {
   });
 
   it("a K4 shell site's terms line without the js flag (its one render is a js render), and its other pages", () => {
-    const w = world();
+    const w = world({ plainShell: true });
     const r = refused(w, `https://shell.example/legal${T}terms-shell\n`, /terms gate refuses/);
     expect(r.err).toMatch(/line 1: shell\.example: shell\.example is NO_TERMS, shell: only its terms page \(a terms- slug\), once, as a js line queued by --js --terms-shell/);
     refused(w, `https://shell.example/pricing${T}shell-pricing${T}js\n`, /terms gate refuses/);
+  });
+
+  it("a js terms- line on another page of a K4 shell site: only its plain capture's URL passes (3(3))", () => {
+    const w = world({ plainShell: true });
+    const r = refused(w, `https://shell.example/rates/registered-mail${T}terms-rates${T}js\n`, /terms gate refuses/);
+    expect(r.err).toMatch(/line 1: shell\.example: shell\.example is NO_TERMS, shell: a js terms- line passes only on the URL of its own plain capture/);
+    refused(w, `https://shell.example/rates${T}terms-shell${T}js\n`, /terms-shell\.meta\.json is of https:\/\/shell\.example\/legal, not https:\/\/shell\.example\/rates/);
   });
 
   it("a line with no slug, and a usage error (exit 2)", () => {
@@ -358,7 +368,7 @@ describe("render-dispatch: refused before any gh call", () => {
 
 describe("render-dispatch: a line queued by queue-zero-test --js --terms-shell (ruling 6.10 row 21 (c))", () => {
   it("passes step 1 — render-watch's parser and termsGate with the line's js flag — and is dispatched as it is", () => {
-    const w = world();
+    const w = world({ plainShell: true });
     // The two lines the route writes: a NO_TERMS shell site's terms page and a TERMS_PENDING site's, each with js.
     const lines = [
       "# ruling 6.10 row 21 (c), once-only js render of a shell terms page (a fixture's comment)",
