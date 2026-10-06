@@ -18,10 +18,10 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `remask-captures.json` | `scripts/remask-captures.mjs` (+ `freeze-capture.mjs`'s `maskedMeta`; a body a trimmed meta says left, tick 56) | `remask-captures.test.ts` (+ `trim-capture.test.ts` for T56-R1) | ticks 49, 50, 56 |
 | `remask-run.json` | `scripts/remask-run.sh` | `remask-run.test.ts` | tick 53 |
 | `render-dispatch.json` | `scripts/render-dispatch.sh` | `render-dispatch.test.ts` | ticks 52, 54 |
-| `render-watch.json` | `scripts/render-watch.mjs` (the address mask; the User-Agent and `UA_CONTACT`, tick 54; kaggle.com's `TERMS_BARRED` entry, tick 54 shell-terms review; the copying-barred artifact route, tick 56) | `render-watch.test.ts` (+ `render-watch-robots.test.ts` for the T54-U entries, `render-watch-terms-barred.test.ts` and `prize-terms-audit.test.ts` for the T54-TB entries) | ticks 48, 50, 54, 56 |
+| `render-watch.json` | `scripts/render-watch.mjs` (the address mask; the User-Agent and `UA_CONTACT`, tick 54; kaggle.com's `TERMS_BARRED` entry, tick 54 shell-terms review; the copying-barred artifact route, tick 56, and its review fixes: a failed fetch keeps the trimmed block, a redirect into a copying-barred site stores nothing) | `render-watch.test.ts` (+ `render-watch-robots.test.ts` for the T54-U entries, `render-watch-terms-barred.test.ts` and `prize-terms-audit.test.ts` for the T54-TB entries, `render-watch-js.test.ts` and `trim-capture.test.ts` for some T56-RW entries) | ticks 48, 50, 54, 56 |
 | `robots-verdict.json` | `scripts/robots-verdict.mjs` (`judgeSite` keeps every field it does not set; `serializeVerdicts`' one field order, copying after note) | `robots-verdict.test.ts` | tick 54 |
 | `sim-tree.json` | `scripts/sim-tree.sh` | `sim-tree.test.ts` | ticks 51, 52 |
-| `trim-capture.json` | `scripts/trim-capture.mjs` (ruling 6.10 row 21 (d), decision 4) | `trim-capture.test.ts` | tick 56 |
+| `trim-capture.json` | `scripts/trim-capture.mjs` (ruling 6.10 row 21 (d), decision 4; the review fixes: a capture refused alone, the route's remedy, kept bytes, `wide`, the guard's seam) | `trim-capture.test.ts` | tick 56 |
 
 ## An entry
 
@@ -70,9 +70,9 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
   | `queue-zero-test.json` | 32 | 194 (tick 54 review fixer, in sim-tree.sh, alone; 169 with the first 31; the builder's 16: 108, and 133 beside `render-watch.json`'s and `render-dispatch.json`'s new entries) |
   | `address-kinds.json` | 22 | 198 (tick 53 fixer, beside the whole revenue suite; the builder's 17 entries: 156) |
   | `remask-run.json` | 23 | 210 (tick 53 fixer; the builder's 14 entries: 87, after a first run of 94 s left one survivor) |
-  | `trim-capture.json` | 19 | 217 (tick 56 builder, in sim-tree.sh, beside `render-watch.json`; the test file takes about 8 s a run) |
-  | `render-watch.json` | 80 | 244 (tick 56 builder, in sim-tree.sh, beside `trim-capture.json` and then `freeze-capture.json`); 162 with the first 67 (tick 54 shell-terms review fixer, in sim-tree.sh, alone); 117 with the first 53 (tick 54's 9 UA entries alone: 52, in sim-tree.sh beside the next two; the two address-mask entries T54-M1, T54-M2 came from the base) |
-  | `freeze-capture.json` | 28 | 349 (tick 56 builder, in sim-tree.sh, beside `render-watch.json`, `remask-captures.json` and `capture-check.json`); 171 with the first 23 |
+  | `render-watch.json` | 90 | 247 (tick 56 review fixer, in sim-tree.sh, beside `freeze-capture.json`); 244 with the first 80 (tick 56 builder, in sim-tree.sh, beside `trim-capture.json` and then `freeze-capture.json`); 162 with the first 67 (tick 54 shell-terms review fixer, in sim-tree.sh, alone); 117 with the first 53 (tick 54's 9 UA entries alone: 52, in sim-tree.sh beside the next two; the two address-mask entries T54-M1, T54-M2 came from the base) |
+  | `trim-capture.json` | 30 | 273 (tick 56 review fixer, in sim-tree.sh, beside the sim-tree proof); 217 with the first 19 (tick 56 builder, in sim-tree.sh, beside `render-watch.json`; the test file takes about 8 s a run) |
+  | `freeze-capture.json` | 29 | 289 (tick 56 review fixer, in sim-tree.sh, beside `render-watch.json`); 349 with the first 28 (tick 56 builder, in sim-tree.sh, beside `render-watch.json`, `remask-captures.json` and `capture-check.json`); 171 with the first 23 |
   | `mutate.json` | 11 | 393 (243-249 with the first 6) |
   | `prize-apply-reading.json` | 40 | 580 (208 with the first 21) |
   | `render-dispatch.json` | 26 | 591 (184 with the first 14); 21 entries since tick 53, its five address-report entries moved to `address-kinds.json`; 22 since tick 54 (T54-D1 alone: 109) |
