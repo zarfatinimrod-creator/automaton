@@ -25,6 +25,8 @@ import {
   termsGate,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/queue-zero-test.mjs";
+// @ts-expect-error — plain ESM script, no type declarations by design
+import { classifyCapture, readCapture } from "../../../scripts/capture-check.mjs";
 import {
   PAUSED_LINE,
   judgeSite,
@@ -72,6 +74,14 @@ import {
  * gives the state between the two (robots verdicts set, terms unread). Ruling 6.10 row 21's fold 2 rode along: every
  * entry has a "copying" field and the NO_TERMS/TERMS_PENDING notes open with their kind word. The "tick 54: the terms
  * read on 6.10" block holds that state.
+ *
+ * Tick 54 (6.10.2026), later still: kaggle.com's terms page, a shell to the plain GET (ruling 6.10 row 21 decision 3, K4),
+ * was rendered once in js mode (queued c058238, rendered a3cb438) and read on its frozen copy
+ * (terms-kaggle-2026-10-06-a3cb438): BARRED, and TERMS_BARRED gains kaggle.com. Israel Post's shell, rendered the same
+ * way, answered 403 (refusal-type). Both js lines are retired with their js flag kept. kaggle.com's source now ends in
+ * TERMS_BEFORE and the tick-45 source like the other read entries, so tick45() and termsReadBefore() read it back as
+ * before; jsReadBefore() gives the state between the terms read and the js render. The "tick 54: the shell terms pages
+ * rendered once" block holds that state.
  */
 const VERDICTS = "research/channel-loop/terms-verdicts.json";
 const URLS = "research/rendered/urls.txt";
@@ -293,8 +303,10 @@ const RULINGS_SECTION = [
  * which on 5.10 held all 21 probed sites, for it. The terms read of 6.10 (tick 54) moved the third group's nine sites:
  * virtualembryo.ai to "Now", eurocontrol.int to the fifth (its probe queued, not yet fetched), and the five the reading
  * shut to the sixth (BARRED, CONDITIONAL_UNMET or refusal-type, checked 6.10); the seventh keeps the sites graded before.
- * The counts test reads the groups three times, with the verdicts as they are, as termsReadBefore() gives them (after the
- * robots verdicts, before the terms read) and as tick45() gives them, and the note states all three.
+ * Later on 6.10 kaggle.com's shell was rendered once in js mode and read (BARRED), so its 17 URLs moved from the third
+ * group to the sixth, whose heading now names the js render too. The counts test reads the groups four times, with the
+ * verdicts as they are, as jsReadBefore() gives them (after the terms read, before the js render), as termsReadBefore()
+ * gives them (after the robots verdicts, before the terms read) and as tick45() gives them, and the note states all four.
  */
 type Probe = "captured" | "queued" | null;
 const RENDER_GROUPS: { opens: string; holds: (site: string, e: Entry, probe: Probe) => boolean }[] = [
@@ -304,7 +316,7 @@ const RENDER_GROUPS: { opens: string; holds: (site: string, e: Entry, probe: Pro
   { opens: "- **Probed 6.10, NO_TERMS_ROBOTS_OK not set ", holds: (_, e, probe) => isExhaustiveNegative(e) && probe === "captured" },
   { opens: "- **Robots probe queued for the next weekly run ", holds: (_, e, probe) => isExhaustiveNegative(e) && probe === "queued" },
   {
-    opens: "- **Shut by the 6.10 terms fetch ",
+    opens: "- **Shut by the 6.10 terms fetch and the once-only js render ",
     holds: (_, e) =>
       e.checked === TERMS_CHECKED &&
       (e.verdict === "BARRED" || e.verdict === "CONDITIONAL_UNMET" || (e.verdict === "NO_TERMS" && /^refusal-type\b/.test(e.note ?? ""))),
@@ -393,8 +405,9 @@ const tick45 = (v: Record<string, Entry>): Record<string, Entry> =>
   );
 /**
  * Tick 54 (6.10.2026): the nine sites whose terms page the 6.10 render captured, and their verdicts after the reading.
- * All nine were TERMS_PENDING on 5.10. Seven changed verdict, and their sources end in TERMS_BEFORE and the tick-45 source;
- * kaggle.com and adaptionlabs.ai kept theirs (a shell is no reading) and only their note and checked date changed.
+ * All nine were TERMS_PENDING on 5.10. Seven changed verdict on the plain fetch, and kaggle.com later the same day on the
+ * once-only js render of its shell (the "shell terms pages" block); their sources end in TERMS_BEFORE and the tick-45
+ * source. adaptionlabs.ai kept its verdict (a shell is no reading), and only its note and checked date changed.
  */
 const TERMS_READ: Record<string, string> = {
   "devpost.com": "BARRED",
@@ -404,30 +417,36 @@ const TERMS_READ: Record<string, string> = {
   "virtualembryo.ai": "NOT_BARRED",
   "eurocontrol.int": "NO_TERMS",
   "opensky-network.org": "NO_TERMS",
-  "kaggle.com": "TERMS_PENDING",
+  "kaggle.com": "BARRED",
   "adaptionlabs.ai": "TERMS_PENDING",
 };
 const TERMS_CHECKED = "2026-10-06";
 /** What the tick-54 fold puts between a read entry's new source and the TERMS_PENDING source it replaced. */
 const TERMS_BEFORE = "; TERMS_PENDING before: ";
 /**
- * The nine TERMS_PENDING sources tick 45 wrote, which the seven changed sources keep after TERMS_BEFORE and the two shells
- * keep whole: the sha256 of one "<site>\t<source>" line per site, in TERMS_READ order, joined by "\n". Checked at tick 54
+ * The nine TERMS_PENDING sources tick 45 wrote, which the eight changed sources keep after TERMS_BEFORE and adaptionlabs.ai's
+ * shell keeps whole: the sha256 of one "<site>\t<source>" line per site, in TERMS_READ order, joined by "\n". Checked at tick 54
  * against terms-verdicts.json at 227b3cb, the file before the fold.
  */
 const TICK45_TERMS_SOURCES_SHA256 = "b70ca8c699288f7151bd537d1500698f305a8edb9b6da5efcb7ea3c0eed755fa";
 /**
  * The verdicts as they stood after the robots verdicts of 6.10 and before the terms read: each of the nine TERMS_READ entries
- * read back to the TERMS_PENDING entry tick 45 left (its source after TERMS_BEFORE, or its whole source for the two shells,
+ * read back to the TERMS_PENDING entry tick 45 left (its source after TERMS_BEFORE, or its whole source for adaptionlabs.ai,
  * checked 2026-10-05 as every audited entry was at 227b3cb, a constant); every other entry as it is.
  */
 /**
  * Each of the nine sites' terms- line in urls.txt after the 6.10 reading: "active", or the comment that now precedes
  * " — <url>\t<slug>" (queue-zero-test.mjs --apply-verdicts paused them; the reason was then reworded by hand where
  * the verdict came from reading the terms, in a form urls-pause-comments.mjs keeps; opensky's took the Knesset line's form).
+ * kaggle.com's is the once-only js line (js: the line ends "\tjs"), retired after its render in the form the main thread
+ * gave (no script writes a "# retired" line), with the js flag kept so the route's once-only check still sees it.
  */
-const TERMS_LINES: Record<string, { slug: string; state: string }> = {
-  "kaggle.com": { slug: "terms-kaggle", state: "active" },
+const TERMS_LINES: Record<string, { slug: string; state: string; js?: boolean }> = {
+  "kaggle.com": {
+    slug: "terms-kaggle",
+    state: "# retired (6.10.2026: rendered once in js mode under ruling 6.10 row 21 (c) 3(2); read, kaggle.com BARRED — see TERMS_BARRED in scripts/render-watch.mjs)",
+    js: true,
+  },
   "devpost.com": { slug: "terms-devpost", state: "# paused (terms audit): devpost.com — see TERMS_BARRED in scripts/render-watch.mjs" },
   "grand-challenge.org": {
     slug: "terms-grand-challenge",
@@ -456,6 +475,15 @@ const termsReadBefore = (v: Record<string, Entry>): Record<string, Entry> =>
       return [site, { verdict: "TERMS_PENDING", source: at < 0 ? e.source : e.source.slice(at + TERMS_BEFORE.length), checked: "2026-10-05" }];
     }),
   );
+/**
+ * The verdicts as they stood after the terms read of 6.10 and before kaggle.com's once-only js render: kaggle.com
+ * TERMS_PENDING (its tick-45 source, read back after TERMS_BEFORE; checked 2026-10-06, the day its note recorded the
+ * plain shell), every other entry as it is.
+ */
+const jsReadBefore = (v: Record<string, Entry>): Record<string, Entry> => ({
+  ...v,
+  "kaggle.com": { ...termsReadBefore(v)["kaggle.com"], checked: TERMS_CHECKED },
+});
 type Cited =
   | { kind: "file"; path: string; slug: string; url: string; fetchedAt: string; sha12: string; n: number }
   | { kind: "absent"; status: number; path: string; slug: string; url: string; fetchedAt: string; n: number };
@@ -566,7 +594,7 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
         expect(v[site].source.endsWith(`${BEFORE}${then[site].source}`), site).toBe(true);
       } else if (Object.hasOwn(TERMS_READ, site)) {
         // 6.10 (tick 54): one of the nine terms pages read or tried; its source keeps tick 45's after TERMS_BEFORE, or
-        // whole for the two shells ("tick 54: the terms read on 6.10" below holds the rest).
+        // whole for adaptionlabs.ai's shell ("tick 54: the terms read on 6.10" and "the shell terms pages" below hold the rest).
         expect(verdict, site).toBe("TERMS_PENDING");
         expect(v[site].verdict, site).toBe(TERMS_READ[site]);
         expect(v[site].checked, site).toBe(TERMS_CHECKED);
@@ -693,7 +721,7 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     const text = readFileSync(URLS, "utf8").split("\n");
     for (const [site, verdict] of Object.entries(AUDITED)) {
       if (verdict !== "TERMS_PENDING") continue;
-      const { slug, state } = TERMS_LINES[site];
+      const { slug, state, js } = TERMS_LINES[site];
       const url = then[site].source.slice(0, then[site].source.indexOf(" ("));
       expect(then[site].source.startsWith(`${url} (`), site).toBe(true);
       // Tick 45 queued it; 5.10's verdicts pass it, except where TERMS_BARRED, which is code and not a verdict, now names
@@ -703,10 +731,13 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       else expect(gateThen.ok, site).toBe(true);
       const mine = lines.filter((e) => siteOfUrl(e.url) === site);
       // Since 6.10 (ruling row 21 (c) 3(2)) a TERMS_PENDING site whose note opens "shell:" may hold its terms line as the
-      // once-only js line queue-zero-test --js --terms-shell writes (kaggle.com, queued in tick 54); any other site holds
-      // the plain line. The one line of the site that names that URL, active or commented out.
+      // once-only js line queue-zero-test --js --terms-shell writes, active until the render; after it the line is
+      // retired with the flag kept (TERMS_LINES' js: kaggle.com, queued and rendered in tick 54). No audited site holds an
+      // active js line now, but the rule stays. Any other site holds the plain line. The one line of the site that names
+      // that URL, active or commented out.
       const shell = v[site].note.startsWith("shell:") && text.some((l) => l === `${url}\t${slug}\tjs`);
-      const named = text.filter((l) => l.endsWith(shell ? `${url}\t${slug}\tjs` : `${url}\t${slug}`));
+      const flag = shell || js ? "\tjs" : "";
+      const named = text.filter((l) => l.endsWith(`${url}\t${slug}${flag}`));
       expect(named, site).toHaveLength(1);
       if (state === "active") {
         expect(mine.map((e) => [e.url, e.slug]), site).toEqual([[url, slug]]);
@@ -717,9 +748,13 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
         const probe = site === EURO_PROBE.site ? [[EURO_PROBE.url, EURO_PROBE.slug]] : [];
         expect(mine.map((e) => [e.url, e.slug]), site).toEqual(probe);
         expect(termsGate(url, slug, v).ok, site).toBe(false);
-        expect(named[0], site).toBe(`${state} — ${url}\t${slug}`);
+        expect(named[0], site).toBe(`${state} — ${url}\t${slug}${flag}`);
       }
     }
+    // The js-form acceptance above is for a shell-kind TERMS_PENDING site; none of the audited sites is one with an active
+    // js line any more (kaggle.com's was rendered and retired).
+    const activeJs = (parseUrlList(text.join("\n")) as { url: string; js?: boolean }[]).filter((e) => e.js && Object.hasOwn(AUDITED, siteOfUrl(e.url)));
+    expect(activeJs).toEqual([]);
   });
 
   it("queued grand-challenge.org's derived terms URL under ruling R2's exception, which urls.txt's header records after its one rule", () => {
@@ -839,14 +874,19 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       expect(comment, `row ${n}`).toBeDefined();
       const url = rows.get(n)?.url;
       const parts = line!.split("\t");
-      // A js flag is allowed only on the once-only js line of a shell-kind TERMS_PENDING site (kaggle.com, row 235, tick 54).
+      // A js flag is allowed only on the once-only js line of a shell terms page: active while the site's note opens
+      // "shell:", or retired after the render (TERMS_LINES' js: kaggle.com, row 235, tick 54).
       const js = parts.at(-1) === "js";
       const slug = js ? parts.at(-2)! : parts.at(-1)!;
-      if (js) expect(verdicts()[siteOfUrl(url!)].note.startsWith("shell:"), `row ${n}`).toBe(true);
+      const site = siteOfUrl(url!);
+      if (js) expect(verdicts()[site].note.startsWith("shell:") || TERMS_LINES[site]?.js === true, `row ${n}`).toBe(true);
       const state = bySlug.get(slug) ?? "active";
-      expect(line, `row ${n}`).toBe(state === "active" ? `${url}\t${slug}${js ? "\tjs" : ""}` : `${state} — ${url}\t${slug}`);
-      // The row says what happened to a line the reading shut: READ 6.10 for a paused or kept one, RETIRED for opensky's.
-      if (n <= 243) expect(rows.get(n)?.row, `row ${n}`).toMatch(state.startsWith("# retired") ? /\*\*RETIRED 6\.10 \(403 to the runner; 16\(d\) D2\(iv\)\)\.\*\* \|$/ : /\*\*READ 6\.10 \(tick 54\): [^|]+\.\*\* \|$/);
+      const flag = js ? "\tjs" : "";
+      expect(line, `row ${n}`).toBe(state === "active" ? `${url}\t${slug}${flag}` : `${state} — ${url}\t${slug}${flag}`);
+      // The row says what happened to a line the reading shut: RETIRED for a site that refused the runner (opensky's), READ
+      // 6.10 for a paused, kept or read one (kaggle.com's js line is retired, but its terms were read: BARRED).
+      const refused = /^refusal-type\b/.test(verdicts()[site].note ?? "");
+      if (n <= 243) expect(rows.get(n)?.row, `row ${n}`).toMatch(refused ? /\*\*RETIRED 6\.10 \(403 to the runner; 16\(d\) D2\(iv\)\)\.\*\* \|$/ : /\*\*READ 6\.10 \(tick 54\): [^|]+\.\*\* \|$/);
     }
     expect(Math.max(...rows.keys())).toBe(EURO_PROBE.row);
   });
@@ -920,6 +960,7 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       return { counts, urls, sums: counts.map((m) => [[...m.values()].reduce((a, b) => a + b, 0), m.size]) };
     };
     const now = group(verdicts());
+    const jsBefore = group(jsReadBefore(verdicts()));
     const robots = group(termsReadBefore(verdicts()));
     const then = group(tick45(verdicts()));
     const counts = now.counts;
@@ -944,7 +985,9 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     });
     expect(then.sums.map((c) => c.join("/"))).toEqual(["13/12", "0/0", "40/9", "29/21", "0/0", "0/0", "19/3", "0/0"]);
     expect(robots.sums.map((c) => c.join("/"))).toEqual(["13/12", "20/17", "40/9", "9/4", "0/0", "0/0", "19/3", "0/0"]);
-    expect(computed.map((c) => c.join("/"))).toEqual(["14/13", "20/17", "18/2", "9/4", "1/1", "20/5", "19/3", "0/0"]);
+    expect(jsBefore.sums.map((c) => c.join("/"))).toEqual(["14/13", "20/17", "18/2", "9/4", "1/1", "20/5", "19/3", "0/0"]);
+    // Later on 6.10: kaggle.com's 17 rules URLs leave the shell group for the shut one (BARRED on its js-rendered terms).
+    expect(computed.map((c) => c.join("/"))).toEqual(["14/13", "20/17", "1/1", "9/4", "1/1", "37/6", "19/3", "0/0"]);
     // Each bullet's per-site list: `site` n, for every site of the group and no other.
     bullets.forEach((b, i) => {
       const listed = Object.fromEntries([...b.matchAll(/`([a-z0-9.-]+\.[a-z]+)` (\d+)/g)].map((m) => [m[1], Number(m[2])]));
@@ -977,7 +1020,12 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(between).not.toBeNull();
     expect([terms(between![1]), terms(between![3])]).toEqual([robots.sums.map((c) => c[0]), robots.sums.map((c) => c[1])]);
     expect([Number(between![2]), Number(between![4])]).toEqual([101, 45]);
-    for (const sums of [computed, robots.sums, then.sums]) {
+    // ...and the 6.10 line after the terms read and before kaggle.com's js render.
+    const beforeJs = section.match(/^6\.10 \(tick 54\), after the terms read and before kaggle\.com's js render: ([\d + ]+) = (\d+) URLs, over ([\d + ]+) = (\d+) sites\.$/m);
+    expect(beforeJs).not.toBeNull();
+    expect([terms(beforeJs![1]), terms(beforeJs![3])]).toEqual([jsBefore.sums.map((c) => c[0]), jsBefore.sums.map((c) => c[1])]);
+    expect([Number(beforeJs![2]), Number(beforeJs![4])]).toEqual([101, 45]);
+    for (const sums of [computed, jsBefore.sums, robots.sums, then.sums]) {
       expect(sums.reduce((a, c) => a + c[0], 0)).toBe(101);
       expect(sums.reduce((a, c) => a + c[1], 0)).toBe(45);
     }
@@ -1200,7 +1248,12 @@ describe("tick 54: the robots verdicts of 6.10", () => {
   it("records every robots verdict in the audit note's section after the appendix, with the values the frozen copies hold", () => {
     const audit = readFileSync(AUDIT, "utf8");
     const heads = audit.split("\n").filter((l) => l.startsWith("## "));
-    expect(heads.slice(-3)).toEqual(["## Every URL the agents fetched", "## Robots verdicts (6.10.2026, tick 54)", "## Terms read (6.10.2026, tick 54)"]);
+    expect(heads.slice(-4)).toEqual([
+      "## Every URL the agents fetched",
+      "## Robots verdicts (6.10.2026, tick 54)",
+      "## Terms read (6.10.2026, tick 54)",
+      "## Shell terms pages rendered once (6.10.2026, tick 54)",
+    ]);
     const text = section();
     expect(text).toContain("node scripts/robots-verdict.mjs <site> --urls research/measurements/ai-allowed-events.urls.txt");
     expect(text).toContain("ruling 30.9 16(d) D2(iv)-(v)");
@@ -1359,11 +1412,19 @@ describe("tick 54: the terms read on 6.10", () => {
     "grand-challenge.org": "research/rendered/terms-grand-challenge-2026-10-06.txt:150",
     "stanford.edu": "research/rendered/terms-stanford-2026-10-06.txt:125",
   };
+  /**
+   * kaggle.com, read later on 6.10 on the once-only js render of its terms page: barred too, its note citing the clause
+   * (:87 of research/rendered/terms-kaggle-2026-10-06-a3cb438.txt, the copy the note names at :77 first).
+   */
+  const JS_COPY_BARRED: Record<string, string> = {
+    "kaggle.com": ":87 bars using, copying, reproducing or publishing",
+  };
   const COPY_CLAUSE: Record<string, string> = {
     "devpost.com": "Unauthorized copying or use of any Devpost Content or Intellectual Property Rights without the express written consent of Devpost is strictly prohibited.",
     "zindi.africa": "store or transmit any of the material on our Website",
     "grand-challenge.org": "without the express written permission by Radboudumc",
     "stanford.edu": "User may not otherwise copy, reproduce, retransmit, distribute, publish",
+    "kaggle.com": "for any purpose any Content not owned by you, (i) without the prior consent of the owner of that Content",
     "codabench.org": "'Any reproduction in whole or in part is prohibited without prior consent of its owner.'",
     "tipalti.com":
       "\"You may not download or save a copy of the Site or any portion thereof, including, without limitation, any materials and logos, for any purpose, without Tipalti’s prior written consent.\"",
@@ -1577,13 +1638,15 @@ describe("tick 54: the terms read on 6.10", () => {
   ];
   /** Decision 3(1)'s five kinds, by the first word of the note. */
   const KIND = /^(refusal-type|exhaustive-negative|unanswered|shell|deferred to [a-z0-9.-]+)\b/;
-  /** The kind word fold 2 and this reading give each named site. */
+  /**
+   * The kind word fold 2 and this reading give each named site. Later on 6.10 Israel Post's shell answered its once-only js
+   * render 403, so its kind is refusal-type (K1); kaggle.com's was read and is BARRED, so it has no kind word.
+   */
   const NAMED_KINDS: Record<string, string> = {
     "mr.gov.il": "unanswered:",
-    "israelpost.co.il": "shell:",
+    "israelpost.co.il": "refusal-type:",
     "streetlib.com": "shell:",
     "streetlib.it": "shell:",
-    "kaggle.com": "shell:",
     "adaptionlabs.ai": "shell:",
     "data.gov.il": "deferred to www.gov.il:",
     "eurocontrol.int": "exhaustive-negative:",
@@ -1646,7 +1709,10 @@ describe("tick 54: the terms read on 6.10", () => {
     }
     expect(v["opensky-network.org"].source.startsWith("research/rendered/terms-opensky.meta.json (")).toBe(true);
     expect(v["opensky-network.org"].source.split(TERMS_BEFORE)).toHaveLength(2);
-    for (const site of ["kaggle.com", "adaptionlabs.ai"]) expect(v[site].source.includes(TERMS_BEFORE), site).toBe(false);
+    // adaptionlabs.ai's shell kept its source whole; kaggle.com's, read later on its js render, ends in TERMS_BEFORE and
+    // tick 45's ("the shell terms pages" below holds the rest).
+    expect(v["adaptionlabs.ai"].source.includes(TERMS_BEFORE)).toBe(false);
+    expect(v["kaggle.com"].source.split(TERMS_BEFORE)).toHaveLength(2);
     // The kinds the verdicts carry.
     expect(isExhaustiveNegative(v["eurocontrol.int"])).toBe(true);
     expect(isExhaustiveNegative(v["opensky-network.org"])).toBe(false);
@@ -1709,12 +1775,11 @@ describe("tick 54: the terms read on 6.10", () => {
     const os = JSON.parse(readFileSync("research/rendered/terms-opensky.meta.json", "utf8"));
     expect([os.status, os.error, os.fetchedAt.slice(0, 10)]).toEqual([403, "HTTP 403 Forbidden", FROZEN_ON]);
     expect(active().some((l) => l.slug === "terms-opensky")).toBe(false);
-    // The two shells: kind K4 for kaggle, and adaptionlabs' nav-only page in the words of the main thread's verdict.
-    expect(v["kaggle.com"].note).toMatch(/^shell: the plain capture of 6\.10 /);
-    expect(v["kaggle.com"].note).toContain("is a JavaScript shell with 21 characters of text");
-    expect(v["kaggle.com"].note).toContain("ruling 6.10 row 21 decision 3 kind K4");
+    // The shells: kaggle.com's (kind K4) was rendered once in js mode later on 6.10 and read ("the shell terms pages"
+    // below); adaptionlabs' nav-only page stays, in the words of the main thread's verdict.
+    expect(v["kaggle.com"].note).toMatch(/^BARRED on access and copying: /);
+    expect(v["kaggle.com"].note).toContain("The plain capture of 6.10 was a JavaScript shell with 21 characters of text (kind K4");
     expect(v["kaggle.com"].note).toContain("--js --terms-shell");
-    expect(v["kaggle.com"].note).toContain("run by the main thread");
     expect(v["adaptionlabs.ai"].note).toMatch(
       /^shell: nav-only shell: the 6\.10 plain capture is 200, 51 KB of HTML and 85 characters of text \(the navigation\), which capture-check grades short, not js-shell; the js route of decision 3 waits on the classifier naming this kind /,
     );
@@ -1730,8 +1795,10 @@ describe("tick 54: the terms read on 6.10", () => {
     const raw = JSON.parse(readFileSync(VERDICTS, "utf8"));
     for (const [site, e] of Object.entries(v)) expect(["barred", "allowed", "unread"], site).toContain(e.copying);
     const barred = Object.keys(v).filter((s) => v[s].copying === "barred").sort();
-    expect(barred).toEqual([...Object.keys(RULING_COPY_BARRED), ...Object.keys(READ_COPY_BARRED), ...Object.keys(REVIEW_COPY_BARRED)].sort());
-    for (const [site, cite] of Object.entries({ ...RULING_COPY_BARRED, ...READ_COPY_BARRED })) expect(v[site].note, site).toContain(cite);
+    expect(barred).toEqual(
+      [...Object.keys(RULING_COPY_BARRED), ...Object.keys(READ_COPY_BARRED), ...Object.keys(REVIEW_COPY_BARRED), ...Object.keys(JS_COPY_BARRED)].sort(),
+    );
+    for (const [site, cite] of Object.entries({ ...RULING_COPY_BARRED, ...READ_COPY_BARRED, ...JS_COPY_BARRED })) expect(v[site].note, site).toContain(cite);
     // The review's two: the note cites the file and line, which hold the clause the note quotes.
     for (const [site, { file, line }] of Object.entries(REVIEW_COPY_BARRED)) {
       expect(v[site].note, site).toContain(`(${file}:${line})`);
@@ -1749,7 +1816,7 @@ describe("tick 54: the terms read on 6.10", () => {
     for (const [site, words] of Object.entries(COPY_CLAUSE)) expect(v[site].note, site).toContain(words);
     expect(Object.keys(v).filter((s) => v[s].copying === "allowed")).toEqual(["virtualembryo.ai"]);
     expect(v["virtualembryo.ai"].note).toContain("copying: allowed, read 6.10");
-    expect(Object.keys(v).filter((s) => v[s].copying === "unread")).toHaveLength(Object.keys(v).length - 11);
+    expect(Object.keys(v).filter((s) => v[s].copying === "unread")).toHaveLength(Object.keys(v).length - 12);
     // The field sits after "note" (or after "checked" when there is none) in every entry, and the _about says what it is.
     for (const [site, e] of Object.entries(raw.sites as Record<string, Entry>)) expect(Object.keys(e).at(-1), site).toBe("copying");
     expect(raw._about).toContain('every entry carries a fifth field after "note", "copying"');
@@ -1809,15 +1876,18 @@ describe("tick 54: the terms read on 6.10", () => {
     );
     expect(v["virtualembryo.ai"].verdict).toBe("NOT_BARRED");
     expect(row("virtualembryo.ai")).toContain("Open for the main thread (tick-54 review): the footer names a Stanford University lab");
-    // kaggle.com: the --js --terms-shell route was built 6.10 (the base this branch merged), not "being built".
-    expect(v["kaggle.com"].note).toContain("(decision 3(2); built 6.10, commit 5a3ee24)");
+    // kaggle.com: the --js --terms-shell route was built 6.10 (the base this branch merged), not "being built"; the note
+    // now also says when it was queued and rendered.
+    expect(v["kaggle.com"].note).toContain("(decision 3(2); built 6.10, commit 5a3ee24; queued c058238, rendered a3cb438)");
     expect(v["kaggle.com"].note).not.toContain("being built");
     expect(readFileSync("scripts/queue-zero-test.mjs", "utf8")).toContain("--terms-shell");
     expect(row("kaggle.com")).toContain("(built 6.10, commit 5a3ee24)");
-    // The audit's copying paragraph counts the review's two and names the caveat-only sites.
+    // The audit's copying paragraph counts the review's two and names the caveat-only sites, as they stood after the terms
+    // read (121 unread); kaggle.com's read later on 6.10 made it 120, which the shell section states.
     expect(audit).toContain('"allowed" for virtualembryo.ai, and "unread" for the other 121, which is not "allowed".');
     expect(audit).toContain("for the two other sites whose verdicts already rested on a read copying clause (codabench.org,");
-    expect(Object.keys(v).length - 11).toBe(121);
+    expect(Object.keys(v).length - 12).toBe(120);
+    expect(audit).toContain("so eleven entries of `terms-verdicts.json` are barred and 120 unread, against ten and 121 after the terms read above.");
     // No note or row names a person: the footer's words before " Lab," (the lab's name) stay out of both.
     const footer = readFileSync(fz("terms-virtualembryo"), "utf8").split("\n")[108];
     const named = footer.slice(0, footer.indexOf(" Lab,"));
@@ -1841,7 +1911,7 @@ describe("tick 54: the terms read on 6.10", () => {
     expect(v["nevo.co.il"].note).toContain(
       "[robots-bar] (ruling 6.10 row 21 (a)): the ten captures of 29.9 are D1(1) — compliance and decisions not to act only, never a product input",
     );
-    expect(v["israelpost.co.il"].note).toContain("decision 3(3) applies the once-only js render of rule 2 to this page");
+    expect(v["israelpost.co.il"].note).toContain("kind K4 before, shell: the plain GET of 30.9 answered 200 with a React shell");
     expect(v["data.gov.il"].note).toContain("it takes the kind of www.gov.il's terms, refusal-type today");
     // wikisource points at decision 2's two triggers, and stays CONDITIONAL_UNMET until one of them.
     expect(v["wikisource.org"].verdict).toBe("CONDITIONAL_UNMET");
@@ -1867,13 +1937,16 @@ describe("tick 54: the terms read on 6.10", () => {
     expect(out.verdicts.sites[site]).toEqual(v[site]);
   });
 
-  it("records the reading in the audit note's last section: how it was read, the nine rows, the shells and the copying field", () => {
+  it("records the reading in the audit note's section after the robots verdicts: how it was read, the nine rows, the shells and the copying field", () => {
     const audit = readFileSync(AUDIT, "utf8");
-    const text = audit.slice(audit.indexOf("## Terms read (6.10.2026, tick 54)"));
-    expect(text.indexOf("\n## ", 1)).toBe(-1);
+    const start = audit.indexOf("## Terms read (6.10.2026, tick 54)");
+    // The section ends where the next begins: the shell terms pages rendered once, later on 6.10, the note's last.
+    const text = audit.slice(start, audit.indexOf("\n## ", start + 1) + 1);
+    expect(audit.slice(start + text.length).startsWith("## Shell terms pages rendered once (6.10.2026, tick 54)\n")).toBe(true);
     expect(text).toContain("read in full by one Opus reader and then by one adversarial Opus verifier");
     expect(text).toContain("the main thread (Fable 5.1, tick 54) ruled on the two records");
-    const v = verdicts();
+    // The rows state the verdicts as the terms read left them, before kaggle.com's js render.
+    const v = jsReadBefore(verdicts());
     const rows = text.split("\n").filter((l) => /^\| `[a-z0-9.-]+` \|/.test(l));
     expect(rows.map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual([
       "devpost.com",
@@ -1901,6 +1974,245 @@ describe("tick 54: the terms read on 6.10", () => {
     expect(text).toContain("**The copying field and the kind words (ruling 6.10 row 21, fold 2).**");
     expect(text).toContain("**Notes with no kind word yet.** Twenty-three other NO_TERMS or TERMS_PENDING notes");
     expect(NO_KIND).toHaveLength(23);
+    expect(ADDRESS.test(text)).toBe(false);
+  });
+});
+
+/**
+ * Tick 54 (6.10.2026), later: the two shell terms pages rendered once in js mode under ruling 6.10 row 21 (c) decision 3(2)
+ * (queued by queue-zero-test --js --terms-shell in c058238, rendered by the run of a3cb438). kaggle.com's came back as its
+ * Terms of Use: frozen as terms-kaggle-2026-10-06-a3cb438 (freeze-capture's name for a second copy of one slug and day,
+ * <slug>-<day>-<commit>: the plain shell holds <slug>-<day>), read by one Opus reader and one adversarial Opus verifier,
+ * and ruled BARRED by the main thread on three grounds (:77 crawling or scraping any page by manual or automated means,
+ * :87 copying or publishing Content without its owner's consent, :70 internal, personal, non-commercial use only).
+ * Israel Post's came back 403: refusal-type, no second attempt, no other page. Both js lines are retired with the js flag
+ * kept, so the route's once-only check still sees them (queue-zero-test.test.ts runs it against the real store).
+ */
+describe("tick 54: the shell terms pages rendered once (6.10)", () => {
+  const JS_FROZEN = "terms-kaggle-2026-10-06-a3cb438";
+  const JS_COMMIT = "a3cb438";
+  const PLAIN_FROZEN = "terms-kaggle-2026-10-06";
+  const KAGGLE_RULES = [24, 27, 38, 57, 100, 112, 118, 119, 133, 136, 179, 201, 204, 210, 213, 235, 241];
+  const ISRAEL_POST_RETIRED =
+    "# retired (6.10.2026: rendered once in js mode under ruling 6.10 row 21 (c) 3(3); the site answered 403, refusal-type, 16(d) D2(iv)) — https://doar.israelpost.co.il/content/term-of-use/\tterms-israel-post\tjs";
+  /** The lines of the frozen js render that kaggle.com's source and note cite, and words each holds (quoted: the entry quotes them). */
+  const KAGGLE_LINES: { line: number; words: string; quoted: boolean }[] = [
+    { line: 53, words: "June 22, 2025 (active)", quoted: true },
+    { line: 59, words: "Effective Date: June 22, 2025", quoted: true },
+    { line: 57, words: "YOUR USE OF AND ACCESS TO OUR SERVICES (DEFINED BELOW) ARE SUBJECT TO THE FOLLOWING TERMS", quoted: true },
+    { line: 60, words: "website(s), products, services and applications", quoted: true },
+    { line: 62, words: "the www.kaggle.com website", quoted: false },
+    { line: 63, words: "signed by both you and us", quoted: true },
+    { line: 70, words: "for your own internal, personal, non-commercial use, and not on behalf of or for the benefit of any third party", quoted: true },
+    { line: 74, words: "otherwise use the Services or interact with the Services in a manner that", quoted: false },
+    { line: 75, words: "Acceptable Use Policy", quoted: false },
+    {
+      line: 77,
+      words: "“Crawls,” “scrapes,” or “spiders” any page, data, or portion of or relating to the Services or Content (through use of manual or automated means)",
+      quoted: true,
+    },
+    { line: 78, words: "significant portion", quoted: true },
+    { line: 87, words: "for any purpose any Content not owned by you, (i) without the prior consent of the owner of that Content", quoted: true },
+    { line: 89, words: "just because this functionality exists, doesn’t mean that all the restrictions above don’t apply — they do!", quoted: true },
+    { line: 103, words: "a skills-based competition or challenge on the Services", quoted: true },
+    { line: 108, words: "template for the Competition Rules", quoted: false },
+    { line: 113, words: "an Environment by itself is not a Competition", quoted: false },
+    { line: 120, words: "assist you in setting up and managing your Competition", quoted: false },
+    // The verifier's record (tick-54 review fix): the :118 licence, who is a user (:67, :96), and the documents the Terms
+    // name that nobody read (:60, :104).
+    { line: 60, words: "the Privacy Policy and the Community Guidelines", quoted: true },
+    { line: 67, words: "You may be required to sign up for an account", quoted: false },
+    { line: 96, words: "gain access to the Services", quoted: true },
+    { line: 104, words: "may impose additional restrictions or requirements for Competitions", quoted: true },
+    { line: 118, words: "all other users of the Services", quoted: true },
+    { line: 118, words: "as permitted by the functionality of the Services", quoted: true },
+  ];
+  /** The verifier's seven refutations: one qualifies :77 itself, six correct supporting points (each cites its line). */
+  const SIX_CORRECTIONS = [":63, not :120", "(:118)", "by :70", ":78's", "(:108)", "(:113)"];
+  const UNREAD = "Not read, all named by the Terms: the Acceptable Use Policy (:75), the Privacy Policy and the Community Guidelines, which the Terms include (:60), and each competition's own Competition Rules, which";
+
+  it("freezes the js render under freeze-capture's name for a second copy of one slug and day, beside the plain shell's copy", () => {
+    const urlsTxt = readFileSync(URLS, "utf8");
+    const manifest = readFileSync("research/rendered/FROZEN.sha256", "utf8");
+    const meta = JSON.parse(readFileSync(`research/rendered/${JS_FROZEN}.meta.json`, "utf8"));
+    const plain = JSON.parse(readFileSync(`research/rendered/${PLAIN_FROZEN}.meta.json`, "utf8"));
+    // <slug>-<fetchedAt day> is the plain shell's (frozen first, 3(2)(iv)); the js render took <slug>-<day>-<commit>.
+    expect(JS_FROZEN).toBe(`${PLAIN_FROZEN}-${meta.frozen.commit}`);
+    expect([meta.slug, meta.frozen.from, meta.frozen.commit, meta.frozen.on, meta.frozen.flagged]).toEqual([
+      JS_FROZEN,
+      "research/rendered/terms-kaggle.meta.json",
+      JS_COMMIT,
+      FROZEN_ON,
+      undefined,
+    ]);
+    expect([meta.url, meta.status, meta.renderedWith, meta.fetchedAt]).toEqual(["https://www.kaggle.com/terms", 200, "chromium", "2026-10-06T09:48:50.939Z"]);
+    expect(createHash("sha256").update(readFileSync(meta.bodyPath)).digest("hex")).toBe(meta.sha256);
+    // The live capture is that render, byte for byte; its line is retired, so no render rewrites it either.
+    const txt = readFileSync(`research/rendered/${JS_FROZEN}.txt`);
+    expect(txt.equals(readFileSync("research/rendered/terms-kaggle.txt"))).toBe(true);
+    expect(txt.toString("utf8").split("\n").length - 1).toBe(167);
+    expect(classifyCapture(readCapture(JS_FROZEN)).kind).toBe("ok");
+    // The plain shell's copy, frozen --allow-flagged before the render, is what the plain GET saw.
+    expect([plain.slug, plain.frozen.commit, plain.frozen.flagged.kind]).toEqual([PLAIN_FROZEN, RENDER_COMMIT, "js-shell"]);
+    expect(classifyCapture(readCapture(PLAIN_FROZEN)).kind).toBe("js-shell");
+    for (const slug of [JS_FROZEN, PLAIN_FROZEN]) {
+      expect(urlsTxt.includes(slug), slug).toBe(false);
+      for (const ext of ["txt", "html", "meta.json"]) expect(manifest, `${slug}.${ext}`).toContain(`  ${slug}.${ext}\n`);
+    }
+  });
+
+  it("rests kaggle.com's BARRED on the frozen js render, whose cited lines hold the words the entry quotes", () => {
+    const v = verdicts();
+    const k = v["kaggle.com"];
+    expect([k.verdict, k.checked, k.copying]).toEqual(["BARRED", TERMS_CHECKED, "barred"]);
+    expect(k.note).toMatch(/^BARRED on access and copying: /);
+    expect(k.source.startsWith(`research/rendered/${JS_FROZEN}.txt (Kaggle's Terms of Use, `)).toBe(true);
+    expect(k.source).toContain("read in full by one Opus reader and one adversarial Opus verifier, verdict by the main thread (tick 54;");
+    expect(k.source).toContain(`frozen as ${JS_COMMIT} stored it`);
+    expect(k.source).toContain('"Shell terms pages rendered once (6.10.2026, tick 54)"');
+    expect(tick45(v)["kaggle.com"].verdict).toBe("TERMS_PENDING");
+    expect(k.source.endsWith(`${TERMS_BEFORE}${tick45(v)["kaggle.com"].source}`)).toBe(true);
+    expect(k.note).toContain(`research/rendered/${JS_FROZEN}.txt:77`);
+    expect(k.note).toContain(`that shell is frozen as research/rendered/${PLAIN_FROZEN}.txt`);
+    const lines = readFileSync(`research/rendered/${JS_FROZEN}.txt`, "utf8").split("\n");
+    const text = `${k.source} ${k.note}`;
+    for (const { line, words, quoted } of KAGGLE_LINES) {
+      expect(lines[line - 1], `:${line}`).toContain(words);
+      expect(text, `:${line}`).toMatch(new RegExp(`:${line}(?!\\d)`));
+      if (quoted) expect(text, `:${line}`).toContain(words);
+    }
+    // The verifier's record as it stands (tick-54 review fix): seven refutations, the verdict unmoved. One qualifies the
+    // first ground, :77, which therefore does not carry the verdict alone; the other six are supporting points, each
+    // named; every document the Terms name and nobody read is listed.
+    expect(k.note).toContain("The verifier agreed BARRED and recorded seven refutations of the reader's, none of which moves the verdict. ");
+    expect(k.note).toContain("One qualifies :77 itself: :77 reaches manual means too, so a narrower bulk-extraction reading can be argued");
+    expect(k.note).toContain("the verdict stands without it, because :87 and :70 each bar the runner alone.");
+    const six = k.note.split("The other six correct supporting points: ")[1]?.split(". Not read, ")[0] ?? "";
+    const items = six.split("; ");
+    expect(items).toHaveLength(6);
+    SIX_CORRECTIONS.forEach((cite, i) => expect(items[i], cite).toContain(cite));
+    expect(k.note).toContain(UNREAD);
+    expect(k.note).not.toContain("four supporting points");
+    // Every rules line of the site is cited, pinned, and none was fetched.
+    expect(pinnedLines(k.note)).toEqual(KAGGLE_RULES);
+    expect(rulesOf("kaggle.com").map((e) => e.n)).toEqual(KAGGLE_RULES);
+    expect(ADDRESS.test(k.note)).toBe(false);
+    expect(ADDRESS.test(k.source)).toBe(false);
+  });
+
+  it("puts kaggle.com in TERMS_BARRED: the gate refuses its 17 rules URLs, build-arena's among them, and its terms page in either mode", () => {
+    const v = verdicts();
+    const b = termsBarred("www.kaggle.com");
+    expect(b?.domain).toBe("kaggle.com");
+    expect(b?.why).toContain(`research/rendered/${JS_FROZEN}.txt:77`);
+    const rules = rulesOf("kaggle.com");
+    expect(rules).toHaveLength(17);
+    expect(rules.filter((e) => e.url.includes("build-arena")).map((e) => e.n)).toEqual([112]);
+    for (const e of rules) {
+      const gate = termsGate(e.url, e.slug, v);
+      expect(gate.ok, e.url).toBe(false);
+      expect(gate.why, e.url).toMatch(/^kaggle\.com is in TERMS_BARRED: /);
+    }
+    for (const js of [false, true]) expect(termsGate("https://www.kaggle.com/terms", "terms-kaggle", v, { js }).why, String(js)).toMatch(/^kaggle\.com is in TERMS_BARRED: /);
+  });
+
+  it("retires both js lines in their forms with the flag kept, under the route's comments, and leaves nothing of either site active", () => {
+    const v = verdicts();
+    const text = readFileSync(URLS, "utf8").split("\n");
+    expect(text.filter((l) => l.endsWith("\tterms-kaggle\tjs"))).toEqual([`${TERMS_LINES["kaggle.com"].state} — https://www.kaggle.com/terms\tterms-kaggle\tjs`]);
+    expect(text.filter((l) => l.endsWith("\tterms-israel-post\tjs"))).toEqual([ISRAEL_POST_RETIRED]);
+    for (const slug of ["terms-kaggle", "terms-israel-post"]) {
+      const at = text.findIndex((l) => l.endsWith(`\t${slug}\tjs`));
+      expect(text[at - 1].startsWith(`# ${TERMS_SHELL_RULING} `), slug).toBe(true);
+      expect(text[at - 1], slug).toContain(`the plain capture research/rendered/${slug} (sha256 `);
+    }
+    expect(active().filter((e) => ["kaggle.com", "israelpost.co.il"].includes(siteOfUrl(e.url)))).toEqual([]);
+    // Nothing left for the gate to pause: a retired line is a comment, never touched again.
+    expect(applyVerdicts(text.join("\n"), v).paused).toEqual([]);
+    // ZERO-TESTS row 235 reads BARRED in the form rows 236-242 took.
+    expect(zeroRows().get(235)?.row).toMatch(
+      /\*\*READ 6\.10 \(tick 54\): BARRED: the plain GET saw a JavaScript shell \(kind K4\), and the once-only js render of ruling 6\.10 row 21 decision 3\(2\) read the Terms of Use: research\/rendered\/terms-kaggle-2026-10-06-a3cb438\.txt:77 [^|]+; kaggle\.com is in TERMS_BARRED, and the js line is retired in its form\.\*\* \|$/,
+    );
+  });
+
+  it("records Israel Post's js render as the site's answer: 403, refusal-type, no second attempt and no Israel Post page until GitHub-hosted terms are read", () => {
+    const v = verdicts();
+    const p = v["israelpost.co.il"];
+    const meta = JSON.parse(readFileSync("research/rendered/terms-israel-post.meta.json", "utf8"));
+    expect([meta.url, meta.status, meta.error, meta.renderedWith, meta.bodyPath, meta.fetchedAt.slice(0, 10)]).toEqual([
+      "https://doar.israelpost.co.il/content/term-of-use/",
+      403,
+      "HTTP 403",
+      "chromium",
+      null,
+      FROZEN_ON,
+    ]);
+    expect([p.verdict, p.checked, p.copying]).toEqual(["NO_TERMS", TERMS_CHECKED, "unread"]);
+    expect(p.note).toMatch(
+      /^refusal-type: the once-only js render of the terms page answered HTTP 403 on 6\.10 \(research\/rendered\/terms-israel-post\.meta\.json: status 403, error "HTTP 403", renderedWith chromium, fetched 2026-10-06T09:48:52\.118Z; /,
+    );
+    expect(p.note).toContain(meta.fetchedAt);
+    expect(p.note).toContain("kind K1 under ruling 6.10 row 21 decision 3(1)");
+    expect(p.note).toContain("kind K4 before, shell: ");
+    expect(p.note).toContain("frozen as research/rendered/terms-israel-post-2026-09-30.txt");
+    expect(p.note).toContain("there is no second attempt in any mode, and the js line is retired");
+    expect(p.note).toContain("no Israel Post page is fetched, ever, until a GitHub-hosted copy of its terms is read");
+    expect(p.note).toContain("the registered-mail rate (documents ruling fold 11(c)");
+    expect(p.note).toContain("step 2's registered-mail notice stays recorded, not asked");
+    expect(isExhaustiveNegative(p)).toBe(false);
+    expect(ADDRESS.test(p.note ?? "")).toBe(false);
+    // The plain shell of 30.9, frozen before the render, is the record of what the plain GET saw.
+    const shell = JSON.parse(readFileSync("research/rendered/terms-israel-post-2026-09-30.meta.json", "utf8"));
+    expect([shell.status, shell.frozen.flagged.kind]).toEqual([200, "js-shell"]);
+    // The gate refuses the terms page in either mode, and any other page of the site.
+    for (const js of [false, true]) {
+      expect(termsGate("https://doar.israelpost.co.il/content/term-of-use/", "terms-israel-post", v, { js }).ok, String(js)).toBe(false);
+    }
+    expect(termsGate("https://www.israelpost.co.il/", "terms-israel-post-rates", v, { js: true }).ok).toBe(false);
+    // ZERO-TESTS row 233 says so in the form opensky-network.org's row 243 took.
+    const row = zeroRows().get(233)?.row ?? "";
+    expect(row).toMatch(/\*\*RETIRED 6\.10 \(403 to the runner; 16\(d\) D2\(iv\)\)\.\*\* \|$/);
+    expect(row).toContain("retired 30.9 (tick 31): a JavaScript shell with reCAPTCHA, only the title rendered; re-queued once in js mode 6.10 (ruling 6.10 row 21 (c) 3(3))");
+  });
+
+  it("records both in the audit note's last section: decision 3, the two rows and the copying count", () => {
+    const audit = readFileSync(AUDIT, "utf8");
+    const start = audit.indexOf("## Shell terms pages rendered once (6.10.2026, tick 54)");
+    expect(start).toBeGreaterThan(audit.indexOf("## Terms read (6.10.2026, tick 54)"));
+    const text = audit.slice(start);
+    expect(text.indexOf("\n## ", 1)).toBe(-1);
+    expect(text).toContain("whatever comes back is the answer (3(2)(vi))");
+    expect(text).toContain("read in full by one Opus reader and then by one adversarial Opus verifier");
+    expect(text).toContain("the main thread (Fable 5.1, tick 54) ruled on the two records");
+    expect(text).toContain("`<slug>-<day>-<commit>`");
+    const v = verdicts();
+    const rows = text.split("\n").filter((l) => /^\| `[a-z0-9.-]+` \|/.test(l));
+    expect(rows.map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual(["kaggle.com", "israelpost.co.il"]);
+    for (const row of rows) {
+      const cells = row.split(" | ");
+      expect(cells, row.slice(0, 40)).toHaveLength(6);
+      const site = cells[0].match(/`([a-z0-9.-]+)`/)![1];
+      expect(cells[3].startsWith(v[site].verdict), site).toBe(true);
+    }
+    const [kaggle, post] = rows;
+    expect(kaggle).toContain(`\`research/rendered/${PLAIN_FROZEN}.txt\``);
+    expect(kaggle).toContain(`\`research/rendered/${JS_FROZEN}.txt:77\``);
+    expect(kaggle).toContain(KAGGLE_LINES.find((x) => x.line === 77)!.words);
+    expect(kaggle).toContain("17 rules URLs refused");
+    // "The reading" states the verifier's record as the note does: seven refutations, the :77 caveat, the unread documents.
+    const reading = text.split("\n").find((l) => l.startsWith("**The reading.** ")) ?? "";
+    expect(reading).toContain("The verifier's record holds seven refutations of the reader's, none of which moves the verdict.");
+    expect(reading).toContain("One qualifies the first ground itself: :77 reaches manual means too");
+    expect(reading).toContain("the verdict does not wait on it, since :87 and :70 each bar the runner alone.");
+    const sixInAudit = reading.split("The other six correct supporting points: ")[1]?.split(". Not read, ")[0] ?? "";
+    expect(sixInAudit.split("; ")).toHaveLength(6);
+    for (const cite of ["(:120)", "(:118)", ":70 bars", ":78", "(:108)", "(:113)"]) expect(sixInAudit, cite).toContain(cite);
+    expect(reading).toContain(UNREAD);
+    expect(post).toContain("`research/rendered/terms-israel-post-2026-09-30.txt`");
+    expect(post).toContain("HTTP 403, no body (`research/rendered/terms-israel-post.meta.json`");
+    expect(post).toContain("NO_TERMS (refusal-type; shell before)");
+    expect(text).toContain("eleven entries of `terms-verdicts.json` are barred and 120 unread");
+    expect(Object.values(v).filter((e) => e.copying === "barred")).toHaveLength(11);
     expect(ADDRESS.test(text)).toBe(false);
   });
 });

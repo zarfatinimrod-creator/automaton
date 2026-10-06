@@ -18,7 +18,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `remask-captures.json` | `scripts/remask-captures.mjs` (+ `freeze-capture.mjs`'s `maskedMeta`) | `remask-captures.test.ts` | ticks 49, 50 |
 | `remask-run.json` | `scripts/remask-run.sh` | `remask-run.test.ts` | tick 53 |
 | `render-dispatch.json` | `scripts/render-dispatch.sh` | `render-dispatch.test.ts` | ticks 52, 54 |
-| `render-watch.json` | `scripts/render-watch.mjs` (the address mask; the User-Agent and `UA_CONTACT`, tick 54) | `render-watch.test.ts` (+ `render-watch-robots.test.ts` for the T54-U entries) | ticks 48, 50, 54 |
+| `render-watch.json` | `scripts/render-watch.mjs` (the address mask; the User-Agent and `UA_CONTACT`, tick 54; kaggle.com's `TERMS_BARRED` entry, tick 54 shell-terms review) | `render-watch.test.ts` (+ `render-watch-robots.test.ts` for the T54-U entries, `render-watch-terms-barred.test.ts` and `prize-terms-audit.test.ts` for the T54-TB entries) | ticks 48, 50, 54 |
 | `robots-verdict.json` | `scripts/robots-verdict.mjs` (`judgeSite` keeps every field it does not set; `serializeVerdicts`' one field order, copying after note) | `robots-verdict.test.ts` | tick 54 |
 | `sim-tree.json` | `scripts/sim-tree.sh` | `sim-tree.test.ts` | ticks 51, 52 |
 
@@ -65,7 +65,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
   | `robots-verdict.json` | 4 | 13 (tick 54 terms-read builder, in its worktree, alone; the test file takes about 2 s a run) |
   | `page-views.json` | 5 | 23 (tick 54 builder, inside sim-tree.sh, alone; the two test files take about 2 s a run) |
   | `prize-dispatch.json` | 28 | 69 |
-  | `render-watch.json` | 64 | 117 with the first 53 (tick 54's 9 UA entries alone: 52, in sim-tree.sh beside the next two; the two address-mask entries T54-M1, T54-M2 came from the base) |
+  | `render-watch.json` | 67 | 162 (tick 54 shell-terms review fixer, in sim-tree.sh, alone); 117 with the first 53 (tick 54's 9 UA entries alone: 52, in sim-tree.sh beside the next two; the two address-mask entries T54-M1, T54-M2 came from the base) |
   | `freeze-capture.json` | 23 | 171 |
   | `loop-edit.json` | 46 | 188, 191 |
   | `queue-zero-test.json` | 32 | 194 (tick 54 review fixer, in sim-tree.sh, alone; 169 with the first 31; the builder's 16: 108, and 133 beside `render-watch.json`'s and `render-dispatch.json`'s new entries) |
