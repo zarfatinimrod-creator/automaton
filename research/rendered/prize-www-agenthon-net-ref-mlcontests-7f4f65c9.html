@@ -1,0 +1,2597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Agenthon 2026</title>
+  
+  <link rel="canonical" href="https://www.agenthon.net/">
+  <link rel="icon" href="/static/alphathon/logo/SQAlogo.png" sizes="16x16" type="image/png">
+
+  
+  
+  <link rel="stylesheet" href="/static/agenthon2026/styles.css?v=1791060425">
+  <link rel="stylesheet" href="/static/alphathon/css/theme_tokens.css">
+  
+  <link rel="stylesheet" href="/static/alphathon/css/agenthon2026_shell.css?v=8">
+  
+  
+</head>
+
+<body>
+  <div class="page-shell">
+
+    
+
+<header class="a26-header">
+  <a class="a26-brand" href="/" aria-label="Agenthon 2026 — home">
+    <img src="/static/alphathon/logo/SQAlogo.png" alt="SQA">
+    <span class="a26-brand-word">Agenthon</span>
+  </a>
+
+  <button class="a26-toggle" type="button" aria-expanded="false" aria-controls="a26-nav" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav id="a26-nav" class="a26-nav" aria-label="Primary navigation">
+    <div class="a26-nav-left">
+      <a href="/" class="">Home</a>
+      <a href="/about/" class="">About</a>
+      <a href="/compete/" class="">Compete</a>
+      <a href="/guides/" class="">Guides</a>
+
+      <details class="a26-dd">
+        <summary>Past Events</summary>
+        <div class="a26-menu">
+          <a href="/2025/home/">2025</a>
+          <a href="/2024/home/">2024</a>
+        </div>
+      </details>
+    </div>
+
+    <div class="a26-nav-right">
+      
+        <a href="/account/login/">Sign In</a>
+        <a class="a26-btn solid" href="/account/signup/">Sign Up</a>
+      
+    </div>
+  </nav>
+</header>
+
+
+    
+    
+  
+  
+    <nav class="a26-subnav" aria-label="On this page">
+      <div class="a26-subnav-inner">
+        
+          <a href="#tracks">Tracks</a>
+        
+          <a href="#protocol">Protocol</a>
+        
+          <a href="#leaderboard">Leaderboard</a>
+        
+          <a href="#timeline">Timeline</a>
+        
+          <a href="#awards">Awards</a>
+        
+          <a href="#call-for-papers">Call for Papers</a>
+        
+      </div>
+    </nav>
+  
+
+
+    
+    
+    
+
+<div class="a26-coming-soon a26-dev-band" data-dev-opens-at="2026-08-28T23:59:00+00:00" data-dev-ends-at="2026-10-13T11:59:00+00:00" data-dev-opens-label="Friday, August 28th, 23:59 UTC" data-dev-ends-label="Monday, October 12th, 23:59 AoE">
+  
+  
+  
+  
+  <div class="a26-dev-open">Agenthon Submissions Deadline: October 12th, 23:59 AoE</div>
+  <div class="a26-dev-zones">(October 13th at 7:59 AM New York, October 13th at 12:59 PM London, October 13th at 7:59 PM Singapore)</div>
+  <div class="a26-dev-open" style="margin-top:6px">Announcing Competition Awards!</div>
+  
+</div>
+
+
+
+    
+
+    
+    
+  
+    
+    <main id="top">
+<section class="hero-section">
+<div class="hero-copy">
+<p class="eyebrow">
+<span class="status-dot"></span>
+              NeurIPS 2026 Competition Track
+            </p>
+<h1>Agenthon 2026</h1>
+<p class="hero-subtitle">
+              Verifiable AI for quantitative finance.
+            </p>
+<p class="hero-body">
+              A four-track competition testing whether AI agents can produce finance outputs that survive
+              automated, leakage-controlled, cheat-resistant evaluation.
+            </p>
+<div class="hero-actions">
+<a class="button primary-button" href="#tracks" rel="noopener noreferrer">Explore tracks</a>
+<a class="button ghost-button" href="#protocol" rel="noopener noreferrer">How scoring works</a>
+</div>
+</div>
+<div aria-label="Agenthon competition summary" class="hero-visual">
+<div class="logo-stage">
+<img alt="Agenthon 2026 logo" src="/static/agenthon2026/assets/agenthon-2026-logo.jpg">
+</div>
+<div class="signal-panel">
+<div>
+<span class="signal-label">Submission</span>
+<strong>Docker agent</strong>
+</div>
+<div>
+<span class="signal-label">Admissibility</span>
+<strong>g0-g3 gates</strong>
+</div>
+<div>
+<span class="signal-label">Ranking</span>
+<strong>Track metrics</strong>
+</div>
+</div>
+</div>
+</section>
+<section aria-label="Announcements" class="content-band announce-band" id="news">
+<div class="announce-stack">
+<article class="announce-banner announce-awards">
+<div class="announce-copy">
+<p class="announce-kicker">Awards</p>
+<h2>$1,500, $1,000 and $500 in every track.</h2>
+<p>
+                  The first, second and third teams in each of the four tracks win cash awards:
+                  $12,000 in total.
+                </p>
+</div>
+<div class="announce-actions">
+<a class="button ghost-button" href="#awards" rel="noopener noreferrer">Award details</a>
+</div>
+</article>
+<article class="announce-banner announce-cfp">
+<div class="announce-copy">
+<p class="announce-kicker">Call for papers · NeurIPS 2026 workshop, Atlanta, 12 December</p>
+<h2>Present your work at the Agenthon workshop.</h2>
+<p>
+                  Papers are due Wednesday 30 September at 23:59 AoE. Decisions follow by Friday
+                  2 October at 23:59 AoE.
+                </p>
+</div>
+<div class="announce-actions">
+<a class="button primary-button" href="https://forms.gle/oBs6nVyvyZG2Ky2P7" rel="noopener noreferrer">Submit a paper</a>
+<a class="button ghost-button" href="#call-for-papers" rel="noopener noreferrer">Details</a>
+</div>
+</article>
+</div>
+<p class="announce-sponsors">
+<strong>We're delighted to welcome NVIDIA, Bloomberg and AllianceBernstein as sponsors of
+            Agenthon 2026.</strong>
+            Thank you for your support, for helping us organize the competition, and for collaborating
+            with us on its science and task development.
+            <a href="#sponsors" rel="noopener noreferrer">Meet our sponsors</a>
+</p>
+</section>
+<section class="content-band" id="key-dates">
+<div class="section-heading narrow-heading">
+<p class="section-kicker">Key dates</p>
+<h2>Key dates.</h2>
+<p>
+              Registration runs from 17 August to 12 October 2026. Registration and Development
+              close together at 23:59 Anywhere on Earth (AoE, UTC−12) on 12 October.
+              The last Development runs start by 20:00 UTC on 12 October: an upload that has not started by then is not run. The evaluation fleet is in scheduled maintenance on 13 October from 08:00 to 12:00 UTC, when the Final + Verification phase opens.
+            </p>
+</div>
+<ol class="key-dates-grid">
+<li>
+<span class="key-date-when">17 Aug – 12 Oct</span>
+<h3>Registration</h3>
+<p>Sign up and form your team.</p>
+</li>
+<li>
+<span class="key-date-when">28 Aug – 12 Oct</span>
+<h3>Development</h3>
+<p>Public practice repositories, iteration, and the validation leaderboard.</p>
+</li>
+<li>
+<span class="key-date-when">30 Sep</span>
+<h3>Call for papers closes</h3>
+<p>Papers for the NeurIPS workshop are due at 23:59 AoE.
+                <a href="#call-for-papers" rel="noopener noreferrer">How to submit</a>.</p>
+</li>
+<li>
+<span class="key-date-when">13 – 25 Oct</span>
+<h3>Final + Verification</h3>
+<p>One submission per entered track is evaluated on sealed held-out units; organizers
+                rerun leading submissions and review reproducibility within the same phase.</p>
+</li>
+<li>
+<span class="key-date-when">Sat 12 Dec</span>
+<h3>Workshop at NeurIPS, Atlanta</h3>
+<p>The Agenthon workshop, with final presentations by the winners, in Atlanta, Georgia.</p>
+</li>
+</ol>
+<p class="key-dates-note">
+            The competition closes with a workshop and final presentations from the winning teams at
+            NeurIPS in <strong>Atlanta, Georgia</strong>, on <strong>Saturday 12 December</strong>. All
+            dates are given in the
+            <a href="/rules/" rel="noopener noreferrer">official rules</a>, which govern if anything here is out of step.
+          </p>
+</section>
+<section class="content-band" id="teams">
+<div class="section-heading narrow-heading">
+<p class="section-kicker">Teams</p>
+<h2>Enter as a team of one to three.</h2>
+<p>
+              You can compete alone or with up to two teammates. You join one team and stay on it,
+              and that one team can enter as many of the four tracks as it wants.
+            </p>
+<p>
+              Registration is per team, and only registered teams can submit solutions or appear
+              on the leaderboard. Your team uses one account on the competition platform, chosen
+              by the team — the <a href="/guides/faq/#team-account" rel="noopener noreferrer">FAQ</a> explains what
+              that means for everyone else on the team.
+            </p>
+<p>
+              Have a question about entering? Start with the <a href="/guides/faq/" rel="noopener noreferrer">FAQ</a>.
+            </p>
+</div>
+</section>
+<section class="content-band intro-band">
+<div class="section-heading">
+<p class="section-kicker">Core question</p>
+<h2>Can AI agents produce finance answers that can be checked by machine?</h2>
+</div>
+<div class="intro-grid">
+<p>
+              Agenthon extends the Alphathon program into its first NeurIPS edition. The competition
+              keeps the four-track structure and hard finance setting, while adding sealed held-out
+              data, automated leakage controls, reproducible reruns, and public leaderboards.
+            </p>
+<p>
+              Agents in all four tracks run in sandboxed Docker containers without general internet
+              access. Supported Coding, Forecasting and Explainability submissions can call House
+              Nemotron through a restricted connection. Simulation has no network access. Build
+              required dependencies and permitted artifacts into your image before evaluation.
+            </p>
+</div>
+</section>
+<section class="content-band" id="tracks">
+<div class="section-heading narrow-heading">
+<p class="section-kicker">Four tracks</p>
+<h2>Same competition spine, four finance problems.</h2>
+</div>
+<div class="tracks-grid">
+<article class="track-card track-green">
+<span class="track-tag">T1 Coding</span>
+<h3>Quant-finance coding agents</h3>
+<p>
+                Build a Docker agent that solves quantitative finance coding tasks under pytest and
+                financial-invariant checks.
+              </p>
+<dl>
+<div><dt>Verb</dt><dd>solve</dd></div>
+<div><dt>Metric</dt><dd>pass@1</dd></div>
+<div><dt>Gate</dt><dd>pytest + invariants</dd></div>
+</dl>
+</article>
+<article class="track-card track-blue">
+<span class="track-tag">T2 Forecasting</span>
+<h3>Reasoning-augmented time series</h3>
+<p>
+                Forecast future panels using time-series data plus a time-stamped text corpus.
+                The score evaluates the forecast distribution; information uplift is a research aim.
+              </p>
+<dl>
+<div><dt>Verb</dt><dd>forecast</dd></div>
+<div><dt>Metric</dt><dd>CRPS composite</dd></div>
+<div><dt>Gate</dt><dd>as-of cutoff + calibration</dd></div>
+</dl>
+</article>
+<article class="track-card track-amber">
+<span class="track-tag">T3 Simulation</span>
+<h3>Accelerated market simulation</h3>
+<p>
+                Submit an ABIDES-compatible simulator that is faster while preserving matching-engine
+                semantics and market stylized facts. Development results are practice feedback, not
+                controlled Final timing.
+              </p>
+<dl>
+<div><dt>Verb</dt><dd>simulate</dd></div>
+<div><dt>Metric</dt><dd>events/sec</dd></div>
+<div><dt>Gate</dt><dd>semantic regression</dd></div>
+</dl>
+</article>
+<article class="track-card track-coral">
+<span class="track-tag">T4 Explainability</span>
+<h3>Evidence-grounded prediction</h3>
+<p>
+                Predict labels, values, or rankings over tabular entities, supported by a frozen
+                evidence corpus. Follow the track guide for prediction, evidence and reasoning evaluation.
+              </p>
+<dl>
+<div><dt>Verb</dt><dd>analyze</dd></div>
+<div><dt>Metric</dt><dd>Track 4 composite</dd></div>
+<div><dt>Gate</dt><dd>faithfulness + embargo</dd></div>
+</dl>
+</article>
+</div>
+</section>
+<section class="content-band protocol-band" id="protocol">
+<div class="section-heading narrow-heading">
+<p class="section-kicker">Protocol</p>
+<h2>Submit, check, score.</h2>
+<p>
+              Each unit is checked for admissibility and evaluated using its track's scoring rules.
+              Participant failures remain in the evaluation denominator; organizer faults are handled
+              separately. If two Final submissions finish a track with the same ranking score, the
+              tie is broken in favour of the one uploaded earlier.
+            </p>
+</div>
+<div aria-label="Submission process" class="process-row">
+<div class="process-step">
+<span>01</span>
+<h3>Submit</h3>
+<p>Upload the toolkit-generated ZIP identifying your agent image and proving team registration.</p>
+</div>
+<div class="process-step">
+<span>02</span>
+<h3>Check</h3>
+<p>g0-g3 verify integrity, schema, cutoff/resource rules, and domain semantics.</p>
+</div>
+<div class="process-step">
+<span>03</span>
+<h3>Score</h3>
+<p>Track-specific scoring produces Development feedback. Track 1 uses pass@1 without a confidence interval.</p>
+</div>
+</div>
+<div class="split-layout">
+<div class="text-block">
+<p class="section-kicker">Public/private firewall</p>
+<h3>Transparent grading, sealed answers.</h3>
+<p>
+                Each track has a public practice repo and a private sealed exam repo. Public repos
+                include practice tasks, examples, local checks, available baselines and participant
+                docs. Private repos hold evaluation tasks, reference answers, scoring material and
+                audit records.
+              </p>
+</div>
+<div aria-label="Public and private repo split" class="firewall-table" role="table">
+<div class="table-header" role="row">
+<span role="columnheader">Public practice</span>
+<span role="columnheader">Private exam</span>
+</div>
+<div role="row">
+<span role="cell">Public practice units</span>
+<span role="cell">Private-test held-out units</span>
+</div>
+<div role="row">
+<span role="cell">Examples, local checks and available baselines</span>
+<span role="cell">Oracle solutions and final scorer</span>
+</div>
+<div role="row">
+<span role="cell">Manifest and canary safety checks</span>
+<span role="cell">Canary registry and audit logs</span>
+</div>
+</div>
+</div>
+</section>
+<section class="content-band leaderboard-band leaderboard-section" data-leaderboard="" data-leaderboard-src="leaderboard.json" id="leaderboard">
+<div class="section-heading narrow-heading">
+<p class="section-kicker">Leaderboard</p>
+<h2>Competition scores, one track at a time.</h2>
+<p>
+              Development leaderboards on agenthon.net are public and visible to everyone.
+              Each track uses its own scale. Higher is better for the displayed leaderboard scores;
+              the raw Forecasting loss is converted for this display. Use CodaBench for uploads and
+              processing status. Follow the logged-in website for submission opening status.
+              From 5 October 2026, 00:00 AoE (12:00 UTC), the Track 1 board ranks only runs uploaded after
+              25 September 2026 at 05:00 UTC, for every team (Track 1 README, rules 8 and 9).
+            </p>
+</div>
+
+
+<p class="leaderboard-updated">
+            The leaderboard is updated periodically from the competition platform.
+          </p>
+<div class="leaderboard-controls" data-leaderboard-controls="">
+<div aria-label="Leaderboard track" class="leaderboard-tabs" role="tablist">
+T1 Coding
+T2 Forecasting
+T3 Simulation
+T4 Explainability
+</div>
+<div class="leaderboard-search">
+Search teams
+
+</div>
+</div>
+<p aria-live="polite" class="visually-hidden" data-leaderboard-status="" role="status"></p>
+<div aria-labelledby="lb-tab-t1" class="leaderboard-panel" data-track-panel="t1" id="lb-panel-t1" role="tabpanel">
+<h3 class="leaderboard-panel-title">T1 Coding</h3>
+<div class="leaderboard-page" id="lb-t1-p1">
+<p class="leaderboard-page-range">T1 Coding: teams 1–25 of 73</p>
+<div aria-label="T1 Coding leaderboard, teams 1–25 of 73" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="Kaile" role="row">
+<span class="rank-value" role="cell">1</span>
+<span class="team-name" role="cell">Kaile</span>
+<span class="score-value" role="cell">0.7674</span>
+</div>
+<div class="leaderboard-row" data-team="Saifuddin" role="row">
+<span class="rank-value" role="cell">2</span>
+<span class="team-name" role="cell">Saifuddin</span>
+<span class="score-value" role="cell">0.7209</span>
+</div>
+<div class="leaderboard-row" data-team="Proxima" role="row">
+<span class="rank-value" role="cell">3</span>
+<span class="team-name" role="cell">Proxima</span>
+<span class="score-value" role="cell">0.5000</span>
+</div>
+<div class="leaderboard-row" data-team="Arsen Ibragimov" role="row">
+<span class="rank-value" role="cell">4</span>
+<span class="team-name" role="cell">Arsen Ibragimov</span>
+<span class="score-value" role="cell">0.4535</span>
+</div>
+<div class="leaderboard-row" data-team="Pluvia" role="row">
+<span class="rank-value" role="cell">5</span>
+<span class="team-name" role="cell">Pluvia</span>
+<span class="score-value" role="cell">0.4302</span>
+</div>
+<div class="leaderboard-row" data-team="Yan Su" role="row">
+<span class="rank-value" role="cell">6</span>
+<span class="team-name" role="cell">Yan Su</span>
+<span class="score-value" role="cell">0.3605</span>
+</div>
+<div class="leaderboard-row" data-team="Chirayu" role="row">
+<span class="rank-value" role="cell">7</span>
+<span class="team-name" role="cell">Chirayu</span>
+<span class="score-value" role="cell">0.3488</span>
+</div>
+<div class="leaderboard-row" data-team="MindAlchemist" role="row">
+<span class="rank-value" role="cell">8</span>
+<span class="team-name" role="cell">MindAlchemist</span>
+<span class="score-value" role="cell">0.2907</span>
+</div>
+<div class="leaderboard-row" data-team="RizYL" role="row">
+<span class="rank-value" role="cell">9</span>
+<span class="team-name" role="cell">RizYL</span>
+<span class="score-value" role="cell">0.2791</span>
+</div>
+<div class="leaderboard-row" data-team="abc123" role="row">
+<span class="rank-value" role="cell">10</span>
+<span class="team-name" role="cell">abc123</span>
+<span class="score-value" role="cell">0.2674</span>
+</div>
+<div class="leaderboard-row" data-team="Nana Champions" role="row">
+<span class="rank-value" role="cell">10</span>
+<span class="team-name" role="cell">Nana Champions</span>
+<span class="score-value" role="cell">0.2674</span>
+</div>
+<div class="leaderboard-row" data-team="Cornfield Chase" role="row">
+<span class="rank-value" role="cell">12</span>
+<span class="team-name" role="cell">Cornfield Chase</span>
+<span class="score-value" role="cell">0.2326</span>
+</div>
+<div class="leaderboard-row" data-team="Formaggio" role="row">
+<span class="rank-value" role="cell">12</span>
+<span class="team-name" role="cell">Formaggio</span>
+<span class="score-value" role="cell">0.2326</span>
+</div>
+<div class="leaderboard-row" data-team="Autonomous Alpha" role="row">
+<span class="rank-value" role="cell">14</span>
+<span class="team-name" role="cell">Autonomous Alpha</span>
+<span class="score-value" role="cell">0.2209</span>
+</div>
+<div class="leaderboard-row" data-team="RandomGuyHavingFun" role="row">
+<span class="rank-value" role="cell">15</span>
+<span class="team-name" role="cell">RandomGuyHavingFun</span>
+<span class="score-value" role="cell">0.2093</span>
+</div>
+<div class="leaderboard-row" data-team="Liqourena" role="row">
+<span class="rank-value" role="cell">15</span>
+<span class="team-name" role="cell">Liqourena</span>
+<span class="score-value" role="cell">0.2093</span>
+</div>
+<div class="leaderboard-row" data-team="Tengen Toppa" role="row">
+<span class="rank-value" role="cell">15</span>
+<span class="team-name" role="cell">Tengen Toppa</span>
+<span class="score-value" role="cell">0.2093</span>
+</div>
+<div class="leaderboard-row" data-team="Anonymous" role="row">
+<span class="rank-value" role="cell">18</span>
+<span class="team-name" role="cell">Anonymous</span>
+<span class="score-value" role="cell">0.1977</span>
+</div>
+<div class="leaderboard-row" data-team="in3lab" role="row">
+<span class="rank-value" role="cell">18</span>
+<span class="team-name" role="cell">in3lab</span>
+<span class="score-value" role="cell">0.1977</span>
+</div>
+<div class="leaderboard-row" data-team="APTAPT" role="row">
+<span class="rank-value" role="cell">18</span>
+<span class="team-name" role="cell">APTAPT</span>
+<span class="score-value" role="cell">0.1977</span>
+</div>
+<div class="leaderboard-row" data-team="Husky River Trading" role="row">
+<span class="rank-value" role="cell">18</span>
+<span class="team-name" role="cell">Husky River Trading</span>
+<span class="score-value" role="cell">0.1977</span>
+</div>
+<div class="leaderboard-row" data-team="eagle" role="row">
+<span class="rank-value" role="cell">22</span>
+<span class="team-name" role="cell">eagle</span>
+<span class="score-value" role="cell">0.1860</span>
+</div>
+<div class="leaderboard-row" data-team="fiftyfifty" role="row">
+<span class="rank-value" role="cell">22</span>
+<span class="team-name" role="cell">fiftyfifty</span>
+<span class="score-value" role="cell">0.1860</span>
+</div>
+<div class="leaderboard-row" data-team="CMCCGDYDDICT" role="row">
+<span class="rank-value" role="cell">22</span>
+<span class="team-name" role="cell">CMCCGDYDDICT</span>
+<span class="score-value" role="cell">0.1860</span>
+</div>
+<div class="leaderboard-row" data-team="eoo0m" role="row">
+<span class="rank-value" role="cell">22</span>
+<span class="team-name" role="cell">eoo0m</span>
+<span class="score-value" role="cell">0.1860</span>
+</div>
+</div>
+<div aria-label="T1 Coding leaderboard pages" class="leaderboard-pager" role="navigation">
+<span aria-current="page" class="leaderboard-page-link is-current">1–25</span>
+<a class="leaderboard-page-link" href="#lb-t1-p2" rel="noopener noreferrer">26–50</a>
+<a class="leaderboard-page-link" href="#lb-t1-p3" rel="noopener noreferrer">51–73</a>
+</div>
+</div>
+<div class="leaderboard-page" id="lb-t1-p2">
+<p class="leaderboard-page-range">T1 Coding: teams 26–50 of 73</p>
+<div aria-label="T1 Coding leaderboard, teams 26–50 of 73" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="BoGo" role="row">
+<span class="rank-value" role="cell">26</span>
+<span class="team-name" role="cell">BoGo</span>
+<span class="score-value" role="cell">0.1744</span>
+</div>
+<div class="leaderboard-row" data-team="Make It Make Cents 🙏" role="row">
+<span class="rank-value" role="cell">26</span>
+<span class="team-name" role="cell">Make It Make Cents 🙏</span>
+<span class="score-value" role="cell">0.1744</span>
+</div>
+<div class="leaderboard-row" data-team="Pluto" role="row">
+<span class="rank-value" role="cell">26</span>
+<span class="team-name" role="cell">Pluto</span>
+<span class="score-value" role="cell">0.1744</span>
+</div>
+<div class="leaderboard-row" data-team="Undefined" role="row">
+<span class="rank-value" role="cell">29</span>
+<span class="team-name" role="cell">Undefined</span>
+<span class="score-value" role="cell">0.1628</span>
+</div>
+<div class="leaderboard-row" data-team="AbangFrabi" role="row">
+<span class="rank-value" role="cell">29</span>
+<span class="team-name" role="cell">AbangFrabi</span>
+<span class="score-value" role="cell">0.1628</span>
+</div>
+<div class="leaderboard-row" data-team="verifiquant" role="row">
+<span class="rank-value" role="cell">29</span>
+<span class="team-name" role="cell">verifiquant</span>
+<span class="score-value" role="cell">0.1628</span>
+</div>
+<div class="leaderboard-row" data-team="Powerhouse" role="row">
+<span class="rank-value" role="cell">29</span>
+<span class="team-name" role="cell">Powerhouse</span>
+<span class="score-value" role="cell">0.1628</span>
+</div>
+<div class="leaderboard-row" data-team="Eyyyyyy" role="row">
+<span class="rank-value" role="cell">29</span>
+<span class="team-name" role="cell">Eyyyyyy</span>
+<span class="score-value" role="cell">0.1628</span>
+</div>
+<div class="leaderboard-row" data-team="Sean" role="row">
+<span class="rank-value" role="cell">34</span>
+<span class="team-name" role="cell">Sean</span>
+<span class="score-value" role="cell">0.1512</span>
+</div>
+<div class="leaderboard-row" data-team="Money Miner" role="row">
+<span class="rank-value" role="cell">34</span>
+<span class="team-name" role="cell">Money Miner</span>
+<span class="score-value" role="cell">0.1512</span>
+</div>
+<div class="leaderboard-row" data-team="1991" role="row">
+<span class="rank-value" role="cell">34</span>
+<span class="team-name" role="cell">1991</span>
+<span class="score-value" role="cell">0.1512</span>
+</div>
+<div class="leaderboard-row" data-team="Give me a job" role="row">
+<span class="rank-value" role="cell">34</span>
+<span class="team-name" role="cell">Give me a job</span>
+<span class="score-value" role="cell">0.1512</span>
+</div>
+<div class="leaderboard-row" data-team="gheware" role="row">
+<span class="rank-value" role="cell">38</span>
+<span class="team-name" role="cell">gheware</span>
+<span class="score-value" role="cell">0.1395</span>
+</div>
+<div class="leaderboard-row" data-team="Warkop PuteraPrakoso" role="row">
+<span class="rank-value" role="cell">38</span>
+<span class="team-name" role="cell">Warkop PuteraPrakoso</span>
+<span class="score-value" role="cell">0.1395</span>
+</div>
+<div class="leaderboard-row" data-team="Four Sigma" role="row">
+<span class="rank-value" role="cell">38</span>
+<span class="team-name" role="cell">Four Sigma</span>
+<span class="score-value" role="cell">0.1395</span>
+</div>
+<div class="leaderboard-row" data-team="iluss" role="row">
+<span class="rank-value" role="cell">41</span>
+<span class="team-name" role="cell">iluss</span>
+<span class="score-value" role="cell">0.1279</span>
+</div>
+<div class="leaderboard-row" data-team="Just-in-Time" role="row">
+<span class="rank-value" role="cell">41</span>
+<span class="team-name" role="cell">Just-in-Time</span>
+<span class="score-value" role="cell">0.1279</span>
+</div>
+<div class="leaderboard-row" data-team="VerityLovityFalsityCruelty" role="row">
+<span class="rank-value" role="cell">41</span>
+<span class="team-name" role="cell">VerityLovityFalsityCruelty</span>
+<span class="score-value" role="cell">0.1279</span>
+</div>
+<div class="leaderboard-row" data-team="Duo_tech" role="row">
+<span class="rank-value" role="cell">41</span>
+<span class="team-name" role="cell">Duo_tech</span>
+<span class="score-value" role="cell">0.1279</span>
+</div>
+<div class="leaderboard-row" data-team="MicroCat" role="row">
+<span class="rank-value" role="cell">45</span>
+<span class="team-name" role="cell">MicroCat</span>
+<span class="score-value" role="cell">0.1163</span>
+</div>
+<div class="leaderboard-row" data-team="Agent_007" role="row">
+<span class="rank-value" role="cell">45</span>
+<span class="team-name" role="cell">Agent_007</span>
+<span class="score-value" role="cell">0.1163</span>
+</div>
+<div class="leaderboard-row" data-team="always win" role="row">
+<span class="rank-value" role="cell">45</span>
+<span class="team-name" role="cell">always win</span>
+<span class="score-value" role="cell">0.1163</span>
+</div>
+<div class="leaderboard-row" data-team="Nietzsche" role="row">
+<span class="rank-value" role="cell">45</span>
+<span class="team-name" role="cell">Nietzsche</span>
+<span class="score-value" role="cell">0.1163</span>
+</div>
+<div class="leaderboard-row" data-team="Paragon" role="row">
+<span class="rank-value" role="cell">45</span>
+<span class="team-name" role="cell">Paragon</span>
+<span class="score-value" role="cell">0.1163</span>
+</div>
+<div class="leaderboard-row" data-team="UNIVERSEPLAYER" role="row">
+<span class="rank-value" role="cell">50</span>
+<span class="team-name" role="cell">UNIVERSEPLAYER</span>
+<span class="score-value" role="cell">0.0930</span>
+</div>
+</div>
+<div aria-label="T1 Coding leaderboard pages" class="leaderboard-pager" role="navigation">
+<a class="leaderboard-page-link" href="#lb-t1-p1" rel="noopener noreferrer">1–25</a>
+<span aria-current="page" class="leaderboard-page-link is-current">26–50</span>
+<a class="leaderboard-page-link" href="#lb-t1-p3" rel="noopener noreferrer">51–73</a>
+</div>
+</div>
+<div class="leaderboard-page" id="lb-t1-p3">
+<p class="leaderboard-page-range">T1 Coding: teams 51–73 of 73</p>
+<div aria-label="T1 Coding leaderboard, teams 51–73 of 73" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="Proof of Alpha" role="row">
+<span class="rank-value" role="cell">50</span>
+<span class="team-name" role="cell">Proof of Alpha</span>
+<span class="score-value" role="cell">0.0930</span>
+</div>
+<div class="leaderboard-row" data-team="Sir Thaddeus" role="row">
+<span class="rank-value" role="cell">50</span>
+<span class="team-name" role="cell">Sir Thaddeus</span>
+<span class="score-value" role="cell">0.0930</span>
+</div>
+<div class="leaderboard-row" data-team="Banana Kingdom" role="row">
+<span class="rank-value" role="cell">50</span>
+<span class="team-name" role="cell">Banana Kingdom</span>
+<span class="score-value" role="cell">0.0930</span>
+</div>
+<div class="leaderboard-row" data-team="Agent Alpha" role="row">
+<span class="rank-value" role="cell">54</span>
+<span class="team-name" role="cell">Agent Alpha</span>
+<span class="score-value" role="cell">0.0814</span>
+</div>
+<div class="leaderboard-row" data-team="The Unscheduled Penguins" role="row">
+<span class="rank-value" role="cell">55</span>
+<span class="team-name" role="cell">The Unscheduled Penguins</span>
+<span class="score-value" role="cell">0.0698</span>
+</div>
+<div class="leaderboard-row" data-team="HTHY" role="row">
+<span class="rank-value" role="cell">55</span>
+<span class="team-name" role="cell">HTHY</span>
+<span class="score-value" role="cell">0.0698</span>
+</div>
+<div class="leaderboard-row" data-team="Apex" role="row">
+<span class="rank-value" role="cell">57</span>
+<span class="team-name" role="cell">Apex</span>
+<span class="score-value" role="cell">0.0581</span>
+</div>
+<div class="leaderboard-row" data-team="GAOKUO" role="row">
+<span class="rank-value" role="cell">58</span>
+<span class="team-name" role="cell">GAOKUO</span>
+<span class="score-value" role="cell">0.0465</span>
+</div>
+<div class="leaderboard-row" data-team="attention is qkv" role="row">
+<span class="rank-value" role="cell">59</span>
+<span class="team-name" role="cell">attention is qkv</span>
+<span class="score-value" role="cell">0.0349</span>
+</div>
+<div class="leaderboard-row" data-team="Volatility Labs" role="row">
+<span class="rank-value" role="cell">60</span>
+<span class="team-name" role="cell">Volatility Labs</span>
+<span class="score-value" role="cell">0.0233</span>
+</div>
+<div class="leaderboard-row" data-team="Urithiru" role="row">
+<span class="rank-value" role="cell">61</span>
+<span class="team-name" role="cell">Urithiru</span>
+<span class="score-value" role="cell">0.0116</span>
+</div>
+<div class="leaderboard-row" data-team="Quiet Signal" role="row">
+<span class="rank-value" role="cell">61</span>
+<span class="team-name" role="cell">Quiet Signal</span>
+<span class="score-value" role="cell">0.0116</span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="Aamir Abdul Azeez" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">Aamir Abdul Azeez</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="TEst" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">TEst</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="AlbertQuant" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">AlbertQuant</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="9:00pm" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">9:00pm</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="C_cake" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">C_cake</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="hnhparitosh" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">hnhparitosh</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="FedorAzarov" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">FedorAzarov</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="phtree" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">phtree</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="Submartingale" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">Submartingale</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="Future Ability" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">Future Ability</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="Masato" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">Masato</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+</div>
+<div aria-label="T1 Coding leaderboard pages" class="leaderboard-pager" role="navigation">
+<a class="leaderboard-page-link" href="#lb-t1-p1" rel="noopener noreferrer">1–25</a>
+<a class="leaderboard-page-link" href="#lb-t1-p2" rel="noopener noreferrer">26–50</a>
+<span aria-current="page" class="leaderboard-page-link is-current">51–73</span>
+</div>
+</div>
+<p class="leaderboard-empty" data-leaderboard-noresults="">No team matches that search.</p>
+</div>
+<div aria-labelledby="lb-tab-t2" class="leaderboard-panel" data-track-panel="t2" id="lb-panel-t2" role="tabpanel">
+<h3 class="leaderboard-panel-title">T2 Forecasting</h3>
+<div class="leaderboard-page" id="lb-t2-p1">
+<p class="leaderboard-page-range">T2 Forecasting: teams 1–25 of 99</p>
+<div aria-label="T2 Forecasting leaderboard, teams 1–25 of 99" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="Made in Heaven" role="row">
+<span class="rank-value" role="cell">1</span>
+<span class="team-name" role="cell">Made in Heaven</span>
+<span class="score-value" role="cell">-0.6301</span>
+</div>
+<div class="leaderboard-row" data-team="Yan Su" role="row">
+<span class="rank-value" role="cell">2</span>
+<span class="team-name" role="cell">Yan Su</span>
+<span class="score-value" role="cell">-0.6555</span>
+</div>
+<div class="leaderboard-row" data-team="Ywin" role="row">
+<span class="rank-value" role="cell">3</span>
+<span class="team-name" role="cell">Ywin</span>
+<span class="score-value" role="cell">-0.6667</span>
+</div>
+<div class="leaderboard-row" data-team="Samoyed" role="row">
+<span class="rank-value" role="cell">4</span>
+<span class="team-name" role="cell">Samoyed</span>
+<span class="score-value" role="cell">-0.7761</span>
+</div>
+<div class="leaderboard-row" data-team="CMCCGDYDDICT" role="row">
+<span class="rank-value" role="cell">5</span>
+<span class="team-name" role="cell">CMCCGDYDDICT</span>
+<span class="score-value" role="cell">-0.7765</span>
+</div>
+<div class="leaderboard-row" data-team="labubu666" role="row">
+<span class="rank-value" role="cell">6</span>
+<span class="team-name" role="cell">labubu666</span>
+<span class="score-value" role="cell">-0.7947</span>
+</div>
+<div class="leaderboard-row" data-team="F1_1" role="row">
+<span class="rank-value" role="cell">7</span>
+<span class="team-name" role="cell">F1_1</span>
+<span class="score-value" role="cell">-0.8023</span>
+</div>
+<div class="leaderboard-row" data-team="HBIT" role="row">
+<span class="rank-value" role="cell">8</span>
+<span class="team-name" role="cell">HBIT</span>
+<span class="score-value" role="cell">-0.8159</span>
+</div>
+<div class="leaderboard-row" data-team="Nexus of f(x)" role="row">
+<span class="rank-value" role="cell">9</span>
+<span class="team-name" role="cell">Nexus of f(x)</span>
+<span class="score-value" role="cell">-0.8184</span>
+</div>
+<div class="leaderboard-row" data-team="Warkop PuteraPrakoso" role="row">
+<span class="rank-value" role="cell">10</span>
+<span class="team-name" role="cell">Warkop PuteraPrakoso</span>
+<span class="score-value" role="cell">-0.8369</span>
+</div>
+<div class="leaderboard-row" data-team="alpha-extractor" role="row">
+<span class="rank-value" role="cell">11</span>
+<span class="team-name" role="cell">alpha-extractor</span>
+<span class="score-value" role="cell">-0.8546</span>
+</div>
+<div class="leaderboard-row" data-team="VerityLovityFalsityCruelty" role="row">
+<span class="rank-value" role="cell">12</span>
+<span class="team-name" role="cell">VerityLovityFalsityCruelty</span>
+<span class="score-value" role="cell">-0.8580</span>
+</div>
+<div class="leaderboard-row" data-team="Apex" role="row">
+<span class="rank-value" role="cell">13</span>
+<span class="team-name" role="cell">Apex</span>
+<span class="score-value" role="cell">-0.8598</span>
+</div>
+<div class="leaderboard-row" data-team="Chirayu" role="row">
+<span class="rank-value" role="cell">14</span>
+<span class="team-name" role="cell">Chirayu</span>
+<span class="score-value" role="cell">-0.8694</span>
+</div>
+<div class="leaderboard-row" data-team="Saifuddin" role="row">
+<span class="rank-value" role="cell">15</span>
+<span class="team-name" role="cell">Saifuddin</span>
+<span class="score-value" role="cell">-0.9027</span>
+</div>
+<div class="leaderboard-row" data-team="Masato" role="row">
+<span class="rank-value" role="cell">16</span>
+<span class="team-name" role="cell">Masato</span>
+<span class="score-value" role="cell">-0.9037</span>
+</div>
+<div class="leaderboard-row" data-team="Sapien" role="row">
+<span class="rank-value" role="cell">17</span>
+<span class="team-name" role="cell">Sapien</span>
+<span class="score-value" role="cell">-0.9215</span>
+</div>
+<div class="leaderboard-row" data-team="DKYnumber1" role="row">
+<span class="rank-value" role="cell">18</span>
+<span class="team-name" role="cell">DKYnumber1</span>
+<span class="score-value" role="cell">-0.9315</span>
+</div>
+<div class="leaderboard-row" data-team="Sitadel Insecurities" role="row">
+<span class="rank-value" role="cell">19</span>
+<span class="team-name" role="cell">Sitadel Insecurities</span>
+<span class="score-value" role="cell">-0.9317</span>
+</div>
+<div class="leaderboard-row" data-team="urayaha" role="row">
+<span class="rank-value" role="cell">20</span>
+<span class="team-name" role="cell">urayaha</span>
+<span class="score-value" role="cell">-0.9372</span>
+</div>
+<div class="leaderboard-row" data-team="Garros Solo Lab" role="row">
+<span class="rank-value" role="cell">21</span>
+<span class="team-name" role="cell">Garros Solo Lab</span>
+<span class="score-value" role="cell">-0.9383</span>
+</div>
+<div class="leaderboard-row" data-team="Formaggio" role="row">
+<span class="rank-value" role="cell">22</span>
+<span class="team-name" role="cell">Formaggio</span>
+<span class="score-value" role="cell">-0.9394</span>
+</div>
+<div class="leaderboard-row" data-team="abc123" role="row">
+<span class="rank-value" role="cell">23</span>
+<span class="team-name" role="cell">abc123</span>
+<span class="score-value" role="cell">-0.9439</span>
+</div>
+<div class="leaderboard-row" data-team="Autonomous Alpha" role="row">
+<span class="rank-value" role="cell">24</span>
+<span class="team-name" role="cell">Autonomous Alpha</span>
+<span class="score-value" role="cell">-0.9476</span>
+</div>
+<div class="leaderboard-row" data-team="Husky River Trading" role="row">
+<span class="rank-value" role="cell">25</span>
+<span class="team-name" role="cell">Husky River Trading</span>
+<span class="score-value" role="cell">-0.9498</span>
+</div>
+</div>
+<div aria-label="T2 Forecasting leaderboard pages" class="leaderboard-pager" role="navigation">
+<span aria-current="page" class="leaderboard-page-link is-current">1–25</span>
+<a class="leaderboard-page-link" href="#lb-t2-p2" rel="noopener noreferrer">26–50</a>
+<a class="leaderboard-page-link" href="#lb-t2-p3" rel="noopener noreferrer">51–75</a>
+<a class="leaderboard-page-link" href="#lb-t2-p4" rel="noopener noreferrer">76–99</a>
+</div>
+</div>
+<div class="leaderboard-page" id="lb-t2-p2">
+<p class="leaderboard-page-range">T2 Forecasting: teams 26–50 of 99</p>
+<div aria-label="T2 Forecasting leaderboard, teams 26–50 of 99" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="in3lab" role="row">
+<span class="rank-value" role="cell">26</span>
+<span class="team-name" role="cell">in3lab</span>
+<span class="score-value" role="cell">-0.9511</span>
+</div>
+<div class="leaderboard-row" data-team="Super Debugging" role="row">
+<span class="rank-value" role="cell">27</span>
+<span class="team-name" role="cell">Super Debugging</span>
+<span class="score-value" role="cell">-0.9528</span>
+</div>
+<div class="leaderboard-row" data-team="JJ LAB" role="row">
+<span class="rank-value" role="cell">28</span>
+<span class="team-name" role="cell">JJ LAB</span>
+<span class="score-value" role="cell">-0.9541</span>
+</div>
+<div class="leaderboard-row" data-team="Cornfield Chase" role="row">
+<span class="rank-value" role="cell">29</span>
+<span class="team-name" role="cell">Cornfield Chase</span>
+<span class="score-value" role="cell">-0.9586</span>
+</div>
+<div class="leaderboard-row" data-team="mikelou1" role="row">
+<span class="rank-value" role="cell">30</span>
+<span class="team-name" role="cell">mikelou1</span>
+<span class="score-value" role="cell">-0.9617</span>
+</div>
+<div class="leaderboard-row" data-team="AsOf Quant" role="row">
+<span class="rank-value" role="cell">31</span>
+<span class="team-name" role="cell">AsOf Quant</span>
+<span class="score-value" role="cell">-0.9632</span>
+</div>
+<div class="leaderboard-row" data-team="Yongchang" role="row">
+<span class="rank-value" role="cell">32</span>
+<span class="team-name" role="cell">Yongchang</span>
+<span class="score-value" role="cell">-0.9661</span>
+</div>
+<div class="leaderboard-row" data-team="Natpaphon" role="row">
+<span class="rank-value" role="cell">33</span>
+<span class="team-name" role="cell">Natpaphon</span>
+<span class="score-value" role="cell">-0.9701</span>
+</div>
+<div class="leaderboard-row" data-team="LastDigitsOfPi" role="row">
+<span class="rank-value" role="cell">34</span>
+<span class="team-name" role="cell">LastDigitsOfPi</span>
+<span class="score-value" role="cell">-0.9714</span>
+</div>
+<div class="leaderboard-row" data-team="Just-in-Time" role="row">
+<span class="rank-value" role="cell">35</span>
+<span class="team-name" role="cell">Just-in-Time</span>
+<span class="score-value" role="cell">-0.9724</span>
+</div>
+<div class="leaderboard-row" data-team="1991" role="row">
+<span class="rank-value" role="cell">36</span>
+<span class="team-name" role="cell">1991</span>
+<span class="score-value" role="cell">-0.9754</span>
+</div>
+<div class="leaderboard-row" data-team="spidy" role="row">
+<span class="rank-value" role="cell">37</span>
+<span class="team-name" role="cell">spidy</span>
+<span class="score-value" role="cell">-0.9755</span>
+</div>
+<div class="leaderboard-row" data-team="Liqourena" role="row">
+<span class="rank-value" role="cell">38</span>
+<span class="team-name" role="cell">Liqourena</span>
+<span class="score-value" role="cell">-0.9782</span>
+</div>
+<div class="leaderboard-row" data-team="LIZARD" role="row">
+<span class="rank-value" role="cell">39</span>
+<span class="team-name" role="cell">LIZARD</span>
+<span class="score-value" role="cell">-0.9786</span>
+</div>
+<div class="leaderboard-row" data-team="pluuuuuus" role="row">
+<span class="rank-value" role="cell">40</span>
+<span class="team-name" role="cell">pluuuuuus</span>
+<span class="score-value" role="cell">-0.9794</span>
+</div>
+<div class="leaderboard-row" data-team="Proof of Alpha" role="row">
+<span class="rank-value" role="cell">41</span>
+<span class="team-name" role="cell">Proof of Alpha</span>
+<span class="score-value" role="cell">-0.9821</span>
+</div>
+<div class="leaderboard-row" data-team="Money Miner" role="row">
+<span class="rank-value" role="cell">42</span>
+<span class="team-name" role="cell">Money Miner</span>
+<span class="score-value" role="cell">-0.9822</span>
+</div>
+<div class="leaderboard-row" data-team="fiftyfifty" role="row">
+<span class="rank-value" role="cell">43</span>
+<span class="team-name" role="cell">fiftyfifty</span>
+<span class="score-value" role="cell">-0.9825</span>
+</div>
+<div class="leaderboard-row" data-team="In Sync" role="row">
+<span class="rank-value" role="cell">44</span>
+<span class="team-name" role="cell">In Sync</span>
+<span class="score-value" role="cell">-0.9882</span>
+</div>
+<div class="leaderboard-row" data-team="iluss" role="row">
+<span class="rank-value" role="cell">45</span>
+<span class="team-name" role="cell">iluss</span>
+<span class="score-value" role="cell">-0.9890</span>
+</div>
+<div class="leaderboard-row" data-team="randomwalk" role="row">
+<span class="rank-value" role="cell">46</span>
+<span class="team-name" role="cell">randomwalk</span>
+<span class="score-value" role="cell">-0.9890</span>
+</div>
+<div class="leaderboard-row" data-team="Quiet Signal" role="row">
+<span class="rank-value" role="cell">47</span>
+<span class="team-name" role="cell">Quiet Signal</span>
+<span class="score-value" role="cell">-0.9921</span>
+</div>
+<div class="leaderboard-row" data-team="ZZKK" role="row">
+<span class="rank-value" role="cell">48</span>
+<span class="team-name" role="cell">ZZKK</span>
+<span class="score-value" role="cell">-0.9933</span>
+</div>
+<div class="leaderboard-row" data-team="HG Market System" role="row">
+<span class="rank-value" role="cell">49</span>
+<span class="team-name" role="cell">HG Market System</span>
+<span class="score-value" role="cell">-0.9947</span>
+</div>
+<div class="leaderboard-row" data-team="DoublePai" role="row">
+<span class="rank-value" role="cell">50</span>
+<span class="team-name" role="cell">DoublePai</span>
+<span class="score-value" role="cell">-0.9954</span>
+</div>
+</div>
+<div aria-label="T2 Forecasting leaderboard pages" class="leaderboard-pager" role="navigation">
+<a class="leaderboard-page-link" href="#lb-t2-p1" rel="noopener noreferrer">1–25</a>
+<span aria-current="page" class="leaderboard-page-link is-current">26–50</span>
+<a class="leaderboard-page-link" href="#lb-t2-p3" rel="noopener noreferrer">51–75</a>
+<a class="leaderboard-page-link" href="#lb-t2-p4" rel="noopener noreferrer">76–99</a>
+</div>
+</div>
+<div class="leaderboard-page" id="lb-t2-p3">
+<p class="leaderboard-page-range">T2 Forecasting: teams 51–75 of 99</p>
+<div aria-label="T2 Forecasting leaderboard, teams 51–75 of 99" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="TradeFlare" role="row">
+<span class="rank-value" role="cell">51</span>
+<span class="team-name" role="cell">TradeFlare</span>
+<span class="score-value" role="cell">-0.9969</span>
+</div>
+<div class="leaderboard-row" data-team="Paragon" role="row">
+<span class="rank-value" role="cell">52</span>
+<span class="team-name" role="cell">Paragon</span>
+<span class="score-value" role="cell">-0.9974</span>
+</div>
+<div class="leaderboard-row" data-team="Not Today" role="row">
+<span class="rank-value" role="cell">53</span>
+<span class="team-name" role="cell">Not Today</span>
+<span class="score-value" role="cell">-0.9983</span>
+</div>
+<div class="leaderboard-row" data-team="Luca" role="row">
+<span class="rank-value" role="cell">54</span>
+<span class="team-name" role="cell">Luca</span>
+<span class="score-value" role="cell">-0.9988</span>
+</div>
+<div class="leaderboard-row" data-team="OOBs" role="row">
+<span class="rank-value" role="cell">55</span>
+<span class="team-name" role="cell">OOBs</span>
+<span class="score-value" role="cell">-1.0000</span>
+</div>
+<div class="leaderboard-row" data-team="Nietzsche" role="row">
+<span class="rank-value" role="cell">55</span>
+<span class="team-name" role="cell">Nietzsche</span>
+<span class="score-value" role="cell">-1.0000</span>
+</div>
+<div class="leaderboard-row" data-team="Verifiable Capital" role="row">
+<span class="rank-value" role="cell">57</span>
+<span class="team-name" role="cell">Verifiable Capital</span>
+<span class="score-value" role="cell">-1.0030</span>
+</div>
+<div class="leaderboard-row" data-team="iKun's Team" role="row">
+<span class="rank-value" role="cell">58</span>
+<span class="team-name" role="cell">iKun's Team</span>
+<span class="score-value" role="cell">-1.0120</span>
+</div>
+<div class="leaderboard-row" data-team="Banana Kingdom" role="row">
+<span class="rank-value" role="cell">59</span>
+<span class="team-name" role="cell">Banana Kingdom</span>
+<span class="score-value" role="cell">-1.0135</span>
+</div>
+<div class="leaderboard-row" data-team="LiLaiLai" role="row">
+<span class="rank-value" role="cell">60</span>
+<span class="team-name" role="cell">LiLaiLai</span>
+<span class="score-value" role="cell">-1.0185</span>
+</div>
+<div class="leaderboard-row" data-team="lingsio" role="row">
+<span class="rank-value" role="cell">61</span>
+<span class="team-name" role="cell">lingsio</span>
+<span class="score-value" role="cell">-1.0228</span>
+</div>
+<div class="leaderboard-row" data-team="JiaxinLi" role="row">
+<span class="rank-value" role="cell">62</span>
+<span class="team-name" role="cell">JiaxinLi</span>
+<span class="score-value" role="cell">-1.0245</span>
+</div>
+<div class="leaderboard-row" data-team="Tengen Toppa" role="row">
+<span class="rank-value" role="cell">63</span>
+<span class="team-name" role="cell">Tengen Toppa</span>
+<span class="score-value" role="cell">-1.0254</span>
+</div>
+<div class="leaderboard-row" data-team="quack" role="row">
+<span class="rank-value" role="cell">64</span>
+<span class="team-name" role="cell">quack</span>
+<span class="score-value" role="cell">-1.0265</span>
+</div>
+<div class="leaderboard-row" data-team="Aamir Abdul Azeez" role="row">
+<span class="rank-value" role="cell">65</span>
+<span class="team-name" role="cell">Aamir Abdul Azeez</span>
+<span class="score-value" role="cell">-1.0271</span>
+</div>
+<div class="leaderboard-row" data-team="ARKANE" role="row">
+<span class="rank-value" role="cell">66</span>
+<span class="team-name" role="cell">ARKANE</span>
+<span class="score-value" role="cell">-1.0334</span>
+</div>
+<div class="leaderboard-row" data-team="Bayes Street" role="row">
+<span class="rank-value" role="cell">67</span>
+<span class="team-name" role="cell">Bayes Street</span>
+<span class="score-value" role="cell">-1.0355</span>
+</div>
+<div class="leaderboard-row" data-team="lifeisluck" role="row">
+<span class="rank-value" role="cell">68</span>
+<span class="team-name" role="cell">lifeisluck</span>
+<span class="score-value" role="cell">-1.0366</span>
+</div>
+<div class="leaderboard-row" data-team="Dog parents" role="row">
+<span class="rank-value" role="cell">69</span>
+<span class="team-name" role="cell">Dog parents</span>
+<span class="score-value" role="cell">-1.0402</span>
+</div>
+<div class="leaderboard-row" data-team="Jigglyduck" role="row">
+<span class="rank-value" role="cell">70</span>
+<span class="team-name" role="cell">Jigglyduck</span>
+<span class="score-value" role="cell">-1.0411</span>
+</div>
+<div class="leaderboard-row" data-team="C_cake" role="row">
+<span class="rank-value" role="cell">71</span>
+<span class="team-name" role="cell">C_cake</span>
+<span class="score-value" role="cell">-1.0431</span>
+</div>
+<div class="leaderboard-row" data-team="Jade" role="row">
+<span class="rank-value" role="cell">72</span>
+<span class="team-name" role="cell">Jade</span>
+<span class="score-value" role="cell">-1.0626</span>
+</div>
+<div class="leaderboard-row" data-team="katharsis" role="row">
+<span class="rank-value" role="cell">73</span>
+<span class="team-name" role="cell">katharsis</span>
+<span class="score-value" role="cell">-1.0666</span>
+</div>
+<div class="leaderboard-row" data-team="time" role="row">
+<span class="rank-value" role="cell">74</span>
+<span class="team-name" role="cell">time</span>
+<span class="score-value" role="cell">-1.0710</span>
+</div>
+<div class="leaderboard-row" data-team="pranshu rastogi" role="row">
+<span class="rank-value" role="cell">75</span>
+<span class="team-name" role="cell">pranshu rastogi</span>
+<span class="score-value" role="cell">-1.0766</span>
+</div>
+</div>
+<div aria-label="T2 Forecasting leaderboard pages" class="leaderboard-pager" role="navigation">
+<a class="leaderboard-page-link" href="#lb-t2-p1" rel="noopener noreferrer">1–25</a>
+<a class="leaderboard-page-link" href="#lb-t2-p2" rel="noopener noreferrer">26–50</a>
+<span aria-current="page" class="leaderboard-page-link is-current">51–75</span>
+<a class="leaderboard-page-link" href="#lb-t2-p4" rel="noopener noreferrer">76–99</a>
+</div>
+</div>
+<div class="leaderboard-page" id="lb-t2-p4">
+<p class="leaderboard-page-range">T2 Forecasting: teams 76–99 of 99</p>
+<div aria-label="T2 Forecasting leaderboard, teams 76–99 of 99" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="YIC Quant" role="row">
+<span class="rank-value" role="cell">76</span>
+<span class="team-name" role="cell">YIC Quant</span>
+<span class="score-value" role="cell">-1.0797</span>
+</div>
+<div class="leaderboard-row" data-team="AbangFrabi" role="row">
+<span class="rank-value" role="cell">77</span>
+<span class="team-name" role="cell">AbangFrabi</span>
+<span class="score-value" role="cell">-1.0805</span>
+</div>
+<div class="leaderboard-row" data-team="Flowfront" role="row">
+<span class="rank-value" role="cell">78</span>
+<span class="team-name" role="cell">Flowfront</span>
+<span class="score-value" role="cell">-1.0806</span>
+</div>
+<div class="leaderboard-row" data-team="OffTheTape" role="row">
+<span class="rank-value" role="cell">79</span>
+<span class="team-name" role="cell">OffTheTape</span>
+<span class="score-value" role="cell">-1.1042</span>
+</div>
+<div class="leaderboard-row" data-team="PSS_" role="row">
+<span class="rank-value" role="cell">80</span>
+<span class="team-name" role="cell">PSS_</span>
+<span class="score-value" role="cell">-1.1066</span>
+</div>
+<div class="leaderboard-row" data-team="krnb" role="row">
+<span class="rank-value" role="cell">81</span>
+<span class="team-name" role="cell">krnb</span>
+<span class="score-value" role="cell">-1.1135</span>
+</div>
+<div class="leaderboard-row" data-team="5 o'clock" role="row">
+<span class="rank-value" role="cell">82</span>
+<span class="team-name" role="cell">5 o'clock</span>
+<span class="score-value" role="cell">-1.1146</span>
+</div>
+<div class="leaderboard-row" data-team="GAOKUO" role="row">
+<span class="rank-value" role="cell">83</span>
+<span class="team-name" role="cell">GAOKUO</span>
+<span class="score-value" role="cell">-1.1180</span>
+</div>
+<div class="leaderboard-row" data-team="Try hard" role="row">
+<span class="rank-value" role="cell">84</span>
+<span class="team-name" role="cell">Try hard</span>
+<span class="score-value" role="cell">-1.1220</span>
+</div>
+<div class="leaderboard-row" data-team="hnhparitosh" role="row">
+<span class="rank-value" role="cell">85</span>
+<span class="team-name" role="cell">hnhparitosh</span>
+<span class="score-value" role="cell">-1.1293</span>
+</div>
+<div class="leaderboard-row" data-team="SMTM" role="row">
+<span class="rank-value" role="cell">86</span>
+<span class="team-name" role="cell">SMTM</span>
+<span class="score-value" role="cell">-1.1321</span>
+</div>
+<div class="leaderboard-row" data-team="GXR123" role="row">
+<span class="rank-value" role="cell">87</span>
+<span class="team-name" role="cell">GXR123</span>
+<span class="score-value" role="cell">-1.1502</span>
+</div>
+<div class="leaderboard-row" data-team="Pawsibble" role="row">
+<span class="rank-value" role="cell">88</span>
+<span class="team-name" role="cell">Pawsibble</span>
+<span class="score-value" role="cell">-1.1539</span>
+</div>
+<div class="leaderboard-row" data-team="Probably Right" role="row">
+<span class="rank-value" role="cell">89</span>
+<span class="team-name" role="cell">Probably Right</span>
+<span class="score-value" role="cell">-1.1812</span>
+</div>
+<div class="leaderboard-row" data-team="Undefined" role="row">
+<span class="rank-value" role="cell">90</span>
+<span class="team-name" role="cell">Undefined</span>
+<span class="score-value" role="cell">-1.1958</span>
+</div>
+<div class="leaderboard-row" data-team="SoloTraveler" role="row">
+<span class="rank-value" role="cell">91</span>
+<span class="team-name" role="cell">SoloTraveler</span>
+<span class="score-value" role="cell">-1.2577</span>
+</div>
+<div class="leaderboard-row" data-team="ah_a1g" role="row">
+<span class="rank-value" role="cell">92</span>
+<span class="team-name" role="cell">ah_a1g</span>
+<span class="score-value" role="cell">-1.2618</span>
+</div>
+<div class="leaderboard-row" data-team="Give me a job" role="row">
+<span class="rank-value" role="cell">92</span>
+<span class="team-name" role="cell">Give me a job</span>
+<span class="score-value" role="cell">-1.2618</span>
+</div>
+<div class="leaderboard-row" data-team="BigWorld" role="row">
+<span class="rank-value" role="cell">94</span>
+<span class="team-name" role="cell">BigWorld</span>
+<span class="score-value" role="cell">-1.2907</span>
+</div>
+<div class="leaderboard-row" data-team="K-uant" role="row">
+<span class="rank-value" role="cell">95</span>
+<span class="team-name" role="cell">K-uant</span>
+<span class="score-value" role="cell">-1.3205</span>
+</div>
+<div class="leaderboard-row" data-team="PA-Agent" role="row">
+<span class="rank-value" role="cell">96</span>
+<span class="team-name" role="cell">PA-Agent</span>
+<span class="score-value" role="cell">-1.3913</span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="9:00pm" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">9:00pm</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="ZOLDIK" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">ZOLDIK</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="Urithiru" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">Urithiru</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+</div>
+<div aria-label="T2 Forecasting leaderboard pages" class="leaderboard-pager" role="navigation">
+<a class="leaderboard-page-link" href="#lb-t2-p1" rel="noopener noreferrer">1–25</a>
+<a class="leaderboard-page-link" href="#lb-t2-p2" rel="noopener noreferrer">26–50</a>
+<a class="leaderboard-page-link" href="#lb-t2-p3" rel="noopener noreferrer">51–75</a>
+<span aria-current="page" class="leaderboard-page-link is-current">76–99</span>
+</div>
+</div>
+<p class="leaderboard-empty" data-leaderboard-noresults="">No team matches that search.</p>
+</div>
+<div aria-labelledby="lb-tab-t3" class="leaderboard-panel" data-track-panel="t3" id="lb-panel-t3" role="tabpanel">
+<h3 class="leaderboard-panel-title">T3 Simulation</h3>
+<div class="leaderboard-page" id="lb-t3-p1">
+<p class="leaderboard-page-range">T3 Simulation: teams 1–25 of 54</p>
+<div aria-label="T3 Simulation leaderboard, teams 1–25 of 54" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="VerityLovityFalsityCruelty" role="row">
+<span class="rank-value" role="cell">1</span>
+<span class="team-name" role="cell">VerityLovityFalsityCruelty</span>
+<span class="score-value" role="cell">10000000.0000</span>
+</div>
+<div class="leaderboard-row" data-team="Warkop PuteraPrakoso" role="row">
+<span class="rank-value" role="cell">1</span>
+<span class="team-name" role="cell">Warkop PuteraPrakoso</span>
+<span class="score-value" role="cell">10000000.0000</span>
+</div>
+<div class="leaderboard-row" data-team="abc123" role="row">
+<span class="rank-value" role="cell">1</span>
+<span class="team-name" role="cell">abc123</span>
+<span class="score-value" role="cell">10000000.0000</span>
+</div>
+<div class="leaderboard-row" data-team="recently rejected" role="row">
+<span class="rank-value" role="cell">1</span>
+<span class="team-name" role="cell">recently rejected</span>
+<span class="score-value" role="cell">10000000.0000</span>
+</div>
+<div class="leaderboard-row" data-team="in3lab" role="row">
+<span class="rank-value" role="cell">5</span>
+<span class="team-name" role="cell">in3lab</span>
+<span class="score-value" role="cell">9998689.9222</span>
+</div>
+<div class="leaderboard-row" data-team="Paragon" role="row">
+<span class="rank-value" role="cell">6</span>
+<span class="team-name" role="cell">Paragon</span>
+<span class="score-value" role="cell">9972374.4193</span>
+</div>
+<div class="leaderboard-row" data-team="Quantumonster" role="row">
+<span class="rank-value" role="cell">7</span>
+<span class="team-name" role="cell">Quantumonster</span>
+<span class="score-value" role="cell">9939790.7398</span>
+</div>
+<div class="leaderboard-row" data-team="lingsio" role="row">
+<span class="rank-value" role="cell">8</span>
+<span class="team-name" role="cell">lingsio</span>
+<span class="score-value" role="cell">9911384.7399</span>
+</div>
+<div class="leaderboard-row" data-team="CMCCGDYDDICT" role="row">
+<span class="rank-value" role="cell">9</span>
+<span class="team-name" role="cell">CMCCGDYDDICT</span>
+<span class="score-value" role="cell">9907276.4205</span>
+</div>
+<div class="leaderboard-row" data-team="fuzz" role="row">
+<span class="rank-value" role="cell">10</span>
+<span class="team-name" role="cell">fuzz</span>
+<span class="score-value" role="cell">9873690.1501</span>
+</div>
+<div class="leaderboard-row" data-team="Made in Heaven" role="row">
+<span class="rank-value" role="cell">11</span>
+<span class="team-name" role="cell">Made in Heaven</span>
+<span class="score-value" role="cell">9858359.8514</span>
+</div>
+<div class="leaderboard-row" data-team="Neko's Life" role="row">
+<span class="rank-value" role="cell">12</span>
+<span class="team-name" role="cell">Neko's Life</span>
+<span class="score-value" role="cell">9770998.6533</span>
+</div>
+<div class="leaderboard-row" data-team="Cornfield Chase" role="row">
+<span class="rank-value" role="cell">13</span>
+<span class="team-name" role="cell">Cornfield Chase</span>
+<span class="score-value" role="cell">9686877.6757</span>
+</div>
+<div class="leaderboard-row" data-team="Arsen Ibragimov" role="row">
+<span class="rank-value" role="cell">14</span>
+<span class="team-name" role="cell">Arsen Ibragimov</span>
+<span class="score-value" role="cell">9531655.5350</span>
+</div>
+<div class="leaderboard-row" data-team="IMAnonymous" role="row">
+<span class="rank-value" role="cell">15</span>
+<span class="team-name" role="cell">IMAnonymous</span>
+<span class="score-value" role="cell">9473913.5548</span>
+</div>
+<div class="leaderboard-row" data-team="Proof of Alpha" role="row">
+<span class="rank-value" role="cell">16</span>
+<span class="team-name" role="cell">Proof of Alpha</span>
+<span class="score-value" role="cell">9126164.4816</span>
+</div>
+<div class="leaderboard-row" data-team="PA-Agent" role="row">
+<span class="rank-value" role="cell">17</span>
+<span class="team-name" role="cell">PA-Agent</span>
+<span class="score-value" role="cell">8967200.9830</span>
+</div>
+<div class="leaderboard-row" data-team="Liqourena" role="row">
+<span class="rank-value" role="cell">18</span>
+<span class="team-name" role="cell">Liqourena</span>
+<span class="score-value" role="cell">8870380.1467</span>
+</div>
+<div class="leaderboard-row" data-team="Saifuddin" role="row">
+<span class="rank-value" role="cell">19</span>
+<span class="team-name" role="cell">Saifuddin</span>
+<span class="score-value" role="cell">8859896.6544</span>
+</div>
+<div class="leaderboard-row" data-team="S2WISH" role="row">
+<span class="rank-value" role="cell">20</span>
+<span class="team-name" role="cell">S2WISH</span>
+<span class="score-value" role="cell">8610307.0893</span>
+</div>
+<div class="leaderboard-row" data-team="Yan Su" role="row">
+<span class="rank-value" role="cell">21</span>
+<span class="team-name" role="cell">Yan Su</span>
+<span class="score-value" role="cell">7599191.1734</span>
+</div>
+<div class="leaderboard-row" data-team="Formaggio" role="row">
+<span class="rank-value" role="cell">22</span>
+<span class="team-name" role="cell">Formaggio</span>
+<span class="score-value" role="cell">7179866.1036</span>
+</div>
+<div class="leaderboard-row" data-team="GenerationalUnawareness" role="row">
+<span class="rank-value" role="cell">23</span>
+<span class="team-name" role="cell">GenerationalUnawareness</span>
+<span class="score-value" role="cell">5548940.3067</span>
+</div>
+<div class="leaderboard-row" data-team="Autonomous Alpha" role="row">
+<span class="rank-value" role="cell">24</span>
+<span class="team-name" role="cell">Autonomous Alpha</span>
+<span class="score-value" role="cell">5461422.7315</span>
+</div>
+<div class="leaderboard-row" data-team="Probably Right" role="row">
+<span class="rank-value" role="cell">25</span>
+<span class="team-name" role="cell">Probably Right</span>
+<span class="score-value" role="cell">4610174.4342</span>
+</div>
+</div>
+<div aria-label="T3 Simulation leaderboard pages" class="leaderboard-pager" role="navigation">
+<span aria-current="page" class="leaderboard-page-link is-current">1–25</span>
+<a class="leaderboard-page-link" href="#lb-t3-p2" rel="noopener noreferrer">26–50</a>
+<a class="leaderboard-page-link" href="#lb-t3-p3" rel="noopener noreferrer">51–54</a>
+</div>
+</div>
+<div class="leaderboard-page" id="lb-t3-p2">
+<p class="leaderboard-page-range">T3 Simulation: teams 26–50 of 54</p>
+<div aria-label="T3 Simulation leaderboard, teams 26–50 of 54" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="Masato" role="row">
+<span class="rank-value" role="cell">26</span>
+<span class="team-name" role="cell">Masato</span>
+<span class="score-value" role="cell">4303583.5761</span>
+</div>
+<div class="leaderboard-row" data-team="Alpha Male" role="row">
+<span class="rank-value" role="cell">27</span>
+<span class="team-name" role="cell">Alpha Male</span>
+<span class="score-value" role="cell">3918338.3250</span>
+</div>
+<div class="leaderboard-row" data-team="Ablation" role="row">
+<span class="rank-value" role="cell">28</span>
+<span class="team-name" role="cell">Ablation</span>
+<span class="score-value" role="cell">3452033.5818</span>
+</div>
+<div class="leaderboard-row" data-team="YIC Quant" role="row">
+<span class="rank-value" role="cell">29</span>
+<span class="team-name" role="cell">YIC Quant</span>
+<span class="score-value" role="cell">3119388.3309</span>
+</div>
+<div class="leaderboard-row" data-team="chistopat" role="row">
+<span class="rank-value" role="cell">30</span>
+<span class="team-name" role="cell">chistopat</span>
+<span class="score-value" role="cell">2841771.3068</span>
+</div>
+<div class="leaderboard-row" data-team="Money Miner" role="row">
+<span class="rank-value" role="cell">31</span>
+<span class="team-name" role="cell">Money Miner</span>
+<span class="score-value" role="cell">2743568.6870</span>
+</div>
+<div class="leaderboard-row" data-team="chilli" role="row">
+<span class="rank-value" role="cell">32</span>
+<span class="team-name" role="cell">chilli</span>
+<span class="score-value" role="cell">1462525.3323</span>
+</div>
+<div class="leaderboard-row" data-team="Nietzsche" role="row">
+<span class="rank-value" role="cell">33</span>
+<span class="team-name" role="cell">Nietzsche</span>
+<span class="score-value" role="cell">147213.4669</span>
+</div>
+<div class="leaderboard-row" data-team="Aamir Abdul Azeez" role="row">
+<span class="rank-value" role="cell">34</span>
+<span class="team-name" role="cell">Aamir Abdul Azeez</span>
+<span class="score-value" role="cell">50971.9152</span>
+</div>
+<div class="leaderboard-row" data-team="hnhparitosh" role="row">
+<span class="rank-value" role="cell">35</span>
+<span class="team-name" role="cell">hnhparitosh</span>
+<span class="score-value" role="cell">35354.8121</span>
+</div>
+<div class="leaderboard-row" data-team="Banana Kingdom" role="row">
+<span class="rank-value" role="cell">36</span>
+<span class="team-name" role="cell">Banana Kingdom</span>
+<span class="score-value" role="cell">29447.2373</span>
+</div>
+<div class="leaderboard-row" data-team="krnb" role="row">
+<span class="rank-value" role="cell">37</span>
+<span class="team-name" role="cell">krnb</span>
+<span class="score-value" role="cell">27054.2153</span>
+</div>
+<div class="leaderboard-row" data-team="Apex" role="row">
+<span class="rank-value" role="cell">38</span>
+<span class="team-name" role="cell">Apex</span>
+<span class="score-value" role="cell">26023.1527</span>
+</div>
+<div class="leaderboard-row" data-team="1991" role="row">
+<span class="rank-value" role="cell">39</span>
+<span class="team-name" role="cell">1991</span>
+<span class="score-value" role="cell">25999.1096</span>
+</div>
+<div class="leaderboard-row" data-team="Jade" role="row">
+<span class="rank-value" role="cell">40</span>
+<span class="team-name" role="cell">Jade</span>
+<span class="score-value" role="cell">25262.2013</span>
+</div>
+<div class="leaderboard-row" data-team="Urithiru" role="row">
+<span class="rank-value" role="cell">41</span>
+<span class="team-name" role="cell">Urithiru</span>
+<span class="score-value" role="cell">22658.1418</span>
+</div>
+<div class="leaderboard-row" data-team="Undefined" role="row">
+<span class="rank-value" role="cell">42</span>
+<span class="team-name" role="cell">Undefined</span>
+<span class="score-value" role="cell">22577.3820</span>
+</div>
+<div class="leaderboard-row" data-team="Give me a job" role="row">
+<span class="rank-value" role="cell">43</span>
+<span class="team-name" role="cell">Give me a job</span>
+<span class="score-value" role="cell">22143.4450</span>
+</div>
+<div class="leaderboard-row" data-team="fiftyfifty" role="row">
+<span class="rank-value" role="cell">44</span>
+<span class="team-name" role="cell">fiftyfifty</span>
+<span class="score-value" role="cell">22131.3089</span>
+</div>
+<div class="leaderboard-row" data-team="C_cake" role="row">
+<span class="rank-value" role="cell">45</span>
+<span class="team-name" role="cell">C_cake</span>
+<span class="score-value" role="cell">21168.0126</span>
+</div>
+<div class="leaderboard-row" data-team="HalfPlateBasmatiRizz" role="row">
+<span class="rank-value" role="cell">46</span>
+<span class="team-name" role="cell">HalfPlateBasmatiRizz</span>
+<span class="score-value" role="cell">9762.6798</span>
+</div>
+<div class="leaderboard-row" data-team="KheiliDire" role="row">
+<span class="rank-value" role="cell">47</span>
+<span class="team-name" role="cell">KheiliDire</span>
+<span class="score-value" role="cell">3393.7917</span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="iluss" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">iluss</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="AbangFrabi" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">AbangFrabi</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="Verifiable Capital" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">Verifiable Capital</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+</div>
+<div aria-label="T3 Simulation leaderboard pages" class="leaderboard-pager" role="navigation">
+<a class="leaderboard-page-link" href="#lb-t3-p1" rel="noopener noreferrer">1–25</a>
+<span aria-current="page" class="leaderboard-page-link is-current">26–50</span>
+<a class="leaderboard-page-link" href="#lb-t3-p3" rel="noopener noreferrer">51–54</a>
+</div>
+</div>
+<div class="leaderboard-page" id="lb-t3-p3">
+<p class="leaderboard-page-range">T3 Simulation: teams 51–54 of 54</p>
+<div aria-label="T3 Simulation leaderboard, teams 51–54 of 54" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="Just-in-Time" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">Just-in-Time</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="LastDigitsOfPi" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">LastDigitsOfPi</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="Future Ability" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">Future Ability</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="GAOKUO" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">GAOKUO</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+</div>
+<div aria-label="T3 Simulation leaderboard pages" class="leaderboard-pager" role="navigation">
+<a class="leaderboard-page-link" href="#lb-t3-p1" rel="noopener noreferrer">1–25</a>
+<a class="leaderboard-page-link" href="#lb-t3-p2" rel="noopener noreferrer">26–50</a>
+<span aria-current="page" class="leaderboard-page-link is-current">51–54</span>
+</div>
+</div>
+<p class="leaderboard-empty" data-leaderboard-noresults="">No team matches that search.</p>
+</div>
+<div aria-labelledby="lb-tab-t4" class="leaderboard-panel" data-track-panel="t4" id="lb-panel-t4" role="tabpanel">
+<h3 class="leaderboard-panel-title">T4 Explainability</h3>
+<div class="leaderboard-page" id="lb-t4-p1">
+<p class="leaderboard-page-range">T4 Explainability: teams 1–25 of 81</p>
+<div aria-label="T4 Explainability leaderboard, teams 1–25 of 81" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="CMCCGDYDDICT" role="row">
+<span class="rank-value" role="cell">1</span>
+<span class="team-name" role="cell">CMCCGDYDDICT</span>
+<span class="score-value" role="cell">0.9882</span>
+</div>
+<div class="leaderboard-row" data-team="GANisok" role="row">
+<span class="rank-value" role="cell">2</span>
+<span class="team-name" role="cell">GANisok</span>
+<span class="score-value" role="cell">0.7718</span>
+</div>
+<div class="leaderboard-row" data-team="Autonomous Alpha" role="row">
+<span class="rank-value" role="cell">3</span>
+<span class="team-name" role="cell">Autonomous Alpha</span>
+<span class="score-value" role="cell">0.5920</span>
+</div>
+<div class="leaderboard-row" data-team="Warkop PuteraPrakoso" role="row">
+<span class="rank-value" role="cell">4</span>
+<span class="team-name" role="cell">Warkop PuteraPrakoso</span>
+<span class="score-value" role="cell">0.5667</span>
+</div>
+<div class="leaderboard-row" data-team="abc123" role="row">
+<span class="rank-value" role="cell">5</span>
+<span class="team-name" role="cell">abc123</span>
+<span class="score-value" role="cell">0.5326</span>
+</div>
+<div class="leaderboard-row" data-team="AAAA" role="row">
+<span class="rank-value" role="cell">6</span>
+<span class="team-name" role="cell">AAAA</span>
+<span class="score-value" role="cell">0.5218</span>
+</div>
+<div class="leaderboard-row" data-team="in3lab" role="row">
+<span class="rank-value" role="cell">7</span>
+<span class="team-name" role="cell">in3lab</span>
+<span class="score-value" role="cell">0.5091</span>
+</div>
+<div class="leaderboard-row" data-team="Saifuddin" role="row">
+<span class="rank-value" role="cell">8</span>
+<span class="team-name" role="cell">Saifuddin</span>
+<span class="score-value" role="cell">0.5090</span>
+</div>
+<div class="leaderboard-row" data-team="littila" role="row">
+<span class="rank-value" role="cell">9</span>
+<span class="team-name" role="cell">littila</span>
+<span class="score-value" role="cell">0.5039</span>
+</div>
+<div class="leaderboard-row" data-team="stone stone" role="row">
+<span class="rank-value" role="cell">10</span>
+<span class="team-name" role="cell">stone stone</span>
+<span class="score-value" role="cell">0.4993</span>
+</div>
+<div class="leaderboard-row" data-team="Masato" role="row">
+<span class="rank-value" role="cell">11</span>
+<span class="team-name" role="cell">Masato</span>
+<span class="score-value" role="cell">0.4933</span>
+</div>
+<div class="leaderboard-row" data-team="yohoho" role="row">
+<span class="rank-value" role="cell">12</span>
+<span class="team-name" role="cell">yohoho</span>
+<span class="score-value" role="cell">0.4911</span>
+</div>
+<div class="leaderboard-row" data-team="lingsio" role="row">
+<span class="rank-value" role="cell">13</span>
+<span class="team-name" role="cell">lingsio</span>
+<span class="score-value" role="cell">0.4905</span>
+</div>
+<div class="leaderboard-row" data-team="Paragon" role="row">
+<span class="rank-value" role="cell">14</span>
+<span class="team-name" role="cell">Paragon</span>
+<span class="score-value" role="cell">0.4814</span>
+</div>
+<div class="leaderboard-row" data-team="zhuozhuowang" role="row">
+<span class="rank-value" role="cell">15</span>
+<span class="team-name" role="cell">zhuozhuowang</span>
+<span class="score-value" role="cell">0.4793</span>
+</div>
+<div class="leaderboard-row" data-team="Quiet Signal" role="row">
+<span class="rank-value" role="cell">16</span>
+<span class="team-name" role="cell">Quiet Signal</span>
+<span class="score-value" role="cell">0.4785</span>
+</div>
+<div class="leaderboard-row" data-team="fiftyfifty" role="row">
+<span class="rank-value" role="cell">17</span>
+<span class="team-name" role="cell">fiftyfifty</span>
+<span class="score-value" role="cell">0.4729</span>
+</div>
+<div class="leaderboard-row" data-team="iluss" role="row">
+<span class="rank-value" role="cell">18</span>
+<span class="team-name" role="cell">iluss</span>
+<span class="score-value" role="cell">0.4672</span>
+</div>
+<div class="leaderboard-row" data-team="OneModeltoRuleThemAll" role="row">
+<span class="rank-value" role="cell">19</span>
+<span class="team-name" role="cell">OneModeltoRuleThemAll</span>
+<span class="score-value" role="cell">0.4608</span>
+</div>
+<div class="leaderboard-row" data-team="Sitadel Insecurities" role="row">
+<span class="rank-value" role="cell">20</span>
+<span class="team-name" role="cell">Sitadel Insecurities</span>
+<span class="score-value" role="cell">0.4593</span>
+</div>
+<div class="leaderboard-row" data-team="AbangFrabi" role="row">
+<span class="rank-value" role="cell">21</span>
+<span class="team-name" role="cell">AbangFrabi</span>
+<span class="score-value" role="cell">0.4557</span>
+</div>
+<div class="leaderboard-row" data-team="Garros Solo Lab" role="row">
+<span class="rank-value" role="cell">22</span>
+<span class="team-name" role="cell">Garros Solo Lab</span>
+<span class="score-value" role="cell">0.4548</span>
+</div>
+<div class="leaderboard-row" data-team="Nietzsche" role="row">
+<span class="rank-value" role="cell">23</span>
+<span class="team-name" role="cell">Nietzsche</span>
+<span class="score-value" role="cell">0.4523</span>
+</div>
+<div class="leaderboard-row" data-team="WEI-SPBU" role="row">
+<span class="rank-value" role="cell">24</span>
+<span class="team-name" role="cell">WEI-SPBU</span>
+<span class="score-value" role="cell">0.4508</span>
+</div>
+<div class="leaderboard-row" data-team="VerityLovityFalsityCruelty" role="row">
+<span class="rank-value" role="cell">25</span>
+<span class="team-name" role="cell">VerityLovityFalsityCruelty</span>
+<span class="score-value" role="cell">0.4467</span>
+</div>
+</div>
+<div aria-label="T4 Explainability leaderboard pages" class="leaderboard-pager" role="navigation">
+<span aria-current="page" class="leaderboard-page-link is-current">1–25</span>
+<a class="leaderboard-page-link" href="#lb-t4-p2" rel="noopener noreferrer">26–50</a>
+<a class="leaderboard-page-link" href="#lb-t4-p3" rel="noopener noreferrer">51–75</a>
+<a class="leaderboard-page-link" href="#lb-t4-p4" rel="noopener noreferrer">76–81</a>
+</div>
+</div>
+<div class="leaderboard-page" id="lb-t4-p2">
+<p class="leaderboard-page-range">T4 Explainability: teams 26–50 of 81</p>
+<div aria-label="T4 Explainability leaderboard, teams 26–50 of 81" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="Natpaphon" role="row">
+<span class="rank-value" role="cell">26</span>
+<span class="team-name" role="cell">Natpaphon</span>
+<span class="score-value" role="cell">0.4443</span>
+</div>
+<div class="leaderboard-row" data-team="Quorum" role="row">
+<span class="rank-value" role="cell">27</span>
+<span class="team-name" role="cell">Quorum</span>
+<span class="score-value" role="cell">0.4429</span>
+</div>
+<div class="leaderboard-row" data-team="Verifiable Capital" role="row">
+<span class="rank-value" role="cell">28</span>
+<span class="team-name" role="cell">Verifiable Capital</span>
+<span class="score-value" role="cell">0.4398</span>
+</div>
+<div class="leaderboard-row" data-team="iMak AI Lab" role="row">
+<span class="rank-value" role="cell">29</span>
+<span class="team-name" role="cell">iMak AI Lab</span>
+<span class="score-value" role="cell">0.4394</span>
+</div>
+<div class="leaderboard-row" data-team="Agentic AI-Driven Human(黄金暴龙)" role="row">
+<span class="rank-value" role="cell">30</span>
+<span class="team-name" role="cell">Agentic AI-Driven Human(黄金暴龙)</span>
+<span class="score-value" role="cell">0.4293</span>
+</div>
+<div class="leaderboard-row" data-team="Bayes Street" role="row">
+<span class="rank-value" role="cell">31</span>
+<span class="team-name" role="cell">Bayes Street</span>
+<span class="score-value" role="cell">0.4267</span>
+</div>
+<div class="leaderboard-row" data-team="Lucky" role="row">
+<span class="rank-value" role="cell">32</span>
+<span class="team-name" role="cell">Lucky</span>
+<span class="score-value" role="cell">0.4262</span>
+</div>
+<div class="leaderboard-row" data-team="Falcons" role="row">
+<span class="rank-value" role="cell">33</span>
+<span class="team-name" role="cell">Falcons</span>
+<span class="score-value" role="cell">0.4244</span>
+</div>
+<div class="leaderboard-row" data-team="Pluto" role="row">
+<span class="rank-value" role="cell">34</span>
+<span class="team-name" role="cell">Pluto</span>
+<span class="score-value" role="cell">0.4241</span>
+</div>
+<div class="leaderboard-row" data-team="Give me a job" role="row">
+<span class="rank-value" role="cell">35</span>
+<span class="team-name" role="cell">Give me a job</span>
+<span class="score-value" role="cell">0.4150</span>
+</div>
+<div class="leaderboard-row" data-team="Optivex Research" role="row">
+<span class="rank-value" role="cell">36</span>
+<span class="team-name" role="cell">Optivex Research</span>
+<span class="score-value" role="cell">0.4118</span>
+</div>
+<div class="leaderboard-row" data-team="Winner" role="row">
+<span class="rank-value" role="cell">37</span>
+<span class="team-name" role="cell">Winner</span>
+<span class="score-value" role="cell">0.4106</span>
+</div>
+<div class="leaderboard-row" data-team="Perch AI" role="row">
+<span class="rank-value" role="cell">38</span>
+<span class="team-name" role="cell">Perch AI</span>
+<span class="score-value" role="cell">0.4091</span>
+</div>
+<div class="leaderboard-row" data-team="a-team" role="row">
+<span class="rank-value" role="cell">39</span>
+<span class="team-name" role="cell">a-team</span>
+<span class="score-value" role="cell">0.4091</span>
+</div>
+<div class="leaderboard-row" data-team="Apex" role="row">
+<span class="rank-value" role="cell">40</span>
+<span class="team-name" role="cell">Apex</span>
+<span class="score-value" role="cell">0.3966</span>
+</div>
+<div class="leaderboard-row" data-team="Faithful" role="row">
+<span class="rank-value" role="cell">41</span>
+<span class="team-name" role="cell">Faithful</span>
+<span class="score-value" role="cell">0.3918</span>
+</div>
+<div class="leaderboard-row" data-team="Hatenabase" role="row">
+<span class="rank-value" role="cell">42</span>
+<span class="team-name" role="cell">Hatenabase</span>
+<span class="score-value" role="cell">0.3704</span>
+</div>
+<div class="leaderboard-row" data-team="SignalCraft" role="row">
+<span class="rank-value" role="cell">43</span>
+<span class="team-name" role="cell">SignalCraft</span>
+<span class="score-value" role="cell">0.3559</span>
+</div>
+<div class="leaderboard-row" data-team="Genshin, launch!" role="row">
+<span class="rank-value" role="cell">44</span>
+<span class="team-name" role="cell">Genshin, launch!</span>
+<span class="score-value" role="cell">0.3415</span>
+</div>
+<div class="leaderboard-row" data-team="zzsyyy" role="row">
+<span class="rank-value" role="cell">45</span>
+<span class="team-name" role="cell">zzsyyy</span>
+<span class="score-value" role="cell">0.3296</span>
+</div>
+<div class="leaderboard-row" data-team="DataWow" role="row">
+<span class="rank-value" role="cell">46</span>
+<span class="team-name" role="cell">DataWow</span>
+<span class="score-value" role="cell">0.3173</span>
+</div>
+<div class="leaderboard-row" data-team="hnhparitosh" role="row">
+<span class="rank-value" role="cell">47</span>
+<span class="team-name" role="cell">hnhparitosh</span>
+<span class="score-value" role="cell">0.2983</span>
+</div>
+<div class="leaderboard-row" data-team="MoneyMoneybackmyhome" role="row">
+<span class="rank-value" role="cell">48</span>
+<span class="team-name" role="cell">MoneyMoneybackmyhome</span>
+<span class="score-value" role="cell">0.2756</span>
+</div>
+<div class="leaderboard-row" data-team="1991" role="row">
+<span class="rank-value" role="cell">49</span>
+<span class="team-name" role="cell">1991</span>
+<span class="score-value" role="cell">0.2656</span>
+</div>
+<div class="leaderboard-row" data-team="TradeFlare" role="row">
+<span class="rank-value" role="cell">50</span>
+<span class="team-name" role="cell">TradeFlare</span>
+<span class="score-value" role="cell">0.2516</span>
+</div>
+</div>
+<div aria-label="T4 Explainability leaderboard pages" class="leaderboard-pager" role="navigation">
+<a class="leaderboard-page-link" href="#lb-t4-p1" rel="noopener noreferrer">1–25</a>
+<span aria-current="page" class="leaderboard-page-link is-current">26–50</span>
+<a class="leaderboard-page-link" href="#lb-t4-p3" rel="noopener noreferrer">51–75</a>
+<a class="leaderboard-page-link" href="#lb-t4-p4" rel="noopener noreferrer">76–81</a>
+</div>
+</div>
+<div class="leaderboard-page" id="lb-t4-p3">
+<p class="leaderboard-page-range">T4 Explainability: teams 51–75 of 81</p>
+<div aria-label="T4 Explainability leaderboard, teams 51–75 of 81" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="Yan Su" role="row">
+<span class="rank-value" role="cell">51</span>
+<span class="team-name" role="cell">Yan Su</span>
+<span class="score-value" role="cell">0.2514</span>
+</div>
+<div class="leaderboard-row" data-team="polarbear" role="row">
+<span class="rank-value" role="cell">52</span>
+<span class="team-name" role="cell">polarbear</span>
+<span class="score-value" role="cell">0.2497</span>
+</div>
+<div class="leaderboard-row" data-team="Pressforward" role="row">
+<span class="rank-value" role="cell">53</span>
+<span class="team-name" role="cell">Pressforward</span>
+<span class="score-value" role="cell">0.2446</span>
+</div>
+<div class="leaderboard-row" data-team="PSS_" role="row">
+<span class="rank-value" role="cell">54</span>
+<span class="team-name" role="cell">PSS_</span>
+<span class="score-value" role="cell">0.2183</span>
+</div>
+<div class="leaderboard-row" data-team="AAIA" role="row">
+<span class="rank-value" role="cell">55</span>
+<span class="team-name" role="cell">AAIA</span>
+<span class="score-value" role="cell">0.2141</span>
+</div>
+<div class="leaderboard-row" data-team="Undefined" role="row">
+<span class="rank-value" role="cell">56</span>
+<span class="team-name" role="cell">Undefined</span>
+<span class="score-value" role="cell">0.2063</span>
+</div>
+<div class="leaderboard-row" data-team="YIC Quant" role="row">
+<span class="rank-value" role="cell">57</span>
+<span class="team-name" role="cell">YIC Quant</span>
+<span class="score-value" role="cell">0.1959</span>
+</div>
+<div class="leaderboard-row" data-team="Alpha on Belay" role="row">
+<span class="rank-value" role="cell">58</span>
+<span class="team-name" role="cell">Alpha on Belay</span>
+<span class="score-value" role="cell">0.1955</span>
+</div>
+<div class="leaderboard-row" data-team="Husky River Trading" role="row">
+<span class="rank-value" role="cell">59</span>
+<span class="team-name" role="cell">Husky River Trading</span>
+<span class="score-value" role="cell">0.1872</span>
+</div>
+<div class="leaderboard-row" data-team="passerbybye" role="row">
+<span class="rank-value" role="cell">60</span>
+<span class="team-name" role="cell">passerbybye</span>
+<span class="score-value" role="cell">0.1841</span>
+</div>
+<div class="leaderboard-row" data-team="NeneTeam" role="row">
+<span class="rank-value" role="cell">61</span>
+<span class="team-name" role="cell">NeneTeam</span>
+<span class="score-value" role="cell">0.1655</span>
+</div>
+<div class="leaderboard-row" data-team="Just-in-Time" role="row">
+<span class="rank-value" role="cell">62</span>
+<span class="team-name" role="cell">Just-in-Time</span>
+<span class="score-value" role="cell">0.1560</span>
+</div>
+<div class="leaderboard-row" data-team="Proof of Alpha" role="row">
+<span class="rank-value" role="cell">63</span>
+<span class="team-name" role="cell">Proof of Alpha</span>
+<span class="score-value" role="cell">0.1388</span>
+</div>
+<div class="leaderboard-row" data-team="Ablation" role="row">
+<span class="rank-value" role="cell">64</span>
+<span class="team-name" role="cell">Ablation</span>
+<span class="score-value" role="cell">0.1224</span>
+</div>
+<div class="leaderboard-row" data-team="scu_statistics" role="row">
+<span class="rank-value" role="cell">65</span>
+<span class="team-name" role="cell">scu_statistics</span>
+<span class="score-value" role="cell">0.1135</span>
+</div>
+<div class="leaderboard-row" data-team="chilli" role="row">
+<span class="rank-value" role="cell">66</span>
+<span class="team-name" role="cell">chilli</span>
+<span class="score-value" role="cell">0.1074</span>
+</div>
+<div class="leaderboard-row" data-team="spacityTe" role="row">
+<span class="rank-value" role="cell">67</span>
+<span class="team-name" role="cell">spacityTe</span>
+<span class="score-value" role="cell">0.0745</span>
+</div>
+<div class="leaderboard-row" data-team="IMPEL" role="row">
+<span class="rank-value" role="cell">68</span>
+<span class="team-name" role="cell">IMPEL</span>
+<span class="score-value" role="cell">0.0720</span>
+</div>
+<div class="leaderboard-row" data-team="Tengen Toppa" role="row">
+<span class="rank-value" role="cell">69</span>
+<span class="team-name" role="cell">Tengen Toppa</span>
+<span class="score-value" role="cell">0.0580</span>
+</div>
+<div class="leaderboard-row" data-team="Cornfield Chase" role="row">
+<span class="rank-value" role="cell">70</span>
+<span class="team-name" role="cell">Cornfield Chase</span>
+<span class="score-value" role="cell">0.0499</span>
+</div>
+<div class="leaderboard-row" data-team="Aamir Abdul Azeez" role="row">
+<span class="rank-value" role="cell">71</span>
+<span class="team-name" role="cell">Aamir Abdul Azeez</span>
+<span class="score-value" role="cell">0.0466</span>
+</div>
+<div class="leaderboard-row" data-team="krnb" role="row">
+<span class="rank-value" role="cell">72</span>
+<span class="team-name" role="cell">krnb</span>
+<span class="score-value" role="cell">0.0382</span>
+</div>
+<div class="leaderboard-row" data-team="LOOOONG" role="row">
+<span class="rank-value" role="cell">73</span>
+<span class="team-name" role="cell">LOOOONG</span>
+<span class="score-value" role="cell">0.0250</span>
+</div>
+<div class="leaderboard-row" data-team="TEst" role="row">
+<span class="rank-value" role="cell">74</span>
+<span class="team-name" role="cell">TEst</span>
+<span class="score-value" role="cell">0.0187</span>
+</div>
+<div class="leaderboard-row" data-team="Jade" role="row">
+<span class="rank-value" role="cell">75</span>
+<span class="team-name" role="cell">Jade</span>
+<span class="score-value" role="cell">-0.0628</span>
+</div>
+</div>
+<div aria-label="T4 Explainability leaderboard pages" class="leaderboard-pager" role="navigation">
+<a class="leaderboard-page-link" href="#lb-t4-p1" rel="noopener noreferrer">1–25</a>
+<a class="leaderboard-page-link" href="#lb-t4-p2" rel="noopener noreferrer">26–50</a>
+<span aria-current="page" class="leaderboard-page-link is-current">51–75</span>
+<a class="leaderboard-page-link" href="#lb-t4-p4" rel="noopener noreferrer">76–81</a>
+</div>
+</div>
+<div class="leaderboard-page" id="lb-t4-p4">
+<p class="leaderboard-page-range">T4 Explainability: teams 76–81 of 81</p>
+<div aria-label="T4 Explainability leaderboard, teams 76–81 of 81" class="leaderboard-shell" role="table">
+<div class="leaderboard-header" role="row">
+<span role="columnheader">Rank</span>
+<span role="columnheader">Team</span>
+<span role="columnheader">Score</span>
+</div>
+<div class="leaderboard-row" data-team="GAOKUO" role="row">
+<span class="rank-value" role="cell">76</span>
+<span class="team-name" role="cell">GAOKUO</span>
+<span class="score-value" role="cell">-0.1201</span>
+</div>
+<div class="leaderboard-row" data-team="ccczy" role="row">
+<span class="rank-value" role="cell">77</span>
+<span class="team-name" role="cell">ccczy</span>
+<span class="score-value" role="cell">-0.1964</span>
+</div>
+<div class="leaderboard-row" data-team="C_cake" role="row">
+<span class="rank-value" role="cell">78</span>
+<span class="team-name" role="cell">C_cake</span>
+<span class="score-value" role="cell">-0.2700</span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="Urithiru" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">Urithiru</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="uqueensland" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">uqueensland</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+<div class="leaderboard-row is-unscored" data-team="Banana Kingdom" role="row">
+<span class="rank-value" role="cell">—</span>
+<span class="team-name" role="cell">Banana Kingdom</span>
+<span class="score-none" role="cell">— <span class="score-none-label">not scored</span></span>
+</div>
+</div>
+<div aria-label="T4 Explainability leaderboard pages" class="leaderboard-pager" role="navigation">
+<a class="leaderboard-page-link" href="#lb-t4-p1" rel="noopener noreferrer">1–25</a>
+<a class="leaderboard-page-link" href="#lb-t4-p2" rel="noopener noreferrer">26–50</a>
+<a class="leaderboard-page-link" href="#lb-t4-p3" rel="noopener noreferrer">51–75</a>
+<span aria-current="page" class="leaderboard-page-link is-current">76–81</span>
+</div>
+</div>
+<p class="leaderboard-empty" data-leaderboard-noresults="">No team matches that search.</p>
+</div>
+
+</section>
+<section class="content-band timeline-band" id="timeline">
+<div class="section-heading narrow-heading">
+<p class="section-kicker">2026 phases</p>
+<h2>Development, then Final + Verification.</h2>
+<p>Development runs through 12 October 2026. The joint Final + Verification phase runs
+              from 13 to 25 October 2026. Registration and Development close on 12 October at 23:59 Anywhere on Earth (AoE, UTC−12). Final + Verification closes on 25 October at 23:59 AoE.</p>
+</div>
+<div class="timeline" data-timeline="">
+<div class="timeline-status">
+<div>
+<p class="timeline-label" data-timeline-label="">Upcoming</p>
+<h3 data-timeline-title="">Development</h3>
+<p data-timeline-copy="">Build and test with the public starter packages. Check the logged-in website for submission opening status.</p>
+</div>
+<div aria-label="Competition timeline progress" class="timeline-meter">
+<strong data-progress-percent="">0%</strong>
+<span>complete</span>
+</div>
+</div>
+<div aria-hidden="true" class="timeline-rail">
+<span class="timeline-progress" data-timeline-progress=""></span>
+</div>
+<ol class="timeline-milestones">
+<li class="timeline-milestone" data-done-copy="Development is complete; the competition has moved past public iteration." data-end="2026-10-12" data-live-copy="Teams practice and iterate with the public starter packages. Submission opening is announced separately." data-next-copy="Build and test with the public starter packages. Check the logged-in website for submission opening status." data-phase="" data-start="2026-08-28" data-title="Development">
+<span aria-hidden="true" class="timeline-node"></span>
+<article>
+<span class="phase-state" data-phase-state="">Upcoming</span>
+<span class="phase-date">Aug 28 - Oct 12</span>
+<h3>Development</h3>
+<p>Teams practice and iterate with the public starter packages. Submission opening is announced separately.</p>
+</article>
+</li>
+<li class="timeline-milestone" data-done-copy="Final evaluation and verification are complete; results await publication." data-end="2026-10-25" data-live-copy="Final submissions are being evaluated; organizers rerun leading submissions and review reproducibility within the same phase." data-next-copy="One submission per entered track is evaluated on sealed private-test units. Run outputs, logs, and score files stay hidden." data-phase="" data-start="2026-10-13" data-title="Final + Verification">
+<span aria-hidden="true" class="timeline-node"></span>
+<article>
+<span class="phase-state" data-phase-state="">Upcoming</span>
+<span class="phase-date">Oct 13 - Oct 25</span>
+<h3>Final + Verification</h3>
+<p>One submission per entered track is evaluated on sealed private-test units.
+                    Organizers rerun leading submissions and review reproducibility in the same
+                    phase. There is no separate verification submission. Run outputs, logs, and
+                    score files stay hidden.</p>
+</article>
+</li>
+</ol>
+</div>
+</section>
+<section class="content-band" id="awards">
+<div class="section-heading narrow-heading">
+<p class="section-kicker">Awards</p>
+<h2>Cash awards in all four tracks.</h2>
+<p>
+              The top three teams in each track win a cash award, decided by the final standings
+              after verification. That is $3,000 per track and $12,000 in total.
+            </p>
+</div>
+<ol class="key-dates-grid award-grid">
+<li>
+<span class="key-date-when">1st place</span>
+<h3 class="award-amount">$1,500</h3>
+<p>In each of the four tracks.</p>
+</li>
+<li>
+<span class="key-date-when">2nd place</span>
+<h3 class="award-amount">$1,000</h3>
+<p>In each of the four tracks.</p>
+</li>
+<li>
+<span class="key-date-when">3rd place</span>
+<h3 class="award-amount">$500</h3>
+<p>In each of the four tracks.</p>
+</li>
+</ol>
+<p class="key-dates-note">
+            Amounts are in US dollars. A team's award is split equally among its registered members.
+            Eligibility, verification, tax and payment requirements are set by the
+            <a href="/rules/" rel="noopener noreferrer">official rules</a>, and a confirmed winner who accepts an award
+            publishes the code needed to reproduce the method.
+          </p>
+</section>
+<section class="content-band outputs-band">
+<div class="section-heading">
+<p class="section-kicker">Scientific outputs</p>
+<h2>Agenthon is designed to explain failures, not just rank winners.</h2>
+</div>
+<div class="outputs-grid">
+<article>
+<h3>Cross-track failure map</h3>
+<p>Gate failures are labeled and aggregated to show where finance agents break down.</p>
+</article>
+<article>
+<h3>Information uplift</h3>
+<p>T2 investigates whether text and reasoning improve forecasts; this is not a separate scored component.</p>
+</article>
+<article>
+<h3>Speed-realism frontier</h3>
+<p>T3 measures throughput only after semantic fidelity and stylized facts survive checks.</p>
+</article>
+<article>
+<h3>Faithfulness under embargo</h3>
+<p>T4 requires evidence-backed predictions that do not cite future or unsupported facts.</p>
+</article>
+</div>
+</section>
+<section class="content-band cfp-band" id="call-for-papers">
+<div class="section-heading narrow-heading">
+<p class="section-kicker">Call for papers</p>
+<h2>Present your work at the Agenthon workshop at NeurIPS 2026.</h2>
+<p>
+              We invite papers on AI and quantitative finance for the Agenthon 2026 workshop at
+              NeurIPS in Atlanta on Saturday 12 December. Accepted papers are presented as posters. Submissions are open to
+              everyone, whether or not you are competing in Agenthon.
+            </p>
+</div>
+<ol class="key-dates-grid cfp-dates">
+<li>
+<span class="key-date-when">Open now</span>
+<h3>Submissions open</h3>
+<p>Send your paper through the submission form.</p>
+</li>
+<li>
+<span class="key-date-when">Wed 30 Sep, 23:59 AoE</span>
+<h3>Submission deadline</h3>
+<p>The form closes at the deadline.</p>
+</li>
+<li>
+<span class="key-date-when">Fri 2 Oct, 23:59 AoE</span>
+<h3>Decisions</h3>
+<p>We email every submitting author with our decision.</p>
+</li>
+</ol>
+<div class="outputs-grid cfp-grid">
+<article>
+<h3>Topics</h3>
+<ul class="cfp-list">
+<li>AI agents for quantitative research and financial software</li>
+<li>Forecasting, including probabilistic and text-informed forecasts</li>
+<li>Market simulation and agent-based models</li>
+<li>Explainable, evidence-grounded prediction</li>
+<li>Optimization and portfolio construction</li>
+<li>Reinforcement learning and sequential decision-making</li>
+<li>Autonomous and multi-agent systems</li>
+<li>Evaluation, verification and benchmarks for AI in finance</li>
+</ul>
+<p>
+                We also strongly encourage high-quality work in machine learning, optimization and
+                AI more broadly, even without a finance application.
+              </p>
+</article>
+<article>
+<h3>Format</h3>
+<p>
+                Full papers or short papers, in any format and length. Submit one PDF.
+              </p>
+<p>
+                The workshop is non-archival, so work under review or published elsewhere is
+                welcome.
+              </p>
+<p>At least one author presents the poster in person in Atlanta.</p>
+</article>
+<article>
+<h3>How to submit</h3>
+<p>
+                Use the submission form. It asks you to sign in with a Google account to upload your
+                PDF, and for the email on the presenting author's NeurIPS account.
+              </p>
+<p>We handle submissions under our <a href="/privacy/" rel="noopener noreferrer">Privacy Notice</a>.</p>
+</article>
+</div>
+<div class="a26-cta-row cfp-cta">
+<a class="button primary-button" href="https://forms.gle/oBs6nVyvyZG2Ky2P7" rel="noopener noreferrer">
+              Submit a paper
+            </a>
+</div>
+</section>
+
+
+
+
+</main>
+  
+
+  
+  
+
+<div aria-hidden="true" style="height:5px; margin:0 auto 40px; border-radius:3px;
+     background:linear-gradient(to right, transparent,
+     rgba(10,159,125,.35) 20%, rgba(10,159,125,.35) 80%, transparent);"></div>
+
+
+
+<section class="content-band" id="sponsors">
+  <div class="section-heading narrow-heading">
+    <p class="section-kicker">Our Supporters</p>
+    <h2>Sponsor Agenthon 2026.</h2>
+    <p>
+      A number of sponsorship tiers and opportunities are available, including monetary and
+      awards sponsorship, event space, data, infrastructure, and compute.
+    </p>
+  </div>
+
+  
+  <div class="a26-sponsor-row">
+    
+    <a class="a26-sponsor-card" href="https://www.nvidia.com/en-us/" target="_blank" rel="noopener" title="NVIDIA">
+      <span class="a26-tier a26-tier-platinum">Platinum</span>
+      <span class="a26-sponsor-lane"><img src="/static/alphathon/partners/Nvidia2_tight.jpg" alt="NVIDIA" style="height:80px"></span>
+      <span class="a26-sponsor-role">Sponsor &amp; Technology Provider</span>
+    </a>
+    
+    <a class="a26-sponsor-card" href="https://www.bloomberg.com/" target="_blank" rel="noopener" title="Bloomberg">
+      <span class="a26-tier a26-tier-gold">Gold</span>
+      <span class="a26-sponsor-lane"><img src="/static/alphathon/partners/Bloomberg4_tight.png" alt="Bloomberg" style="height:40px"></span>
+      <span class="a26-sponsor-role">Sponsor</span>
+    </a>
+    
+    <a class="a26-sponsor-card" href="https://www.alliancebernstein.com/" target="_blank" rel="noopener" title="AllianceBernstein">
+      <span class="a26-tier a26-tier-silver">Silver</span>
+      <span class="a26-sponsor-lane"><img src="/static/alphathon/partners/AllianceBernsteinVertical_tight.png" alt="AllianceBernstein" style="height:80px"></span>
+      <span class="a26-sponsor-role">Sponsor</span>
+    </a>
+    
+    <a class="a26-sponsor-card" href="https://nebius.com" target="_blank" rel="noopener" title="Nebius">
+      <span class="a26-tier a26-tier-technology">Technology</span>
+      <span class="a26-sponsor-lane"><img src="/static/alphathon/partners/nebius.svg" alt="Nebius" style="height:40px"></span>
+      <span class="a26-sponsor-role">Cloud infrastructure</span>
+    </a>
+    
+  </div>
+  
+
+  <p class="a26-note">
+    Agenthon Questions and Tasks are of real relevance to hedge funds and asset managers, spanning
+    alpha forecasting, portfolio optimization, computational statistics, machine learning, and AI. Questions are provided jointly
+    by the SQA, CEWIT and our Question Partners.
+  </p>
+  <p class="a26-note" style="margin-top:8px">
+    See <a href="/2025/questions/">Questions 2025</a> for last year's questions and a feel for Agenthon priorities.
+  </p>
+
+  <div class="a26-cta-row" style="margin-top:28px">
+    <a class="button primary-button" href="mailto:[redacted:email]@agenthon.net?subject=Agenthon 2026 Sponsorship Enquiry">
+      Inquire about sponsoring
+    </a>
+  </div>
+</section>
+
+
+<style>
+  /* Center the text in every committee person box. */
+  #committee article { text-align: center; }
+  /* All committee rows: 2 boxes per row, centered (so an odd last box sits centered
+     on its own row), collapsing to ONE column on small screens. Flexbox overrides
+     the grid because an inline grid-template-columns is not responsive. */
+  #committee .comm-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+  #committee .comm-grid > article { flex: 0 1 calc(50% - 8px); max-width: calc(50% - 8px); box-sizing: border-box; margin: 0; }
+  @media (max-width: 640px) {
+    #committee .comm-grid > article { flex-basis: 100%; max-width: 100%; }
+  }
+</style>
+<section class="content-band" id="committee">
+  <div class="section-heading narrow-heading">
+    <p class="section-kicker">Organizing Committee</p>
+    <h2>Thank you from the organizers.</h2>
+  </div>
+
+  <h3 style="text-align:center; margin:8px 0 20px; font-size:clamp(18px,2.4vw,22px);">Lead Organizers</h3>
+  <div class="outputs-grid comm-grid">
+    <article>
+      <h3>Pawel Polak</h3>
+      <p>
+        Assistant Professor, Department of Applied Mathematics and Statistics, Stony Brook University<br>
+        Vice President, Society of Quantitative Analysts
+      </p>
+      <p class="a26-note">
+        <a href="https://sites.google.com/view/pawelpolak/" target="_blank" rel="noopener">Website</a> ·
+        <a href="https://www.linkedin.com/in/pawelpolaknyc/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </article>
+    <article>
+      <h3>Christos Koutsoyannis</h3>
+      <p>
+        Chief Investment Officer, Atlas Ridge Capital<br>
+        Adjunct Professor, NYU Courant<br>
+        Executive Advisory Board, Columbia Business School, Program for Financial Studies
+      </p>
+      <p class="a26-note">
+        <a href="https://math-finance.cims.nyu.edu/team/christos-koutsoyannis/" target="_blank" rel="noopener">Website</a> ·
+        <a href="https://www.linkedin.com/in/koutsoyannis/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </article>
+  </div>
+
+  <h3 style="text-align:center; margin:40px 0 20px; font-size:clamp(18px,2.4vw,22px);">Industry Co-Organizers</h3>
+  <div class="outputs-grid comm-grid">
+    <article>
+      <h3>David Rosenberg</h3>
+      <p>
+        Head of Machine Learning Strategy, CTO Office<br>
+        Bloomberg, Toronto, Canada
+      </p>
+      <p class="a26-note">
+        <a href="https://www.linkedin.com/in/dr-david-rosenberg/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </article>
+    <article>
+      <h3>Gary Kazantsev</h3>
+      <p>
+        Head of Quant Technology Strategy, Office of the CTO<br>
+        Bloomberg, New York, USA
+      </p>
+      <p class="a26-note">
+        <a href="https://www.linkedin.com/in/gkazantsev/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </article>
+    <article>
+      <h3>Ioana Boier</h3>
+      <p>
+        Global Head of Capital Markets Strategy<br>
+        NVIDIA Corporation, USA
+      </p>
+      <p class="a26-note">
+        <a href="https://www.linkedin.com/in/ioana-boier-9083a998/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </article>
+  </div>
+
+  <h3 style="text-align:center; margin:40px 0 20px; font-size:clamp(18px,2.4vw,22px);">Track Leads</h3>
+  <div class="outputs-grid comm-grid">
+    <article>
+      <p class="section-kicker">T1 · Coding</p>
+      <h3>Quant-finance coding agents</h3>
+      <p><strong>Zhikang Dong</strong> <br> Track Lead T1<br>Independent Researcher</p>
+      <p class="a26-note">
+        <a href="https://www.linkedin.com/in/zhikang-dong/" target="_blank" rel="noopener">LinkedIn</a> ·
+        <a href="https://github.com/Dongzhikang" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </article>
+    <article>
+      <p class="section-kicker">T2 · Forecasting</p>
+      <h3>Reasoning-augmented time series</h3>
+      <p><strong>Ruolan Sun</strong> <br> Track Lead T2<br>Ph.D. Student, Stony Brook University</p>
+      <p class="a26-note">
+        <a href="https://www.linkedin.com/in/ruolan-sun-99abb0324/" target="_blank" rel="noopener">LinkedIn</a> ·
+        <a href="https://github.com/sophialanlan" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </article>
+    <article>
+      <p class="section-kicker">T3 · Simulation</p>
+      <h3>Accelerated market simulation</h3>
+      <p><strong>Haohan Xu</strong> <br> Track Lead T3<br>Ph.D. Student, Stony Brook University</p>
+      <p class="a26-note">
+        <a href="https://www.linkedin.com/in/haohan-xu/" target="_blank" rel="noopener">LinkedIn</a> ·
+        <a href="https://github.com/haohanxu616" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </article>
+    <article>
+      <p class="section-kicker">T4 · Explainability</p>
+      <h3>Evidence-grounded prediction</h3>
+      <p><strong>Mathew Thiel</strong> <br> Track Lead T4<br>Quant Research Analyst, validityBase</p>
+      <p class="a26-note">
+        <a href="https://www.linkedin.com/in/mathew-thiel/" target="_blank" rel="noopener">LinkedIn</a> ·
+        <a href="https://github.com/matt-thiel" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </article>
+  </div>
+</section>
+
+
+
+    
+
+    <footer class="a26-footer">
+      <div class="a26-footer-inner">
+        <div>
+          <strong>Alphathon</strong> presents Agenthon&nbsp;2026<br>
+          Organized by
+          <a href="https://www.sqa-us.org" target="_blank" rel="noopener">SQA</a> &middot;
+          <a href="http://www.cewit.org" target="_blank" rel="noopener">CEWIT</a>,
+          Stony Brook University
+        </div>
+        <nav class="a26-footer-links" aria-label="Footer">
+          <a href="/about/">About</a>
+          <a href="/compete/">Compete</a>
+          <a href="/2025/home/">Past Events</a>
+          <a href="/rules/">Rules</a>
+          <a href="/terms/">Terms</a>
+          <a href="/privacy/">Privacy</a>
+          <a href="/licensing/">Licensing</a>
+          <a href="mailto:[redacted:email]@agenthon.net">Contact</a>
+        </nav>
+      </div>
+      <div class="a26-footer-inner" style="margin-top:18px;font-size:13px;">
+        <span>Copyright &copy; 2026: agenthon.net. All rights reserved.</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="/static/alphathon/js/agenthon2026.js?v=6"></script>
+</body>
+</html>

@@ -1,0 +1,1477 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      Competition - Trace the Ace
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <link rel="icon" href="/static/favicon.ico?v=2">
+    
+    
+  
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<meta name="description" content="Predict the learning gains from a tutoring session measured by quiz performance in this tutoring outcomes prediction challenge" />
+<link rel="canonical" href="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/" />
+<meta property="og:site_name" content="K-12 AI Infrastructure Program" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/" />
+<meta property="og:title" content="Competition - Trace the Ace" />
+<meta property="og:description" content="Predict the learning gains from a tutoring session measured by quiz performance in this tutoring outcomes prediction challenge" />
+<meta property="og:logo" content="https://platform.k12-ai-infrastructure.org/static/images/brand/kaiip-logo-horizontal.png" />
+<meta property="og:image" content="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/share-card.jpg?v=gradient-6-credit-jpeg-1" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Trace the Ace" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Competition - Trace the Ace" />
+<meta name="twitter:description" content="Predict the learning gains from a tutoring session measured by quiz performance in this tutoring outcomes prediction challenge" />
+<meta name="twitter:image" content="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/share-card.jpg?v=gradient-6-credit-jpeg-1" />
+<meta name="twitter:image:alt" content="Trace the Ace" />
+
+
+    
+  
+      
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+            crossorigin="anonymous">
+      
+      <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+            rel="stylesheet">
+      
+      <link href="/static/css/global.css?v=2" rel="stylesheet">
+      <link href="/static/css/global_base.css?v=2" rel="stylesheet">
+      <link href="/static/css/global_utils.css?v=2" rel="stylesheet">
+      <link href="/static/css/global_components.css?v=2" rel="stylesheet">
+      
+      <link href="/static/css/kaiip.css?v=1" rel="stylesheet">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap"
+            rel="stylesheet">
+    
+  <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+        // 2. Initialize the library to parse definitions on page load
+        mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+    </script>
+
+<style>
+pre.mermaid svg,
+pre.mermaid text,
+pre.mermaid .label,
+pre.mermaid .sectionTitle,
+pre.mermaid .taskText,
+pre.mermaid .taskTextOutsideRight,
+pre.mermaid .taskTextOutsideLeft,
+pre.mermaid .titleText,
+pre.mermaid .tick text {
+  font-family: Inter, Helvetica, Arial, sans-serif !important;
+  font-style: normal !important;
+}
+
+pre.mermaid .tick text {
+  font-weight: 700 !important;
+  fill: #6f6761 !important;
+  font-size: 12px !important;
+}
+
+pre.mermaid .sectionTitle {
+  font-weight: 700 !important;
+}
+
+pre.mermaid .grid .tick line {
+  display: none;
+}
+
+pre.mermaid path.domain {
+  display: none;
+}
+</style>
+
+    
+      <!-- Google tag (gtag.js) -->
+<script async
+        src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  
+    gtag('config', 'UA-XXXXXXXX-X');
+  
+</script>
+<!-- End Google Analytics -->
+<script>
+  window.capturePlatformEvent = function(eventName, properties) {
+    if (!window.posthog || typeof window.posthog.capture !== 'function') {
+      return;
+    }
+    window.posthog.capture(eventName, properties || {});
+  };
+
+  window.createUploadMilestoneTracker = function(options) {
+    const eventPrefix = options.eventPrefix;
+    const baseProperties = options.baseProperties || {};
+    const milestones = options.milestones || [25, 50, 75];
+    let fileSizeBytes = options.fileSizeBytes || null;
+    let startTime = null;
+    let lastEventTime = null;
+    let lastEventBytes = 0;
+    let nextMilestoneIndex = 0;
+    let terminalEventSent = false;
+
+    function eventProperties(bytesUploaded, extraProps) {
+      const now = Date.now();
+      const elapsedMs = startTime ? Math.max(now - startTime, 0) : 0;
+      const intervalMs = lastEventTime ? Math.max(now - lastEventTime, 0) : elapsedMs;
+      const intervalBytes = Math.max((bytesUploaded || 0) - lastEventBytes, 0);
+      const averageUploadBps = elapsedMs > 0 ? Math.round(((bytesUploaded || 0) * 1000) / elapsedMs) : 0;
+      const intervalUploadBps = intervalMs > 0 ? Math.round((intervalBytes * 1000) / intervalMs) : 0;
+
+      lastEventTime = now;
+      lastEventBytes = bytesUploaded || 0;
+
+      return Object.assign({}, baseProperties, {
+        file_size_bytes: fileSizeBytes,
+        bytes_uploaded: bytesUploaded || 0,
+        elapsed_ms: elapsedMs,
+        average_upload_bps: averageUploadBps,
+        interval_upload_bps: intervalUploadBps,
+      }, extraProps || {});
+    }
+
+    function capture(suffix, bytesUploaded, extraProps) {
+      window.capturePlatformEvent(eventPrefix + suffix, eventProperties(bytesUploaded, extraProps));
+    }
+
+    return {
+      start(totalBytes) {
+        fileSizeBytes = totalBytes || fileSizeBytes;
+        startTime = Date.now();
+        lastEventTime = startTime;
+        lastEventBytes = 0;
+        capture('_started', 0);
+      },
+      progress(bytesUploaded, totalBytes) {
+        fileSizeBytes = totalBytes || fileSizeBytes;
+        if (!startTime || !fileSizeBytes) {
+          return;
+        }
+        const pct = Math.floor((bytesUploaded / fileSizeBytes) * 100);
+        while (nextMilestoneIndex < milestones.length && pct >= milestones[nextMilestoneIndex]) {
+          capture('_pct_' + milestones[nextMilestoneIndex], bytesUploaded);
+          nextMilestoneIndex += 1;
+        }
+      },
+      succeeded(bytesUploaded, totalBytes, extraProps) {
+        if (terminalEventSent) {
+          return;
+        }
+        terminalEventSent = true;
+        fileSizeBytes = totalBytes || fileSizeBytes;
+        capture('_succeeded', bytesUploaded || fileSizeBytes || 0, extraProps);
+      },
+      failed(bytesUploaded, totalBytes, extraProps) {
+        if (terminalEventSent) {
+          return;
+        }
+        terminalEventSent = true;
+        fileSizeBytes = totalBytes || fileSizeBytes;
+        capture('_failed', bytesUploaded || lastEventBytes || 0, extraProps);
+      },
+    };
+  };
+</script>
+
+  <!-- PostHog -->
+  <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_tBJarjMrNZCnq9y4SgY6vzQ95CaKbXTxjRd3yriicCQC', {
+      api_host: 'https://us.i.posthog.com',
+      person_profiles: 'identified_only'
+    });
+    
+  </script>
+  <!-- End PostHog -->
+
+
+
+    
+  </head>
+  <body class="">
+    
+      
+
+
+
+  <nav class="navbar navbar-expand-lg navbar-header pb-4 pt-3 pt-lg-4"
+       aria-label="Primary">
+    <div class="container-fluid">
+      
+      <!-- <a class="skip-to-main-content-link" href="#main-container">Skip to main content</a> -->
+      <a class="navbar-brand"
+         aria-label="Go to homepage"
+         href="/"
+         aria-current="">
+        <img src="/static/images/brand/kaiip-logo-horizontal.svg"
+             alt="K-12 AI Infrastructure Program"
+             style="height: 45px"
+             class="pe-2 d-none d-xl-block" />
+        <img src="/static/images/brand/kaiip-logo-square.svg"
+             alt="K-12 AI Infrastructure Program"
+             style="height: 45px"
+             class="pe-2 d-block d-xl-none" />
+      </a>
+      <div class="me-5"></div>
+      <button class="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav my-3 my-lg-0 d-flex gap-2 gap-lg-5 align-items-lg-center w-100">
+          <li>
+            <a href="/competitions/"
+               aria-current="page">Challenges</a>
+          </li>
+          <li>
+            <a href="/#benchmarks">Benchmarks</a>
+          </li>
+          <li>
+            <a href="/datasets/"
+               >Datasets</a>
+          </li>
+          
+          
+            <li class="ms-lg-auto">
+              <a href="/accounts/login/?next=/competitions/3/tutoring-outcomes/">Log in</a>
+            </li>
+            <li class="highlight sign-up">
+              <a href="/accounts/signup/?next=/competitions/3/tutoring-outcomes/"
+                 class="btn btn-outline-primary px-3">Sign up</a>
+            </li>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+<script>
+    function closeNavDropdownOnEscKeyPress() {
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                $('.navbar-collapse').collapse('hide');
+            }
+        });
+    }
+    closeNavDropdownOnEscKeyPress();
+</script>
+
+    
+    
+  
+
+
+<div class="pt-3"></div>
+<div class="competition-header">
+  <div class="container-fluid">
+    <div class="d-flex align-items-stretch" style="width:100%; height:100%;">
+      <div class="w-100">
+        <div class="bg-white rounded-5 border border-primary px-4 py-4 d-flex align-items-center h-100 gap-4">
+          <div class="w-100">
+            <div class="d-flex flex-column px-0 px-lg-4"  style="max-width: 100ch;">
+              <div class="pt-3"></div>
+              <div class="d-flex gap-3 align-items-center w-100">
+                <div class="d-flex gap-1 text-uppercase align-items-center">
+                  
+
+                </div>
+              </div>
+              <a href="/competitions/"
+                 class="text-caps small text-decoration-none pb-1 text-body">Challenge</a>
+              <h1 class="text-3xl">Trace the Ace</h1>
+              <div class="pt-1"></div>
+              <div>
+                <p class="text-muted m-0 text-sm">
+                  
+                  
+                  Predict the learning gains from a tutoring session measured by quiz performance in this tutoring outcomes prediction challenge
+
+                  <span class="pe-1"></span>
+                  
+
+                </p>
+                <div class="pt-2"></div>
+              </div>
+              <div class="pt-3"></div>
+              <div class="d-flex flex-wrap align-items-center column-gap-3 row-gap-2">
+  <div class="d-flex gap-2 align-items-center flex-wrap">
+    <div class="text-muted small">Tasks</div>
+    
+      <div class="rounded-4 py-1 px-2 text-xs text-body border border-light d-flex gap-1 align-items-center">
+        <div>
+          
+          <svg aria-hidden="true"
+               xmlns="http://www.w3.org/2000/svg"
+               height="20px"
+               viewBox="0 -960 960 960"
+               width="24px"
+               fill="var(--color-purple-600)">
+            <path d="M290-290h260v-60H290v60Zm0-160h380v-60H290v60Zm0-160h380v-60H290v60Zm-77.69 470Q182-140 161-161q-21-21-21-51.31v-535.38Q140-778 161-799q21-21 51.31-21h535.38Q778-820 799-799q21 21 21 51.31v535.38Q820-182 799-161q-21 21-51.31 21H212.31Zm0-60h535.38q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H212.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85ZM200-760v560-560Z" />
+          </svg>
+        </div>
+        Tutoring
+      </div>
+    
+  </div>
+  <div class="d-flex gap-2 align-items-center flex-wrap">
+    <div class="text-muted small">Data types</div>
+    
+      <div class="rounded-4 py-1 px-2 text-xs text-body border border-light d-flex gap-1 align-items-center">
+        <div>
+          <svg aria-hidden="true"
+               xmlns="http://www.w3.org/2000/svg"
+               height="20px"
+               viewBox="0 -960 960 960"
+               width="24px"
+               fill="var(--color-orange-600)">
+            <path d="m801-305-50-50q48-51 73.5-104.5T850-591q0-78-25.5-131.5T751-827l50-50q56 58 87.5 126.5T920-591q0 91-31.5 159.5T801-305ZM662-447l-50-50q18-20 28-42.5t10-51.5q0-29-10-51.5T612-685l50-50q26 28 42 65.5t16 78.5q0 41-16 78.5T662-447Zm-302 6q-66 0-108-42t-42-108q0-66 42-108t108-42q66 0 108 42t42 108q0 66-42 108t-108 42ZM40-120v-94q0-38 19-64.5t49-41.5q51-26 120.5-43T360-380q62 0 131 17t120 43q30 15 49.5 41.5T680-214v94H40Zm60-60h520v-34q0-16-8.5-29.5T587-266q-48-27-109-40.5T360-320q-57 0-118.5 14.5T132-266q-14 7-23 21.5t-9 30.5v34Zm324.5-346.5Q450-552 450-591t-25.5-64.5Q399-681 360-681t-64.5 25.5Q270-630 270-591t25.5 64.5Q321-501 360-501t64.5-25.5ZM360-591Zm0 411Z" />
+          </svg>
+        </div>
+        Human transcript
+      </div>
+    
+      <div class="rounded-4 py-1 px-2 text-xs text-body border border-light d-flex gap-1 align-items-center">
+        <div>
+          <svg aria-hidden="true"
+               xmlns="http://www.w3.org/2000/svg"
+               height="20px"
+               viewBox="0 -960 960 960"
+               width="24px"
+               fill="var(--color-orange-600)">
+            <path d="M780-121H180q-24 0-42-18t-18-42v-599q0-24 18-42t42-18h600q24 0 42 18t18 42v599q0 24-18 42t-42 18ZM180-639h600v-141H180v141Zm130 60H180v398h130v-398Zm340 0v398h130v-398H650Zm-60 0H370v398h220v-398Z" />
+          </svg>
+        </div>
+        Tabular
+      </div>
+    
+  </div>
+  
+</div>
+
+              <div class="pt-4"></div>
+              <div class="d-flex flex-column-reverse flex-wrap-reverse flex-md-row gap-4">
+                
+                
+                <div class="d-flex gap-3 align-items-center">
+                  
+                    <div class="text-sm d-flex flex-wrap"
+                         style="column-gap:1.5rem;
+                                row-gap:0.25rem">
+                      
+
+<div class="d-flex align-items-center gap-2">
+  
+  <div>
+    
+      <span class="prize">
+        <strong>$50,000</strong>
+      </span>
+      <span>
+        
+          in prizes
+        
+      </span>
+    
+  </div>
+</div>
+
+                      
+<div class="d-flex align-items-center gap-2">
+  
+  
+    <div class="d-flex flex-wrap gap-3">
+      
+        <div>
+          
+            <span class="end-date text-muted">Model submissions closed</span>
+          
+        </div>
+      
+        <div>
+          
+            <span class="end-date text-muted">Solution write-up closed</span>
+          
+        </div>
+      
+    </div>
+  
+</div>
+
+                      
+<div class="d-flex align-items-center gap-2">
+  
+  <div>
+    <span class="participants"
+          data-bs-toggle="tooltip"
+          data-bs-placement="bottom"
+          title="1,059 solo participants and 44 teams">
+      <strong>1,150</strong> joined
+    </span>
+  </div>
+</div>
+
+                    </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex-shrink-0 d-none d-lg-block border border-light rounded-4"
+               style="width: 400px;
+                      aspect-ratio: 3/2;
+                      border-radius: 3px;
+                      background-size: cover;
+                      background-color: #ddd;
+                      position: relative;
+                      overflow: hidden;
+                      background-image: url(https://kaiip-platform-prod-public.s3.amazonaws.com/comp_images/NTO_tile_chat.png )">
+            <div class="position-absolute" style="right: 8px; bottom: 8px">
+              
+  
+    <div class="panel-logo p-1 bg-white rounded border">
+      <img src="https://kaiip-platform-prod-public.s3.amazonaws.com/hosts/NTO_Logo_-Horizontal_V3.png"
+           height="26px"
+           alt="Hosted by National Tutoring Observatory" />
+    </div>
+  
+
+
+            </div>
+            
+              <div class="position-absolute"
+                   style="bottom: 0;
+                          left: 0;
+                          right: 0;
+                          font-size: 0.6rem;
+                          color: rgba(255,255,255,0.6);
+                          background: transparent;
+                          padding: 2px 6px;
+                          white-space: nowrap;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          pointer-events: none">Image generated using Gemini</div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <main class="main">
+      <div id="wrapper">
+        <div id="main-container">
+          
+          
+          <div class="container-fluid">
+            
+
+            
+  <div class="pt-5"></div>
+  <div class="d-flex justify-content-between gap-3 gap-lg-5 flex-wrap flex-lg-nowrap mb-5">
+    
+      <div class="sidebar sticky-lg-top align-self-start" style="top: 1rem;">
+        
+<div class="d-none">
+  
+    
+
+
+
+
+
+<div class="results-sidebar">
+  <blockquote>
+    <p>Predict the learning gains from a tutoring session measured by quiz performance in this tutoring outcomes prediction challenge</p>
+  </blockquote>
+  <div class="well" style="padding: 1em;">
+    <h3 class="text-center" style="margin-top: 0;">Quick Facts</h3>
+    <div class="row">
+      <div class="col-xs-5 text-right">
+        <h6>Participants</h6>
+      </div>
+      <div class="col-xs-7">
+        <span class="number">1,150</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-5 text-right">
+        <h6>No. of Entries</h6>
+      </div>
+      <div class="col-xs-7">
+        <span class="number">7,386</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-5 text-right">
+        <h6>Prize</h6>
+      </div>
+      <div class="col-xs-7">
+        
+          <span class="number">$50,000</span>
+        
+      </div>
+    </div>
+    
+      <div class="row">
+        <div class="col-xs-5 text-right">
+          <h6>Winner</h6>
+        </div>
+        <div class="col-xs-7">
+          
+            
+
+  
+    <div class="user">
+      <a class="user-left user-middle"
+         href="/users/oleh/">
+        <div class="avatar-wrapper"><img class="img-circle" src="https://secure.gravatar.com/avatar/1ea3ebc41b368a5104382ccf4f572b11.jpg?s=50&amp;d=404&amp;r=g" width="50" height="50" alt="" loading="lazy" onload="this.style.opacity = 1" onerror="this.style.opacity = 0; this.onerror = null; this.src = 'https://kaiip-platform-prod-public.s3.amazonaws.com/avatar/1ea3ebc41b368a5104382ccf4f572b11.svg'"/></div>
+      </a>
+      <div class="user-body">
+        <h4>oleh</h4>
+        <small>
+          
+            1st Place
+          
+        </small>
+      </div>
+    </div>
+  
+
+
+          
+        </div>
+      </div>
+    
+  </div>
+</div>
+
+
+  
+</div>
+
+
+<div class="nav-subpages">
+  <h2 class="text-base">Navigation</h2>
+  <ul class="list-unstyled m-0">
+    
+      <li>
+        <a aria-current="page"
+           href="/competitions/3/tutoring-outcomes/page/3/">Home</a>
+      </li>
+    
+      <li>
+        <a 
+           href="/competitions/3/tutoring-outcomes/page/4/">Problem description</a>
+      </li>
+    
+      <li>
+        <a 
+           href="/competitions/3/tutoring-outcomes/page/6/">Code submission format</a>
+      </li>
+    
+      <li>
+        <a 
+           href="/competitions/3/tutoring-outcomes/page/8/">Publication bonus</a>
+      </li>
+    
+      <li>
+        <a 
+           href="/competitions/3/tutoring-outcomes/page/5/">About</a>
+      </li>
+    
+    
+    
+      
+        
+        
+        
+          <li>
+            <a href="/competitions/3/tutoring-outcomes/rules/"
+               >Official rules</a>
+          </li>
+        
+      
+        
+        
+        
+      
+        
+          <li>
+            <a href="/competitions/3/tutoring-outcomes/leaderboard/"
+               >
+              Leaderboard
+              results
+            </a>
+          </li>
+        
+        
+        
+      
+        
+        
+        
+      
+        
+        
+        
+      
+        
+        
+        
+      
+        
+        
+        
+      
+        
+        
+        
+      
+        
+        
+        
+      
+        
+        
+        
+      
+        
+        
+        
+      
+        
+        
+        
+          <li>
+            <a href="/competitions/3/tutoring-outcomes/community-code/"
+               >Community code</a>
+          </li>
+        
+      
+        
+        
+        
+      
+        
+        
+        
+      
+    
+  </ul>
+</div>
+
+<div class="pt-5"></div>
+
+      </div>
+    
+    
+    <div class="d-flex flex-column flex-grow-1"
+         id="content-page"
+         style="min-width: 0">
+      <div class="js-messages">
+  
+  <div class="d-flex flex-column messages-container gap-2">
+    
+  </div>
+  
+  <div class="toast-container position-fixed start-0 bottom-0 m-3">
+    
+  </div>
+</div>
+<script>
+  function showToast(message, options) {
+    const toastContainer = document.querySelector('.toast-container');
+
+    const toastElement = document.createElement('div');
+    toastElement.classList.add('toast');
+
+    const toastBody = document.createElement('div');
+    toastBody.classList.add('toast-body');
+    toastBody.classList.add(options.classList);
+    toastBody.innerText = message;
+
+    toastElement.appendChild(toastBody);
+
+    const toastInstance = new bootstrap.Toast(toastElement);
+    toastContainer.appendChild(toastElement);
+
+    toastInstance.show();
+  };
+  function showToastInfo(message) {
+    showToast(message, {classList: 'toast-info'});
+  }
+</script>
+
+      
+        <div class="prose"><h1 id="overview">Overview</h1>
+<p>Individualized tutoring is proven to be one of the best solutions to help struggling students succeed academically. A strong tutor can be the difference between a young child staying on track with learning goals, passing courses, and becoming successful in school, or falling behind. However, detecting exactly what makes a tutoring session effective is far less straightforward. The signals are often buried in nuanced, back-and-forth conversations that vary widely across students, subjects, and teaching styles, making it challenging to reliably assess what effective tutoring actually looks like.</p>
+<p><strong>This competition focuses on evaluating tutoring effectiveness using only the student–tutor conversation.</strong> Participants will build models that use tutoring session transcripts to predict whether a student goes on to answer a follow-up question correctly - a practical proxy for whether learning actually took place. Developing better ways of identifying effective tutoring could inform how we train educators, guide real-time support, and expand access to high-quality tutoring through AI-powered tools. </p>
+<pre class="mermaid">
+%%{
+  init: {
+    'theme': 'base',
+    'gantt': { 'tickInterval': '1month' },
+    'themeVariables': {
+      'background': '#f9f8f5',
+      'mainBkg': '#f9f8f5',
+      'titleColor': '#20083f',
+      'fontFamily': 'Inter, Helvetica, Arial, sans-serif',
+      'fontSize': '14px',
+      'gridColor': 'transparent',
+      'taskBorderColor': '#4d3965',
+      'taskBkgColor': '#daceec',
+      'taskTextColor': '#20083f',
+      'taskTextLightColor': '#20083f',
+      'taskTextOutsideColor': '#20083f',
+      'taskTextClickableColor': '#20083f',
+      'activeTaskBorderColor': '#1c6b8e',
+      'activeTaskBkgColor': '#d3eaf5',
+      'doneTaskBkgColor': '#eae6dc',
+      'doneTaskBorderColor': '#bcb1a3',
+      'critBorderColor': '#1c6b8e',
+      'critBkgColor': '#d3eaf5',
+      'todayLineColor': 'transparent',
+      'sectionBkgColor': '#f9f7fb',
+      'altSectionBkgColor': '#f4f9fb',
+      'sectionBkgColor2': '#f9f7fb'
+    },
+    'themeCSS': 'text { font-style: normal !important; } .tick text { font-weight: 700 !important; fill: #6f6761 !important; font-size: 12px; } .sectionTitle { font-weight: 700 !important; } .grid .tick line { display: none; } path.domain { display: none; }'
+  }
+}%%
+gantt
+    title Competition Timeline
+    dateFormat  YYYY-MM-DD
+    axisFormat  %B
+
+    section Phase 1
+    Contest opens (Jun 15)              :milestone, m1, 2026-06-15, 0d
+    Model submission window              :phase1, 2026-06-15, 2026-08-27
+    Submissions close, leaderboard frozen (Aug 27) :milestone, m2, 2026-08-27, 0d
+
+    section Phase 2
+    Write-up window, top 15 teams        :active, phase2, 2026-08-27, 2026-09-17
+    Write-ups close (Sep 17)             :active, milestone, m4, 2026-09-17, 0d
+</pre>
+
+<hr />
+<h2 id="prizes">Prizes</h2>
+<table border=0 style="width:95%">
+    <tbody>
+        <tr>
+            <td>
+                <h5>Competition End Date:</h5>
+                <h3>Aug. 27, 2026, 11:59 p.m. UTC</h3>
+            </td>
+            <td>
+                <table class="table" style="width:95%">
+                <thead>
+                    <th>Place</th>
+                    <th>Prize Amount</th>
+                </thead>
+                <tbody>
+                    <tr class="success">
+                        <td>1st</td>
+                        <td>$15,000</td>
+                    </tr>
+                    <tr class="info">
+                        <td>2nd</td>
+                        <td>$10,000</td>
+                    </tr>
+                    <tr class="warning">
+                        <td>3rd</td>
+                        <td>$7,000</td>
+                    </tr>
+                     <tr class="warning">
+                        <td>Publication Bonus (x9)</td>
+                        <td>$2,000 each</td>
+                    </tr>
+                     <tr class="warning">
+                        <td><b>Total Prize Pool</b></td>
+                        <td><b>$50,000</b></td>
+                    </tr>
+                </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Prizes for this competition will not be awarded based on leaderboard ranking alone. Instead, the top 15 teams on the final leaderboard will be invited to submit a <a href="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/page/4/#solution-write-up">solution write-up</a> describing their key insights, methodology, and results. Judges will use a combination of leaderboard performance and write-up quality to select the 1st-3rd place winners.</p>
+<p><strong>All code submissions that have been properly submitted before the deadline are eligible and will be executed and added to the leaderboard, even if they have not completed execution by the submission deadline.</strong> Keep in mind, this also means that the leaderboard will show the best private scores once submissions close, but these may continue to update until remaining submissions are executed. We will post an announcement when the leaderboard is finalized.</p>
+<h4 id="publication-bonus-prize">Publication bonus prize</h4>
+<p>Judges will invite top teams to participate in the <a href="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/page/8/">publication bonus prize</a> program. Invited teams will be eligible to receive a publication bonus prize by submitting a publishable-quality preprint submission. Up to 9 teams will receive a publication bonus prize of $2,000.</p>
+<hr />
+<h3 id="how-to-compete">How to compete</h3>
+<ol>
+<li>Click the "Compete!" button in the sidebar to enroll in the competition.</li>
+<li>Get familiar with the problem through the overview and problem description. You might also want to reference additional resources available on the <a href="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/page/5/">about page</a>.</li>
+<li>Download the data from the <a href="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/data/">data tab</a>.</li>
+<li>Create and train your own model. This <a href="https://drivendata.co/blog/productive-math-talk-reference">blog post</a> demonstrates a very simple approach.</li>
+<li>Bundle your trained model and prediction code for evaluation in our cloud runtime. See the <a href="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/page/6/">code submission format</a> page for more detail.</li>
+<li><a href="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/page/6/#testing-your-submission">Test</a> your submission locally, and in the smoke test environment.</li>
+<li>Click “Code jobs” in the sidebar, and then “Make new code submission”. You’re in!</li>
+<li>If you are in the top 15 on the leaderboard when model submissions close, you will be eligible for a prize. Summarize your key insights and methodology as described <a href="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/page/4/#solution-write-up">here</a>, then upload your PDF on the "Solution write-up" tab. Prizes will be based on a combination of leaderboard performance and write-up quality.</li>
+<li>The top submissions will also be invited to develop their write-up into a full academic paper for publication, with a chance to win an additional <a href="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/#publication-bonus-prize">publication bonus prize</a>.</li>
+</ol>
+<p>The challenge rules are in place to promote fair competition and useful solutions. If you are ever unsure whether your solution meets the competition rules, ask the challenge organizers in the <a href="https://k12-ai-infrastructure.discourse.group/c/tutoring-outcomes">competition forum</a> or send an email to <a href="mailto:[redacted:email]@drivendata.org">[redacted:email]@drivendata.org</a>. </p>
+<h3 id="external-data-and-models">External Data and Models</h3>
+<p><strong>External data and pre-trained models are allowed in this competition</strong>
+This challenge aims to support open solutions with broad social benefit and real-world applicability. <strong>To be eligible for prizes, any external data or pre-trained models used must be licensed so that the resulting model can be released for broad use, in and beyond the competition, including for commercial purposes (no NC, CC NC, or CC BY-NC licenses).</strong></p>
+<p>Participants may use external data provided they have the legal right to do so. While this data does not need to be shared publicly, the data must be shareable with the challenge organizers to allow for independent result verification and the development of openly licensed models in order to be eligible for prizes. See the <a href="https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/rules/#external-data-rule-open-external-data">external data section in the challenge rules</a> for further details.</p>
+<p>If you have questions about licensing in general or whether specific external data and models can be used, post in the <a href="https://k12-ai-infrastructure.discourse.group/c/tutoring-outcomes">competition forum</a> or send an email to <a href="mailto:[redacted:email]@drivendata.org">[redacted:email]@drivendata.org</a>.</p>
+<blockquote>
+<p>Prize finalists will be required to declare all external data and pre-trained models used. Each team must either: (1) certify that all resources are licensed to enable commercial model use and provide documentation if requested, or (2) opt out of prize eligibility.</p>
+</blockquote>
+<hr />
+<h3 id="prize-generously-supplied-by-our-friends-at-the-national-tutoring-observatory">Prize generously supplied by our friends at <a href="https://nationaltutoringobservatory.org">The National Tutoring Observatory</a>.</h3>
+<p><a href="https://nationaltutoringobservatory.org"><img src="https://drivendata-public-assets.s3.amazonaws.com/gates-ed-ai-infra/nto-logo.png" style="height: 175px" alt="NTO Logo"></a></p>
+<hr />
+<p>Image Credit: Image generated using Gemini</p></div>
+      
+    </div>
+    
+      
+
+
+
+<script>
+  function getHeadingSlug(headingEl) {
+    return (
+      headingEl.textContent
+        .toLowerCase()
+        // Remove special chars
+        .replace(/[^\w\s-]/g, "")
+        // Replace spaces with hyphens
+        .replace(/\s+/g, "-")
+    );
+  }
+
+  function generateTocListItemEl(headingEl) {
+    const headingTocLink = document.createElement("a");
+    headingTocLink.textContent = headingEl.textContent;
+    headingTocLink.setAttribute("href", `#${headingEl.id}`);
+
+    const liEl = document.createElement("li");
+    liEl.appendChild(headingTocLink);
+    return liEl;
+  }
+
+  function generateToc() {
+    const tocHeadings = document.createElement("ol");
+
+    const docHeadingEls = document.querySelectorAll(
+      "#content-page :where(h2)",
+    );
+    docHeadingEls.forEach((docHeadingEl, docHeadingIndex) => {
+      const headingSlug = getHeadingSlug(docHeadingEl);
+      const headingIdAlreadyExists = document.getElementById(headingSlug);
+      docHeadingEl.id ||= headingIdAlreadyExists ? `${headingSlug}-toc-${docHeadingIndex}` : headingSlug;
+
+      const tocItemEl = generateTocListItemEl(docHeadingEl);
+      tocHeadings.appendChild(tocItemEl);
+    });
+
+    const isTocEmpty = tocHeadings.childElementCount === 0;
+    return isTocEmpty ? undefined : tocHeadings;
+  }
+
+  function createAccordion(accordionHeaderEl, accordionContentsEl) {
+    const summaryEl = document.createElement("summary");
+    summaryEl.className =
+      "list-unstyled d-flex align-items-center justify-content-between";
+
+    const detailsEl = document.createElement("details");
+    detailsEl.open = true;
+    const detailsContentsEl = document.createElement("div");
+    detailsContentsEl.className = "sidebar-toc toc";
+
+    const accordionArrowEl = document.createElement("div");
+    accordionArrowEl.className = "accordion-arrow";
+    accordionArrowEl.setAttribute("aria-hidden", "true");
+
+    accordionHeaderEl.replaceWith(detailsEl);
+    summaryEl.append(accordionHeaderEl, accordionArrowEl);
+    detailsEl.append(summaryEl, detailsContentsEl);
+    detailsContentsEl.appendChild(accordionContentsEl);
+
+    // Clicking the accordion header toggles the accordion only and e.g. won't send clicks to hyperlinks
+    summaryEl.addEventListener("click", (e) => {
+      if (e.target === accordionHeaderEl) {
+        e.preventDefault();
+        detailsEl.open = !detailsEl.open;
+      }
+    });
+  }
+
+  const selectedPageNavItemEl = document.querySelector('.sidebar [aria-current="page"]');
+  if (selectedPageNavItemEl) {
+    const toc = generateToc();
+    if (toc) {
+      createAccordion(selectedPageNavItemEl, toc);
+    }
+  }
+</script>
+
+    
+  </div>
+  
+  
+    <div class="modal fade"
+         id="signupModal"
+         tabindex="-1"
+         role="dialog"
+         aria-labelledby="signupModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="signupModalLabel">Trace the Ace: Rules and Terms of Data Use</h4>
+          </div>
+          <div class="modal-body"><h1>DrivenData Competition Rules</h1>
+
+<hr />
+
+<h1>GUIDELINES</h1>
+
+<p>These guidelines are intended to summarize a few main features of the competition rules. Full details are provided in the competition rules below.</p>
+
+<h2>One account per participant</h2>
+
+<p>You cannot sign up to the K-12 AI Infrastructure platform from multiple accounts and therefore you cannot submit from multiple accounts.</p>
+
+<h2>Private sharing of code</h2>
+
+<p>Privately sharing code or data outside of teams is not permitted. </p>
+
+<h2>Submission limits</h2>
+
+<p>The number of submissions allowed is restricted to a fixed value or rate on a per-competition basis. Any attempt to circumvent this limit will result in disqualification.</p>
+
+<h2>Documentation for winning solutions</h2>
+
+<p>Winning solutions must be documented using the version of the <a href="https://github.com/drivendataorg/prize-winner-template/blob/main/example_documentation_guide.pdf">Winning Model Documentation Template</a> that will be provided to top-ranking participants to be eligible for recognition and prize money if offered.</p>
+
+<h2>Winner License Type: Open source license</h2>
+
+<p>Winning solutions need to be made available under The MIT License (an open source software license commonly described at <a href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a>) in order to be eligible for recognition and prize money if offered. Unless otherwise specified on the challenge website, any software required to generate the solution must also be available under an open source license that does not prohibit free commercial use, so that solutions could be reproduced using only free open source software.</p>
+
+<h2>External Data Rule: Open external data</h2>
+
+<p>Participants may use external data other than the competition data, including pre-trained models, to develop and test their solutions, provided that the external data is freely and publicly available to all Participants under a permissive <a href="https://opendefinition.org/">open license</a> that does not prohibit commercial use (e.g., CC0 or CC-BY).</p>
+
+<p>Participants may also use external data for local validation and model selection, including data that is not available under an open license, provided that they have rights to use the data for this purpose and that solutions do not rely on use of any non-openly-licensed data for inference or to train, fine-tune, or otherwise update any model weights.</p>
+
+<h2>Use of test data</h2>
+
+<p>Unless otherwise specified on the website, each test data sample should be processed independently during inference without the use of information from other cases in the test set. By default, this precludes using information gathered across multiple test samples as feature inputs or target labels for model training, for instance through pseudo labeling or unsupervised learning on the test set. As a result, running model training code with the same training data but a different set of test data or no test data should produce the same model weights and fitted feature parameters. Eligible solutions must be able to run inference on new test data automatically, without retraining the model.</p>
+
+<h2>Questions?</h2>
+
+<p>The challenge rules are in place to promote fair competition and useful solutions. If you are ever unsure whether your solution meets the competition rules, ask the challenge organizers in the competition forum or send an email to [redacted:email]@drivendata.org. </p>
+
+<hr />
+
+<h1>FULL RULES</h1>
+
+<p>NO PURCHASE NECESSARY TO ENTER OR WIN THIS COMPETITION. A PURCHASE OR PAYMENT WILL NOT INCREASE YOUR CHANCES OF WINNING.</p>
+
+<p>BY ENTERING THIS COMPETITION, PARTICIPANT AGREES TO THESE COMPETITION RULES, WHICH ARE A CONTRACT, SO READ THEM CAREFULLY BEFORE ENTERING.</p>
+
+<p>These are the complete, official rules (the <strong>"Competition Rules"</strong>) for the competition (the <strong>"Competition"</strong>) described on the website listed above or linking to these Competition Rules (the <strong>"Competition Website"</strong>). The Competition Rules incorporate by reference the contents of the Competition Website listed above.</p>
+
+<p>By downloading a dataset linked from the Competition Website, submitting an entry to this Competition (a <strong>"Submission"</strong>), or joining a Team in this Competition, you are agreeing to be bound by these Competition Rules which constitute a binding agreement between you and DrivenData and, if applicable, any rules and restrictions that may be imposed by the third-party sponsor of this competition (the <strong>"Competition Sponsor"</strong>).</p>
+
+<p>The Competition is hosted by DrivenData, LLC (<strong>"DrivenData"</strong>). The Competition will run according to the dates listed on the Competition Website (the "Competition Period").</p>
+
+<p>Each registered individual or Team is referred to as a Participant. You may only compete using a single, unique K-12 AI Infrastructure platform account registered at <a href="https://platform.k12-ai-infrastructure.org/">https://platform.k12-ai-infrastructure.org/</a>. Competing using more than one account per individual is a breach of these Competition Rules and DrivenData reserves the right to disqualify any individual (or Team including an individual) who is found to breach these Competition Rules.</p>
+
+<h2>Eligibility</h2>
+
+<p>The Competition is open to all natural persons who are a legal resident of a country, state, province or territory within the Territory, are not the target of any trade sanctions administered or enforced by the United States, and, at the date of entry, are at least eighteen years of age and the age of majority in their jurisdiction of residence. Legal entities and organizations are not eligible for entry. There is no purchase or donation necessary to enter the Competition.</p>
+
+<p>Officers, directors, employees and advisory board members (and their immediate families and members of the same household) of the Competition Sponsor or DrivenData and their respective affiliates, subsidiaries, contractors, agents, judges and advertising and promotion agencies, or and any family member or member of the same household (whether or not related) of any such persons, or any team containing such persons are not eligible to win a prize in this Competition. For purposes of this Competition, the term “family member” is defined as any spouse, partner, parent, legal guardian, child, sibling, grandparent, grandchild, or in-law. </p>
+
+<p>For the purposes of this Competition, the <strong>“Territory”</strong> means any country, state, province, territory, region, or jurisdiction where the laws of the United States or local law do not prohibit participating or receiving a prize in the Competition and excludes any area or country designated by the United States Treasury’s Office of Foreign Assets Control. Individual participants or team members located in the Russian Federation are not eligible to win a prize in this Competition.</p>
+
+<h2>Registration</h2>
+
+<p>If you meet the eligibility requirements and would like to participate, then you must first complete the Competition registration process through the Competition Website within the Competition Period. After you complete the registration process, you will receive access to the available Competition Dataset(s) (each a “Dataset”) (described on the Competition Website) that will enable you to develop and submit one or more Submissions. All Submissions must be received during the Competition Period. To register, visit the Competition Website and follow the onscreen instructions to complete and submit your registration. All of the registration information that you provide is collectively referred to as your "Account". (If you have already created an Account at <a href="https://platform.k12-ai-infrastructure.org/">https://platform.k12-ai-infrastructure.org/</a>, enter your user name and password and follow the on-screen instructions). </p>
+
+<p>After you register individually, you may join a group of individuals with which to collaborate (each group, a <strong>"Team"</strong>), but you may register only once for the Competition either as an Individual or as part of a Team. If you register for the Competition more than once, you will be, and the remainder of your Team may be, disqualified in DrivenData’s sole discretion. An individual Participant cannot join more than one (1) Team and a Participant who is part of a Team cannot also enter the Competition on an individual basis. </p>
+
+<p>You acknowledge and agree that you are solely responsible for abiding by your employer's policies regarding participation in the Competition. Participants (including each member of a Team) must not be under any legal or contractual obligation that would prohibit their participation in this Competition as described in these Competition Rules. If participating in this Competition would result in a violation by Participant of any law applicable to them or any agreement to which they are a party or employer or company policies and procedures, such Participant is ineligible. Participants and Teams (including each member of a Team) represent and warrant that their participation in this Competition does not violate their employer’s or company’s policies and procedures; and if participating in this Competition would result in a violation by Participant of employer or company policies and procedures, such Participant is ineligible. If you are participating within the scope of your employment, as an employee, contractor, or agent of a legal entity, you warrant that such party has full knowledge of your actions and has consented thereto, including your potential receipt of a prize. </p>
+
+<p>Once you have completed the registration process, you or your Team will be provided with access to the Dataset(s) that you use to develop your Submissions. </p>
+
+<p>BY ENTERING THE COMPETITION YOU ACCEPT THE CONDITIONS STATED IN THESE COMPETITION RULES INCLUDING THE RULES ON THE COMPETITION WEBSITE, AGREE TO BE BOUND BY THE DECISIONS OF THE JUDGES, COMPETITION SPONSOR AND DRIVENDATA AND WARRANT THAT YOU ARE ELIGIBLE TO PARTICIPATE IN THE COMPETITION. IF YOU DO NOT ACCEPT ALL OF THESE COMPETITION RULES, THEN PLEASE DO NOT REGISTER FOR THE COMPETITION. WE RECOMMEND THAT YOU PRINT OUT A COPY OF THESE COMPETITION RULES FOR YOUR FUTURE REFERENCE.</p>
+
+<h2>Teams</h2>
+
+<p><strong>FORMING A TEAM</strong>. 
+Multiple individuals may collaborate as a Team. You may not participate on more than one Team. Each Team member must be a single individual operating a separate K-12 AI Infrastructure platform account. You must register individually for the Competition before joining a Team. You must confirm your Team membership to make it official by responding to the Team notification message which will be sent to your Account. </p>
+
+<p><strong>TEAM PRIZES</strong>. 
+If a Team wins a monetary Prize, DrivenData will allocate the Prize money in even shares between the Team members unless the Team unanimously contacts DrivenData before the Prize is awarded to request an alternative prize distribution. </p>
+
+<h2>Entry submissions</h2>
+
+<p>Each Submission must be uploaded to the Competition Website in the manner and format specified on the Competition Website. </p>
+
+<p>Unless otherwise specified on the Competition Website, for the purposes of quantitative evaluation of Submissions, Participants agree to process each test data sample independently during inference without the use of information from other cases in the test set. By default, this precludes using information gathered across multiple test samples as feature inputs or target labels for model training, for instance through pseudo labeling or unsupervised learning on the test set. Eligible Submissions and models must be able to run inference on new test data automatically, without retraining the model.</p>
+
+<p>All Submissions must be received during the Competition Period. The Submission includes all data, content, copy and/or all other materials submitted in the manner and format specified on the Competition Website via the submission form, as well as all documentation provided by entrants for winning Submissions. The number of Submissions a Participant may submit during each calendar day of the Competition Period will be displayed on the Competition Website. If the Competition includes selection of Submissions to be considered for final evaluation and winner determination, the number of Submissions allowed for selection will be displayed on the Competition Website. If the Competition is a multi-stage Competition with temporally separate training data and/or leaderboard data, one or more valid Submissions must be submitted and selected during each stage of the Competition in the manner described on the Competition Website. </p>
+
+<p>USER SUBMISSIONS MUST IN THEIR ENTIRETY COMPLY WITH ALL APPLICABLE FEDERAL, STATE, LOCAL, AND INTERNATIONAL LAWS AND REGULATIONS.  WITHOUT LIMITING THE FOREGOING, IN ORDER TO BE ELIGIBLE, YOU WARRANT THAT YOUR SUBMISSION FOR THIS COMPETITION MEETS THE FOLLOWING SUBMISSION CRITERIA, ALL AS DETERMINED IN THE SOLE DISCRETION OF COMPETITION SPONSOR AND/OR DRIVENDATA: </p>
+
+<ul>
+<li>Does not include or anticipate the inclusion of any content that is in violation of or infringes third party intellectual property rights including, but not limited to copyrights, including music copyrights, patents, trade secrets, trademarks, and rights of publicity or privacy.</li>
+<li>Is free and clear of all liens, claims, encumbrances or demands of any third parties. </li>
+<li>Does not include or anticipate the inclusion of any unsuitable or offensive content, including nudity, sexually explicit, disparaging, libelous or other inappropriate content. </li>
+<li>Has not been entered in previous challenges, competitions or contests, or won previous awards. </li>
+<li>Has not been published or distributed previously in any media. </li>
+<li>Is suitable for a general audience. </li>
+<li>Does not contain any claims that are not and cannot be substantiated or that would be false and/or misleading to a reasonable consumer.</li>
+</ul>
+
+<h2>Selection of winners</h2>
+
+<p>This Competition is a challenge of skill and the final results are determined by evaluating a combination of quantitative and qualitative factors, as more fully described on the Competition Website. For that portion of the Competition evaluated quantitatively, the results will be determined solely by leaderboard ranking on the private leaderboard based on an objective statistical evaluation metric published on the Competition Website prior to commencement of the Competition (subject to compliance with these Competition Rules). Participants' scores and ranks on the Competition Website at any given stage of the Competition will be based on the objective statistical evaluation metric described on the Competition Website, as determined by applying the predictions in the Submission to the ground truth of a validation dataset whose instances were a fixed set sampled from the Data. Scores displayed on the public leaderboard while the competition is running may or may not be the same as the final scores on the private leaderboard, depending on how samples from the Data are used for evaluation. For that portion of the Competition evaluated qualitatively, the results will be determined by a panel of judges, as more fully described on the Competition Website. As more fully described on the Competition Website, the Competition may have quantitative winners, qualitative winners, combined quantitative and qualitative winners, or all three. </p>
+
+<p>The evaluation metric or judging rubric used for scoring and ranking Submissions will be displayed on the Competition Website.</p>
+
+<p>The anticipated number of and amount of prize awards that will be awarded for this Competition are set forth on the Competition Website; however, DrivenData is not obligated to make all or any awards and reserves the right, in its sole discretion, to award fewer than the anticipated number of awards if an insufficient number of entries are deemed worthy in accordance with the evaluation criteria and challenge requirements.</p>
+
+<p>Any prize awards are subject to verification of eligibility and compliance with these Competition Rules. All decisions of DrivenData, the Competition Sponsor and/or judges will be final and binding on all matters relating to this Competition. DrivenData reserves the right to examine the Submission and any associated code or documentation for compliance with these Competition Rules. In the event that the Submission demonstrates a breach of these Competition Rules, Competition Sponsor or DrivenData may at its discretion take either of the following actions:</p>
+
+<ul>
+<li>disqualify your Submission(s); or </li>
+<li>require that you remediate within one week any issues identified in your Submission(s) (including, without limitation, the resolution of license conflicts and confirmation of the fulfillment of all obligations required by software licenses). DrivenData is under no obligation to alert you of any issues with your Submission or permit you to remediate any identified issues.</li>
+</ul>
+
+<p>A tie between two or more valid and identically ranked submissions will be resolved in favor of the tied submission that was submitted first. </p>
+
+<p>A Participant may decline to be nominated as a Winner by notifying DrivenData directly within one week following the Competition deadline, in which case the declining Participant forgoes any prize or other features associated with winning the Competition. DrivenData reserves the right to disqualify a Participant who so declines at DrivenData's sole discretion if DrivenData deems disqualification appropriate.</p>
+
+<h2>Prizes and conditions</h2>
+
+<p>If the Competition has a prize, the Prize Winner(s) will be notified by email. The Prize Winner(s) will receive their prizes awarded as a check or electronic transfer from DrivenData. </p>
+
+<p>If a Team wins a prize, all Team members must submit a single written statement describing how the prize is to be allocated among the Team members. If the Team fails to submit such statement within 10 days after DrivenData requests it, then DrivenData will distribute the prize among Team members in equal shares and will have no further obligation to winning Team members.</p>
+
+<p>As a condition of receipt of a prize, winner must deliver their solution’s code and documentation to DrivenData. The source code must contain a description of resources required to build and run the solution, and should be able to sufficiently reproduce winning results and generate predictions on new data samples with and without retraining. The accompanying documentation should be consistent with DrivenData’s <a href="https://github.com/drivendataorg/prize-winner-template/blob/main/example_documentation_guide.pdf">Winning Model Documentation Template</a>, a version of which will be provided to winners after the competition. Winner must complete the specific version of the documentation template provided for the competition. Winner must also sign and return any documents provided in connection with prize acceptance as may be required by DrivenData or Competition Sponsor, including without limitation eligibility certifications and U.S. tax forms.</p>
+
+<p>The prize may be awarded to an alternate winner if required documentation is not returned within fifteen (15) days after mailing to winner, if prize notification letter/email or prize is returned as undeliverable, if winner does not respond to an email or other communication from DrivenData within seven (7) days of the date sent, or if the winner, in DrivenData’s judgment, does not respond to reasonable requests for information related to prize delivery or is otherwise unable or unwilling to coordinate prize delivery within fifteen (15) days after prize notification. Allow thirty (30) days for prize delivery. By accepting any prize/award, Winner agrees to allow DrivenData and/or the Competition Sponsor to disclose Winner’s first name, first initial of last name, and city of residence, as well as prize information to the extent required by law, and if so required by law, Winner agrees to the disclosure of additional personal information, all without additional compensation. </p>
+
+<p>DrivenData is responsible only for prize delivery and is not responsible for prize utility or otherwise. No substitution or transfer of prizes is permitted. All taxes, fees and expenses associated with participation in the Competition or receipt and use of a prize are the sole responsibility of the Prize Winner(s).</p>
+
+<p><strong>CHEATING.</strong> 
+Participating using more than one K-12 AI Infrastructure platform account is deemed cheating and, if discovered, will result in disqualification from the Competition and any other affected Competitions and may result in banning or deactivation of affected K-12 AI Infrastructure platform accounts.</p>
+
+<p>DrivenData reserves the right to request information associated with our investigation of suspected cheating. Failure to respond to these requests (including failure to furnish the requested information) within ten (10) days is grounds for disqualification.</p>
+
+<p><strong>RECEIVING PRIZES.</strong>
+After verification of eligibility, if prizes are awarded, each Prize winner will receive the prize in the form of a check or electronic transfer from DrivenData made out to the Prize winner (if an individual, or to the individual Team members if a Team). Allow 30 days from final verification and confirmation for Prize delivery. Winners who are U.S. residents will receive an IRS 1099 form from DrivenData in the amount of their prize at the appropriate time. Prize winners are responsible for any taxes, fees or other liability resulting from their receipt of a Prize. </p>
+
+<h2>Permissions</h2>
+
+<p>Except where prohibited by law, entry constitutes permission to use winners’ names, hometowns, images, statements and likenesses for online posting, and/or any advertising and publicity without additional compensation. Winners may also be required to sign and return a release of liability, declaration of eligibility and, where lawful, a publicity consent agreement, as conditions of receiving a prize. Failure to comply with the aforementioned conditions shall be grounds for forfeiture of a prize. </p>
+
+<p><strong>PARTICIPANT INTELLECTUAL PROPERTY LICENSING/ASSIGNMENT.</strong>
+All Participants grant DrivenData, the Competition Sponsor and/or judges a limited, worldwide license to use each Participant’s Submission for the administration of the Competition. </p>
+
+<p>As a further condition of receipt of a Prize, each winning Participant thereby licenses their winning Submission and the source code used to generate the Submission according to the Winner License/Assignment Type specified above (note: if no Winner License/Assignment Type is specified above, the Winner License/Assignment Type is deemed to be Non-Exclusive License).</p>
+
+<p>Unless otherwise specified in the Guidelines above or elsewhere on the Competition Website, any source code or software required to generate and reproduce the Submission must also be available a) under an open source license that does not prohibit free commercial use or b) otherwise in accordance with the specified Winner License/Assignment Type.</p>
+
+<ul>
+<li><p><strong>NON-EXCLUSIVE LICENSE.</strong>
+If the Winner License/Assignment Type for the Competition (see Winner License/Assignment Type above) is a Non-Exclusive License then each Winner by accepting a Prize thereby:</p>
+
+<ul>
+<li>grants to Competition Sponsor and its designees a worldwide, non-exclusive, sub-licensable, transferable, fully paid-up, royalty-free, perpetual, irrevocable right to use, not use, reproduce, distribute, create derivative works of, publicly perform, publicly display, digitally perform, make, have made, sell, offer for sale and import their winning Submission and the source code used to generate the Submission, in any media now known or hereafter developed, for any purpose whatsoever, commercial or otherwise, without further approval by or payment to Participant; and</li>
+<li>represents that he/she/it has the unrestricted right to grant that license.</li>
+</ul></li>
+<li><p><strong>OPEN SOURCE LICENSE.</strong>
+If the Winner License/Assignment Type for the Competition (see Winner License/Assignment Type above) is Open Source License, then each Winner by accepting a Prize thereby:</p>
+
+<ul>
+<li>licenses their winning Submission and the source code used to generate the Submission under the MIT License (an open source software license commonly described at <a href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a>); and</li>
+<li>represents that he/she/it has the unrestricted right to grant that license.</li>
+</ul></li>
+<li><p><strong>ASSIGNMENT TO COMPETITION SPONSOR.</strong>
+If the Winner License/Assignment Type for the Competition (see Winner License/Assignment Type above) is Assignment to Competition Sponsor, then each Winner by accepting a Prize thereby:</p>
+
+<ul>
+<li>grants all right, title, and interest in and to their winning Submission and the source code used to generate the Submission, and all intellectual property rights therein, to the Competition Sponsor or their designee;</li>
+<li>represents that he/she/it has the unrestricted right to make that assignment; and</li>
+<li>agrees to execute a stand-alone assignment document in the discretion of the Competition Sponsor or their designee to memorialize the same.</li>
+</ul></li>
+<li><p><strong>NON-EXCLUSIVE LICENSE FOR ORIGINAL WORK.</strong>
+If the Winner License/Assignment Type for the Competition (see Winner License/Assignment Type above) is a Non-Exclusive License for Original Work, then each Winner must disclose those components of their Submission that depend on or are produced by proprietary systems or commercial products (the “Proprietary Elements”). The remaining components of the Submission are considered original work (the “Original Elements”). The Winner in accepting a Prize thereby:</p>
+
+<ul>
+<li>to the extent that the Winner holds any right, title, or interest in or to the Proprietary Elements and the intellectual property rights therein, unless otherwise agreed upon with the Competition Sponsor prior to accepting a Prize, grants to Competition Sponsor and its designees a worldwide, non-exclusive, sub-licensable, transferable, fully paid-up, royalty-free, perpetual, irrevocable right to use, not use, reproduce, distribute, create derivative works of, publicly perform, publicly display, digitally perform, make, have made, sell, offer for sale and import the Proprietary Elements as embodied in their winning Submission and the source code used to generate the Submission, in any media now known or hereafter developed, for any purpose whatsoever, commercial or otherwise, without further approval by or payment to Participant</li>
+<li>grants to Competition Sponsor and its designees a worldwide, non-exclusive, sub-licensable, transferable, fully paid-up, royalty-free, perpetual, irrevocable right to use, not use, reproduce, distribute, create derivative works of, publicly perform, publicly display, digitally perform, make, have made, sell, offer for sale and import the Original Work embodied in their winning Submission and the source code used to generate the Submission, in any media now known or hereafter developed, for any purpose whatsoever, commercial or otherwise, without further approval by or payment to Participant; and</li>
+<li>represents that he/she/it has the unrestricted right to grant the licenses described herein.</li>
+</ul></li>
+</ul>
+
+<h2>Data use and code sharing</h2>
+
+<p><strong>DATA.</strong>
+"Data" means the data or datasets linked from the Competition Website for the purpose of use by Participants in the Competition. For the avoidance of doubt, Data is deemed for the purpose of these Competition Rules to include any prototype or executable code provided to Participants by DrivenData or via the Competition Website. Participants must use the Data only as permitted by these Competition Rules and any associated data use rules specified on the Competition Website.</p>
+
+<p>Unless otherwise permitted by the terms of the Competition Website, Participants must use the Data solely for the purpose and duration of the Competition, including but not limited to reading and learning from the Data, analyzing the Data, modifying the Data and generally preparing your Submission and any underlying models and participating in forum discussions on the Competition Website. If the Data includes information from individuals, Participants explicitly agree to make no attempt to utilize the Data to identify specific individuals, and will immediately delete relevant Data and notify DrivenData in the event of inadvertent discovery of the identity of any person represented in the Data during the Competition. Participants agree to use suitable measures to prevent persons who have not formally agreed to these Competition Rules from gaining access to the Data and agree not to transmit, duplicate, publish, redistribute or otherwise provide or make available the Data to any party not participating in the Competition. Participants agree to notify DrivenData immediately upon learning of any possible unauthorized transmission or unauthorized access of the Data and agree to work with DrivenData to rectify any unauthorized transmission. Participants agree that participation in the Competition shall not be construed as having or being granted a license (expressly, by implication, estoppel, or otherwise) under, or any right of ownership in, any of the Data.</p>
+
+<p><strong>EXTERNAL DATA.</strong>
+Participants’ use of external data is subject to the External Data Rule specified in the Competition Guidelines and any rules on external data expressly stated on the Competition Website (note: if no External Data Rule is specified above, the External Data Rule is deemed to be No External Data).</p>
+
+<ul>
+<li><p><strong>NO EXTERNAL DATA.</strong>
+Unless otherwise expressly stated on the Competition Website, Participants must not use data other than the Data to develop and test their models and Submissions.</p></li>
+<li><p><strong>OPEN EXTERNAL DATA.</strong>
+Participants may use external data other than the Data, including pre-trained models, to develop and test their solutions, provided that they comply with any external data restrictions stated on the Competition Website and the external data is freely and publicly available to all Participants under a permissive <a href="https://opendefinition.org/">open license</a> that does not prohibit commercial use (e.g., CC0 or CC-BY).</p></li>
+</ul>
+
+<p>Participants may also use external data for local validation and model selection, including data that is not available under an open license, provided that they have rights to use the data for this purpose and that solutions do not rely on use of any non-openly-licensed data for inference or to train, fine-tune, or otherwise update any model weights.</p>
+
+<ul>
+<li><strong>EXTERNAL DATA WITH RIGHTS.</strong>
+Participants may use external data other than the Data, including pre-trained models, to develop and test their solutions, provided that the Participant has all rights, licenses and permissions to use the external data as contemplated in these Competition Rules. Participant represents and warrants that any use of any external data in connection with participation in this Competition is pursuant to and in accordance with a valid license that permit use of the external data in this Competition without the need for additional approvals from any third party, and agrees to provide DrivenData with proof (to DrivenData’s satisfaction) of such license upon request at any time during the Competition or evaluation process. Failure to satisfy any of these requirements in accordance with DrivenData’s instructions and timing, or DrivenData’s reasonable belief, as determined in DrivenData’s sole discretion, that a Participant does not have all necessary consents and licenses (notwithstanding any certification by Participant) will result in disqualification from the Competition and forfeiture of any prize claim. </li>
+</ul>
+
+<p>Furthermore, unless otherwise expressly stated on the Competition Website:</p>
+
+<ul>
+<li>Participants may annotate provided training data as long as they are included with solutions to enable reproduction and do not overfit to the test set;</li>
+<li>Participants may not add any manual annotations to the provided test data. Eligible solutions need to be able to run on test samples automatically using the test data as provided.</li>
+</ul>
+
+<p>Competition Sponsor reserves the right in its sole discretion to disqualify any Participant who Competition Sponsor discovers has undertaken or attempted to undertake the use of data other than the Data, or who uses the Data other than as permitted according to the Competition Website and in these Competition Rules, in the course of the Competition.</p>
+
+<p><strong>CODE SHARING.</strong>
+Participants are prohibited from privately sharing source or executable code developed in connection with or based upon the Data, and any such sharing is a breach of these Competition Rules and may result in disqualification.
+Participants are permitted to publicly share source or executable code developed in connection with or based upon the Data, or otherwise relevant to the Competition, provided that such sharing does not violate the intellectual property rights of any third party. By so sharing, the sharing Participant is thereby deemed to have licensed the shared code under the MIT License (an open source software license commonly described at <a href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a>).</p>
+
+<h2>Participant warranties and obligations</h2>
+
+<p>By registering, you agree that (a) your Account is complete, correct and accurate and (b) your registration may be rejected or terminated and all Entries submitted by you and/or your Team may be disqualified if any of the information in your Account is (or Competition Sponsor of DrivenData has reasonable grounds to believe it is) incomplete, incorrect or inaccurate. You are solely responsible for your Account. All registration information is deemed collected in the United States.</p>
+
+<p>Participation is subject to all applicable federal, state, provincial, territorial and local laws, rules and regulations. You agree to comply with all applicable laws and regulations at all times during your participation in the Competition. Void where prohibited or restricted by law. You are responsible for checking applicable laws and regulations in your jurisdiction before participating in the Competition to make sure that your participation is legal. You are responsible for all taxes and reporting related to any award that you may receive as part of the Competition. You are responsible for abiding by your employer's policies regarding participation in the Competition. Competition Sponsor and DrivenData disclaim any and all liability or responsibility for disputes arising between you and your employer related to this Competition Each Participant must comply with all applicable explicit or implicit terms and conditions or policies applicable for platforms, applications, or software used in connection with or on which their Solution operates.  As such, each Participant must follow the spirit of such terms and conditions and policies; and any attempt to subvert or to use a work-around of such terms and conditions or policies may, in DrivenData’s sole discretion, lead to such Participant’s disqualification. </p>
+
+<p>Each Participant is solely responsible for all equipment, including but not necessarily limited to a computer and internet connection necessary to access the Competition Website and to develop and upload any Submission, and any telephone, data, hosting or other service fees associated with such access, as well as all costs incurred by or behalf of the Entrant in participating in the Competition.</p>
+
+<p>By entering a Submission, you represent and warrant that all information you enter on the Competition Website is true and complete to the best of your knowledge, that you have the right and authority to make the Submission (including any underlying code and model) on your own behalf or on behalf of the persons and entities that you specify within the Submission, and that your Submission:</p>
+
+<ul>
+<li>complies with all applicable federal, state, provincial, territorial, local and international laws, statutes, ordinances, rules and regulations;</li>
+<li>is your own original work, or is used by permission, in which case full and proper credit and identity is given and the third party contributions are clearly identified within your Submission;</li>
+<li>does not contain confidential information or trade secrets and is not the subject of a registered patent or pending patent application;</li>
+<li>does not violate or infringe upon the patent rights, industrial design rights, copyrights, trademarks, rights of privacy, publicity or other intellectual property or other rights of any person or entity;</li>
+<li>does not contain malicious code, such as viruses, timebombs, cancelbots, worms, Trojan horses or other potentially harmful programs or other material or information; </li>
+<li>does not and will not violate any applicable law, statute, ordinance, rule or regulation;</li>
+<li>does not trigger any reporting or royalty obligation to any third party; and</li>
+<li>was not previously published and has not won any other prize/award. </li>
+</ul>
+
+<p>A breach of any of these warranties will result in the corresponding Submission being invalid.</p>
+
+<h2>Confidentiality</h2>
+
+<p><strong>Confidential Information Defined.</strong>
+As used in this Section, "Confidential Information" means Competition Sponsor materials, and any information provided by DrivenData hereunder, whether of a technical, business, or other nature (including, without limitation, information relating to a party's technology, software, products, services, designs, methodologies, business plans, finances, marketing plans, Sponsors, prospects, or other affairs), that is received by Participant. </p>
+
+<p><strong>Exclusions.</strong>
+Participant's obligations under this Section as to the disclosing party's Confidential Information does not include any information that Participant can document: (a) was known to Participant prior to receiving the same from the disclosing party in connection with this Agreement; (b) is independently developed by Participant without use of or reference to the Confidential Information of the disclosing party; (c) is acquired by Participant from another source without restriction as to use or disclosure; or (d) is or becomes part of the public domain through no fault or action of Participant.</p>
+
+<p><strong>Nondisclosure.</strong>
+In consideration of the terms and conditions of this Agreement, and for other good and valuable consideration, the receipt and sufficiency of which is acknowledged, during and after the term of this Agreement Participant will: (a) use the disclosing party's Confidential Information solely for the purpose for which it is provided; (b) not disclose the disclosing party's Confidential Information to a third party unless the third party must access the Confidential Information to perform in accordance with this Agreement and the third party has executed a written agreement that contains terms that are substantially similar to the terms contained in this Section; and (c) maintain the secrecy of, and protect from unauthorized use and disclosure, the disclosing party's Confidential Information to the same extent (but using no less than a reasonable degree of care) that Participant protects its own Confidential Information of a similar nature. If Participant is required by law or by any governmental or semi-governmental agency or court to disclose the disclosing party's Confidential Information or the terms of this Agreement Participant must give prompt written notice of such requirement to the disclosing party before such disclosure and assist the disclosing party in attempting to obtain an order protecting the Confidential Information from public disclosure. </p>
+
+<p><strong>Return of Information.</strong>
+Upon request, Participant will destroy or deliver to the disclosing party all Confidential Information Participant may have in its possession or control. </p>
+
+<p><strong>Injunctive Relief.</strong>
+Participant acknowledges that any violation or threatened violation of this Section may cause irreparable injury to the other party, entitling the disclosing party to obtain injunctive relief in addition to all legal remedies.</p>
+
+<h2>Delivery and receipt of entries</h2>
+
+<p>DrivenData is not responsible for (a) late, lost, stolen, damaged, garbled, incomplete, incorrect or misdirected Entries or other communications, (b) errors, omissions, interruptions, deletions, defects, or delays in operations or transmission of information, in each case whether arising by way of technical or other failures or malfunctions of computer hardware, software, communications devices, or transmission lines, or (c) data corruption, theft, destruction, unauthorized access to or alteration of Submission materials, loss or otherwise. DrivenData is not responsible for electronic communications or emails which are undeliverable as a result of any form of active or passive filtering of any kind, or insufficient space in any email account to receive email messages. DrivenData disclaims any liability for damage to any computer system resulting from participation in, or accessing or downloading information in connection with, the Competition.</p>
+
+<h2>Reservation of rights</h2>
+
+<p>DrivenData, in its sole discretion, reserves the right to disqualify any person tampering with the entry process, the operation of the Web site, the competition process, or is otherwise in violation of the Competition Rules. DrivenData reserves the right at any time to disqualify a Submission from a Competition where, acting in good faith, it believes there are reasonable grounds to warrant disqualification. For example, DrivenData’s determination that the Submission does not provide the functionality described or required, or the Submission appears to be purposely designed to circumvent these Competition Rules or the spirit of the Competition would be grounds for disqualification. DrivenData reserves the right to cancel, terminate or modify the Competition if it is not capable of completion as planned for any reason, including infection by computer virus, bugs, tampering, unauthorized intervention or technical failures of any sort. If DrivenData determines (at any time and in their sole discretion) that any Participant is engaging in behavior that DrivenData deems obnoxious, inappropriate, threatening, illegal or that is intended to annoy, abuse, or harass any other person or entity, DrivenData reserves the right to disqualify such Participant (and Participant’s Team, if applicable). </p>
+
+<h2>General release</h2>
+
+<p>By entering the Competition, you release and discharge the Competition Sponsor and DrivenData from any liability whatsoever in connection with the Competition or with the acceptance, possession, use or misuse of any prize including, without limitation, legal claims, costs, injuries, losses or damages, demands or actions of any kind (including, without limitation: personal injuries; death; damage to, loss or destruction of property; rights of publicity or privacy; and defamation or portrayal in a false light). The Competition Sponsor and DrivenData will not be responsible for typographical, printing or other inadvertent errors in these Competition Rules or in other materials relating to the Competition. Additionally, you hereby agree to indemnify the Competition Sponsor and DrivenData from any and all losses, damages, costs, expenses, rights, claims, demands and actions (including attorney's fees and expenses for litigation and settlement), which may be brought against any one or more of them by anyone claiming to have suffered loss or damage as a result of your participation in the Competition or for any breach of any representation or warranty herein.</p>
+
+<h2>Limitations of liability</h2>
+
+<p>By participating in the Competition, each Participant agrees that: (1) any and all disputes, claims, and causes of action arising out of or in connection with the Competition, or any prize awarded, shall be resolved individually without resort to any form of class action; (2) any claims, judgments and awards shall be limited to actual out-of-pocket costs incurred, including costs associated with entering the Competition, but in no event attorney's fees; and (3) under no circumstances will a Participant be permitted to obtain any award for, and each Participant hereby waives all rights to claim, punitive, incidental or consequential damages and any and all rights to have damages multiplied or otherwise increased and any other damages, other than damages for actual out-of-pocket expenses. </p>
+
+<p>DrivenData, LLC, Competition Sponsor, and the employees, officers, directors, shareholders, agents, representatives, affiliates, subsidiaries, and advertising, promotional and legal advisors thereof (collectively, the “Released Parties”) are not responsible and shall not be liable for: (i) late, lost, delayed, damaged, misdirected, incomplete, illegible, or unintelligible entries; (ii) telephone, electronic, hardware, or software program, network, Internet, or computer malfunctions, failures, or difficulties; (iii) errors in transmission; (iv) any condition caused by events beyond the control of the Released Parties that may cause the Competition to be disrupted or corrupted; (v) any injuries, losses, or damages of any kind caused by a prize or resulting from acceptance, possession, or use of a prize, or from participation in the Competition (however (but only if required by law in your jurisdiction), this release and hold harmless commitment does not apply to cases of bodily injury or loss of life to the extent that any death or personal injury is caused by the negligence of DrivenData, Competition Sponsor, or other third parties, where liability to the injured party cannot be excluded by law); or (vi) any printing or typographical errors in any materials associated with the Competition. </p>
+
+<h2>Disclaimer of Warranties</h2>
+
+<p>You understand that we cannot and do not guarantee or warrant that the Data or other files available for downloading from the internet or the Competition Website will be free of viruses or other destructive code. You are responsible for implementing sufficient procedures and checkpoints to satisfy your particular requirements for anti-virus protection and accuracy of data input and output, and for maintaining a means external to our site for any reconstruction of any lost data. RELEASED PARTIES  WILL NOT BE LIABLE FOR ANY LOSS OR DAMAGE CAUSED BY A DISTRIBUTED DENIAL-OF-SERVICE ATTACK, VIRUSES OR OTHER TECHNOLOGICALLY HARMFUL MATERIAL THAT MAY INFECT YOUR COMPUTER EQUIPMENT, COMPUTER PROGRAMS, DATA OR OTHER PROPRIETARY MATERIAL DUE TO YOUR USE OF THE WEBSITE OR ANY SERVICES OR ITEMS OBTAINED THROUGH THE WEBSITE OR TO YOUR DOWNLOADING OF ANY MATERIAL POSTED ON IT, OR ON ANY WEBSITE LINKED TO IT. </p>
+
+<p>YOUR USE OF THE COMPETITION WEBSITE, ITS CONTENT AND ANY SERVICES OR ITEMS OBTAINED THROUGH THE WEBSITE AND RECEIPT OF ANY PRIZES IS AT YOUR OWN RISK. THE WEBSITE, ITS CONTENT AND ANY SERVICES OR ITEMS OBTAINED THROUGH THE WEBSITE ARE PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS, WITHOUT ANY WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, BEYOND ANY NON-EXCLUDABLE GUARANTEES (DEFINED BELOW). NEITHER THE RELEASED PARTIES NOR ANY PERSON ASSOCIATED WITH RELEASED PARTIES MAKES ANY WARRANTY OR REPRESENTATION WITH RESPECT TO THE COMPLETENESS, SECURITY, RELIABILITY, QUALITY, ACCURACY OR AVAILABILITY OF THE COMPETITION WEBSITE. WITHOUT LIMITING THE FOREGOING, NEITHER RELEASED PARTIES NOR ANYONE ASSOCIATED WITH THE RELEASED PARTIES REPRESENTS OR WARRANTS THAT THE COMPETITION WEBSITE, ITS CONTENT OR ANY SERVICES OR ITEMS OBTAINED THROUGH THE WEBSITE WILL BE ACCURATE, RELIABLE, ERROR-FREE OR UNINTERRUPTED, THAT DEFECTS WILL BE CORRECTED, THAT OUR SITE OR THE SERVER THAT MAKES IT AVAILABLE ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS OR THAT THE COMPETITION WEBSITE OR ANY SERVICES OR ITEMS OBTAINED THROUGH THE WEBSITE WILL OTHERWISE MEET YOUR NEEDS OR EXPECTATIONS. </p>
+
+<p>NOTHING IN THESE COMPETITION RULES LIMITS, EXCLUDES, OR MODIFIES OR PURPORTS TO LIMIT, EXCLUDE, OR MODIFY ANY STATUTORY CONSUMER GUARANTEE OR ANY IMPLIED CONDITION OR WARRANTY, THE EXCLUSION OF WHICH FROM THESE COMPETITION RULES WOULD CONTRAVENE ANY STATUTE OR CAUSE ANY PART OF THESE TERMS TO BE VOID (“NON-EXCLUDABLE GUARANTEES”). SUBJECT TO THE LIMITATIONS IN THE PRECEDING SENTENCE AND TO THE MAXIMUM EXTENT PERMITTED BY ANY MANDATORY PROVISIONS OF APPLICABLE LAW, THE RELEASED PARTIES HEREBY DISCLAIM ALL WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, STATUTORY OR OTHERWISE, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY, NON-INFRINGEMENT AND FITNESS FOR PARTICULAR PURPOSE. </p>
+
+<p>THE FOREGOING DOES NOT AFFECT ANY WARRANTIES WHICH CANNOT BE EXCLUDED OR LIMITED UNDER APPLICABLE LAW. </p>
+
+<h2>Governing Law and Jurisdiction</h2>
+
+<p>DrivenData shall be the sole interpreter of these Competition Rules. </p>
+
+<p>All matters relating to the Competition Rules or the Competition and any dispute or claim arising therefrom or related thereto (in each case, including non-contractual disputes or claims), shall be governed by and construed in accordance with the internal laws of the Commonwealth of Massachusetts without giving effect to any choice or conflict of law provision or rule (whether of the Commonwealth of Massachusetts or any other jurisdiction).</p>
+
+<p>Any legal suit, action or proceeding arising out of, or related to, the Competition or the Competition Website shall be instituted exclusively in the federal courts of the United States or the courts of the Commonwealth of Massachusetts although we retain the right to bring any suit, action or proceeding against you for breach of these Competition Rules in your country of residence or any other relevant country. You waive any and all objections to the exercise of jurisdiction over you by such courts and to venue in such courts.</p>
+
+<p>The invalidity or unenforceability of any provision of these Competition Rules shall not affect the validity or enforceability of any other provision. In the event that any provision is determined to be invalid or otherwise unenforceable or illegal, these Competition Rules shall otherwise remain in effect and be construed in accordance with their terms as if the invalid or illegal provision was not contained herein.</p>
+</div>
+          <div class="modal-footer">
+            
+              <form method="post" action="/competitions/3/tutoring-outcomes/join/">
+                <input type="hidden" name="csrfmiddlewaretoken" value="YjSk28yLe2M9NPxZGmxdbce6ApBqgE4TQ58ARUNOm60cXL9Rl5bgvoI9dx4RaGNl">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">I Decline</button>
+                <button class="btn btn-success" type="submit">I Agree</button>
+              </form>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  
+
+            
+            
+          </div>
+        </div>
+      </div>
+    </main>
+    
+      
+
+<div class="container-fluid py-4">
+  <hr>
+</div>
+<footer class="nav-footer footer text-sm">
+  <div class="container-fluid">
+    <div class="d-flex flex-column flex-md-row gap-3 justify-content-between w-100 align-items-md-end">
+      <div class="mb-1">
+        <a href="https://www.drivendata.org">
+          <img src="/static/images/brand/hosted-by-drivendata-color.svg"
+               height="80"
+               alt="Hosted by DrivenData - Go to DrivenData homepage" />
+        </a>
+      </div>
+      <div class="d-flex flex-column align-items-md-end gap-1 mt-2">
+        <div class="text-center" style="max-width: 293px">
+          <h2 class="m-0 text-sm font-heading fw-bold lh-base">Stay informed about future developments</h2>
+          <a href="https://go.digitalpromise.org/l/414542/2025-10-14/cr6v82"
+             target="_blank"
+             class="btn btn-lg btn-outline-primary w-100 px-2 py-2">Subscribe</a>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex gap-3 flex-column flex-md-row pt-md-2 mt-5">
+      <nav class="flex-grow-1" aria-label="Footer">
+        <ul class="list-unstyled d-flex gap-2 gap-md-4 m-0 flex-column flex-md-row">
+          <li>
+            <a href="https://k12-ai-infrastructure.org/" target="_blank">About</a>
+          </li>
+          <li>
+            <a href="https://k12-ai-infrastructure.org/contact/" target="_blank">Contact</a>
+          </li>
+          <li>
+            <a href="mailto:[redacted:email]@drivendata.org">[redacted:email]@drivendata.org</a>
+          </li>
+          <li>
+            <a href="/privacypolicy/"
+               target="_blank"
+               rel="noopener noreferrer">Privacy</a>
+          </li>
+          <li>
+            <a href="/termsofuse/"
+               target="_blank"
+               rel="noopener noreferrer">Terms</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="text-end" style="max-width: 350px;">
+        © 2026 <a class="text-body" href="https://k12-ai-infrastructure.org/">K-12 AI Infrastructure Program</a> managed by Digital Promise, Platform operated by DrivenData
+      </div>
+    </div>
+  </div>
+  <div class="pt-5"></div>
+</footer>
+
+    
+    
+    
+    
+  
+      
+      <script src="/static/js/jquery.min.js"></script>
+      
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+              integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+              crossorigin="anonymous"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/protonet-jquery.inview/1.1.2/jquery.inview.min.js"
+              type="text/javascript"></script>
+      
+      <script src="/static/js/global.js"></script>
+      
+      <script src="/static/js/project.js"></script>
+      <script>
+        // Triggers scroll-based animations on homepage
+    $('section').on('inview', function(event, isInView) {
+      if (isInView) {
+        $(this).addClass('animated')
+      } else {
+        $(this).removeClass('animated')
+      }
+    });
+      </script>
+    
+  <script>
+    $(document).ready(function () {
+      if ($('.sticky').length) {
+        sizeStickyWrapper = function () {
+          $('.sticky-wrapper').height($('.sticky').outerHeight());
+        };
+
+        var $offset = $('.sticky').offset().top;
+        affixCompetitionBar = function () {
+          sizeStickyWrapper();
+          $('.sticky').affix({
+            offset: {
+              top: $offset
+            }
+          });
+        };
+
+        if ($(window).width() > 991) {
+          affixCompetitionBar();
+        }
+
+        $(window).on('resize', function () {
+          sizeStickyWrapper();
+        });
+      }
+
+      
+        if ($('#unread_forum_count').length > 0) {
+          $.getJSON('https://k12-ai-infrastructure.discourse.group/c/tutoring-outcomes/show.json', function (jsdata) {
+            document.getElementById("unread_forum_count").innerHTML = jsdata.category.topic_count;
+          });
+        }
+      
+    });
+  </script>
+  <style>
+      .hero:before {
+          background-image: url("/static/images/loading.svg");
+      }
+  </style>
+  
+    <script type="text/javascript" src="/static/js/d3.3.4.8.min.js"></script>
+    <script type="text/javascript" src="/static/js/leaderboard.d3.js?v=1"></script>
+    <script type="text/javascript">
+      var data; // a global
+      var json_url = "/competitions/3/tutoring-outcomes/leaderboard/json/";
+
+      
+        var SORT_ASCENDING = true;
+      
+
+      window.onload = function () {
+
+        $('body').addClass('loading');
+
+        d3.json(json_url, function (error, json) {
+          if (error) return console.warn(error);
+          data = json;
+
+          if (data.length >= 2) {
+            visualizeit();
+          } else {
+            $('.hero').remove();
+          }
+          $('body').removeClass('loading');
+        });
+      };
+    </script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.3.1/anchor.min.js"
+          integrity="sha512-zPB79j2C+3sFS9zcA3vg/z6bVKzJVEyu9pY5w89akQRys76zpAT2t6S3wZKla3QQ14O5l/Yt0RUQ/DHXx82Y5g=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"></script>
+  <style>
+      a.anchorjs-link {
+          color: #777;
+      }
+
+      a.anchorjs-link:hover {
+          text-decoration: none;
+      }
+  </style>
+  <script>
+    anchors.add('.anchored');
+    anchors.add('#content-page h2, #content-page h3, #content-page h4').remove('.tooltiptext h4');
+  </script>
+  <script>
+  mermaid.run()
+</script>
+
+    
+    
+  </body>
+</html>

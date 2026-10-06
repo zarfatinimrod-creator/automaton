@@ -1,0 +1,620 @@
+Bibliothèque Ouverte d'Algorithmes en Santé (BOAS) | Health Data Hub
+
+Vous êtes…
+
+Citoyen
+
+Utilisateur de données
+
+Responsable de données
+
+Candidat
+
+Vous êtes…
+
+Citoyen
+
+Utilisateur de données
+
+Responsable de données
+
+Candidat
+
+Explorer la PDS
+
+Qui sommes-nous ?
+Notre organisation
+Comité stratégique des données de santé
+La PDS à l'international
+Nos évènements
+Nos appels à projets
+Les Data Challenges en santé
+Notre offre pour les EDS
+Notre entrepôt EMC2
+Ressources
+Marchés publics
+
+Déposer votre projet
+
+Plateformes de dépôt
+Calendrier du CESREES
+Enregistrer un projet
+Répertoire public des projets
+Projets lauréats
+Chiffres clés
+CESREES
+
+Notre offre de service
+
+Laissez-vous guider
+Démarches réglementaires
+Intérêt public
+Information patient
+Mon interface d’appariement
+Starter kit pour l'autorisation CNIL
+Starter kit pour la MR 004
+Starter kit pour la MR 007
+Starter kit pour la MR 008
+Starter kit entrepôts de données de santé
+Formations
+Offre technologique
+Open science
+Bibliothèque Ouverte d'Algorithmes en Santé
+
+Découvrir les données
+
+SNDS historique
+Répertoire national des bases de données de santé
+Nos engagements
+Accéder à une base de l'Entrepôt de la PDS
+Partager une base sur l'Entrepôt de la PDS
+Référencer sa base dans le répertoire national des bases de données de santé
+Notre catalogue de métadonnées
+Compléter les métadonnées de votre base
+
+Actualités
+
+Accueil
+
+Bibliothèque Ouverte d'Algorithmes en Santé (BOAS)
+
+Filtrer
+
+Valider
+
+Type d'auteur
+
+Administrations et ministère
+(7)
+
+Agence
+(6)
+
+Associations et ONG
+(1)
+
+Autorités administratives indépendantes et consultatives
+(1)
+
+Autre
+(4)
+
+Bureau d’étude
+(2)
+
+Établissement / Fédération de santé (CHU, CHRU, CLCC, clinique, etc…)
+(2)
+
+Établissement de santé
+(7)
+
+Établissement d’enseignement supérieur
+(1)
+
+Fondation
+(1)
+
+Industriel santé
+(1)
+
+Organisme de presse
+(1)
+
+Organisme de recherche
+(10)
+
+Plateforme de données
+(9)
+
+Société savante
+(3)
+
+Start-up
+(1)
+
+Objectif de l'algorithme
+
+Outils de ciblage dans la base principale du SNDS
+(16)
+
+Outils d’identification de patients / dépistage biologique
+(11)
+
+Algorithmes de requête à la demande
+(10)
+
+Outils de manipulation / transformation de la base principale du SNDS
+(9)
+
+Autre
+(8)
+
+Outils de cartographie des pathologies
+(4)
+
+Outils de pseudonymisation / anonymisation
+(2)
+
+Domaine Médical
+
+Autre
+(21)
+
+Cancers
+(13)
+
+Autres
+(4)
+
+Radiologie et imagerie médicale
+(1)
+
+Tous
+(2)
+
+Maladies cardio-vasculaires
+(8)
+
+Diabète
+(7)
+
+Maladies neurodégénératives
+(5)
+
+Santé mentale et Psychiatrie
+(6)
+
+Périnatalité et Santé reproductive
+(5)
+
+Maladies respiratoires
+(7)
+
+Maladies infectieuses
+(5)
+
+Enfants et Pédiatrie
+(3)
+
+Personnes âgées et Gériatrie
+(3)
+
+Langage de programmation
+
+Autre
+(2)
+
+Spark
+(1)
+
+Python
+(22)
+
+R
+(6)
+
+SAS
+(23)
+
+SQL
+(11)
+
+Données d'application
+
+Autre
+(5)
+
+Données synthétiques
+(1)
+
+Base principale
+(30)
+
+Données d’imagerie
+(8)
+
+Données tabulaires
+(9)
+
+Texte libre
+(2)
+
+Validation
+
+En cours de validation
+(4)
+
+Non validé
+(17)
+
+Validé
+(23)
+
+Maintenance
+
+Ad-hoc (en fonction des remontées de problèmes, suggestions)
+(20)
+
+Pas de maintenance
+(15)
+
+Régulière
+(12)
+
+Rechercher un intitulé
+
+Trier et filtrer
+
+Tri
+
+Résultats par page
+
+10 par page
+20 par page
+50 par page
+
+Tri
+
+Les + récents
+Les - récents
+
+EHDEN / Persephone
+
+Auteurs
+
+Plateforme de données
+
+Objectifs de l’algorithme
+
+Outils de manipulation / transformation de la base principale du SNDS
+
+Domaines
+
+Autre
+
+Langages de programmation
+
+SQL
+
+Données d’application
+
+Base principale
+
+Validation
+
+Validé
+
+Maintenance
+
+Ad-hoc (en fonction des remontées de problèmes, suggestions)
+
+Prise en charge des allergies aux pollens dans la région Normandie
+
+Auteurs
+
+Plateforme de données
+
+Objectifs de l’algorithme
+
+Algorithmes de requête à la demande
+
+Domaines
+
+Maladies respiratoires
+
+Langages de programmation
+
+SAS
+
+SQL
+
+Données d’application
+
+Base principale
+
+Validation
+
+Non validé
+
+Maintenance
+
+Pas de maintenance
+
+Indicateurs sur le statut d’ayant droit entre 2012 et 2020.
+
+Auteurs
+
+Autre
+
+Objectifs de l’algorithme
+
+Algorithmes de requête à la demande
+
+Domaines
+
+Autre
+
+Langages de programmation
+
+SAS
+
+SQL
+
+Données d’application
+
+Base principale
+
+Validation
+
+Non validé
+
+Maintenance
+
+Pas de maintenance
+
+Magic Loop
+
+Auteurs
+
+Administrations et ministère
+
+Objectifs de l’algorithme
+
+Outils de manipulation / transformation de la base principale du SNDS
+
+Langages de programmation
+
+SAS
+
+Données d’application
+
+Base principale
+
+Validation
+
+Validé
+
+Maintenance
+
+Ad-hoc (en fonction des remontées de problèmes, suggestions)
+
+Prise en charge des patients atteints de la maladie de Crohn et de la rectocolite hémorragique.
+
+Auteurs
+
+Plateforme de données
+
+Objectifs de l’algorithme
+
+Algorithmes de requête à la demande
+
+Domaines
+
+Autre
+
+Langages de programmation
+
+SAS
+
+SQL
+
+Données d’application
+
+Base principale
+
+Validation
+
+Non validé
+
+Maintenance
+
+Pas de maintenance
+
+Bibliothèque d’outils de pseudonymisation d’attributs et de clichés radiographiques contenus dans les fichiers DICOM
+
+Auteurs
+
+Start-up
+
+Objectifs de l’algorithme
+
+Outils de pseudonymisation / anonymisation
+
+Domaines
+
+Cancers
+
+Radiologie et imagerie médicale
+
+Langages de programmation
+
+Python
+
+Données d’application
+
+Données d’imagerie
+
+Données tabulaires
+
+Texte libre
+
+Validation
+
+Validé
+
+Maintenance
+
+Ad-hoc (en fonction des remontées de problèmes, suggestions)
+
+Extract-Metadata - extraction de métadonnées à partir d’une base de données tabulaire et d'imagerie au format DICOM.
+
+Auteurs
+
+Autre
+
+Objectifs de l’algorithme
+
+Autre
+
+Domaines
+
+Autre
+
+Langages de programmation
+
+Python
+
+Données d’application
+
+Données d’imagerie
+
+Données tabulaires
+
+Validation
+
+Validé
+
+Maintenance
+
+Régulière
+
+Programmes d’extraction des données du SNDS (accès permanent)
+
+Auteurs
+
+Organisme de recherche
+
+Objectifs de l’algorithme
+
+Outils de ciblage dans la base principale du SNDS
+
+Outils de manipulation / transformation de la base principale du SNDS
+
+Outils d’identification de patients / dépistage biologique
+
+Domaines
+
+Autre
+
+Langages de programmation
+
+SAS
+
+Données d’application
+
+Base principale
+
+Validation
+
+Validé
+
+Maintenance
+
+Ad-hoc (en fonction des remontées de problèmes, suggestions)
+
+Jointure d’une table avec les référentiels bénéficiaires (IR_BEN_R et IR_BEN_R_ARC).
+
+Auteurs
+
+Agence
+
+Objectifs de l’algorithme
+
+Outils de ciblage dans la base principale du SNDS
+
+Domaines
+
+Autres
+
+Langages de programmation
+
+SAS
+
+Données d’application
+
+Base principale
+
+Validation
+
+Validé
+
+Maintenance
+
+Régulière
+
+Requête-type de sélection d’ALD exonérantes actives une année civile donnée.
+
+Auteurs
+
+Agence
+
+Objectifs de l’algorithme
+
+Outils de ciblage dans la base principale du SNDS
+
+Langages de programmation
+
+SAS
+
+Données d’application
+
+Base principale
+
+Maintenance
+
+Régulière
+
+1
+
+2
+
+3
+
+4
+
+5
+
+L’accès aisé et unifié, transparent et sécurisé, aux données de santé pour améliorer la qualité des soins et l’accompagnement des patients.
+
+Suivez toute l’actualité de la Plateforme des données de santé
+
+S'abonner à l'infolettre
+
+Contactez-nous
+
+©
+2026 Plateforme des données de santé
+
+Mentions légales
+
+Politique de confidentialité
+
+Politique de cookies
+
+Gestion des cookies
+
+Marchés publics
+
+FAQ
+
+Nous rejoindre

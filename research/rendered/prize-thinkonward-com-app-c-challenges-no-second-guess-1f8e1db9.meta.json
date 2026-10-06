@@ -1,0 +1,20 @@
+{
+  "url": "https://thinkonward.com/app/c/challenges/no-second-guessing?ref=mlc",
+  "slug": "prize-thinkonward-com-app-c-challenges-no-second-guess-1f8e1db9",
+  "fetchedAt": "2026-10-06T08:46:39.703Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 400804,
+  "sha256": "f588e96b63f3cac08959d1f9fbaa4151bc6608cc4cc936b7cb5460a2ed8f1e38",
+  "truncated": false,
+  "redacted": 17,
+  "error": null,
+  "bodyPath": "research/rendered/prize-thinkonward-com-app-c-challenges-no-second-guess-1f8e1db9.html",
+  "textPath": "research/rendered/prize-thinkonward-com-app-c-challenges-no-second-guess-1f8e1db9.txt",
+  "robots": "none",
+  "robotsUrl": "https://thinkonward.com/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

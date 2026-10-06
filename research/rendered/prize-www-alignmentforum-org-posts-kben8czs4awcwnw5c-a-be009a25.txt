@@ -1,0 +1,150 @@
+x
+This website requires javascript to properly function. Consider activating javascript to get access to all site functionality. AI ALIGNMENT FORUM
+
+AF
+
+Login
+
+Announcing the ARC White-Box Estimation Challenge — AI Alignment Forum
+
+AI Frontpage
+2026 Top Fifty: 14 %
+
+65
+
+Announcing the ARC White-Box Estimation Challenge
+
+by Jacob_Hilton , paulfchristiano , Wilson Wu
+2nd Jun 2026
+ARC 3 min read
+20
+
+65
+
+ARC has teamed up with AIcrowd to launch the ARC White-Box Estimation Challenge , a contest to improve upon our estimation algorithms for random MLPs . The warm-up round begins this week, and later rounds will have a total prize pool of at least $100,000.
+
+We are very grateful to Sharada Mohanty, Sneha Nanavati, Dipam Chakraborty and everyone else at AIcrowd for working with us to host this contest, as well as to Paul Rosu for testing the contest and to Harshita Khera for operational support.
+
+Introduction to the Challenge
+
+Our challenge follows the same setup as our recent paper on wide random MLPs: we consider MLPs with weights , defined by
+
+where the activation function is , applied coordinatewise.
+
+To begin with, we are fixing the width and the number of hidden layers , but we expect to change this setup in future rounds. [1]
+
+Contestants must design an algorithm that takes in a set of weights and produces an estimate for the expected output
+
+Algorithms will be evaluated on MLPs with randomly-sampled Gaussian weights. The goal is to achieve as low mean squared error as possible, subject to certain computational constraints.
+
+We have devised a FLOP-counting scheme with AIcrowd to minimize any advantage from using heavily optimized numerical kernels, allowing participants to focus on higher-level algorithm design instead. This scheme may still have a few rough edges remaining, but we hope to round these out over the course of the warm-up round.
+
+For further details, please see the challenge website .
+
+Why run this contest?
+
+In the long run, we would like to answer questions about highly intelligent AI systems such as, "Are there unusual situations in which the system would undermine human control?". Running the system on a huge number of different inputs may not be a reliable way to answer such questions, since a highly intelligent system may not fall for our "honey pots". This why we are interested in white-box approaches that leverage our access to the model's internals. Ultimately, of course, we should use whichever methods perform the best.
+
+Unfortunately, designing highly performant white-box estimation methods for trained networks is challenging, even for tiny models . ARC's bet is that we can build up to this challenge by first producing performant white-box estimation methods for randomly-initialized networks, and then figuring out how those methods can be adapted with each step of training. However, even this first step remains incomplete. In our recent paper , we produced white-box methods that outperform black-box methods for MLPs with large width, but they break down as the depth grows, and we are very confident that our methods can be significantly improved.
+
+By running this contest, we hope to spur others to discover such improvements. Even though "white-box" is in the name of the challenge, contestants are permitted to use any methods they choose, whether white-box or black-box: as stated above, we ultimately want the best-performing algorithm. However, we strongly expect the best possible algorithms for this problem to be "mechanistic" (i.e., to avoid black-box sampling entirely), mirroring our existing results in the large width setting.
+
+Use of LLMs
+
+We encourage contestants to use LLMs to whatever extent helps them improve their submissions the most. In later rounds, there will be two kinds of prize: one for the best-performing submission, and one for our favorite algorithmic contribution described in a technical report. Especially for the latter kind of prize, contestants may benefit from having a good understanding of any LLM-written code themselves, but the rules of the contest do not require this.
+
+In fact, exploring LLM usage is another motivation for holding the contest. Thanks to how our research has developed, it now looks possible to make progress on some of our core problems by hill-climbing on well-defined metrics, which is exciting to us. [2] At the same time, the ability of LLMs to make considerable progress on such problems is improving rapidly, and we want to position ourselves to take full advantage of this. We are not sure whether we will be able to draw generalizable insights from strong submissions that are primarily LLM-written, but we think putting LLMs to work on the problem is a worthwhile experiment nonetheless.
+
+As a word of caution, our FLOP-counting utility is definitely hackable in ways that would be very unambiguously hacking once pointed out, such as by modifying constants or counts held in memory. Contestants are responsible for ensuring that their submissions do not hack our FLOP-counting utility, regardless of whether or how they choose to use LLMs.
+
+To all contestants: good luck!
+
+The contest setup is actually slightly different in that it omits the final linear layer, but this makes essentially no difference. ↩︎
+
+We have previously offered prizes for solutions to problems, but they have either been more pedagogical or less central to our agenda. ↩︎
+
+AI Frontpage
+
+Announcing the ARC White-Box Estimation Challenge 5 Jacob_Hilton
+1 James Payor
+1 James Payor
+2 paulfchristiano
+1 James Payor
+1 James Payor
+
+6 Comments
+
+20
+
+More from Jacob_Hilton
+
+View more
+
+Curated and popular this week
+
+New Comment
+
+Submit
+
+6 comments , sorted by top scoring
+Click to highlight new comments since: Today at 8:43 AM
+[ - ] Jacob_Hilton 3mo * 5
+0
+
+Update: We have now launched Phase 1 of the Challenge with $50,000 in prizes:
+Score-based prizes: $25,000 / $10,000 / $5,000 for 1st / 2nd / 3rd place
+Algorithmic contribution prize: $10,000
+
+For Phase 1, we have increased the depth of the network from 8 to 32 hidden layers. Our existing algorithms scale poorly with depth, and so we expect there to be significant room for improvement. Phase 1 lasts until the end of July, after which Phase 2 begins. For Phase 2, there will be a prize pool of at least $100,000, and we may change the architectural parameters again.
+The best-performing algorithms in the warm-up round appear to be variants on the factorized 3rd cumulant propagation algorithm we introduced in our paper, combined with learned networks that consume the cumulant estimates as features. Many of these submissions appear to have been produced with the help of LLMs, but we don't know much about the extent of this. For Phase 1, we expect the increased depth to advantage approaches that go beyond basic cumulant propagation in their mechanistic analysis. We also expect to get more visibility into the design of top submissions, since we will be using accompanying technical write-ups to award the algorithmic contribution prize. For more information, please see the contest website .
+
+Reply
+
+[ - ] James Payor 4mo * 1
+0
+
+It looks to me that the pre-grading "smoke-test" has a flop cap that is well below 6.8e10, it's perhaps at 1e10? So for me submissions at 0.1x the cap are getting through but larger flop counts are failing.
+
+(Update: it's now fixed, thanks!)
+
+Reply
+1
+
+[ - ] James Payor 4mo 1
+0
+
+Okay another thing (let me know if there's a better spot for reports like this?), the "symmetrize" functionality seems unavailable on the grader. For that matter, the grader doesn't have stock numpy and some other deps that are included in the starterkit env. See https://www.aicrowd.com/challenges/arc-white-box-estimation-challenge-2026/submissions/310565 re symmetrize not being there.
+
+Reply
+1
+
+[ - ] paulfchristiano 4mo 2
+0
+
+I believe that all the issues you raised have been fixed, let us know if that's not the case.
+
+Reply
+1
+
+[ - ] James Payor 4mo 1
+0
+
+Great, thank you! Timing seems updated, but also fwiw flops.symmetrize is still not there: https://www.aicrowd.com/challenges/arc-white-box-estimation-challenge-2026/submissions/310914
+
+Reply
+
+[ - ] James Payor 4mo * 1
+1
+
+Another point coming up: it seems like remote-dispatch (and perhaps array-copying) are currently being billed as "excess wall time" rather than flopscope time. This shows up when one dispatches ops with a lot of state, which is getting penalized excessively (I think).
+
+If I have this right, I'd vote for flopscope time to be counted on the op boundaries (which would absorb time spent dispatching to the remote) rather than time the remote actually spends on array crunching.
+
+(Also if the arrays are being copied back and forth that seems a bit excessive and causing the grader to be way slower than necessary! I'd try to have the remote endpoint have durable custody of arrays within a session, and only transfer data on creation and when-demanded.)
+
+EDIT: This issue I just found seems related and probably complementary.
+
+Reply
+1
+
+Moderation Log
