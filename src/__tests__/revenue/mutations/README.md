@@ -59,16 +59,16 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 
   | Plan | Entries | Full run |
   | --- | --- | --- |
-  | `remask-run.json` | 14 | 87 (tick 53; a first run, 94 s, left one survivor, pinned by a test since) |
-| `prize-dispatch.json` | 28 | 69 |
+  | `prize-dispatch.json` | 28 | 69 |
   | `render-watch.json` | 53 | 117 |
   | `freeze-capture.json` | 23 | 171 |
   | `loop-edit.json` | 46 | 188, 191 |
+  | `address-kinds.json` | 22 | 198 (tick 53 fixer, beside the whole revenue suite; the builder's 17 entries: 156) |
+  | `remask-run.json` | 23 | 210 (tick 53 fixer; the builder's 14 entries: 87, after a first run of 94 s left one survivor) |
   | `mutate.json` | 11 | 393 (243-249 with the first 6) |
   | `remask-captures.json` | 45 | 523 |
   | `prize-apply-reading.json` | 40 | 580 (208 with the first 21) |
-  | `address-kinds.json` | 17 | 156 (tick 53; 12 at about 2 s each, the 5 moved entries at about 17 s with render-dispatch's tests) |
-| `render-dispatch.json` | 26 | 591 (184 with the first 14); 21 entries since tick 53, its five address-report entries moved to `address-kinds.json` |
+  | `render-dispatch.json` | 26 | 591 (184 with the first 14); 21 entries since tick 53, its five address-report entries moved to `address-kinds.json` |
   | `capture-check.json` | 42 | 785, 827 (its test file alone takes about 18 s) |
   | `sim-tree.json` | 36 | 927 (501 with the first 28, 349 with the first 24, 182-184 with the first 14) |
 
