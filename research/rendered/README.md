@@ -370,7 +370,13 @@ verdict), then queue the line. A line for a site with no verdict fails CI, and s
   disallowed): the site is NO_TERMS again, so its lines stop passing `termsGate` at once, its probe stays on the weekly
   watch, and no line of this list is edited. `error` (exit 1): a source that cites no frozen copy, a copy that does not
   hold what it says, or a change with no queued page to judge; resolved before any dispatch. Exit 0 when something
-  changed, 3 when nothing did.
+  changed, 3 when nothing did. After `--apply`: commit the new copies and the file, run
+  `node scripts/urls-pause-comments.mjs --fix` after a revert (a paused line naming the site's verdict names a stale
+  one), then `scripts/verify.sh`. The tests of ticks 45 to 57 read the verdicts as they stood before any re-check
+  (`beforeRechecks`, fixture `src/__tests__/revenue/fixtures/terms-verdicts-5c980e3-robots-ok.json`), so they stay green;
+  a refresh or a revert of eurocontrol.int or agenthon.net also moves the find text of a few `T57-D`/`T57B-D` entries of
+  `src/__tests__/revenue/mutations/robots-verdict.json`, which `mutation-plans.test.ts` names (the list, measured, is in
+  the script's header).
 - **googlesource.com** left `TERMS_BARRED` for CONDITIONAL_MET: its one condition was robots.txt
   (`research/colony-sweep/scouts/risk-governance--automation-tos.md:106`), and its line (`sweep2-google-vrp-faq`) is
   active again. `google.com` stays barred: YouTube's terms bar the Help pages outright.

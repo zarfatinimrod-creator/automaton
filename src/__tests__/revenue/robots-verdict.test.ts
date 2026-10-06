@@ -6,8 +6,11 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 import {
+  beforeRechecks,
+  isRecheckOf,
   judgeRobots,
   judgeSite,
+  parseRevertSource,
   parseRobotsSource,
   queuedPaths,
   readCaptureBySlug,
@@ -18,7 +21,7 @@ import {
   // @ts-expect-error — plain ESM script, no type declarations by design (same as queue-zero-test.mjs)
 } from "../../../scripts/robots-verdict.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
-import { checkManifest, readManifest, recordFiles } from "../../../scripts/freeze-capture.mjs";
+import { checkManifest, diskFiles, readManifest, recordFiles, sourceVersion } from "../../../scripts/freeze-capture.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { isExhaustiveNegative, isRobotsOkVerdict, termsGate } from "../../../scripts/queue-zero-test.mjs";
 
@@ -334,6 +337,22 @@ afterAll(() => {
   for (const dir of tmpDirs) rmSync(dir, { recursive: true, force: true });
 });
 
+/**
+ * The committed terms-verdicts.json as it stood before any --recheck rewrite (tick 58): beforeRechecks with the 18
+ * NO_TERMS_ROBOTS_OK entries of 5c980e3 (prize-terms-audit.test.ts pins the fixture), written to a scratch file, so the
+ * blocks below that re-run the script on a tick-57 verdict still hold after the Tuesday tick applies a refresh or a revert.
+ * With no re-check applied it is the committed file byte for byte.
+ */
+const RECHECK_FIXTURE = join(ROOT, "src", "__tests__", "revenue", "fixtures", "terms-verdicts-5c980e3-robots-ok.json");
+function committedBeforeRecheck(): string {
+  const file = JSON.parse(readFileSync(join(ROOT, "research", "channel-loop", "terms-verdicts.json"), "utf8"));
+  const dir = mkdtempSync(join(tmpdir(), "robots-verdict-committed-"));
+  tmpDirs.push(dir);
+  const path = join(dir, "terms-verdicts.json");
+  writeFileSync(path, serializeVerdicts({ ...file, sites: beforeRechecks(file.sites, JSON.parse(readFileSync(RECHECK_FIXTURE, "utf8"))) }));
+  return path;
+}
+
 function fixture(robotsBody: string | null, verdicts: object = VERDICTS) {
   const dir = mkdtempSync(join(tmpdir(), "robots-verdict-test-"));
   tmpDirs.push(dir);
@@ -420,14 +439,17 @@ describe("robots-verdict CLI", () => {
     // (dry, so that a broken script cannot write into the committed file from a test).
     const verdictsFile = join(ROOT, "research", "channel-loop", "terms-verdicts.json");
     const before = readFileSync(verdictsFile, "utf8");
+    // Run on the committed file as it stood before any --recheck rewrite (committedBeforeRecheck).
+    const committed = committedBeforeRecheck();
+    const read = readFileSync(committed, "utf8");
     for (const urls of [join(ROOT, "research", "measurements", "ai-allowed-events.urls.txt"), join(ROOT, "research", "rendered", "urls.txt")]) {
-      const got = spawnSync(process.execPath, [SCRIPT, "eurocontrol.int", "--urls", urls], { encoding: "utf8" });
+      const got = spawnSync(process.execPath, [SCRIPT, "eurocontrol.int", "--urls", urls, "--verdicts", committed], { encoding: "utf8" });
       expect(got.status).toBe(3);
       expect(got.stdout.split("\n")[0]).toBe("robots-verdict: eurocontrol.int (NO_TERMS_ROBOTS_OK)");
       expect(got.stdout).toContain("no change: eurocontrol.int is already NO_TERMS_ROBOTS_OK");
     }
-    expect(readFileSync(verdictsFile, "utf8")).toBe(before);
-    const entry = JSON.parse(before).sites["eurocontrol.int"];
+    expect([readFileSync(verdictsFile, "utf8"), readFileSync(committed, "utf8")]).toEqual([before, read]);
+    const entry = JSON.parse(read).sites["eurocontrol.int"];
     expect([entry.verdict, entry.checked, entry.copying]).toEqual(["NO_TERMS_ROBOTS_OK", "2026-10-06", "unread"]);
     expect(entry.note.startsWith("exhaustive-negative: ")).toBe(true);
     expect(entry.source.startsWith(
@@ -443,14 +465,17 @@ describe("robots-verdict CLI", () => {
     // (src/__tests__/revenue/prize-terms-audit.test.ts, "tick 57, third round", re-derives it). Run again dry, it declines.
     const verdictsFile = join(ROOT, "research", "channel-loop", "terms-verdicts.json");
     const before = readFileSync(verdictsFile, "utf8");
+    // Run on the committed file as it stood before any --recheck rewrite (committedBeforeRecheck).
+    const committed = committedBeforeRecheck();
+    const read = readFileSync(committed, "utf8");
     for (const urls of [join(ROOT, "research", "measurements", "ai-allowed-events.urls.txt"), join(ROOT, "research", "rendered", "urls.txt")]) {
-      const got = spawnSync(process.execPath, [SCRIPT, "agenthon.net", "--urls", urls], { encoding: "utf8" });
+      const got = spawnSync(process.execPath, [SCRIPT, "agenthon.net", "--urls", urls, "--verdicts", committed], { encoding: "utf8" });
       expect(got.status).toBe(3);
       expect(got.stdout.split("\n")[0]).toBe("robots-verdict: agenthon.net (NO_TERMS_ROBOTS_OK)");
       expect(got.stdout).toContain("no change: agenthon.net is already NO_TERMS_ROBOTS_OK");
     }
-    expect(readFileSync(verdictsFile, "utf8")).toBe(before);
-    const entry = JSON.parse(before).sites["agenthon.net"];
+    expect([readFileSync(verdictsFile, "utf8"), readFileSync(committed, "utf8")]).toEqual([before, read]);
+    const entry = JSON.parse(read).sites["agenthon.net"];
     expect([entry.verdict, entry.checked, entry.copying]).toEqual(["NO_TERMS_ROBOTS_OK", "2026-10-06", "unread"]);
     expect(entry.note.startsWith("exhaustive-negative: ruled by the main thread (tick 57): ")).toBe(true);
     expect(entry.source.startsWith(
@@ -531,14 +556,19 @@ type Fixture = {
  * hand.example (set by judgeSite, then put back to NO_TERMS by hand, its live capture changed) start as judgeSite wrote
  * them on their frozen copies; open.example is NOT_BARRED. The live captures default to the frozen bytes (law), a 404 again
  * (gone) and a changed, allowing robots.txt (hand); `law`, `gone` override (null: no live capture). `repo` lays the files
- * out as a repository's research/rendered.
+ * out as a repository's research/rendered; `frozenLaw` is the body of law.example's frozen copy.
  */
-function recheckFixture({ law = { body: FROZEN_LAW }, gone = { body: null, status: 404 }, repo = false }: { law?: LiveSpec; gone?: LiveSpec; repo?: boolean } = {}): Fixture {
+function recheckFixture({
+  law = { body: FROZEN_LAW },
+  gone = { body: null, status: 404 },
+  repo = false,
+  frozenLaw = FROZEN_LAW,
+}: { law?: LiveSpec; gone?: LiveSpec; repo?: boolean; frozenLaw?: string } = {}): Fixture {
   const dir = mkdtempSync(join(tmpdir(), "robots-recheck-test-"));
   tmpDirs.push(dir);
   const rendered = repo ? join(dir, "research", "rendered") : join(dir, "rendered");
   mkdirSync(rendered, { recursive: true });
-  writeRobots(rendered, "robots-law-2026-10-06", LAW_ROBOTS, { body: FROZEN_LAW }, frozenBlock("robots-law"));
+  writeRobots(rendered, "robots-law-2026-10-06", LAW_ROBOTS, { body: frozenLaw }, frozenBlock("robots-law"));
   writeRobots(rendered, "robots-gone-2026-10-06", GONE_ROBOTS, { body: null, status: 404 }, frozenBlock("robots-gone"));
   writeRobots(rendered, "robots-hand-2026-10-06", HAND_ROBOTS, { body: FROZEN_LAW }, frozenBlock("robots-hand"));
   for (const slug of ["robots-gone-2026-10-06", "robots-hand-2026-10-06", "robots-law-2026-10-06"]) recordFiles(rendered, slug);
@@ -640,9 +670,11 @@ describe("parseRobotsSource — the citation a NO_TERMS_ROBOTS_OK source opens w
     const rendered = join(ROOT, "research", "rendered");
     const manifest: Map<string, string> = readManifest(rendered);
     const ok = Object.keys(sites).filter((s) => sites[s].verdict === "NO_TERMS_ROBOTS_OK");
-    expect(ok.length).toBeGreaterThan(0);
-    for (const site of ok) {
-      const parsed = parseRobotsSource(sites[site].source);
+    // A site --recheck reverted cites the frozen copy it judged on in the same form (tick 58).
+    const reverted = Object.keys(sites).filter((s) => sites[s].verdict === "NO_TERMS" && parseRevertSource(sites[s].source) !== null);
+    expect(ok.length + reverted.length).toBeGreaterThan(0);
+    for (const site of [...ok, ...reverted]) {
+      const parsed = ok.includes(site) ? parseRobotsSource(sites[site].source) : parseRevertSource(sites[site].source);
       expect(parsed, site).not.toBeNull();
       for (const cite of parsed.cites) {
         const copy = readCaptureBySlug(cite.slug, rendered);
@@ -810,6 +842,11 @@ describe("robots-verdict --recheck", () => {
     );
     expect(readFileSync(join(f.rendered, "robots-law-2026-10-13.txt"), "utf8")).toBe(REFUSING);
     expect(checkManifest(f.rendered)).toEqual([]);
+    // Read back: the new copy's citation, the day, and the source it replaced, whole; no other source reads as a revert.
+    const declined = parseRevertSource(entry.source);
+    expect([declined.cites.map((c: { slug: string }) => c.slug), declined.day, declined.replaced]).toEqual([["robots-law-2026-10-13"], day, old.source]);
+    expect(declined.cites[0].text).toBe(`robots.txt read at research/rendered/robots-law-2026-10-13.txt (${LAW_ROBOTS}, fetched ${T1}, sha256 ${hash(REFUSING).slice(0, 12)})`);
+    for (const other of [old.source, `a hand note${entry.source.slice(entry.source.indexOf(": robots.txt disallows "))}`, ""]) expect(parseRevertSource(other)).toBeNull();
     // The gate: the site's lines no longer pass, its robots probe still does; urls.txt itself is not touched.
     const after = f.sites();
     expect(termsGate("https://www.law.example/law_html/law00/1.htm", "law-one", after).ok).toBe(false);
@@ -888,6 +925,109 @@ describe("robots-verdict --recheck", () => {
     expect(bad.stdout).toMatch(/error\s+law\.example .*robots-law-2026-10-06\.txt hashes to [0-9a-f]{12}, not [0-9a-f]{12} as the source says/);
   });
 
+  it("errors (exit 1) when the cited frozen copy is of another URL, another fetch, another kind or another status than the citation says", () => {
+    const LAW_COPY = "robots-law-2026-10-06";
+    const GONE_COPY = "robots-gone-2026-10-06";
+    const editMeta = (f: Fixture, slug: string, edit: Record<string, unknown>) => {
+      const path = join(f.rendered, `${slug}.meta.json`);
+      writeFileSync(path, `${JSON.stringify({ ...JSON.parse(readFileSync(path, "utf8")), ...edit }, null, 2)}\n`);
+    };
+    const cases: Array<{ name: string; edit: (f: Fixture) => void; site: string; other: string; why: string }> = [
+      {
+        name: "another URL",
+        edit: (f) => editMeta(f, LAW_COPY, { url: "https://other.example/robots.txt" }),
+        site: "law.example",
+        other: "gone.example",
+        why: `research/rendered/${LAW_COPY}.txt is a copy of https://other.example/robots.txt, not of ${LAW_ROBOTS}`,
+      },
+      {
+        name: "another fetch",
+        edit: (f) => editMeta(f, LAW_COPY, { fetchedAt: T1 }),
+        site: "law.example",
+        other: "gone.example",
+        why: `research/rendered/${LAW_COPY}.txt was fetched ${T1}, not ${T0} as the source says`,
+      },
+      {
+        name: "a 404 where the source cites a file",
+        edit: (f) =>
+          editMeta(f, LAW_COPY, { status: 404, contentType: "text/html; charset=utf-8", error: "HTTP 404", sha256: null, byteLength: 0, bodyPath: null }),
+        site: "law.example",
+        other: "gone.example",
+        why: `research/rendered/${LAW_COPY}.txt reads as absent, not as the file the source cites`,
+      },
+      {
+        name: "a file where the source cites a 404",
+        edit: (f) => writeRobots(f.rendered, GONE_COPY, GONE_ROBOTS, { body: "User-agent: *\nAllow: /\n" }, frozenBlock("robots-gone")),
+        site: "gone.example",
+        other: "law.example",
+        why: `research/rendered/${GONE_COPY}.meta.json reads as file, not as the 404/410 the source cites`,
+      },
+      {
+        name: "a 410 where the source cites a 404",
+        edit: (f) => editMeta(f, GONE_COPY, { status: 410, error: "HTTP 410" }),
+        site: "gone.example",
+        other: "law.example",
+        why: `research/rendered/${GONE_COPY}.meta.json answered 410, not 404 as the source says`,
+      },
+    ];
+    for (const c of cases) {
+      const f = recheckFixture();
+      c.edit(f);
+      const before = [f.raw(), f.files()];
+      const got = f.run("--apply");
+      expect(got.status, c.name).toBe(1);
+      const lines = got.stdout.split("\n");
+      expect(lines.find((l) => l.startsWith(`  error       ${c.site}  `)), c.name).toBe(`  error       ${c.site}  ${c.why}`);
+      expect(outcomes(got.stdout).find(([, s]) => s === c.other), c.name).toEqual(["unchanged", c.other]);
+      expect([f.raw(), f.files()], c.name).toEqual(before);
+    }
+  });
+
+  it("refresh: a changed robots.txt of the same length is a change: the bytes are compared, not the size", () => {
+    const same = FROZEN_LAW.replace("Disallow: /search", "Disallow: /searcH");
+    expect([same.length, same === FROZEN_LAW]).toEqual([FROZEN_LAW.length, false]);
+    const f = recheckFixture({ law: { body: same, fetchedAt: T1 } });
+    const got = f.run();
+    expect(got.status, got.stderr).toBe(0);
+    expect(outcomes(got.stdout)[0]).toEqual(["refresh", "law.example"]);
+    expect(got.stdout).toContain(`robots.txt changed (${hash(FROZEN_LAW).slice(0, 12)} → ${hash(same).slice(0, 12)})`);
+  });
+
+  it("refresh: the source keeps its own count of queued paths; the note's sentence counts the paths re-checked now", () => {
+    // A third law page queued since the verdict was set: the re-check judges 3, the source still says what was judged then.
+    const f = recheckFixture({ law: { body: ALLOWING, fetchedAt: T1 } });
+    writeFileSync(f.urlsFile, `${RE_URLS}https://www.law.example/law_html/law02/3.htm\tlaw-three\n`);
+    const old = f.sites()["law.example"];
+    const got = f.run("--apply");
+    expect(got.status, got.stderr).toBe(0);
+    const entry = f.sites()["law.example"];
+    expect(parseRobotsSource(entry.source).rest).toBe(parseRobotsSource(old.source).rest);
+    expect(parseRobotsSource(entry.source).rest.startsWith(": all 2 queued paths allowed for MehudakRenderWatch")).toBe(true);
+    expect(entry.note.endsWith(`→ ${hash(ALLOWING).slice(0, 12)}), all 3 queued paths still allowed.`)).toBe(true);
+  });
+
+  it("refuses to freeze a copy that is not the live answer, whatever version it is handed (an older one a fallback returns)", () => {
+    const f = recheckFixture();
+    const older = diskFiles("robots-law", f.rendered);
+    // The live capture is a 404 now, the 200's body left beside its meta; the version handed to the freeze is the 200.
+    writeRobots(f.rendered, "robots-law", LAW_ROBOTS, { body: null, status: 404, fetchedAt: T1 });
+    const entry = f.sites()["law.example"];
+    const versionOf = () => ({ commit: "abc1234", files: older, note: "the fetch after it failed" });
+    expect(() => recheckSite({ site: "law.example", entry, urls: RE_URLS, renderedDir: f.rendered, today: "2026-10-13", versionOf })).toThrow(
+      /a freeze of research\/rendered\/robots-law would cite is not its live answer \(it reads as file 200, the live capture as absent 404\): nothing frozen or written$/,
+    );
+    // The same for an older 200 handed in for a live 200 of other bytes.
+    const g = recheckFixture();
+    const older200 = diskFiles("robots-law", g.rendered);
+    writeRobots(g.rendered, "robots-law", LAW_ROBOTS, { body: ALLOWING, fetchedAt: T1 });
+    expect(() =>
+      recheckSite({ site: "law.example", entry: g.sites()["law.example"], urls: RE_URLS, renderedDir: g.rendered, today: "2026-10-13", versionOf: () => ({ commit: "abc1234", files: older200, note: null }) }),
+    ).toThrow(/would cite is not its live answer \(it reads as file 200, the live capture as file 200\)/);
+    // Handed the live version, the same re-check is a refresh on the 404.
+    const live = recheckSite({ site: "law.example", entry, urls: RE_URLS, renderedDir: f.rendered, today: "2026-10-13" });
+    expect([live.outcome, live.freezes.map((p: { plan: { frozenSlug: string } }) => p.plan.frozenSlug)]).toEqual(["refresh", ["robots-law-2026-10-13"]]);
+  });
+
   it("errors when the robots.txt changed and no page of the site is queued in the lists it read", () => {
     const f = recheckFixture({ law: { body: ALLOWING, fetchedAt: T1 } });
     writeFileSync(f.urlsFile, "https://www.law.example/robots.txt\trobots-law\n");
@@ -906,7 +1046,9 @@ describe("robots-verdict --recheck", () => {
     expect(got.status).toBe(1);
     expect(got.stderr).toMatch(/not in the format serializeVerdicts writes/);
     expect([f.raw(), f.files()]).toEqual(before);
-    expect(f.run().status).toBe(0); // a dry run writes nothing, so it does not care
+    // A dry run writes nothing, so it does not care, and it leaves the file in the format it found it in.
+    expect(f.run().status).toBe(0);
+    expect([f.raw(), f.files()]).toEqual(before);
   });
 
   it("names the commit the live capture came from when --rendered is a repository's research/rendered, and refuses an uncommitted one", () => {
@@ -930,6 +1072,128 @@ describe("robots-verdict --recheck", () => {
     expect(meta.frozen.why).toContain(`as commit ${commit} stored it`);
   });
 
+  it("refresh in a repository: a 200 that became a 404, its old body left on disk, is frozen as the 404's meta alone and cited; a second run finds it unchanged", () => {
+    // A robots.txt long enough for capture-check to call a read page (>= MIN_TERMS_TEXT characters), as aicrowd.com's,
+    // eurocontrol.int's, health-data-hub.fr's and wundernn.io's are: then freeze-capture's sourceVersion reads a failed
+    // fetch beside it as "the fetch after it failed" and hands back the older 200 version (review of tick 58, blocking).
+    const long = `User-agent: *\nDisallow: /search\n${Array.from({ length: 50 }, (_, i) => `Disallow: /private/area-${String(i).padStart(2, "0")}/\n`).join("")}`;
+    expect(long.length).toBeGreaterThanOrEqual(1000);
+    const f = recheckFixture({ frozenLaw: long, law: { body: long }, repo: true });
+    const git = (...args: string[]) => spawnSync("git", ["-C", f.dir, "-c", "user.name=fixture", "-c", "user.email=fixture", "-c", "commit.gpgsign=false", ...args], { encoding: "utf8" });
+    expect(git("init", "-q").status).toBe(0);
+    expect(git("add", "-A").status).toBe(0);
+    expect(git("commit", "-q", "-m", "render 6.10").status).toBe(0);
+    // The weekly render's 404: render-watch writes the failed fetch's meta (no sha256, no bodyPath) and no file, so the
+    // 6.10 body stays on disk beside it.
+    writeRobots(f.rendered, "robots-law", LAW_ROBOTS, { body: null, status: 404, fetchedAt: T1 });
+    expect(readFileSync(join(f.rendered, "robots-law.txt"), "utf8")).toBe(long);
+    expect(git("add", "-A").status).toBe(0);
+    expect(git("commit", "-q", "-m", "render 13.10").status).toBe(0);
+    const metaCommit = git("log", "-1", "--format=%h").stdout.trim();
+    // A later commit that touches no capture: the copy names the commit that wrote the meta, not HEAD.
+    writeFileSync(join(f.dir, "later.txt"), "later\n");
+    expect(git("add", "-A").status).toBe(0);
+    expect(git("commit", "-q", "-m", "later").status).toBe(0);
+    expect(git("log", "-1", "--format=%h").stdout.trim()).not.toBe(metaCommit);
+    expect(sourceVersion(f.dir, "robots-law").note).toMatch(/^the fetch after it failed \(its meta: status 404\)/);
+    const old = f.sites()["law.example"];
+    const sentence = `Re-checked ${today()}: robots.txt changed (${hash(long).slice(0, 12)} → HTTP 404), all 2 queued paths still allowed.`;
+
+    const got = f.run("--apply");
+    expect(got.status, got.stdout + got.stderr).toBe(0);
+    expect(outcomes(got.stdout)[0]).toEqual(["refresh", "law.example"]);
+    expect(got.stdout).toContain("froze robots-law -> robots-law-2026-10-13");
+    // The copy is the 404's meta, as the commit that wrote it stored it, and nothing else: not the body the 6.10 fetch left.
+    const meta = JSON.parse(readFileSync(join(f.rendered, "robots-law-2026-10-13.meta.json"), "utf8"));
+    expect([meta.status, meta.bodyPath, meta.sha256, meta.fetchedAt, meta.frozen.commit]).toEqual([404, null, null, T1, metaCommit]);
+    expect(meta.frozen.why).toContain(`as commit ${metaCommit} stored it`);
+    expect(readdirSync(f.rendered).filter((n) => n.startsWith("robots-law-2026-10-13"))).toEqual(["robots-law-2026-10-13.meta.json"]);
+    expect(checkManifest(f.rendered)).toEqual([]);
+    const entry = f.sites()["law.example"];
+    expect(entry.source).toBe(
+      `robots.txt answered 404 at ${LAW_ROBOTS} (research/rendered/robots-law-2026-10-13.meta.json, fetched ${T1}): no rules, RFC 9309 §2.3.1.3${parseRobotsSource(old.source).rest}`,
+    );
+    expect(entry.note).toBe(`${NOTE}. ${sentence}`);
+    expect({ ...entry, source: old.source, note: old.note }).toEqual(old);
+
+    // The copy it cites is the live answer now: a second run changes nothing, and the note gains no second sentence.
+    const again = f.run("--apply");
+    expect(again.status, again.stdout + again.stderr).toBe(3);
+    expect(outcomes(again.stdout)[0]).toEqual(["unchanged", "law.example"]);
+    expect(f.sites()["law.example"]).toEqual(entry);
+  });
+
+  it("isRecheckOf reads each rewrite back to the entry it rewrote; beforeRechecks puts that entry back and nothing else", () => {
+    const T2 = "2026-10-20T05:23:00.000Z";
+    // One refresh, then a second one a week later, then a revert: each state is the 6.10 entry after re-checks.
+    const f = recheckFixture({ law: { body: ALLOWING, fetchedAt: T1 } });
+    const base = f.sites()["law.example"];
+    expect(isRecheckOf(base, base)).toBe(true);
+    expect(f.run("--apply").status).toBe(0);
+    const once = f.sites()["law.example"];
+    writeRobots(f.rendered, "robots-law", LAW_ROBOTS, { body: `${ALLOWING}Disallow: /tmp/\n`, fetchedAt: T2 });
+    expect(f.run("--apply").status).toBe(0);
+    const twice = f.sites()["law.example"];
+    writeRobots(f.rendered, "robots-law", LAW_ROBOTS, { body: REFUSING, fetchedAt: "2026-10-27T05:23:00.000Z" });
+    expect(f.run("--apply").status).toBe(0);
+    const reverted = f.sites()["law.example"];
+    expect([once.verdict, twice.verdict, reverted.verdict]).toEqual(["NO_TERMS_ROBOTS_OK", "NO_TERMS_ROBOTS_OK", "NO_TERMS"]);
+    expect(twice.note.split("Re-checked ").length - 1).toBe(2);
+    for (const [name, e] of Object.entries({ once, twice, reverted })) expect(isRecheckOf(e, base), name).toBe(true);
+    // A revert straight from the 6.10 entry, and a 404 that became a file, too.
+    const r = recheckFixture({ law: { body: REFUSING, fetchedAt: T1 }, gone: { body: "User-agent: *\nAllow: /\n", fetchedAt: T1 } });
+    const rBase = r.sites();
+    expect(r.run("--apply").status).toBe(0);
+    expect(isRecheckOf(r.sites()["law.example"], rBase["law.example"])).toBe(true);
+    const straight = r.sites()["law.example"];
+    expect(isRecheckOf({ ...straight, source: straight.source.replace(/NO_TERMS_ROBOTS_OK before: .*$/, "NO_TERMS_ROBOTS_OK before: lost") }, rBase["law.example"])).toBe(false);
+    expect(isRecheckOf(r.sites()["gone.example"], rBase["gone.example"])).toBe(true);
+    expect(r.sites()["law.example"].verdict).toBe("NO_TERMS");
+
+    // Anything else is not a re-check of it.
+    const day = today();
+    const not: Record<string, Record<string, string>> = {
+      "another field": { ...once, copying: "allowed" },
+      "the rest of the source": { ...once, source: once.source.replace(": all 2 queued paths allowed", ": all 3 queued paths allowed") },
+      "the old note changed, its length kept": { ...once, note: once.note.replace("fetchable only", "fetchable ONLY") },
+      "a word after the sentence": { ...once, note: `${once.note} Also.` },
+      "no sentence": { ...once, note: base.note },
+      "the joiner and no sentence": { ...once, note: `${base.note}. ` },
+      "the checked date of a refresh": { ...once, checked: "2026-10-13" },
+      "a revert dated another day": { ...reverted, checked: "2026-10-01" },
+      "a revert that keeps NO_TERMS_ROBOTS_OK": { ...reverted, verdict: "NO_TERMS_ROBOTS_OK" },
+      "a revert's history cut": { ...reverted, source: reverted.source.replace(/NO_TERMS_ROBOTS_OK before: .*$/, "NO_TERMS_ROBOTS_OK before: lost") },
+      "a revert's citation not one the script writes": { ...reverted, source: `a hand note${reverted.source.slice(reverted.source.indexOf(": robots.txt disallows "))}` },
+      "another verdict": { ...once, verdict: "NOT_BARRED" },
+      "a revert under another verdict": { ...reverted, verdict: "BARRED" },
+      "a field more": { ...once, extra: "x" },
+    };
+    for (const [name, e] of Object.entries(not)) expect(isRecheckOf(e, base), name).toBe(false);
+    // judgeSite setting the reverted site again is a new verdict, not a re-check.
+    const again = judgeSite({
+      site: "law.example",
+      verdicts: { sites: { "law.example": reverted } },
+      urls: RE_URLS,
+      readCapture: reader({ [LAW_ROBOTS]: capture(FROZEN_LAW) }),
+      today: day,
+    });
+    expect(again.changed).toBe(true);
+    expect(isRecheckOf(again.verdicts.sites["law.example"], base)).toBe(false);
+    // The base must be a NO_TERMS_ROBOTS_OK entry with the script's citation.
+    expect(isRecheckOf(once, { ...base, verdict: "NO_TERMS" })).toBe(false);
+    expect(isRecheckOf(once, { ...base, source: "a hand source" })).toBe(false);
+
+    // beforeRechecks: the re-checked entry put back, a hand-edited one and every other entry left as they are.
+    const now = f.sites();
+    const edited = { ...now, "gone.example": { ...now["gone.example"], note: "edited by hand" } };
+    const back = beforeRechecks(edited, { "law.example": base, "gone.example": recheckFixture().sites()["gone.example"], "missing.example": base });
+    expect(back["law.example"]).toEqual(base);
+    expect(back["gone.example"]).toEqual(edited["gone.example"]);
+    expect(back["hand.example"]).toBe(edited["hand.example"]);
+    expect(Object.keys(back)).toEqual(Object.keys(edited));
+    expect(edited["law.example"]).toEqual(reverted);
+  });
+
   it("judgeRobots, shared with judgeSite, counts a page queued in two lists once", () => {
     const one = judgeRobots({ site: "law.example", urls: URLS, readCapture: reader({ [LAW_ROBOTS]: capture(FROZEN_LAW) }) });
     const twice = judgeRobots({ site: "law.example", urls: `${URLS}${URLS}`, readCapture: reader({ [LAW_ROBOTS]: capture(FROZEN_LAW) }) });
@@ -938,7 +1202,9 @@ describe("robots-verdict --recheck", () => {
 
   it("re-checks the committed store dry: every NO_TERMS_ROBOTS_OK site unchanged (or unreachable), exit 3, nothing written", () => {
     // A tripwire: after a weekly render (Tuesday 05:23 UTC) rewrites one of these robots.txt captures, this fails until the
-    // 07:11 tick runs `--recheck --apply` and commits the refresh or the revert.
+    // 07:11 tick runs `--recheck --apply` and commits the refresh or the revert. The rest of the suite reads the verdicts as
+    // they stood before any re-check where it holds an earlier tick's state (beforeRechecks); the hand edits a refresh or a
+    // revert still needs are listed in the script's header ("When it runs").
     const verdictsFile = join(ROOT, "research", "channel-loop", "terms-verdicts.json");
     const manifestFile = join(ROOT, "research", "rendered", "FROZEN.sha256");
     const before = [readFileSync(verdictsFile, "utf8"), readFileSync(manifestFile, "utf8")];

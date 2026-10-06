@@ -57,7 +57,8 @@
  *   refresh      the robots.txt changed (a 200 to a 404 included: no rules, RFC 9309 §2.3.1.3 and ruling 6.10) and
  *                judgeRobots, run on the live capture, still allows every queued path: the live capture is frozen as a
  *                new dated copy (freeze-capture's freezeCapture, FROZEN.sha256 following; only the meta and the files it
- *                names), the source's citation is rewritten to name the copy, its fetchedAt and sha256, the rest of the
+ *                names, and always the live meta's version: liveVersion; a planned copy that is not the live answer is
+ *                an error, nothing frozen), the source's citation is rewritten to name the copy, its fetchedAt and sha256, the rest of the
  *                source ("all N queued paths allowed ...; NO_TERMS before: ...") and every other field stay byte for
  *                byte, and the note gains one dated sentence: "Re-checked <date>: robots.txt changed (<old sha12> →
  *                <new sha12>), all N queued paths still allowed."
@@ -72,12 +73,22 @@
  * The queued paths are read from every --urls list (default: research/rendered/urls.txt and
  * research/measurements/ai-allowed-events.urls.txt, where the prize lines are), each line once. A changed live capture
  * must be committed (a freeze names the commit its bytes came from) when --rendered is the repository's own.
- * urls.txt after a revert: nothing in it changes. The site's prize lines are gated by its verdict (termsGate,
+ * urls.txt after a revert: --recheck changes nothing in it. The site's prize lines are gated by its verdict (termsGate,
  * scripts/queue-zero-test.mjs), so they stop passing the moment the verdict is NO_TERMS; its robots probe line stays
  * active, since termsGate passes a probe for an exhaustive-negative NO_TERMS site, and the weekly run keeps the live
- * capture fresh for the next --recheck; no line is paused.
+ * capture fresh for the next --recheck; no line is paused. A paused line whose comment names the site's verdict
+ * (agenthon.net's and eurocontrol.int's read terms lines) then names a stale one, so urls-pause-comments.test.ts fails until
+ * `node scripts/urls-pause-comments.mjs --fix` rewrites that word, which pauses and un-pauses nothing.
  * When it runs: the 07:11 Tuesday tick, after it has read the weekly render's commit (render-watch.yml, Tuesday 05:23
- * UTC) and before any dispatch (research/rendered/README.md).
+ * UTC) and before any dispatch (research/rendered/README.md): dry, then --apply when a site changed, a commit of the copies
+ * and the file, then scripts/verify.sh. The tests that hold what ticks 45 to 57 left read the verdicts as they stood before
+ * any re-check (beforeRechecks, with the 18 entries of 5c980e3 in src/__tests__/revenue/fixtures/
+ * terms-verdicts-5c980e3-robots-ok.json), so a refresh or a revert leaves them green. Measured on a copy of the store for all
+ * 18 sites at once (tick 58 review fix), what else needs a hand edit: after a revert, the urls-pause-comments --fix above;
+ * after a refresh or a revert of eurocontrol.int or agenthon.net, the mutation plan's T57-D and T57B-D entries whose find
+ * text the rewrite moved (src/__tests__/revenue/mutations/robots-verdict.json; mutation-plans.test.ts names them: T57-D2,
+ * D5, D6 and T57B-D2 after a refresh, T57-D1, T57B-D1 and T57B-D2 after a revert), retargeted at the entry's text now or
+ * dropped with a line in the tick's log. Nothing else turned red.
  * Dry run by default: one line per site with its outcome (and, for refresh and revert, each queued path's answer, the
  * copy it would freeze and the sentence it would add), then a totals line. --apply freezes and writes
  * terms-verdicts.json through serializeVerdicts. It never fetches anything. Exit codes: 0 — something was (or, dry,
@@ -412,15 +423,21 @@ export function parseRobotsSource(source) {
   const text = String(source ?? "");
   const tail = SOURCE_TAIL.exec(text);
   if (!tail) return null;
+  const cites = citesOf(text.slice(0, tail.index));
+  return cites && { cites, rest: text.slice(tail.index), n: Number(tail[1]) };
+}
+
+/** The citations robotsCite writes, joined by "; ", read back (parseRobotsSource's cites), or null when one is not. */
+function citesOf(text) {
   const cites = [];
-  for (const part of text.slice(0, tail.index).split("; ")) {
+  for (const part of text.split("; ")) {
     const file = FILE_CITE.exec(part);
     const absent = file ? null : ABSENT_CITE.exec(part);
     if (file) cites.push({ kind: "file", text: part, slug: file[1], robotsUrl: file[2], fetchedAt: file[3], sha12: file[4] });
     else if (absent) cites.push({ kind: "absent", text: part, status: Number(absent[1]), robotsUrl: absent[2], slug: absent[3], fetchedAt: absent[4] });
     else return null;
   }
-  return { cites, rest: text.slice(tail.index), n: Number(tail[1]) };
+  return cites;
 }
 
 /** Why a cited copy is not the frozen copy its citation says, or null when it is. */
@@ -450,14 +467,25 @@ function frozenProblem(cite, frozen) {
 /**
  * The version of a live capture a freeze copies: freeze-capture's sourceVersion (the files as committed, and the commit
  * that wrote them; it refuses uncommitted changes) when renderedDir is a repository's research/rendered, else the files
- * on disk with no commit (a test's directory).
+ * on disk with no commit (a test's directory). Always the live meta: sourceVersion's failed-fetch fallback (a 404 or a
+ * 5xx meta beside the body an earlier 200 left on disk, which render-watch does not delete) hands back that older read
+ * page, which is right for a page a decision quotes and wrong here, where the answer itself is what is judged. Then the
+ * version is the live meta and the files it names (namedFiles: the stale body stays out), as the commit that last wrote
+ * them stored them (the working tree, which sourceVersion has found clean).
  */
 export function liveVersion(renderedDir, slug) {
   const dir = resolve(renderedDir);
   const top = spawnSync("git", ["--no-optional-locks", "-C", dir, "rev-parse", "--show-toplevel"], { encoding: "utf8" });
   const root = top.status === 0 ? top.stdout.trim() : "";
   const own = root !== "" && existsSync(join(root, RENDERED_REL)) && realpathSync(join(root, RENDERED_REL)) === realpathSync(dir);
-  return own ? sourceVersion(root, slug) : { commit: null, files: diskFiles(slug, dir), note: null };
+  if (!own) return { commit: null, files: diskFiles(slug, dir), note: null };
+  const version = sourceVersion(root, slug);
+  const live = diskFiles(slug, dir);
+  if (version.files.get("meta.json")?.equals(live.get("meta.json"))) return version;
+  const files = namedFiles(live);
+  const rels = [...files.keys()].map((ext) => `${RENDERED_REL}/${slug}.${ext}`);
+  const wrote = spawnSync("git", ["--no-optional-locks", "-C", root, "log", "-1", "--format=%h", "--", ...rels], { encoding: "utf8" });
+  return { commit: wrote.status === 0 ? wrote.stdout.trim() || null : null, files, note: null };
 }
 
 const extOf = (path) => (typeof path === "string" ? (CAPTURE_EXTS.find((ext) => ext !== "meta.json" && path.endsWith(`.${ext}`)) ?? null) : null);
@@ -573,6 +601,18 @@ export function recheckSite({ site, entry, urls, urlsText = urls, renderedDir = 
   const planned = [];
   const freezeView = (live) => {
     const p = planCopy({ live, renderedDir, urlsText, today, versionOf });
+    // The copy must hold the live answer: the robots.txt's bytes, or the same 404/410. A copy of another version (an
+    // older one a fallback handed back) would cite an answer the site no longer gives, and every later run would find
+    // the same change again.
+    const now = readableCapture(live.meta, live.body).kind;
+    const kind = p.capture ? readableCapture(p.capture.meta, p.capture.body).kind : "missing";
+    const holds = kind === now && (now === "file" ? p.capture.bytes.equals(live.bytes) : p.capture.meta.status === live.meta.status);
+    if (!holds) {
+      throw new Error(
+        `the copy ${p.plan.frozenSlug} a freeze of research/rendered/${live.slug} would cite is not its live answer (it reads as ` +
+          `${kind}${p.capture?.meta?.status ? ` ${p.capture.meta.status}` : ""}, the live capture as ${now} ${live.meta.status}): nothing frozen or written`,
+      );
+    }
     planned.push(p);
     return p.capture;
   };
@@ -616,6 +656,91 @@ export function recheckSite({ site, entry, urls, urlsText = urls, renderedDir = 
   }
   if (judged.kind === "no-page") return out("error", `robots.txt changed (${change}), but ${judged.why}: pass --urls with the list that queues them`);
   return out("unreachable", `robots.txt changed (${change}), but ${judged.why}`);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// History: what an entry was before --recheck rewrote it, for the tests that reconstruct what an earlier tick left.
+
+const DAY = "\\d{4}-\\d{2}-\\d{2}";
+const TOKEN_RE = escapeRe(ROBOTS_PRODUCT_TOKEN);
+/** The sentence a refresh adds to the note (recheckSite). */
+const REFRESH_SENTENCE = new RegExp(`^Re-checked (${DAY}): robots\\.txt changed \\((.+?)\\), all (\\d+) queued paths? still allowed\\.`);
+/** The sentence a revert adds to the note, always its last (recheckSite). */
+const REVERT_SENTENCE = new RegExp(
+  `^Re-checked (${DAY}): robots\\.txt changed \\((.+?)\\) and now disallows (\\d+) of (\\d+) queued paths? for ${TOKEN_RE}: (.+); ` +
+    "the verdict is NO_TERMS again \\(scripts/robots-verdict\\.mjs --recheck\\), and the robots probe stays on the weekly watch\\.$",
+);
+/** What a revert's source puts between its citations and the NO_TERMS_ROBOTS_OK source it replaced (recheckSite). */
+const REVERT_MARK = new RegExp(
+  `: robots\\.txt disallows \\d+ queued path\\(s\\) for ${TOKEN_RE}: .+? \\(re-checked (${DAY}) by scripts/robots-verdict\\.mjs --recheck\\); ` +
+    `ruling ${escapeRe(RULING)}; NO_TERMS_ROBOTS_OK before: `,
+);
+
+/**
+ * A revert's source as recheckSite writes it, read back: { cites, day, replaced }, cites as parseRobotsSource reads them,
+ * day the re-check's, replaced the NO_TERMS_ROBOTS_OK source it replaced; null for any other source.
+ */
+export function parseRevertSource(source) {
+  const text = String(source ?? "");
+  const mark = REVERT_MARK.exec(text);
+  if (!mark) return null;
+  const cites = citesOf(text.slice(0, mark.index));
+  return cites && { cites, day: mark[1], replaced: text.slice(mark.index + mark[0].length) };
+}
+
+/**
+ * Is `now` the entry `before` after zero or more --recheck rewrites, and nothing else? `before` must be a NO_TERMS_ROBOTS_OK
+ * entry whose source opens with the citation judgeSite writes. A refresh moves only the source's citation (the rest of the
+ * source, from ": all N queued paths" on, stays) and adds one note sentence; a revert, the last rewrite there can be, sets
+ * NO_TERMS, checked to its day, a source of its citations, its reason and the source it replaced, and a last note sentence of
+ * the same day. Every other field is the same, in the same order, and the old note is kept whole at the note's start.
+ */
+export function isRecheckOf(now, before) {
+  const plain = (e) => e !== null && typeof e === "object" && !Array.isArray(e);
+  if (!plain(now) || !plain(before)) return false;
+  if (JSON.stringify(now) === JSON.stringify(before)) return true;
+  const base = before.verdict === "NO_TERMS_ROBOTS_OK" ? parseRobotsSource(before.source) : null;
+  if (!base) return false;
+  if (Object.keys(now).join("\n") !== Object.keys(orderEntry({ ...before, note: before.note ?? "" })).join("\n")) return false;
+  for (const k of Object.keys(now)) {
+    if (!["verdict", "source", "checked", "note"].includes(k) && JSON.stringify(now[k]) !== JSON.stringify(before[k])) return false;
+  }
+  // The note: the old one whole, then each re-check's sentence, joined as withSentence joins them.
+  const old = before.note ?? "";
+  const joiner = !old ? "" : /[.!?]$/.test(old) ? " " : ". ";
+  if (typeof now.note !== "string" || !now.note.startsWith(`${old}${joiner}`)) return false;
+  let rest = now.note.slice(old.length + joiner.length);
+  let refreshes = 0;
+  for (let m = REFRESH_SENTENCE.exec(rest); m; m = REFRESH_SENTENCE.exec(rest)) {
+    refreshes += 1;
+    rest = rest.slice(m[0].length);
+    if (rest === "") break;
+    if (!rest.startsWith(" ")) return false;
+    rest = rest.slice(1);
+  }
+  const source = String(now.source ?? "");
+  if (now.verdict === "NO_TERMS_ROBOTS_OK") {
+    const parsed = parseRobotsSource(source);
+    return refreshes > 0 && rest === "" && now.checked === before.checked && parsed !== null && parsed.rest === base.rest;
+  }
+  if (now.verdict !== "NO_TERMS") return false;
+  const revert = REVERT_SENTENCE.exec(rest);
+  const declined = parseRevertSource(source);
+  if (!revert || !declined || revert[1] !== declined.day || now.checked !== revert[1]) return false;
+  const { replaced } = declined;
+  if (refreshes === 0) return replaced === before.source;
+  return parseRobotsSource(replaced)?.rest === base.rest;
+}
+
+/**
+ * `sites` with each entry of `base` put back where the entry in `sites` is that entry after --recheck rewrites
+ * (isRecheckOf): the verdicts as they stood before any re-check, for a test that reconstructs what an earlier tick left.
+ * Every other entry is kept as it is (a hand edit, a judgeSite set after a revert), so a test still sees it. A new object.
+ */
+export function beforeRechecks(sites, base) {
+  const out = { ...sites };
+  for (const [site, entry] of Object.entries(base)) if (Object.hasOwn(sites, site) && isRecheckOf(sites[site], entry)) out[site] = entry;
+  return out;
 }
 
 const OUTCOMES = ["unchanged", "unreachable", "refresh", "revert", "error"];
