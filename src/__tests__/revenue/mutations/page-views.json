@@ -1,0 +1,57 @@
+[
+  {
+    "id": "M1",
+    "file": "src/revenue/page-views.ts",
+    "find": "      : hasConsecutiveWrites(sorted.map((w) => w.week), g.instrumentedWrites);",
+    "replace": "      : hasConsecutiveWrites(writtenByDeadline, g.instrumentedWrites);",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 54 (RULING-2026-10-06-domain-clock fold 5 M1): instrumented is computed with the day-21 deadline in both periods, so weeks a late-starting reader wrote on domain day 25 do not count as instrumented"
+  },
+  {
+    "id": "M2",
+    "file": "src/revenue/page-views.ts",
+    "find": "  if (period === \"domain\") {\n    for (const end of byWeek.keys()) {\n      const span = range(end - g.killConsecutiveWeeks + 1, end);\n      if (span[0]! < 1 || !span.every((w) => byWeek.has(w))) continue;\n      if (span.every((w) => byWeek.get(w)! < g.killWeeklyBelow)) {\n        return reading(\"kill\", `weeks ${span[0]}-${end} after the domain deploy each under ${g.killWeeklyBelow} page views (${span.map((w) => byWeek.get(w)).join(\", \")})`);\n      }\n    }\n    if (overdue.length) return reading(\"reader_down\", gapNote(overdue, \"domain\"));\n    return reading(\"continue\", `no ${g.killConsecutiveWeeks} consecutive measured weeks under ${g.killWeeklyBelow} since the domain deploy; ${sorted.length} week(s) measured`);\n  }\n\n  if (!instrumented) {\n    if (nowMs < deadlineMs) {\n      return reading(\"uninstrumented\", `fewer than ${g.instrumentedWrites} consecutive weekly writes yet (M-instrument deadline: day ${g.instrumentByDay}): no gate is read`);\n    }\n    return reading(\n      \"instrument_fault\",\n      `fewer than ${g.instrumentedWrites} consecutive weekly writes were made by day ${g.instrumentByDay} (M-instrument; weeks written by then: ${writtenByDeadline.join(\", \") || \"none\"}): ` +\n        \"fix the instrument, restart the clock (a new d0 with its evidence) and record it — a week written later does not undo it; never a fail\",\n    );\n  }\n\n",
+    "replace": "  if (!instrumented) {\n    if (nowMs < deadlineMs) {\n      return reading(\"uninstrumented\", `fewer than ${g.instrumentedWrites} consecutive weekly writes yet (M-instrument deadline: day ${g.instrumentByDay}): no gate is read`);\n    }\n    return reading(\n      \"instrument_fault\",\n      `fewer than ${g.instrumentedWrites} consecutive weekly writes were made by day ${g.instrumentByDay} (M-instrument; weeks written by then: ${writtenByDeadline.join(\", \") || \"none\"}): ` +\n        \"fix the instrument, restart the clock (a new d0 with its evidence) and record it — a week written later does not undo it; never a fail\",\n    );\n  }\n\n  if (period === \"domain\") {\n    for (const end of byWeek.keys()) {\n      const span = range(end - g.killConsecutiveWeeks + 1, end);\n      if (span[0]! < 1 || !span.every((w) => byWeek.has(w))) continue;\n      if (span.every((w) => byWeek.get(w)! < g.killWeeklyBelow)) {\n        return reading(\"kill\", `weeks ${span[0]}-${end} after the domain deploy each under ${g.killWeeklyBelow} page views (${span.map((w) => byWeek.get(w)).join(\", \")})`);\n      }\n    }\n    if (overdue.length) return reading(\"reader_down\", gapNote(overdue, \"domain\"));\n    return reading(\"continue\", `no ${g.killConsecutiveWeeks} consecutive measured weeks under ${g.killWeeklyBelow} since the domain deploy; ${sorted.length} week(s) measured`);\n  }\n\n",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 54 (fold 5 M2): the domain block moves back below the !instrumented block, so a domain clock with no writes reads uninstrumented and, from domain day 21, instrument_fault with a restart nobody can carry out"
+  },
+  {
+    "id": "M3",
+    "file": "src/revenue/page-views.ts",
+    "find": "    if (overdue.length) return reading(\"reader_down\", gapNote(overdue, \"domain\"));\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 54 (fold 5 M3): the overdue.length check in the domain branch is dropped, so an unwritten overdue domain week reads continue instead of reader_down"
+  },
+  {
+    "id": "M4",
+    "file": "src/revenue/page-views.ts",
+    "find": "gapNote(overdue, \"domain\")",
+    "replace": "gapNote(overdue)",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 54 builder: the domain reader_down note takes the netlify blocker's tail, naming an instrument fault and a clock restart (a new d0) that cannot move the domain anchor"
+  },
+  {
+    "id": "M5",
+    "file": "src/revenue/page-views.ts",
+    "find": "; ${sorted.length} week(s) measured",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 54 builder: the domain continue note no longer says how many weeks are measured, so a continue with no rows does not read honestly"
+  }
+]
