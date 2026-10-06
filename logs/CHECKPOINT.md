@@ -1,10 +1,17 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-10-06 ~00:10 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-10-06 ~03:25 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
 > **❓ פתוח לבעלים (30.9, ~21:25 UTC):** הבעלים שלחו קישור לסרטון YouTube (`nWt3CbE96LA`) עם "תלמד מזה". אין דרך מכונה לקרוא אותו: youtube.com חסום בשער התנאים שלנו (BARRED, ביקורת 29.9; הכרעת 30.9 16(d)), והמכולה חסומה ממילא; חיפוש ברשת לפי המזהה לא מחזיר דבר. נתבקשה הדבקה של התמלול (YouTube → "הצג תמלול") או של הכותרת ומה ללמוד ממנו. כשהטקסט יגיע: אותו תהליך כמו מחקר הטיקטוק של 28.9 (`research/tiktok/08-sales-marketing-lessons.md`), על Opus, ותוצאה ב-`research/owner-videos/`.
+
+## ▶ 6.10, ~03:25 UTC — **סבב 52 (טיק 01:11): `prize-apply-reading.mjs`, `render-dispatch.sh` ו-trap לאותות ב-`sim-tree.sh` (§9 51(1)-(2)) מוזגו; הדירקטוריון השבועי של colony — 4 ESCALATE, אותם צעדי בעלים.**
+
+- **בדיקה (01:12):** main התקדם בקומיט colony אחד (`f0fae38`): `revenue_board_review` רץ — 4 הכרעות ESCALATE (apify-actors צעד 6; il-biz-tools 8, 3, 6; oss-bounties 7, 6; pcn874 3, 7, 6), ₪0; הענף קודם. אין PR פתוח; MPT#1 ללא שינוי; אין הודעת בעלים.
+- **הבנייה (מיזוג `5322d2c`; בונה, סוקר, מתקן על Opus, כל אחד בתיקיית scratch משלו, בלי רשת):** `prize-apply-reading.mjs` — תאי המאמת של Workflow קריאה → הטבלה לפי Event URL, אחרי בדיקת כל תא (דירוג/yes-no עקביים, בלי `|`/שורה חדשה, בלי כתובת בשום כתב או קידוד, כל מציין לכידה פותר לשורה קיימת); dry-run כברירת מחדל; `--apply` מסרב להחליף תאים ששורה כבר מחזיקה בלי `--overwrite` — בדיוק מה שהפלט של סבב 49 היה עושה לעריכת היד של סבב 51 (ה-dry-run האמיתי מסמן זאת, exit 3). `render-dispatch.sh` — אימות בפרסר של render-watch ובשער התנאים (אתר חסום מסורב לפני כל קריאת `gh`), גוף ב-python3, מציאת הריצה בחלון (לא ברשימה שנקראה לפני השיגור; נוצרה לא לפני השיגור פחות 120 שניות), המתנה מוגבלת, fast-forward רק ל-checkout נקי על אותו ענף (אחרת exit 4), `capture-check`, דו"ח כתובות לפי סוג. `sim-tree.sh` — trap ל-INT/TERM/HUP/PIPE, מחכה לפקודה, שומר את העץ עם רמז מצוטט. סקירה: 0 חוסמים, 6 fix + 5 note, כולם הוסדרו; 102 מוטציות נהרגו בתוך sim-tree; verify exit 0 (77 קבצים, 2539).
+- **הבא:** **סבב 53 (send_later ~60 דק', או 07:11):** 52(1) — `address-kinds.mjs` + `remask-run.sh`, ואם יש מקום פסק תנאים ל-edem-ai.github.io. **6.10 05:23:** הריצה השבועית; **07:11:** סיכום הריצה, `--cited`, 9 לכידות תנאים, `robots-verdict.mjs`, `prize-dispatch.mjs --skip-captured` → `render-dispatch.sh`, קריאות → `prize-apply-reading.mjs`, ושורות 21 ו-22 של Fable. **7.10:** שורות 24 ו-25; 06:47 prize-intake (צריך לשמור 8 תאים). **8.10:** שורה 26.
+- **היומן:** `logs/2026-10-06-channel-loop-tick-52.md`; יומן הבנייה: `logs/2026-10-06-channel-loop-tick-52-reading-dispatch-scripts.md`.
 
 ## ▶ 6.10, ~00:10 UTC — **סבב 51 (המשך, מ-22:08): `sim-tree.sh`, `mutate.mjs --check` ו-257 תוכניות מוטציה ליד הבדיקות (§9 50(1)) מוזגו; שלושת המסלולים האחרונים של RoboSyn נקראו — השורה נשארת RENDERED/no.**
 

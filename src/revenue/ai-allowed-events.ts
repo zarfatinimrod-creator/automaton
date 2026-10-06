@@ -686,7 +686,13 @@ function renderMarkdown(
       "`BLOCKED`, with Qualifies left empty. **Qualifies**: `yes` only when the rules explicitly permit AI-built or " +
       "automated entries and require no human-authorship attestation; `no` otherwise, silent rules included. A row " +
       "under *Listed again after a closed quarter* is decided first: `SAME EVENT` in Grade, Qualifies empty, if it is " +
-      "that quarter's event with a later deadline; graded as above if it is a new edition.",
+      "that quarter's event with a later deadline; graded as above if it is a new edition. A reading workflow's output " +
+      "is applied in two runs: `node scripts/prize-apply-reading.mjs <output.json>` first, a dry run that prints the " +
+      "diff and writes nothing, then, once the diff is read, `node scripts/prize-apply-reading.mjs <output.json> " +
+      "--apply`, which writes each verifier's three cells to the row whose Event URL is the event's. It refuses a cell " +
+      "with an unescaped `|`, a newline, an address or a pointer to no capture, a RENDERED row without yes or no or " +
+      "without a capture pointer, and, unless given `--overwrite`, cells that would replace the ones a row already " +
+      "holds.",
   );
   out.push(
     "4. Commit to main. `state/colony/prize-intake.json` and the colony report pick the grades up at the next weekly " +
