@@ -1,0 +1,19 @@
+{
+  "url": "https://competition.bcamlc.com/information.html",
+  "slug": "prize-competition-bcamlc-com-information-html-f3bb6119",
+  "fetchedAt": "2026-10-06T09:26:28.153Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 46963,
+  "sha256": "98555fb2aaa15fc69df10a66587cf5e512c0b237e66239a4c1ebb8665044a67c",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/prize-competition-bcamlc-com-information-html-f3bb6119.html",
+  "textPath": "research/rendered/prize-competition-bcamlc-com-information-html-f3bb6119.txt",
+  "robots": "none",
+  "robotsUrl": "https://competition.bcamlc.com/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

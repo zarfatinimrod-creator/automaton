@@ -1,0 +1,120 @@
+Project OmniBus
+
+Project OmniBus
+
+Competition ↗
+
+Closing Ceremony
+
+Sponsors
+
+Information
+
+Simulator
+
+Standings
+
+Contact
+
+The School Bus Routing Problem
+
+01
+
+What You Are Actually Solving
+
+Every morning, a school district has to pick up every student and get them to school before the bell
+rings. They only have a few buses, and each bus can only fit so many kids. The goal is to plan
+routes that pick everyone up on time while keeping the trip as short and cheap as possible.
+
+This sounds like a simple puzzle, but it's actually one of the hardest math problems in computer
+science! It's a version of the "Vehicle Routing Problem". When there are hundreds of stops, no
+standard formula can quickly find the perfect route. That's exactly why we use Artificial
+Intelligence and Reinforcement Learning (RL) to solve it.
+
+02
+
+The Mini-Challenges
+
+Routing isn't just one big problem, but actually composed of smaller parts:
+
+1. Where to stop: Which street corners should be designated bus stops?
+
+2. Who goes where: Which stop does each student walk to?
+
+3. Building the route: In what order should the bus visit its stops?
+
+4. Assigning buses: Which bus drives which route?
+
+5. Timing it right: When does each bus leave to avoid traffic?
+
+In this competition, your AI will focus on a few of these tasks while we treat the others as fixed
+rules.
+
+03
+
+How the AI Understands Everything
+
+What the AI Sees (State): It knows where all the buses are, which stops are left,
+how many kids are on each bus, the time, and any traffic jams.
+
+What the AI Does (Action): At every step, it chooses the next stop to add to a
+route, or reroutes a bus if there's a problem.
+
+How the AI Scores (Reward): It gets penalized for taking too long, making kids
+late, or overcrowding buses. It earns bonus points for using fewer buses and keeping ride times fair
+for everyone.
+
+The Game (Episode): One game is a single morning. It starts when kids need to be
+picked up and ends when everyone is at school or if they're late.
+
+What is Reinforcement Learning?
+
+01
+
+Learning by Doing
+
+Unlike traditional programming where we give the computer exact rules to follow, or supervised learning where we show the AI examples of the "right answer," Reinforcement Learning (RL) is about learning through trial and error.
+
+Imagine training a dog: you don't tell the dog how to move its muscles to sit. You say "sit," and when the dog accidentally sits, you give it a treat (a reward). Over time, the dog figures out that sitting earns a reward.
+
+02
+
+Agents and Environments
+
+In RL, we create an Agent (the AI) and place it in an Environment (the simulated city map). The agent doesn't know anything at first. It takes random Actions (like sending a bus to a stop) and observes the new State of the city (where the bus is now).
+
+03
+
+Rewards and Penalties
+
+After every action, the agent receives a Reward . If it picks up students efficiently, the reward is positive. If it takes too long or students are late, it gets a negative reward (a penalty). By playing thousands of simulated mornings, the agent's neural network updates to maximize its total score, discovering complex routing strategies that human programmers could never hard-code.
+
+Everything You Need to Know
+
+Who You're Competing With
+
+Your AI won't just compete with other teams but it also has to beat real-world benchmarks! You'll
+compare your
+models against actual routes designed by humans, basic nearest-stop algorithms, and even advanced
+tools made by Google. Your goal is to build something better.
+
+Real-world Issues
+
+Most routing problems assume perfect conditions. Your AI will have to deal with the unexpected:
+mid-route road closures, absent students, different school start times, and actual city traffic
+using real map data. It needs to adapt on the fly!
+
+The Competition Setup
+
+We'll release the practice environment publicly, so everyone has the same starting point. You'll
+train your AI on sample towns. But the real test? We hold back a "mystery district" that no one has
+seen to test if your AI can adapt.
+
+How We Decide the Winner
+
+When you submit your agent, we'll run it on our hidden test maps to see if it really learned how to
+route, or if it just memorized the practice towns. We score you based on total time, late kids,
+fairness across neighborhoods, and buses used.
+
+&copy; 2026 Project OmniBus
+Machine Learning Competition

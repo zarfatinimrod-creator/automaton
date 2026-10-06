@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Project OmniBus</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg" />
+    <meta property="og:image" content="logo.jpg" />
+
+    <meta name="description"
+        content="A machine learning competition focused on school bus routing and reinforcement learning." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        :root {
+            --cream: #f5f0e8;
+            --ink: #1a1714;
+            --muted: #7a7168;
+            --accent: #c84b2f;
+            --rule: #d8d1c4;
+
+            --mono: 'DM Mono', monospace;
+            --serif: 'DM Serif Display', serif;
+            --sans: 'DM Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--cream);
+            color: var(--ink);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+
+            z-index: 9999;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 1.25rem 3rem;
+
+            background: rgba(245, 240, 232, 0.92);
+            backdrop-filter: blur(8px);
+
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        .logo {
+            width: 54px;
+            height: 54px;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+
+            color: var(--muted);
+            text-decoration: none;
+
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            color: var(--ink);
+        }
+
+        .nav-cta {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+
+            padding: 0.55rem 1.2rem;
+
+            background: var(--ink);
+            color: var(--cream);
+
+            border: none;
+            cursor: pointer;
+
+            transition: background 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: var(--accent);
+        }
+
+        /* Hamburger menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--ink);
+            margin-bottom: 5px;
+            transition: 0.3s;
+        }
+        
+        .mobile-menu-btn span:last-child {
+            margin-bottom: 0;
+        }
+
+        .hero {
+            min-height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+
+            padding: 0 3rem 5rem;
+
+            border-bottom: 1px solid var(--rule);
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg-text {
+            position: absolute;
+
+            top: 50%;
+            right: -2rem;
+
+            transform: translateY(-50%);
+
+            font-family: var(--serif);
+            font-size: 22vw;
+
+            color: rgba(26, 23, 20, 0.04);
+
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+
+            color: var(--accent);
+
+            margin-bottom: 1.5rem;
+
+            opacity: 0;
+            animation: rise 0.9s ease forwards 0.2s;
+        }
+
+        .hero h1 {
+            font-family: var(--serif);
+
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            line-height: 1;
+
+            font-weight: 400;
+
+            max-width: 900px;
+
+            opacity: 0;
+            animation: rise 0.9s ease forwards 0.4s;
+        }
+
+        .hero-sub {
+            margin-top: 2rem;
+
+            max-width: 560px;
+
+            font-size: 1rem;
+            line-height: 1.8;
+            font-weight: 300;
+
+            color: var(--muted);
+
+            opacity: 0;
+            animation: rise 0.9s ease forwards 0.6s;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+
+            margin-top: 3rem;
+
+            opacity: 0;
+            animation: rise 0.9s ease forwards 0.8s;
+        }
+
+        .btn-primary,
+        .btn-accent,
+        .btn-ghost,
+        .btn-register {
+            font-family: var(--mono);
+
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+
+            padding: 0.85rem 2rem;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--ink);
+            color: var(--cream);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--cream);
+            border: none;
+        }
+
+        .btn-accent:hover {
+            background: var(--ink);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--rule);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--ink);
+        }
+
+        .btn-register {
+            background: var(--ink);
+            color: var(--cream);
+            border: 1px solid var(--ink);
+            border-radius: 4px;
+            font-family: var(--sans);
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.02em;
+            text-transform: none;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(26, 23, 20, 0.1);
+        }
+
+        .btn-register:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--cream);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(200, 75, 47, 0.2);
+        }
+
+        .btn-discord {
+            background: #5865F2;
+            color: var(--cream);
+            border: 1px solid #5865F2;
+            border-radius: 4px;
+            font-family: var(--sans);
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.02em;
+            text-transform: none;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.2);
+            cursor: pointer;
+            transition: 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .btn-discord:hover {
+            background: #4752C4;
+            border-color: #4752C4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(88, 101, 242, 0.3);
+            color: var(--cream);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .oauth-btn {
+            padding: 0.8rem 1.3rem;
+
+            border: 1px solid var(--rule);
+            background: transparent;
+
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .oauth-btn:hover {
+            border-color: var(--ink);
+            background: rgba(26, 23, 20, 0.03);
+        }
+
+        section {
+            padding: 6rem 3rem;
+            border-bottom: 1px solid var(--rule);
+
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: var(--mono);
+
+            font-size: 0.7rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+
+            color: var(--accent);
+
+            margin-bottom: 3rem;
+
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--rule);
+        }
+
+        h3 {
+            font-weight: normal;
+        }
+
+        section h2 {
+            font-family: var(--serif);
+
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 400;
+
+            line-height: 1.15;
+
+            max-width: 760px;
+        }
+
+        .problem-grid,
+        .sponsor-grid,
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+
+            margin-top: 3rem;
+        }
+
+        .contact-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+
+            margin-top: 3rem;
+        }
+
+        .problem-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+            border: 1px solid var(--rule);
+        }
+
+        .problem-cell {
+            padding: 2.5rem;
+
+            border-right: 1px solid var(--rule);
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .problem-cell:nth-child(2n) {
+            border-right: none;
+        }
+
+        .problem-cell:nth-last-child(-n+2) {
+            border-bottom: none;
+        }
+
+        .problem-cell h3,
+        .contact-card h3 {
+            font-family: var(--mono);
+
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+
+            color: var(--muted);
+
+            margin-bottom: 1rem;
+        }
+
+        .problem-cell p,
+        .why-desc {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .why-list {
+            margin-top: 4rem;
+            border-top: 1px solid var(--rule);
+        }
+
+        .why-item {
+            display: grid;
+            grid-template-columns: 3rem 1fr 2fr;
+
+            gap: 2rem;
+
+            padding: 2rem 0;
+
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .why-num {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .why-title {
+            font-family: var(--serif);
+            font-size: 1.3rem;
+        }
+
+        .why-desc {
+            color: var(--muted);
+        }
+
+        .code-block {
+            margin-top: 4rem;
+            border: 1px solid var(--rule);
+            overflow: hidden;
+        }
+
+        .code-bar {
+            background: var(--ink);
+            padding: 0.75rem 1.25rem;
+        }
+
+        .code-bar span {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: rgba(245, 240, 232, 0.45);
+        }
+
+        pre {
+            background: #0f0d0b;
+            padding: 2rem 2.5rem;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            line-height: 2;
+            color: #c8bfb0;
+        }
+
+        .kw {
+            color: #e0956a;
+        }
+
+        .str {
+            color: #8fbe8a;
+        }
+
+        .cm {
+            color: #5a554e;
+        }
+
+        .fn {
+            color: #7db5d8;
+        }
+
+        .lb-table {
+            width: 100%;
+            margin-top: 4rem;
+            border-collapse: collapse;
+        }
+
+        .lb-table th {
+            font-family: var(--mono);
+
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+
+            color: var(--muted);
+
+            text-align: left;
+
+            padding: 0 1rem 1.25rem;
+
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .lb-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--rule);
+            font-size: 0.9rem;
+        }
+
+        .tag {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+
+            padding: 0.2rem 0.6rem;
+            border-radius: 2px;
+        }
+
+        .tag-rl {
+            background: rgba(200, 75, 47, 0.1);
+            color: var(--accent);
+        }
+
+        .tag-exact {
+            background: rgba(26, 23, 20, 0.07);
+            color: var(--muted);
+        }
+
+        .tag-h {
+            background: rgba(26, 23, 20, 0.04);
+            color: #a09880;
+        }
+
+        .contact-card {
+            border: 1px solid var(--rule);
+            background: rgba(26, 23, 20, 0.015);
+            padding: 2rem;
+        }
+
+        .sponsor-card {
+            border: 1px dashed var(--rule);
+            background: transparent;
+            height: 140px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+
+            transition: background 0.2s, border-color 0.2s, transform 0.2s;
+        }
+
+        .sponsor-card:hover {
+            background: rgba(26, 23, 20, 0.04);
+            border-color: var(--accent);
+        }
+
+        .sponsor-card span {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .sponsor-card--real {
+            border-style: solid;
+            border-color: var(--rule);
+            background: rgba(26, 23, 20, 0.02);
+        }
+
+        .sponsor-card--real:hover {
+            border-color: var(--accent);
+            background: rgba(200, 75, 47, 0.04);
+        }
+
+        .contact-card {
+            padding: 2rem;
+        }
+
+        .contact-card a {
+            color: var(--ink);
+            text-decoration: none;
+        }
+
+        .contact-card a:hover {
+            color: var(--accent);
+        }
+
+        #join {
+            padding: 7rem 3rem;
+            text-align: center;
+        }
+
+        #join .inner {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #join h2 {
+            font-family: var(--serif);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1.5rem;
+        }
+
+        #join p {
+            color: var(--muted);
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
+
+        .join-form {
+            display: flex;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .join-form input {
+            flex: 1;
+
+            padding: 0.9rem 1.25rem;
+
+            border: 1px solid var(--rule);
+            border-right: none;
+
+            background: transparent;
+
+            outline: none;
+        }
+
+        .join-form button {
+            padding: 0.9rem 1.5rem;
+
+            background: var(--ink);
+            color: var(--cream);
+
+            border: 1px solid var(--ink);
+
+            font-family: var(--mono);
+
+            cursor: pointer;
+        }
+
+        footer {
+            padding: 2rem 3rem;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        footer span {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+
+            transition:
+                opacity 0.7s ease,
+                transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Countdown Banner ── */
+
+        .countdown-wrapper {
+            width: 100%;
+            max-width: 680px;
+            margin: 1.5rem auto 0;
+            opacity: 0;
+            animation: rise 0.9s ease forwards 1s;
+        }
+
+        .competition-dates {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .competition-dates .dates-sep {
+            width: 28px;
+            height: 1px;
+            background: var(--rule);
+        }
+
+        .competition-dates .dates-accent {
+            color: var(--accent);
+        }
+
+        .countdown-card {
+            border: 1px solid var(--rule);
+            background: rgba(200, 75, 47, 0.03);
+            padding: 1.4rem 1.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .countdown-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .countdown-pulse {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse-dot 1.4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        .countdown-units {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .countdown-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 56px;
+        }
+
+        .countdown-val {
+            font-family: var(--serif);
+            font-size: 2.4rem;
+            line-height: 1;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+            transition: opacity 0.15s;
+        }
+
+        .countdown-lbl {
+            font-family: var(--mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 0.3rem;
+        }
+
+        .countdown-colon {
+            font-family: var(--serif);
+            font-size: 2.4rem;
+            color: var(--rule);
+            line-height: 1;
+            margin-bottom: 1rem;
+            animation: blink-colon 1s step-end infinite;
+        }
+
+        @keyframes blink-colon {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .countdown-live {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #2a7a50;
+            padding: 0.3rem 0.8rem;
+            border: 1px solid rgba(42, 122, 80, 0.25);
+            background: rgba(42, 122, 80, 0.06);
+            border-radius: 2px;
+        }
+
+        .countdown-live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #2a7a50;
+            animation: pulse-dot 1.2s ease-in-out infinite;
+        }
+
+        .countdown-ended {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        @media (max-width: 768px) {
+
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+                gap: 1.5rem;
+                padding-top: 1.5rem;
+                padding-bottom: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .hero {
+                padding: 0 1.5rem 4rem;
+            }
+
+            section,
+            #join {
+                padding: 4rem 1.5rem;
+            }
+
+            .problem-grid,
+            .sponsor-grid,
+            .contact-grid,
+            .contact-grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .problem-cell {
+                border-right: none;
+            }
+
+            .why-item {
+                grid-template-columns: 2rem 1fr;
+            }
+
+            .why-desc {
+                display: none;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+        }
+
+        /* ── Embedded Simulator ── */
+
+        .sim-intro {
+            color: var(--muted);
+            max-width: 620px;
+            margin: 1.5rem 0 0;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .sim-embed {
+            margin-top: 2.5rem;
+            border: 1px solid var(--rule);
+            border-radius: 4px;
+            overflow: hidden;
+            background: #faf7f2;
+        }
+
+        .sim-embed-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 1rem;
+            background: var(--cream);
+            border-bottom: 1px solid var(--rule);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .sim-embed-toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .sim-embed-toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .sim-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--rule);
+            background: transparent;
+            border-radius: 3px;
+            color: var(--muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .sim-btn:hover {
+            border-color: var(--ink);
+            color: var(--ink);
+        }
+
+        .sim-btn.active {
+            background: var(--ink);
+            color: var(--cream);
+            border-color: var(--ink);
+        }
+
+        .sim-select {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            background: transparent;
+            border: 1px solid var(--rule);
+            border-radius: 3px;
+            color: var(--ink);
+            padding: 0.35rem 0.5rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .sim-select:hover {
+            border-color: var(--ink);
+        }
+
+        .sim-toolbar-sep {
+            width: 1px;
+            height: 20px;
+            background: var(--rule);
+            margin: 0 0.3rem;
+        }
+
+        .sim-clock-label {
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .sim-clock-val {
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            color: var(--ink);
+            letter-spacing: 0.03em;
+        }
+
+        .sim-badge {
+            font-family: var(--mono);
+            font-size: 0.62rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 2px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .sim-badge.ready {
+            background: rgba(34, 130, 80, 0.08);
+            color: #2a7a50;
+            border: 1px solid rgba(34, 130, 80, 0.2);
+        }
+
+        .sim-badge.running {
+            background: rgba(200, 75, 47, 0.08);
+            color: var(--accent);
+            border: 1px solid rgba(200, 75, 47, 0.2);
+        }
+
+        .sim-badge.paused {
+            background: rgba(180, 150, 50, 0.08);
+            color: #8a7530;
+            border: 1px solid rgba(180, 150, 50, 0.2);
+        }
+
+        .sim-badge.complete {
+            background: rgba(34, 130, 80, 0.08);
+            color: #2a7a50;
+            border: 1px solid rgba(34, 130, 80, 0.2);
+        }
+
+        .sim-embed-body {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            height: 480px;
+        }
+
+        .sim-embed-map-wrap {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sim-embed-map-wrap #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sim-embed-map-wrap .leaflet-container {
+            background: #f0ece4 !important;
+        }
+
+        .sim-embed-map-wrap .leaflet-control-zoom a {
+            background: rgba(245, 240, 232, 0.9) !important;
+            color: var(--ink) !important;
+            border-color: var(--rule) !important;
+        }
+
+        .sim-embed-map-wrap .leaflet-popup-content-wrapper {
+            background: #faf7f2 !important;
+            color: var(--ink) !important;
+            border: 1px solid var(--rule) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 4px 16px rgba(26, 23, 20, 0.1) !important;
+            font-family: var(--mono) !important;
+            font-size: 0.72rem !important;
+        }
+
+        .sim-embed-map-wrap .leaflet-popup-tip {
+            background: #faf7f2 !important;
+        }
+
+        .map-overlay {
+            position: absolute;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .map-overlay-topright {
+            top: 10px;
+            right: 10px;
+            pointer-events: auto;
+        }
+
+        .event-banner {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            padding: 0.4rem 0.7rem;
+            border-radius: 3px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            backdrop-filter: blur(8px);
+            animation: slide-in 0.3s ease;
+            transition: opacity 0.3s;
+        }
+
+        .event-banner.traffic {
+            background: rgba(180, 140, 30, 0.12);
+            border: 1px solid rgba(180, 140, 30, 0.3);
+            color: #8a7020;
+        }
+
+        .event-banner.closure {
+            background: rgba(200, 75, 47, 0.1);
+            border: 1px solid rgba(200, 75, 47, 0.3);
+            color: var(--accent);
+        }
+
+        .event-banner.weather {
+            background: rgba(70, 130, 180, 0.1);
+            border: 1px solid rgba(70, 130, 180, 0.3);
+            color: #4682b4;
+        }
+
+        .event-banner.breakdown {
+            background: rgba(200, 75, 47, 0.1);
+            border: 1px solid rgba(200, 75, 47, 0.3);
+            color: var(--accent);
+        }
+
+        .event-banner.absence {
+            background: rgba(122, 113, 104, 0.1);
+            border: 1px solid rgba(122, 113, 104, 0.2);
+            color: var(--muted);
+        }
+
+        @keyframes slide-in {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .sim-embed-panel {
+            border-left: 1px solid var(--rule);
+            background: var(--cream);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sim-panel-section {
+            padding: 0.8rem 0.9rem;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .sim-panel-section-grow {
+            flex: 1;
+            border-bottom: none;
+            overflow-y: auto;
+        }
+
+        .sim-panel-header {
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sim-panel-header::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--rule);
+        }
+
+        .sim-metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem;
+        }
+
+        .sim-metric {
+            background: rgba(26, 23, 20, 0.02);
+            border: 1px solid var(--rule);
+            border-radius: 3px;
+            padding: 0.4rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sim-metric-val {
+            font-family: var(--mono);
+            font-size: 0.95rem;
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        .sim-metric-val.good { color: #2a7a50; }
+        .sim-metric-val.warn { color: #8a7530; }
+        .sim-metric-val.bad { color: var(--accent); }
+
+        .sim-metric-label {
+            font-family: var(--mono);
+            font-size: 0.52rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .bus-card {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.5rem;
+            border-radius: 3px;
+            border: 1px solid var(--rule);
+            background: rgba(26, 23, 20, 0.02);
+            margin-bottom: 0.3rem;
+            transition: border-color 0.2s;
+        }
+
+        .bus-card:hover {
+            border-color: var(--muted);
+        }
+
+        .bus-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .bus-card .bus-info { flex: 1; min-width: 0; }
+
+        .bus-card .bus-name {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            color: var(--ink);
+        }
+
+        .bus-card .bus-status {
+            font-size: 0.58rem;
+            color: var(--muted);
+        }
+
+        .bus-card .bus-occupancy {
+            font-family: var(--mono);
+            font-size: 0.62rem;
+            color: var(--muted);
+            text-align: right;
+        }
+
+        .occupancy-bar {
+            width: 40px;
+            height: 3px;
+            background: var(--rule);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 2px;
+        }
+
+        .occupancy-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .sim-event-log {
+            max-height: 140px;
+            overflow-y: auto;
+        }
+
+        .event-log-item {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(216, 209, 196, 0.5);
+            font-size: 0.65rem;
+            animation: fade-in 0.3s ease;
+        }
+
+        .event-log-item:last-child { border-bottom: none; }
+
+        .event-log-item .time {
+            font-family: var(--mono);
+            color: var(--muted);
+            flex-shrink: 0;
+            width: 40px;
+        }
+
+        .event-log-item .msg {
+            color: var(--ink);
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(-3px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stop-demand-marker {
+            border-radius: 50%;
+            background: rgba(58, 112, 198, 0.28);
+            border: 2px solid rgba(58, 112, 198, 0.9);
+            box-shadow: 0 1px 5px rgba(26, 23, 20, 0.18);
+            transition: width 0.25s, height 0.25s, opacity 0.25s, transform 0.25s;
+            cursor: pointer;
+        }
+
+        .stop-demand-marker.empty {
+            background: rgba(58, 112, 198, 0.06);
+            border-color: rgba(58, 112, 198, 0.35);
+            opacity: 0.45;
+        }
+
+        .stop-demand-marker.late {
+            background: rgba(200, 75, 47, 0.16);
+            border-color: var(--accent);
+            animation: pulse-marker 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-marker {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .bus-marker-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: bold;
+            border: 2px solid;
+            box-shadow: 0 1px 4px rgba(26, 23, 20, 0.15);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .bus-marker-icon.en-route { animation: bus-pulse 2s ease-in-out infinite; }
+        .bus-marker-icon.loading { animation: bus-loading 0.5s ease-in-out infinite; }
+        .bus-marker-icon.broken { opacity: 0.4; filter: grayscale(1); }
+
+        @keyframes bus-pulse {
+            0%, 100% { box-shadow: 0 1px 4px rgba(26, 23, 20, 0.15); }
+            50% { box-shadow: 0 2px 10px rgba(200, 75, 47, 0.2); }
+        }
+
+        @keyframes bus-loading {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .school-marker {
+            width: 34px;
+            height: 34px;
+            background: var(--accent);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 56%, 79% 91%, 50% 70%, 21% 91%, 32% 56%, 2% 35%, 39% 35%);
+            filter: drop-shadow(0 1px 4px rgba(26, 23, 20, 0.2));
+        }
+
+        .sim-map-legend {
+            background: rgba(245, 240, 232, 0.92);
+            border: 1px solid var(--rule);
+            padding: 0.75rem 0.85rem;
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            box-shadow: 0 6px 18px rgba(26, 23, 20, 0.08);
+        }
+
+        .sim-map-legend div {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-top: 0.4rem;
+        }
+
+        .sim-map-legend div:first-child {
+            margin-top: 0;
+        }
+
+        .legend-school,
+        .legend-stop,
+        .legend-bus {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            flex: 0 0 12px;
+        }
+
+        .legend-school {
+            background: var(--accent);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 56%, 79% 91%, 50% 70%, 21% 91%, 32% 56%, 2% 35%, 39% 35%);
+        }
+
+        .legend-stop {
+            border-radius: 50%;
+            background: rgba(58, 112, 198, 0.35);
+            border: 1px solid rgba(58, 112, 198, 0.9);
+        }
+
+        .legend-bus {
+            border-radius: 2px;
+            background: rgba(42, 122, 80, 0.2);
+            border: 2px solid #2a7a50;
+        }
+
+        @media (max-width: 768px) {
+            .sim-embed-body {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .sim-embed-map-wrap {
+                height: 320px;
+            }
+
+            .sim-embed-panel {
+                border-left: none;
+                border-top: 1px solid var(--rule);
+                max-height: 300px;
+            }
+
+            .sim-embed-toolbar-left {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+
+    <nav>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="nav-logo" style="text-decoration: none; cursor: pointer;">
+                <img src="bca-logo.png" alt="BCA Logo" class="logo" onerror="this.style.display='none'">
+                <span>Project OmniBus</span>
+            </a>
+            
+            <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="https://www.codabench.org/competitions/16945/" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight: 500;">Competition ↗</a></li>
+            <li><a href="index.html#closing-ceremony">Closing Ceremony</a></li>
+            <li><a href="index.html#sponsors">Sponsors</a></li>
+            <li><a href="information.html">Information</a></li>
+            <li><a href="index.html#simulator">Simulator</a></li>
+            <li><a href="standings.html">Standings</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+
+    </nav>
+
+    <!-- PROBLEM -->
+    <section id="problem">
+
+        <h2>The School Bus Routing Problem</h2>
+
+        <div class="why-list">
+            <div class="why-item">
+                <div class="why-num">01</div>
+                <div class="why-title">What You Are Actually Solving</div>
+                <div class="why-desc">
+                    Every morning, a school district has to pick up every student and get them to school before the bell
+                    rings. They only have a few buses, and each bus can only fit so many kids. The goal is to plan
+                    routes that pick everyone up on time while keeping the trip as short and cheap as possible.
+                    <br><br>
+                    This sounds like a simple puzzle, but it's actually one of the hardest math problems in computer
+                    science! It's a version of the "Vehicle Routing Problem". When there are hundreds of stops, no
+                    standard formula can quickly find the perfect route. That's exactly why we use Artificial
+                    Intelligence and Reinforcement Learning (RL) to solve it.
+                </div>
+            </div>
+
+            <div class="why-item">
+                <div class="why-num">02</div>
+                <div class="why-title">The Mini-Challenges</div>
+                <div class="why-desc">
+                    Routing isn't just one big problem, but actually composed of smaller parts:
+                    <br><br>
+                    <strong>1. Where to stop:</strong> Which street corners should be designated bus stops?<br>
+                    <strong>2. Who goes where:</strong> Which stop does each student walk to?<br>
+                    <strong>3. Building the route:</strong> In what order should the bus visit its stops?<br>
+                    <strong>4. Assigning buses:</strong> Which bus drives which route?<br>
+                    <strong>5. Timing it right:</strong> When does each bus leave to avoid traffic?
+                    <br><br>
+                    In this competition, your AI will focus on a few of these tasks while we treat the others as fixed
+                    rules.
+                </div>
+            </div>
+
+            <div class="why-item" style="border-bottom: none; padding-bottom: 0;">
+                <div class="why-num">03</div>
+                <div class="why-title">How the AI Understands Everything</div>
+                <div class="why-desc">
+                    <strong>What the AI Sees (State):</strong> It knows where all the buses are, which stops are left,
+                    how many kids are on each bus, the time, and any traffic jams.<br><br>
+                    <strong>What the AI Does (Action):</strong> At every step, it chooses the next stop to add to a
+                    route, or reroutes a bus if there's a problem.<br><br>
+                    <strong>How the AI Scores (Reward):</strong> It gets penalized for taking too long, making kids
+                    late, or overcrowding buses. It earns bonus points for using fewer buses and keeping ride times fair
+                    for everyone.<br><br>
+                    <strong>The Game (Episode):</strong> One game is a single morning. It starts when kids need to be
+                    picked up and ends when everyone is at school or if they're late.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHAT IS RL -->
+    <section id="rl-info" style="background: rgba(26, 23, 20, 0.02);">
+
+        <h2>What is Reinforcement Learning?</h2>
+        
+        <div class="why-list">
+            <div class="why-item">
+                <div class="why-num">01</div>
+                <div class="why-title">Learning by Doing</div>
+                <div class="why-desc">
+                    Unlike traditional programming where we give the computer exact rules to follow, or supervised learning where we show the AI examples of the "right answer," <strong>Reinforcement Learning (RL)</strong> is about learning through trial and error. <br><br>
+                    Imagine training a dog: you don't tell the dog how to move its muscles to sit. You say "sit," and when the dog accidentally sits, you give it a treat (a reward). Over time, the dog figures out that sitting earns a reward.
+                </div>
+            </div>
+
+            <div class="why-item">
+                <div class="why-num">02</div>
+                <div class="why-title">Agents and Environments</div>
+                <div class="why-desc">
+                    In RL, we create an <strong>Agent</strong> (the AI) and place it in an <strong>Environment</strong> (the simulated city map). The agent doesn't know anything at first. It takes random <strong>Actions</strong> (like sending a bus to a stop) and observes the new <strong>State</strong> of the city (where the bus is now).
+                </div>
+            </div>
+
+            <div class="why-item" style="border-bottom: none; padding-bottom: 0;">
+                <div class="why-num">03</div>
+                <div class="why-title">Rewards and Penalties</div>
+                <div class="why-desc">
+                    After every action, the agent receives a <strong>Reward</strong>. If it picks up students efficiently, the reward is positive. If it takes too long or students are late, it gets a negative reward (a penalty). By playing thousands of simulated mornings, the agent's neural network updates to maximize its total score, discovering complex routing strategies that human programmers could never hard-code.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DETAILS -->
+    <section id="details">
+
+        <h2>Everything You Need to Know</h2>
+
+        <div class="problem-grid">
+            <div class="problem-cell">
+                <h3>Who You're Competing With</h3>
+                <p>Your AI won't just compete with other teams but it also has to beat real-world benchmarks! You'll
+                    compare your
+                    models against actual routes designed by humans, basic nearest-stop algorithms, and even advanced
+                    tools made by Google. Your goal is to build something better.</p>
+            </div>
+            <div class="problem-cell">
+                <h3>Real-world Issues</h3>
+                <p>Most routing problems assume perfect conditions. Your AI will have to deal with the unexpected:
+                    mid-route road closures, absent students, different school start times, and actual city traffic
+                    using real map data. It needs to adapt on the fly!</p>
+            </div>
+            <div class="problem-cell">
+                <h3>The Competition Setup</h3>
+                <p>We'll release the practice environment publicly, so everyone has the same starting point. You'll
+                    train your AI on sample towns. But the real test? We hold back a "mystery district" that no one has
+                    seen to test if your AI can adapt.</p>
+            </div>
+            <div class="problem-cell">
+                <h3>How We Decide the Winner</h3>
+                <p>When you submit your agent, we'll run it on our hidden test maps to see if it really learned how to
+                    route, or if it just memorized the practice towns. We score you based on total time, late kids,
+                    fairness across neighborhoods, and buses used.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <span>&copy; 2026 Project OmniBus</span>
+        <span>Machine Learning Competition</span>
+    </footer>
+
+    </body>
+
+</html>
