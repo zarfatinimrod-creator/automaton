@@ -702,12 +702,16 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       if (TERMS_READ[site] === "BARRED") expect(gateThen.why, site).toContain("is in TERMS_BARRED");
       else expect(gateThen.ok, site).toBe(true);
       const mine = lines.filter((e) => siteOfUrl(e.url) === site);
-      // The one line of the site that names that URL, active or commented out.
-      const named = text.filter((l) => l.endsWith(`${url}\t${slug}`));
+      // Since 6.10 (ruling row 21 (c) 3(2)) a TERMS_PENDING site whose note opens "shell:" may hold its terms line as the
+      // once-only js line queue-zero-test --js --terms-shell writes (kaggle.com, queued in tick 54); any other site holds
+      // the plain line. The one line of the site that names that URL, active or commented out.
+      const shell = v[site].note.startsWith("shell:") && text.some((l) => l === `${url}\t${slug}\tjs`);
+      const named = text.filter((l) => l.endsWith(shell ? `${url}\t${slug}\tjs` : `${url}\t${slug}`));
       expect(named, site).toHaveLength(1);
       if (state === "active") {
         expect(mine.map((e) => [e.url, e.slug]), site).toEqual([[url, slug]]);
         expect(termsGate(url, slug, v).ok, site).toBe(true);
+        if (shell) expect(termsGate(url, slug, v, { js: true }).ok, site).toBe(true);
       } else {
         // Nothing of the site stays active but, for eurocontrol.int (exhaustive-negative since 6.10), its robots.txt probe.
         const probe = site === EURO_PROBE.site ? [[EURO_PROBE.url, EURO_PROBE.slug]] : [];
@@ -834,9 +838,13 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       const { comment, line } = listedRow(n);
       expect(comment, `row ${n}`).toBeDefined();
       const url = rows.get(n)?.url;
-      const slug = line!.split("\t").at(-1)!;
+      const parts = line!.split("\t");
+      // A js flag is allowed only on the once-only js line of a shell-kind TERMS_PENDING site (kaggle.com, row 235, tick 54).
+      const js = parts.at(-1) === "js";
+      const slug = js ? parts.at(-2)! : parts.at(-1)!;
+      if (js) expect(verdicts()[siteOfUrl(url!)].note.startsWith("shell:"), `row ${n}`).toBe(true);
       const state = bySlug.get(slug) ?? "active";
-      expect(line, `row ${n}`).toBe(state === "active" ? `${url}\t${slug}` : `${state} — ${url}\t${slug}`);
+      expect(line, `row ${n}`).toBe(state === "active" ? `${url}\t${slug}${js ? "\tjs" : ""}` : `${state} — ${url}\t${slug}`);
       // The row says what happened to a line the reading shut: READ 6.10 for a paused or kept one, RETIRED for opensky's.
       if (n <= 243) expect(rows.get(n)?.row, `row ${n}`).toMatch(state.startsWith("# retired") ? /\*\*RETIRED 6\.10 \(403 to the runner; 16\(d\) D2\(iv\)\)\.\*\* \|$/ : /\*\*READ 6\.10 \(tick 54\): [^|]+\.\*\* \|$/);
     }
