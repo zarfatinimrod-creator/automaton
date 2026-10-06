@@ -195,3 +195,65 @@ eurocontrol.int; copying "allowed" אצל eurocontrol.int; שורה שגויה �
 - קריאת `terms-reading.json` במלואו (כ-62 אלף תווים): נחוץ לנקודות המאמת.
 - שני סבבי תיקון בבדיקות (ציטוט `:28-31:`, ההנחה על `robots-verdict` ב-`urls.txt`, הספירה של בדיקת טיק 45).
 - המתנה ל-`verify.sh` המלא (כעשר דקות, ברקע).
+
+## Review fixes
+
+הסוקר (Opus) לא מצא שום ממצא "blocking". הוא מצא ממצא "fix" אחד, שש הערות (note), ושלוש מוטציות ששרדו מתוך 18. הענף `origin/claude/new-session-j071dx` לא זז (עדיין 4f3527d), ולכן לא היה צורך במיזוג. מה שינה המתקן (Opus):
+
+1. **eurocontrol.int, רשומת R1 (ה-fix).** ההערה, טבלת טיק 56, פסקת האתר וקבוצת הרינדור השישית אמרו "ruling R1's test is met". אבל R1 דורש גם grep על תוכן המאגרים של הארגון, אחרי terms, legal, privacy, impressum ו-mentions légales. ביקורת טיק 54 רשמה שהצעד הזה לא נעשה עבור euctrl-pru ו-eurocontrol (שורת eurocontrol.int בטבלת "Terms read"). טיק 56 לא השלים אותו.
+   - המתקן לא שולף דבר, ולכן לא הריץ את ה-grep.
+   - הוא גם לא פסק שהצעד לא מהותי, כי זו הכרעה של החוט הראשי.
+   - הפסק לא שונה: NO_TERMS, והערה שנפתחת ב-"exhaustive-negative:". את הפסק נתן החוט הראשי.
+   - ההערה נפתחת עכשיו ב-"ruled by the main thread (tick 56) on ruling R1's test, one step of which is not on the record". אחר כך היא מתארת את הצעד החסר וקובעת: לפני `robots-verdict.mjs --apply`, החוט הראשי מריץ את ה-grep ב-github grade או פוסק שהצעד לא מהותי.
+   - אותו תנאי נכתב בתא "Verdict now", בפסקת האתר, בפסקת ה-probe, בקבוצה השישית ובסימון של שורה 265 ב-ZERO-TESTS.
+   - המבחן אוסר את הביטוי "R1's test met" בהערה ובסעיף.
+2. **הרצה בלי `--urls` (הערה).** הרצתי בעצמי `robots-verdict.mjs eurocontrol.int` במצב יבש, פעם בלי `--urls` ופעם עם `--urls`.
+   - בלי `--urls`, הסקריפט שופט את שתי שורות ה-terms המושהות (/info/privacy-and-website-terms-use ו-/info/disclaimers) ולא את דף הכללים. למרות זאת הוא כותב "would set NO_TERMS_ROBOTS_OK" ו-"all 2 queued paths allowed".
+   - עם `--urls`, הוא שופט את דף הכללים: "all 1 queued path allowed".
+   - sha256 של `terms-verdicts.json` ושל `urls.txt` לא השתנה באף אחת מההרצות.
+   - האזהרה נכתבה בהערה, בפסקת ה-probe ובסימון של שורה 265.
+   - הפסקה מציינת גם שבדיקת 5.10 בקבוצה "Probed 6.10" ("without `--urls` it judges nothing") כבר לא נכונה לאתר הזה. את השורה ההיסטורית לא שיניתי.
+3. **agenthon.net, המסמך השלישי (הערה).** התנאים מכלילים בשמם שלושה מסמכים (:47-49), לא שניים.
+   - ההערה, פסקת האודיט וניסוח הכלל (במבחן ובאודיט) אומרים עכשיו "שניים משלושה".
+   - המסמך השלישי, Official Competition Rules (/rules/), הוא דף הכללים של האירוע. השער חוסם אותו כמו את שורת הכללים, והוא לא מקבל שורת terms-.
+   - ה-track instructions וה-platform terms (:49-50) לא מקושרים מגוף התנאים. בדקתי את כל ה-href בגוף ה-HTML הקפוא.
+   - הכלל מנוסח עכשיו כך: "one active terms- line for each terms document still unread (an event's own rules page ... gets none)".
+4. **דעת המאמת של agenthon.net (הערה).**
+   - נרשמה עצתו להשאיר את שורת ה-Terms במעקב השבועי, כדי לתפוס גרסה חדשה (:274). נרשם גם שהפסיקה לא קיבלה אותה.
+   - תוקן הניסוח "agreed ... and disagreed on the rest". בפועל המאמת דירג NO_TERMS עם copying "unread", וחלק על ה-copying, על ההיקף ועל ה-fallback של הקורא.
+5. **"Not weighed" של eurocontrol.int (הערה).** נוספו שני פריטים:
+   - פריט Fraud warning בכותרת התחתונה (`terms-eurocontrol-disclaimers-2026-10-06.txt:217`).
+   - הצהרת הפרטיות של טופס יצירת הקשר, קובץ PDF (`.html:1159`).
+   - שניהם לא נקראו. לפי שמם הם הודעות, לא תנאי אתר.
+   - שני הטווחים נוספו ל-`CITED2` יחד עם המילים שבהם.
+6. **שלוש המוטציות ששרדו נהרגו.**
+   - k: הסימון של טיק 56 בשורה 242 מקובע עכשיו במלואו. קודם הוא נבדק ב-regex שמסתיים ב-"active again".
+   - n: משפט הסיום של הקבוצה השישית מקובע במלואו.
+   - p: המשפט של המאמת על ה-fallback ("fails, since on that reading ...") מקובע.
+   - נוספו גם קיבוע של תא ה-R1 בטבלה ושל משפטי ה-grep. הקיבוע המלא של שורה 265 עודכן לנוסח החדש.
+7. **לא תוקן (הערה), ולמה.**
+   - הקבוצה השישית מקבלת גם probe שמצבו "queued" תחת כותרת "captured", ו-`UNJUDGED_PROBES` נשמרת ביד. היום אין טעות. שינוי של `holds()` היה משנה את ספירת המצב ההיסטורי של טיק 54, שבו ה-probe של eurocontrol.int היה בתור.
+   - הפתיח "terms unread:" של agenthon.net נשאר: האודיט מסביר אותו, ושום תנאי אתר שלו עוד לא נקרא.
+
+**בדיקות** (כולן לפי קוד היציאה):
+- `scripts/verify.sh` ממוקד על חמשת הקבצים: exit 0 (180 מבחנים).
+- `scripts/verify.sh` מלא: exit 0 (79 קבצים, 2657 עברו, 2 דולגו).
+- `urls-pause-comments --check`: exit 0, אפס הערות מיושנות.
+- `prize-dispatch --skip-captured --why`: exit 0. agenthon.net נדחה כ-TERMS_PENDING, ו-eurocontrol.int נדחה כ-NO_TERMS, exhaustive-negative.
+- `queue-zero-test --apply-verdicts --dry-run`: exit 0, ישהה 0 שורות.
+- `freeze-capture --cited`: exit 0, ואין ציטוט לפי שורה של לכידה פעילה.
+- `terms-verdicts.json` נכתב רק דרך סקריפט שמייבא את `serializeVerdicts`, והקובץ עובר round-trip בית אחר בית.
+- 13 עריכות האודיט וה-ZERO-TESTS נעשו דרך `loop-edit.mjs replace-in-line`.
+- מוטציות: תוכנית של 31.
+  - 18 הן של הסוקר. ב-b, j ו-l עודכן טקסט ה-find, כי הניסוח השתנה.
+  - 13 חדשות.
+  - כל 31 נהרגו, וה-checkout נשאר נקי.
+- grep השמות לא החזיר כלום (exit 1), ואין כתובת דוא"ל באף שורה שנוספה.
+
+**לחוט הראשי:**
+- **לפני `robots-verdict.mjs --apply` על eurocontrol.int:**
+  - להריץ grep על תוכן המאגרים של euctrl-pru ו-eurocontrol ב-github grade, או לפסוק שהצעד לא מהותי.
+  - להריץ עם `--urls research/measurements/ai-allowed-events.urls.txt`.
+  - להפנות את ה-source מ-`robots-eurocontrol.txt` החי אל `robots-eurocontrol-2026-10-06` הקפוא.
+  - לעדכן את `UNJUDGED_PROBES` ואת ספירות הקבוצות.
+- **עצת המאמת על מעקב שבועי אחרי שורת ה-Terms של agenthon.net:** נרשמה ולא אומצה. ההחלטה נשארת אצל החוט הראשי.
