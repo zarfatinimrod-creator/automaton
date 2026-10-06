@@ -1,0 +1,26 @@
+{
+  "url": "https://www.agenthon.net/?ref=mlcontests",
+  "slug": "prize-www-agenthon-net-ref-mlcontests-7f4f65c9-2026-10-06",
+  "fetchedAt": "2026-10-06T08:46:30.971Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 115600,
+  "sha256": "d5fc782150db6099d9c5a848d1109119bb76f8edf1b6b17143669441e26c2f9a",
+  "truncated": false,
+  "redacted": 2,
+  "error": null,
+  "bodyPath": "research/rendered/prize-www-agenthon-net-ref-mlcontests-7f4f65c9-2026-10-06.html",
+  "textPath": "research/rendered/prize-www-agenthon-net-ref-mlcontests-7f4f65c9-2026-10-06.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://www.agenthon.net/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-06",
+    "from": "research/rendered/prize-www-agenthon-net-ref-mlcontests-7f4f65c9.meta.json",
+    "commit": "007f7f0",
+    "why": "A dated copy of the render-watch capture of prize-www-agenthon-net-ref-mlcontests-7f4f65c9 as its last commit stored it (fetchedAt above), made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json, research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md and the terms-agenthon line's comment in research/rendered/urls.txt keep pointing at the footer links (/terms/, /privacy/, /licensing/) that put agenthon.net back to TERMS_PENDING on 6.10 (tick 55). The slug is not in urls.txt, so render-watch never rewrites these files; the live prize capture stays as the prize dispatch wrote it."
+  }
+}
