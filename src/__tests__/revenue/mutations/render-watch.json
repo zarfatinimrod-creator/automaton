@@ -425,5 +425,21 @@
     "replace": "count += 0;",
     "test": "src/__tests__/revenue/render-watch.test.ts",
     "note": "tick 50 fixer F11: the passes' counts are discarded"
+  },
+  {
+    "id": "T54-M1",
+    "file": "scripts/render-watch.mjs",
+    "find": "{ kind: \"mapbox-secret-token\", re: /\\bsk\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b/g },",
+    "replace": "{ kind: \"mapbox-secret-token\", re: /\\bsk\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b(?!)/g },",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 54 M1: the Mapbox secret pattern matches nothing"
+  },
+  {
+    "id": "T54-M2",
+    "file": "scripts/render-watch.mjs",
+    "find": "{ kind: \"google-api-key\", re: /\\bAIza[0-9A-Za-z_-]{35}\\b/g },",
+    "replace": "{ kind: \"google-api-key\", re: /\\bAIza[0-9A-Za-z_-]{36}\\b/g },",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 54 M2: the Google key pattern wants one character too many"
   }
 ]
