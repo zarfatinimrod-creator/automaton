@@ -1,0 +1,1956 @@
+Agenthon 2026
+
+Agenthon
+
+Home
+About
+Compete
+Guides
+
+Past Events
+
+2025
+2024
+
+Sign In
+Sign Up
+
+Tracks
+
+Protocol
+
+Leaderboard
+
+Timeline
+
+Awards
+
+Call for Papers
+
+Agenthon Submissions Deadline: October 12th, 23:59 AoE
+
+(October 13th at 7:59 AM New York, October 13th at 12:59 PM London, October 13th at 7:59 PM Singapore)
+
+Announcing Competition Awards!
+
+NeurIPS 2026 Competition Track
+
+Agenthon 2026
+
+Verifiable AI for quantitative finance.
+
+A four-track competition testing whether AI agents can produce finance outputs that survive
+automated, leakage-controlled, cheat-resistant evaluation.
+
+Explore tracks
+How scoring works
+
+Submission
+Docker agent
+
+Admissibility
+g0-g3 gates
+
+Ranking
+Track metrics
+
+Awards
+
+$1,500, $1,000 and $500 in every track.
+
+The first, second and third teams in each of the four tracks win cash awards:
+$12,000 in total.
+
+Award details
+
+Call for papers · NeurIPS 2026 workshop, Atlanta, 12 December
+
+Present your work at the Agenthon workshop.
+
+Papers are due Wednesday 30 September at 23:59 AoE. Decisions follow by Friday
+2 October at 23:59 AoE.
+
+Submit a paper
+Details
+
+We're delighted to welcome NVIDIA, Bloomberg and AllianceBernstein as sponsors of
+Agenthon 2026.
+Thank you for your support, for helping us organize the competition, and for collaborating
+with us on its science and task development.
+Meet our sponsors
+
+Key dates
+
+Key dates.
+
+Registration runs from 17 August to 12 October 2026. Registration and Development
+close together at 23:59 Anywhere on Earth (AoE, UTC−12) on 12 October.
+The last Development runs start by 20:00 UTC on 12 October: an upload that has not started by then is not run. The evaluation fleet is in scheduled maintenance on 13 October from 08:00 to 12:00 UTC, when the Final + Verification phase opens.
+
+17 Aug – 12 Oct
+Registration
+
+Sign up and form your team.
+
+28 Aug – 12 Oct
+Development
+
+Public practice repositories, iteration, and the validation leaderboard.
+
+30 Sep
+Call for papers closes
+
+Papers for the NeurIPS workshop are due at 23:59 AoE.
+How to submit .
+
+13 – 25 Oct
+Final + Verification
+
+One submission per entered track is evaluated on sealed held-out units; organizers
+rerun leading submissions and review reproducibility within the same phase.
+
+Sat 12 Dec
+Workshop at NeurIPS, Atlanta
+
+The Agenthon workshop, with final presentations by the winners, in Atlanta, Georgia.
+
+The competition closes with a workshop and final presentations from the winning teams at
+NeurIPS in Atlanta, Georgia , on Saturday 12 December . All
+dates are given in the
+official rules , which govern if anything here is out of step.
+
+Teams
+
+Enter as a team of one to three.
+
+You can compete alone or with up to two teammates. You join one team and stay on it,
+and that one team can enter as many of the four tracks as it wants.
+
+Registration is per team, and only registered teams can submit solutions or appear
+on the leaderboard. Your team uses one account on the competition platform, chosen
+by the team — the FAQ explains what
+that means for everyone else on the team.
+
+Have a question about entering? Start with the FAQ .
+
+Core question
+
+Can AI agents produce finance answers that can be checked by machine?
+
+Agenthon extends the Alphathon program into its first NeurIPS edition. The competition
+keeps the four-track structure and hard finance setting, while adding sealed held-out
+data, automated leakage controls, reproducible reruns, and public leaderboards.
+
+Agents in all four tracks run in sandboxed Docker containers without general internet
+access. Supported Coding, Forecasting and Explainability submissions can call House
+Nemotron through a restricted connection. Simulation has no network access. Build
+required dependencies and permitted artifacts into your image before evaluation.
+
+Four tracks
+
+Same competition spine, four finance problems.
+
+T1 Coding
+Quant-finance coding agents
+
+Build a Docker agent that solves quantitative finance coding tasks under pytest and
+financial-invariant checks.
+
+Verb
+solve
+
+Metric
+pass@1
+
+Gate
+pytest + invariants
+
+T2 Forecasting
+Reasoning-augmented time series
+
+Forecast future panels using time-series data plus a time-stamped text corpus.
+The score evaluates the forecast distribution; information uplift is a research aim.
+
+Verb
+forecast
+
+Metric
+CRPS composite
+
+Gate
+as-of cutoff + calibration
+
+T3 Simulation
+Accelerated market simulation
+
+Submit an ABIDES-compatible simulator that is faster while preserving matching-engine
+semantics and market stylized facts. Development results are practice feedback, not
+controlled Final timing.
+
+Verb
+simulate
+
+Metric
+events/sec
+
+Gate
+semantic regression
+
+T4 Explainability
+Evidence-grounded prediction
+
+Predict labels, values, or rankings over tabular entities, supported by a frozen
+evidence corpus. Follow the track guide for prediction, evidence and reasoning evaluation.
+
+Verb
+analyze
+
+Metric
+Track 4 composite
+
+Gate
+faithfulness + embargo
+
+Protocol
+
+Submit, check, score.
+
+Each unit is checked for admissibility and evaluated using its track's scoring rules.
+Participant failures remain in the evaluation denominator; organizer faults are handled
+separately. If two Final submissions finish a track with the same ranking score, the
+tie is broken in favour of the one uploaded earlier.
+
+01
+Submit
+
+Upload the toolkit-generated ZIP identifying your agent image and proving team registration.
+
+02
+Check
+
+g0-g3 verify integrity, schema, cutoff/resource rules, and domain semantics.
+
+03
+Score
+
+Track-specific scoring produces Development feedback. Track 1 uses pass@1 without a confidence interval.
+
+Public/private firewall
+
+Transparent grading, sealed answers.
+
+Each track has a public practice repo and a private sealed exam repo. Public repos
+include practice tasks, examples, local checks, available baselines and participant
+docs. Private repos hold evaluation tasks, reference answers, scoring material and
+audit records.
+
+Public practice
+Private exam
+
+Public practice units
+Private-test held-out units
+
+Examples, local checks and available baselines
+Oracle solutions and final scorer
+
+Manifest and canary safety checks
+Canary registry and audit logs
+
+Leaderboard
+
+Competition scores, one track at a time.
+
+Development leaderboards on agenthon.net are public and visible to everyone.
+Each track uses its own scale. Higher is better for the displayed leaderboard scores;
+the raw Forecasting loss is converted for this display. Use CodaBench for uploads and
+processing status. Follow the logged-in website for submission opening status.
+From 5 October 2026, 00:00 AoE (12:00 UTC), the Track 1 board ranks only runs uploaded after
+25 September 2026 at 05:00 UTC, for every team (Track 1 README, rules 8 and 9).
+
+The leaderboard is updated periodically from the competition platform.
+
+T1 Coding
+T2 Forecasting
+T3 Simulation
+T4 Explainability
+
+Search teams
+
+T1 Coding
+
+T1 Coding: teams 1–25 of 73
+
+Rank
+Team
+Score
+
+1
+Kaile
+0.7674
+
+2
+Saifuddin
+0.7209
+
+3
+Proxima
+0.5000
+
+4
+Arsen Ibragimov
+0.4535
+
+5
+Pluvia
+0.4302
+
+6
+Yan Su
+0.3605
+
+7
+Chirayu
+0.3488
+
+8
+MindAlchemist
+0.2907
+
+9
+RizYL
+0.2791
+
+10
+abc123
+0.2674
+
+10
+Nana Champions
+0.2674
+
+12
+Cornfield Chase
+0.2326
+
+12
+Formaggio
+0.2326
+
+14
+Autonomous Alpha
+0.2209
+
+15
+RandomGuyHavingFun
+0.2093
+
+15
+Liqourena
+0.2093
+
+15
+Tengen Toppa
+0.2093
+
+18
+Anonymous
+0.1977
+
+18
+in3lab
+0.1977
+
+18
+APTAPT
+0.1977
+
+18
+Husky River Trading
+0.1977
+
+22
+eagle
+0.1860
+
+22
+fiftyfifty
+0.1860
+
+22
+CMCCGDYDDICT
+0.1860
+
+22
+eoo0m
+0.1860
+
+1–25
+26–50
+51–73
+
+T1 Coding: teams 26–50 of 73
+
+Rank
+Team
+Score
+
+26
+BoGo
+0.1744
+
+26
+Make It Make Cents 🙏
+0.1744
+
+26
+Pluto
+0.1744
+
+29
+Undefined
+0.1628
+
+29
+AbangFrabi
+0.1628
+
+29
+verifiquant
+0.1628
+
+29
+Powerhouse
+0.1628
+
+29
+Eyyyyyy
+0.1628
+
+34
+Sean
+0.1512
+
+34
+Money Miner
+0.1512
+
+34
+1991
+0.1512
+
+34
+Give me a job
+0.1512
+
+38
+gheware
+0.1395
+
+38
+Warkop PuteraPrakoso
+0.1395
+
+38
+Four Sigma
+0.1395
+
+41
+iluss
+0.1279
+
+41
+Just-in-Time
+0.1279
+
+41
+VerityLovityFalsityCruelty
+0.1279
+
+41
+Duo_tech
+0.1279
+
+45
+MicroCat
+0.1163
+
+45
+Agent_007
+0.1163
+
+45
+always win
+0.1163
+
+45
+Nietzsche
+0.1163
+
+45
+Paragon
+0.1163
+
+50
+UNIVERSEPLAYER
+0.0930
+
+1–25
+26–50
+51–73
+
+T1 Coding: teams 51–73 of 73
+
+Rank
+Team
+Score
+
+50
+Proof of Alpha
+0.0930
+
+50
+Sir Thaddeus
+0.0930
+
+50
+Banana Kingdom
+0.0930
+
+54
+Agent Alpha
+0.0814
+
+55
+The Unscheduled Penguins
+0.0698
+
+55
+HTHY
+0.0698
+
+57
+Apex
+0.0581
+
+58
+GAOKUO
+0.0465
+
+59
+attention is qkv
+0.0349
+
+60
+Volatility Labs
+0.0233
+
+61
+Urithiru
+0.0116
+
+61
+Quiet Signal
+0.0116
+
+—
+Aamir Abdul Azeez
+— not scored
+
+—
+TEst
+— not scored
+
+—
+AlbertQuant
+— not scored
+
+—
+9:00pm
+— not scored
+
+—
+C_cake
+— not scored
+
+—
+hnhparitosh
+— not scored
+
+—
+FedorAzarov
+— not scored
+
+—
+phtree
+— not scored
+
+—
+Submartingale
+— not scored
+
+—
+Future Ability
+— not scored
+
+—
+Masato
+— not scored
+
+1–25
+26–50
+51–73
+
+No team matches that search.
+
+T2 Forecasting
+
+T2 Forecasting: teams 1–25 of 99
+
+Rank
+Team
+Score
+
+1
+Made in Heaven
+-0.6301
+
+2
+Yan Su
+-0.6555
+
+3
+Ywin
+-0.6667
+
+4
+Samoyed
+-0.7761
+
+5
+CMCCGDYDDICT
+-0.7765
+
+6
+labubu666
+-0.7947
+
+7
+F1_1
+-0.8023
+
+8
+HBIT
+-0.8159
+
+9
+Nexus of f(x)
+-0.8184
+
+10
+Warkop PuteraPrakoso
+-0.8369
+
+11
+alpha-extractor
+-0.8546
+
+12
+VerityLovityFalsityCruelty
+-0.8580
+
+13
+Apex
+-0.8598
+
+14
+Chirayu
+-0.8694
+
+15
+Saifuddin
+-0.9027
+
+16
+Masato
+-0.9037
+
+17
+Sapien
+-0.9215
+
+18
+DKYnumber1
+-0.9315
+
+19
+Sitadel Insecurities
+-0.9317
+
+20
+urayaha
+-0.9372
+
+21
+Garros Solo Lab
+-0.9383
+
+22
+Formaggio
+-0.9394
+
+23
+abc123
+-0.9439
+
+24
+Autonomous Alpha
+-0.9476
+
+25
+Husky River Trading
+-0.9498
+
+1–25
+26–50
+51–75
+76–99
+
+T2 Forecasting: teams 26–50 of 99
+
+Rank
+Team
+Score
+
+26
+in3lab
+-0.9511
+
+27
+Super Debugging
+-0.9528
+
+28
+JJ LAB
+-0.9541
+
+29
+Cornfield Chase
+-0.9586
+
+30
+mikelou1
+-0.9617
+
+31
+AsOf Quant
+-0.9632
+
+32
+Yongchang
+-0.9661
+
+33
+Natpaphon
+-0.9701
+
+34
+LastDigitsOfPi
+-0.9714
+
+35
+Just-in-Time
+-0.9724
+
+36
+1991
+-0.9754
+
+37
+spidy
+-0.9755
+
+38
+Liqourena
+-0.9782
+
+39
+LIZARD
+-0.9786
+
+40
+pluuuuuus
+-0.9794
+
+41
+Proof of Alpha
+-0.9821
+
+42
+Money Miner
+-0.9822
+
+43
+fiftyfifty
+-0.9825
+
+44
+In Sync
+-0.9882
+
+45
+iluss
+-0.9890
+
+46
+randomwalk
+-0.9890
+
+47
+Quiet Signal
+-0.9921
+
+48
+ZZKK
+-0.9933
+
+49
+HG Market System
+-0.9947
+
+50
+DoublePai
+-0.9954
+
+1–25
+26–50
+51–75
+76–99
+
+T2 Forecasting: teams 51–75 of 99
+
+Rank
+Team
+Score
+
+51
+TradeFlare
+-0.9969
+
+52
+Paragon
+-0.9974
+
+53
+Not Today
+-0.9983
+
+54
+Luca
+-0.9988
+
+55
+OOBs
+-1.0000
+
+55
+Nietzsche
+-1.0000
+
+57
+Verifiable Capital
+-1.0030
+
+58
+iKun's Team
+-1.0120
+
+59
+Banana Kingdom
+-1.0135
+
+60
+LiLaiLai
+-1.0185
+
+61
+lingsio
+-1.0228
+
+62
+JiaxinLi
+-1.0245
+
+63
+Tengen Toppa
+-1.0254
+
+64
+quack
+-1.0265
+
+65
+Aamir Abdul Azeez
+-1.0271
+
+66
+ARKANE
+-1.0334
+
+67
+Bayes Street
+-1.0355
+
+68
+lifeisluck
+-1.0366
+
+69
+Dog parents
+-1.0402
+
+70
+Jigglyduck
+-1.0411
+
+71
+C_cake
+-1.0431
+
+72
+Jade
+-1.0626
+
+73
+katharsis
+-1.0666
+
+74
+time
+-1.0710
+
+75
+pranshu rastogi
+-1.0766
+
+1–25
+26–50
+51–75
+76–99
+
+T2 Forecasting: teams 76–99 of 99
+
+Rank
+Team
+Score
+
+76
+YIC Quant
+-1.0797
+
+77
+AbangFrabi
+-1.0805
+
+78
+Flowfront
+-1.0806
+
+79
+OffTheTape
+-1.1042
+
+80
+PSS_
+-1.1066
+
+81
+krnb
+-1.1135
+
+82
+5 o'clock
+-1.1146
+
+83
+GAOKUO
+-1.1180
+
+84
+Try hard
+-1.1220
+
+85
+hnhparitosh
+-1.1293
+
+86
+SMTM
+-1.1321
+
+87
+GXR123
+-1.1502
+
+88
+Pawsibble
+-1.1539
+
+89
+Probably Right
+-1.1812
+
+90
+Undefined
+-1.1958
+
+91
+SoloTraveler
+-1.2577
+
+92
+ah_a1g
+-1.2618
+
+92
+Give me a job
+-1.2618
+
+94
+BigWorld
+-1.2907
+
+95
+K-uant
+-1.3205
+
+96
+PA-Agent
+-1.3913
+
+—
+9:00pm
+— not scored
+
+—
+ZOLDIK
+— not scored
+
+—
+Urithiru
+— not scored
+
+1–25
+26–50
+51–75
+76–99
+
+No team matches that search.
+
+T3 Simulation
+
+T3 Simulation: teams 1–25 of 54
+
+Rank
+Team
+Score
+
+1
+VerityLovityFalsityCruelty
+10000000.0000
+
+1
+Warkop PuteraPrakoso
+10000000.0000
+
+1
+abc123
+10000000.0000
+
+1
+recently rejected
+10000000.0000
+
+5
+in3lab
+9998689.9222
+
+6
+Paragon
+9972374.4193
+
+7
+Quantumonster
+9939790.7398
+
+8
+lingsio
+9911384.7399
+
+9
+CMCCGDYDDICT
+9907276.4205
+
+10
+fuzz
+9873690.1501
+
+11
+Made in Heaven
+9858359.8514
+
+12
+Neko's Life
+9770998.6533
+
+13
+Cornfield Chase
+9686877.6757
+
+14
+Arsen Ibragimov
+9531655.5350
+
+15
+IMAnonymous
+9473913.5548
+
+16
+Proof of Alpha
+9126164.4816
+
+17
+PA-Agent
+8967200.9830
+
+18
+Liqourena
+8870380.1467
+
+19
+Saifuddin
+8859896.6544
+
+20
+S2WISH
+8610307.0893
+
+21
+Yan Su
+7599191.1734
+
+22
+Formaggio
+7179866.1036
+
+23
+GenerationalUnawareness
+5548940.3067
+
+24
+Autonomous Alpha
+5461422.7315
+
+25
+Probably Right
+4610174.4342
+
+1–25
+26–50
+51–54
+
+T3 Simulation: teams 26–50 of 54
+
+Rank
+Team
+Score
+
+26
+Masato
+4303583.5761
+
+27
+Alpha Male
+3918338.3250
+
+28
+Ablation
+3452033.5818
+
+29
+YIC Quant
+3119388.3309
+
+30
+chistopat
+2841771.3068
+
+31
+Money Miner
+2743568.6870
+
+32
+chilli
+1462525.3323
+
+33
+Nietzsche
+147213.4669
+
+34
+Aamir Abdul Azeez
+50971.9152
+
+35
+hnhparitosh
+35354.8121
+
+36
+Banana Kingdom
+29447.2373
+
+37
+krnb
+27054.2153
+
+38
+Apex
+26023.1527
+
+39
+1991
+25999.1096
+
+40
+Jade
+25262.2013
+
+41
+Urithiru
+22658.1418
+
+42
+Undefined
+22577.3820
+
+43
+Give me a job
+22143.4450
+
+44
+fiftyfifty
+22131.3089
+
+45
+C_cake
+21168.0126
+
+46
+HalfPlateBasmatiRizz
+9762.6798
+
+47
+KheiliDire
+3393.7917
+
+—
+iluss
+— not scored
+
+—
+AbangFrabi
+— not scored
+
+—
+Verifiable Capital
+— not scored
+
+1–25
+26–50
+51–54
+
+T3 Simulation: teams 51–54 of 54
+
+Rank
+Team
+Score
+
+—
+Just-in-Time
+— not scored
+
+—
+LastDigitsOfPi
+— not scored
+
+—
+Future Ability
+— not scored
+
+—
+GAOKUO
+— not scored
+
+1–25
+26–50
+51–54
+
+No team matches that search.
+
+T4 Explainability
+
+T4 Explainability: teams 1–25 of 81
+
+Rank
+Team
+Score
+
+1
+CMCCGDYDDICT
+0.9882
+
+2
+GANisok
+0.7718
+
+3
+Autonomous Alpha
+0.5920
+
+4
+Warkop PuteraPrakoso
+0.5667
+
+5
+abc123
+0.5326
+
+6
+AAAA
+0.5218
+
+7
+in3lab
+0.5091
+
+8
+Saifuddin
+0.5090
+
+9
+littila
+0.5039
+
+10
+stone stone
+0.4993
+
+11
+Masato
+0.4933
+
+12
+yohoho
+0.4911
+
+13
+lingsio
+0.4905
+
+14
+Paragon
+0.4814
+
+15
+zhuozhuowang
+0.4793
+
+16
+Quiet Signal
+0.4785
+
+17
+fiftyfifty
+0.4729
+
+18
+iluss
+0.4672
+
+19
+OneModeltoRuleThemAll
+0.4608
+
+20
+Sitadel Insecurities
+0.4593
+
+21
+AbangFrabi
+0.4557
+
+22
+Garros Solo Lab
+0.4548
+
+23
+Nietzsche
+0.4523
+
+24
+WEI-SPBU
+0.4508
+
+25
+VerityLovityFalsityCruelty
+0.4467
+
+1–25
+26–50
+51–75
+76–81
+
+T4 Explainability: teams 26–50 of 81
+
+Rank
+Team
+Score
+
+26
+Natpaphon
+0.4443
+
+27
+Quorum
+0.4429
+
+28
+Verifiable Capital
+0.4398
+
+29
+iMak AI Lab
+0.4394
+
+30
+Agentic AI-Driven Human(黄金暴龙)
+0.4293
+
+31
+Bayes Street
+0.4267
+
+32
+Lucky
+0.4262
+
+33
+Falcons
+0.4244
+
+34
+Pluto
+0.4241
+
+35
+Give me a job
+0.4150
+
+36
+Optivex Research
+0.4118
+
+37
+Winner
+0.4106
+
+38
+Perch AI
+0.4091
+
+39
+a-team
+0.4091
+
+40
+Apex
+0.3966
+
+41
+Faithful
+0.3918
+
+42
+Hatenabase
+0.3704
+
+43
+SignalCraft
+0.3559
+
+44
+Genshin, launch!
+0.3415
+
+45
+zzsyyy
+0.3296
+
+46
+DataWow
+0.3173
+
+47
+hnhparitosh
+0.2983
+
+48
+MoneyMoneybackmyhome
+0.2756
+
+49
+1991
+0.2656
+
+50
+TradeFlare
+0.2516
+
+1–25
+26–50
+51–75
+76–81
+
+T4 Explainability: teams 51–75 of 81
+
+Rank
+Team
+Score
+
+51
+Yan Su
+0.2514
+
+52
+polarbear
+0.2497
+
+53
+Pressforward
+0.2446
+
+54
+PSS_
+0.2183
+
+55
+AAIA
+0.2141
+
+56
+Undefined
+0.2063
+
+57
+YIC Quant
+0.1959
+
+58
+Alpha on Belay
+0.1955
+
+59
+Husky River Trading
+0.1872
+
+60
+passerbybye
+0.1841
+
+61
+NeneTeam
+0.1655
+
+62
+Just-in-Time
+0.1560
+
+63
+Proof of Alpha
+0.1388
+
+64
+Ablation
+0.1224
+
+65
+scu_statistics
+0.1135
+
+66
+chilli
+0.1074
+
+67
+spacityTe
+0.0745
+
+68
+IMPEL
+0.0720
+
+69
+Tengen Toppa
+0.0580
+
+70
+Cornfield Chase
+0.0499
+
+71
+Aamir Abdul Azeez
+0.0466
+
+72
+krnb
+0.0382
+
+73
+LOOOONG
+0.0250
+
+74
+TEst
+0.0187
+
+75
+Jade
+-0.0628
+
+1–25
+26–50
+51–75
+76–81
+
+T4 Explainability: teams 76–81 of 81
+
+Rank
+Team
+Score
+
+76
+GAOKUO
+-0.1201
+
+77
+ccczy
+-0.1964
+
+78
+C_cake
+-0.2700
+
+—
+Urithiru
+— not scored
+
+—
+uqueensland
+— not scored
+
+—
+Banana Kingdom
+— not scored
+
+1–25
+26–50
+51–75
+76–81
+
+No team matches that search.
+
+2026 phases
+
+Development, then Final + Verification.
+
+Development runs through 12 October 2026. The joint Final + Verification phase runs
+from 13 to 25 October 2026. Registration and Development close on 12 October at 23:59 Anywhere on Earth (AoE, UTC−12). Final + Verification closes on 25 October at 23:59 AoE.
+
+Upcoming
+
+Development
+
+Build and test with the public starter packages. Check the logged-in website for submission opening status.
+
+0%
+complete
+
+Upcoming
+Aug 28 - Oct 12
+Development
+
+Teams practice and iterate with the public starter packages. Submission opening is announced separately.
+
+Upcoming
+Oct 13 - Oct 25
+Final + Verification
+
+One submission per entered track is evaluated on sealed private-test units.
+Organizers rerun leading submissions and review reproducibility in the same
+phase. There is no separate verification submission. Run outputs, logs, and
+score files stay hidden.
+
+Awards
+
+Cash awards in all four tracks.
+
+The top three teams in each track win a cash award, decided by the final standings
+after verification. That is $3,000 per track and $12,000 in total.
+
+1st place
+$1,500
+
+In each of the four tracks.
+
+2nd place
+$1,000
+
+In each of the four tracks.
+
+3rd place
+$500
+
+In each of the four tracks.
+
+Amounts are in US dollars. A team's award is split equally among its registered members.
+Eligibility, verification, tax and payment requirements are set by the
+official rules , and a confirmed winner who accepts an award
+publishes the code needed to reproduce the method.
+
+Scientific outputs
+
+Agenthon is designed to explain failures, not just rank winners.
+
+Cross-track failure map
+
+Gate failures are labeled and aggregated to show where finance agents break down.
+
+Information uplift
+
+T2 investigates whether text and reasoning improve forecasts; this is not a separate scored component.
+
+Speed-realism frontier
+
+T3 measures throughput only after semantic fidelity and stylized facts survive checks.
+
+Faithfulness under embargo
+
+T4 requires evidence-backed predictions that do not cite future or unsupported facts.
+
+Call for papers
+
+Present your work at the Agenthon workshop at NeurIPS 2026.
+
+We invite papers on AI and quantitative finance for the Agenthon 2026 workshop at
+NeurIPS in Atlanta on Saturday 12 December. Accepted papers are presented as posters. Submissions are open to
+everyone, whether or not you are competing in Agenthon.
+
+Open now
+Submissions open
+
+Send your paper through the submission form.
+
+Wed 30 Sep, 23:59 AoE
+Submission deadline
+
+The form closes at the deadline.
+
+Fri 2 Oct, 23:59 AoE
+Decisions
+
+We email every submitting author with our decision.
+
+Topics
+
+AI agents for quantitative research and financial software
+
+Forecasting, including probabilistic and text-informed forecasts
+
+Market simulation and agent-based models
+
+Explainable, evidence-grounded prediction
+
+Optimization and portfolio construction
+
+Reinforcement learning and sequential decision-making
+
+Autonomous and multi-agent systems
+
+Evaluation, verification and benchmarks for AI in finance
+
+We also strongly encourage high-quality work in machine learning, optimization and
+AI more broadly, even without a finance application.
+
+Format
+
+Full papers or short papers, in any format and length. Submit one PDF.
+
+The workshop is non-archival, so work under review or published elsewhere is
+welcome.
+
+At least one author presents the poster in person in Atlanta.
+
+How to submit
+
+Use the submission form. It asks you to sign in with a Google account to upload your
+PDF, and for the email on the presenting author's NeurIPS account.
+
+We handle submissions under our Privacy Notice .
+
+Submit a paper
+
+Our Supporters
+
+Sponsor Agenthon 2026.
+
+A number of sponsorship tiers and opportunities are available, including monetary and
+awards sponsorship, event space, data, infrastructure, and compute.
+
+Platinum
+
+Sponsor & Technology Provider
+
+Gold
+
+Sponsor
+
+Silver
+
+Sponsor
+
+Technology
+
+Cloud infrastructure
+
+Agenthon Questions and Tasks are of real relevance to hedge funds and asset managers, spanning
+alpha forecasting, portfolio optimization, computational statistics, machine learning, and AI. Questions are provided jointly
+by the SQA, CEWIT and our Question Partners.
+
+See Questions 2025 for last year's questions and a feel for Agenthon priorities.
+
+Inquire about sponsoring
+
+Organizing Committee
+
+Thank you from the organizers.
+
+Lead Organizers
+
+Pawel Polak
+
+Assistant Professor, Department of Applied Mathematics and Statistics, Stony Brook University
+
+Vice President, Society of Quantitative Analysts
+
+Website ·
+LinkedIn
+
+Christos Koutsoyannis
+
+Chief Investment Officer, Atlas Ridge Capital
+
+Adjunct Professor, NYU Courant
+
+Executive Advisory Board, Columbia Business School, Program for Financial Studies
+
+Website ·
+LinkedIn
+
+Industry Co-Organizers
+
+David Rosenberg
+
+Head of Machine Learning Strategy, CTO Office
+
+Bloomberg, Toronto, Canada
+
+LinkedIn
+
+Gary Kazantsev
+
+Head of Quant Technology Strategy, Office of the CTO
+
+Bloomberg, New York, USA
+
+LinkedIn
+
+Ioana Boier
+
+Global Head of Capital Markets Strategy
+
+NVIDIA Corporation, USA
+
+LinkedIn
+
+Track Leads
+
+T1 · Coding
+
+Quant-finance coding agents
+
+Zhikang Dong
+Track Lead T1
+Independent Researcher
+
+LinkedIn ·
+GitHub
+
+T2 · Forecasting
+
+Reasoning-augmented time series
+
+Ruolan Sun
+Track Lead T2
+Ph.D. Student, Stony Brook University
+
+LinkedIn ·
+GitHub
+
+T3 · Simulation
+
+Accelerated market simulation
+
+Haohan Xu
+Track Lead T3
+Ph.D. Student, Stony Brook University
+
+LinkedIn ·
+GitHub
+
+T4 · Explainability
+
+Evidence-grounded prediction
+
+Mathew Thiel
+Track Lead T4
+Quant Research Analyst, validityBase
+
+LinkedIn ·
+GitHub
+
+Alphathon presents Agenthon 2026
+
+Organized by
+SQA &middot;
+CEWIT ,
+Stony Brook University
+
+About
+Compete
+Past Events
+Rules
+Terms
+Privacy
+Licensing
+Contact
+
+Copyright &copy; 2026: agenthon.net. All rights reserved.

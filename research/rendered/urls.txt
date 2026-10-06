@@ -755,7 +755,7 @@ https://adaptionlabs.ai/terms-of-service	terms-adaptionlabs
 # research/channel-loop/ZERO-TESTS.md row 241 — virtualembryo.ai TERMS_PENDING (tick 45 prize-terms audit): URL from xxx12e/vec-community-kit rules-watch/pages/terms.json:138 at 2cf9662 and gh-dv-openclaw/vec-submit-check README.md:202 at 521cce3, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
 https://virtualembryo.ai/challenge/terms	terms-virtualembryo
 # research/channel-loop/ZERO-TESTS.md row 242 — eurocontrol.int TERMS_PENDING (tick 45 prize-terms audit): URL from euctrl-pru/aiu-portal config.toml:594 and themes/pru-theme/layouts/partials/footer.html:222 at 6a64528, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
-# paused (terms read: a privacy notice, no site terms, 6.10.2026): eurocontrol.int is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.eurocontrol.int/info/privacy-and-website-terms-use	terms-eurocontrol
+# paused (terms read: a privacy notice, no site terms, 6.10.2026; verdict as of 6.10.2026): eurocontrol.int is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.eurocontrol.int/info/privacy-and-website-terms-use	terms-eurocontrol
 # research/channel-loop/ZERO-TESTS.md row 243 — opensky-network.org TERMS_PENDING (tick 45 prize-terms audit): URL from openskynetwork/opensky-api README.md:4 and docs/free/index.rst:28 at c4af9c9, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)); the site says it may block hyperscaler IPs (5.10.2026).
 # retired (ruling 30.9 16(d) D2(iv): the site refused the runner) — https://opensky-network.org/about/terms-of-use	terms-opensky
 # research/channel-loop/ZERO-TESTS.md row 244 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
@@ -765,7 +765,7 @@ https://flagos.io/robots.txt	robots-flagos
 # research/channel-loop/ZERO-TESTS.md row 246 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://wundernn.io/robots.txt	robots-wundernn
 # research/channel-loop/ZERO-TESTS.md row 247 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
-https://www.agenthon.net/robots.txt	robots-agenthon
+# paused (terms unread: TERMS_PENDING again since a terms link was found after the verdict, the probe waits on the terms reading, 6.10.2026): agenthon.net is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.agenthon.net/robots.txt	robots-agenthon
 # research/channel-loop/ZERO-TESTS.md row 248 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://www.aicrowd.com/robots.txt	robots-aicrowd
 # research/channel-loop/ZERO-TESTS.md row 249 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
@@ -801,4 +801,8 @@ https://2026.ijcai.org/robots.txt	robots-ijcai-2026
 # research/channel-loop/ZERO-TESTS.md row 264 — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://competitions.mozilladatacollective.com/robots.txt	robots-mozilladatacollective
 # research/channel-loop/ZERO-TESTS.md row 265 — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (6.10.2026).
-https://www.eurocontrol.int/robots.txt	robots-eurocontrol
+# paused (terms unread: TERMS_PENDING again since a terms link was found after the verdict, the probe waits on the terms reading, 6.10.2026): eurocontrol.int is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.eurocontrol.int/robots.txt	robots-eurocontrol
+# research/channel-loop/ZERO-TESTS.md row 266 — agenthon.net TERMS_PENDING (tick 55, a terms link found after the robots verdict): URL from the footer link href="/terms/" at research/rendered/prize-www-agenthon-net-ref-mlcontests-7f4f65c9-2026-10-06.html:2582, the frozen copy of the 6.10 prize capture of the home page, rendered grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (6.10.2026).
+https://www.agenthon.net/terms/	terms-agenthon
+# research/channel-loop/ZERO-TESTS.md row 267 — eurocontrol.int TERMS_PENDING (tick 55, a terms link found after the terms read): URL from the footer link href="/info/disclaimers" at research/rendered/terms-eurocontrol-2026-10-06.html:1961 and :2830, the frozen copy of the 6.10 capture of the privacy notice, rendered grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (6.10.2026).
+https://www.eurocontrol.int/info/disclaimers	terms-eurocontrol-disclaimers

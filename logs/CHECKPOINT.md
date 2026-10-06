@@ -1,10 +1,18 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-10-06 ~11:00 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-10-06 ~13:54 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
 > **❓ פתוח לבעלים (30.9, ~21:25 UTC):** הבעלים שלחו קישור לסרטון YouTube (`nWt3CbE96LA`) עם "תלמד מזה". אין דרך מכונה לקרוא אותו: youtube.com חסום בשער התנאים שלנו (BARRED, ביקורת 29.9; הכרעת 30.9 16(d)), והמכולה חסומה ממילא; חיפוש ברשת לפי המזהה לא מחזיר דבר. נתבקשה הדבקה של התמלול (YouTube → "הצג תמלול") או של הכותרת ומה ללמוד ממנו. כשהטקסט יגיע: אותו תהליך כמו מחקר הטיקטוק של 28.9 (`research/tiktok/08-sales-marketing-lessons.md`), על Opus, ותוצאה ב-`research/owner-videos/`.
+
+## ▶ 6.10, ~13:54 UTC — **סבב 55 (המשך, מ-12:08): agenthon.net ו-eurocontrol.int חזרה ל-TERMS_PENDING; ההרצה השבועית נורתה באיחור של 6.7 שעות**
+
+**מה נעשה:** בדיקת מצב — main זינק בקומיט רינדור `364bf71`: ה-cron של 05:23 **נורה ב-12:05** (34 עמודים, כולם `ok`, 0 כתובות גולמיות; probe ה-robots של eurocontrol מסבב 54 נלכד). **בנייה (§9 54(1)):** agenthon.net (הצילום מקשר `/terms/`) ו-eurocontrol.int (ה-HTML הקפוא מקשר `/info/disclaimers`) חזרו ל-TERMS_PENDING — ההיפוך הראשון של פסק robots — עם שורת terms- אחת לכל אחד (`terms-agenthon`, `terms-eurocontrol-disclaimers`) ו-probe ה-robots של eurocontrol מושהה עד הקריאה (מיזוג `3edb7ae`). 16 אתרים נשארו `NO_TERMS_ROBOTS_OK`, 19 שורות פתוחות.
+
+**בתהליך / הצעד הבא (סבב 56):** (a) הפצה וקריאה של שני עמודי התנאים החדשים; אם agenthon מתיר — `/rules/` שלו; (b) קיפול 9 של פסק 21 (`scripts/trim-capture.mjs` + מסלול artifacts) או `robots-verdict --recheck`; (c) קבצי לולאה, יומן, PR. ישיבת 7.10 ~07:11: שורות 24-25.
+
+**שאלות לבעלים:** ללא שינוי. לדר ₪0.
 
 ## ▶ 6.10, ~11:00 UTC — **סבב 54 (טיק 07:11, ישיבת Fable): שני פסקים, שישה קיפולי Opus, 29 עמודי אירועי-פרס ו-9 עמודי תנאים נקראו, השורה המזכה הראשונה**
 

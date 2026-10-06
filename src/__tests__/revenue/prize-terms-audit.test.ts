@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design
-import { decisionFiles } from "../../../scripts/freeze-capture.mjs";
+import { decisionFiles, listedNames } from "../../../scripts/freeze-capture.mjs";
 import {
   parseRobotsTxt,
   parseUrlList,
@@ -35,6 +35,8 @@ import {
   serializeVerdicts,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/robots-verdict.mjs";
+// @ts-expect-error — plain ESM script, no type declarations by design
+import { syncPauseComments } from "../../../scripts/urls-pause-comments.mjs";
 
 /**
  * Tick 45 (5.10.2026): the terms audit of the prize-event sites, step 0 of the rules-page reading (logs/CHANNEL_LOOP.md
@@ -82,6 +84,17 @@ import {
  * TERMS_BEFORE and the tick-45 source like the other read entries, so tick45() and termsReadBefore() read it back as
  * before; jsReadBefore() gives the state between the terms read and the js render. The "tick 54: the shell terms pages
  * rendered once" block holds that state.
+ *
+ * Tick 55 (6.10.2026): the terms links found after the verdicts. agenthon.net's home page (the 6.10 prize capture) and
+ * eurocontrol.int's privacy notice (the 6.10 terms capture) each link a terms-like page in their footer, so the premise of
+ * their NO_TERMS verdicts, no terms link anywhere, is false, and the main thread ruled both TERMS_PENDING again
+ * (logs/CHANNEL_LOOP.md §9, "Queued 6.10 (tick 54)" item 1): agenthon.net's NO_TERMS_ROBOTS_OK is the first robots verdict
+ * taken back. Each has one terms- line queued (ZERO-TESTS rows 266-267), its robots.txt probe paused, and no robots
+ * verdict may run for it. Their new notes do not keep the tick-54 notes, so the two tick-54 entries are a FIXTURE
+ * (terms-verdicts-364bf71-links-found.json: the file at 364bf71 for those two sites, pinned by sha256), and tick54() puts
+ * them back; termsReadBefore(), jsReadBefore() and tick45() read the earlier states out of tick54()'s, so every block above
+ * holds what it held, and the counts that moved are kept both ways (17 NO_TERMS_ROBOTS_OK sites and 20 robots-cleared
+ * rules URLs at tick 54, ROBOTS_OK_TICK54; 16 and 19 now, ROBOTS_OK). The "tick 55" block holds the new state.
  */
 const VERDICTS = "research/channel-loop/terms-verdicts.json";
 const URLS = "research/rendered/urls.txt";
@@ -304,15 +317,23 @@ const RULINGS_SECTION = [
  * virtualembryo.ai to "Now", eurocontrol.int to the fifth (its probe queued, not yet fetched), and the five the reading
  * shut to the sixth (BARRED, CONDITIONAL_UNMET or refusal-type, checked 6.10); the seventh keeps the sites graded before.
  * Later on 6.10 kaggle.com's shell was rendered once in js mode and read (BARRED), so its 17 URLs moved from the third
- * group to the sixth, whose heading now names the js render too. The counts test reads the groups four times, with the
- * verdicts as they are, as jsReadBefore() gives them (after the terms read, before the js render), as termsReadBefore()
- * gives them (after the robots verdicts, before the terms read) and as tick45() gives them, and the note states all four.
+ * group to the sixth, whose heading now names the js render too. Tick 55 added a fourth group, "Terms link found after
+ * the verdict": a TERMS_PENDING site whose source keeps an earlier verdict it replaced (agenthon.net's NO_TERMS_ROBOTS_OK,
+ * eurocontrol.int's NO_TERMS), which the shell group no longer holds; the groups after it moved down one, and the note's
+ * earlier lines give it 0. agenthon.net left "Now, on robots.txt" for it, and eurocontrol.int "Robots probe queued". The
+ * counts test reads the groups five times, with the verdicts as they are, as tick54() gives them (after the js render,
+ * before the terms links were found), as jsReadBefore() gives them (after the terms read, before the js render), as
+ * termsReadBefore() gives them (after the robots verdicts, before the terms read) and as tick45() gives them, and the note
+ * states all five.
  */
 type Probe = "captured" | "queued" | null;
+/** A TERMS_PENDING entry reopened by tick 55: its source keeps the earlier verdict's source after BEFORE or ROBOTS_OK_BEFORE. */
+const reopened = (e: Entry) => e.source.includes(BEFORE) || e.source.includes(ROBOTS_OK_BEFORE);
 const RENDER_GROUPS: { opens: string; holds: (site: string, e: Entry, probe: Probe) => boolean }[] = [
   { opens: "- **Now: ", holds: (_, e) => ["CONDITIONAL_MET", "NOT_BARRED"].includes(e.verdict) },
   { opens: "- **Now, on robots.txt ", holds: (_, e) => isRobotsOkVerdict(e) },
-  { opens: "- **Terms page a shell after the 6.10 fetch ", holds: (_, e) => e.verdict === "TERMS_PENDING" },
+  { opens: "- **Terms page a shell after the 6.10 fetch ", holds: (_, e) => e.verdict === "TERMS_PENDING" && !reopened(e) },
+  { opens: "- **Terms link found after the verdict, terms page queued ", holds: (_, e) => e.verdict === "TERMS_PENDING" && reopened(e) },
   { opens: "- **Probed 6.10, NO_TERMS_ROBOTS_OK not set ", holds: (_, e, probe) => isExhaustiveNegative(e) && probe === "captured" },
   { opens: "- **Robots probe queued for the next weekly run ", holds: (_, e, probe) => isExhaustiveNegative(e) && probe === "queued" },
   {
@@ -343,7 +364,7 @@ const EXCEPTION =
  * Eleven served a robots.txt; six answered 404 (ROBOTS_404), for which render-watch stores no body, so the source names the
  * capture's .meta.json and no sha256 (RFC 9309 §2.3.1.3: no rules).
  */
-const ROBOTS_OK = [
+const ROBOTS_OK_TICK54 = [
   "agenthon.net",
   "aicrowd.com",
   "alignmentforum.org",
@@ -362,6 +383,11 @@ const ROBOTS_OK = [
   "thinkonward.com",
   "wundernn.io",
 ];
+/**
+ * Tick 55 (6.10.2026): agenthon.net's NO_TERMS_ROBOTS_OK was taken back (TERMS_PENDING again: a terms link found after the
+ * verdict, LINKS_FOUND below), so 16 of the 17 hold it now. The "tick 54" blocks read ROBOTS_OK_TICK54 in tick54()'s state.
+ */
+const ROBOTS_OK = ROBOTS_OK_TICK54.filter((site) => site !== "agenthon.net");
 const ROBOTS_404 = ["bcamlc.com", "learn2design2026.com", "microblink.com", "pasteurlabs.ai", "solafune.com", "thinkonward.com"];
 /**
  * The four NO_TERMS sites the script declined on 6.10, the capture it read for each, and what in that capture says no:
@@ -461,15 +487,98 @@ const TERMS_LINES: Record<string, { slug: string; state: string; js?: boolean }>
   "virtualembryo.ai": { slug: "terms-virtualembryo", state: "active" },
   "eurocontrol.int": {
     slug: "terms-eurocontrol",
-    state: "# paused (terms read: a privacy notice, no site terms, 6.10.2026): eurocontrol.int is NO_TERMS in research/channel-loop/terms-verdicts.json",
+    // Since tick 55 the site is TERMS_PENDING again, and scripts/urls-pause-comments.mjs --fix rewrote the verdict word; the
+    // line stays paused as read (a privacy notice), though a TERMS_PENDING site's terms- line passes the gate.
+    state:
+      "# paused (terms read: a privacy notice, no site terms, 6.10.2026; verdict as of 6.10.2026): eurocontrol.int is TERMS_PENDING in research/channel-loop/terms-verdicts.json",
   },
   "opensky-network.org": { slug: "terms-opensky", state: "# retired (ruling 30.9 16(d) D2(iv): the site refused the runner)" },
 };
 /** eurocontrol.int's robots.txt probe, queued by queue-zero-test.mjs at tick 54 (ruling R1: exhaustive-negative NO_TERMS). */
 const EURO_PROBE = { row: 265, site: "eurocontrol.int", url: "https://www.eurocontrol.int/robots.txt", slug: "robots-eurocontrol" };
+/** What the tick-55 fold puts between agenthon.net's new source and the NO_TERMS_ROBOTS_OK source it replaced. */
+const ROBOTS_OK_BEFORE = "; NO_TERMS_ROBOTS_OK before: ";
+/** The tick-54 entries of the two sites tick 55 reopened, as terms-verdicts.json held them at LINKS_BASE. */
+const LINKS_FIXTURE = "src/__tests__/revenue/fixtures/terms-verdicts-364bf71-links-found.json";
+const LINKS_FIXTURE_SHA256 = "22064332bfc874b7b9d178c6b518976a15cb9425edd74cf7c29bef6f5f4c9cb4";
+const LINKS_BASE = "364bf71";
+/** The frozen copies the two links were observed in: agenthon.net's frozen in tick 55, eurocontrol.int's in tick 54. */
+const AGENTHON_COPY = "research/rendered/prize-www-agenthon-net-ref-mlcontests-7f4f65c9-2026-10-06";
+const EURO_COPY = "research/rendered/terms-eurocontrol-2026-10-06";
+/**
+ * The comment each reopened site's robots.txt probe is paused under: queue-zero-test.mjs --apply-verdicts wrote "# paused
+ * (terms unread): ...", and the reason was reworded by hand (no script writes it) in a form urls-pause-comments.mjs keeps.
+ */
+const PROBE_PAUSED = (site: string) =>
+  `# paused (terms unread: TERMS_PENDING again since a terms link was found after the verdict, the probe waits on the terms reading, 6.10.2026): ${site} is TERMS_PENDING in research/channel-loop/terms-verdicts.json`;
+/**
+ * Tick 55 (6.10.2026): the two sites a terms link found after the verdict reopened (logs/CHANNEL_LOOP.md §9, "Queued 6.10
+ * (tick 54)" item 1). For each: the verdict tick 54 left and the separator after which the new source keeps the tick-54
+ * source; the terms URL the new source names first, the terms- line's slug, its ZERO-TESTS row and candidate cell; the
+ * frozen-copy lines the link was observed on (the link first), then every other frozen-copy line the tick-55 texts cite,
+ * with words each holds: a line one of those texts cites (the two sources and notes, the two terms- lines' comments, the
+ * audit note's tick-55 section) must be one of these, so a changed line number fails; its robots.txt probe, paused; and its
+ * rules lines in the fixture.
+ */
+type Found = {
+  before: string;
+  marker: string;
+  url: string;
+  slug: string;
+  row: number;
+  candidate: string;
+  observed: { file: string; line: number; words: string }[];
+  probe: { row: number; url: string; slug: string };
+  rules: number[];
+};
+const LINKS_FOUND: Record<string, Found> = {
+  "agenthon.net": {
+    before: "NO_TERMS_ROBOTS_OK",
+    marker: ROBOTS_OK_BEFORE,
+    url: "https://www.agenthon.net/terms/",
+    slug: "terms-agenthon",
+    row: 266,
+    candidate: "terms audit (tick 55): agenthon.net, a terms link found after the robots verdict, before the prize-event rules read (BOARD-LOOP §13)",
+    observed: [
+      { file: `${AGENTHON_COPY}.html`, line: 2582, words: '<a href="/terms/">Terms</a>' },
+      { file: `${AGENTHON_COPY}.html`, line: 2583, words: '<a href="/privacy/">Privacy</a>' },
+      { file: `${AGENTHON_COPY}.html`, line: 2584, words: '<a href="/licensing/">Licensing</a>' },
+      { file: `${AGENTHON_COPY}.txt`, line: 1951, words: "Terms" },
+      { file: `${AGENTHON_COPY}.txt`, line: 1952, words: "Privacy" },
+      { file: `${AGENTHON_COPY}.txt`, line: 1953, words: "Licensing" },
+      { file: `${AGENTHON_COPY}.html`, line: 2581, words: '<a href="/rules/">Rules</a>' },
+    ],
+    probe: { row: 247, url: "https://www.agenthon.net/robots.txt", slug: "robots-agenthon" },
+    rules: [173],
+  },
+  "eurocontrol.int": {
+    before: "NO_TERMS",
+    marker: BEFORE,
+    url: "https://www.eurocontrol.int/info/disclaimers",
+    slug: "terms-eurocontrol-disclaimers",
+    row: 267,
+    candidate: "terms audit (tick 55): eurocontrol.int, a terms link found after the terms read, before the prize-event rules read (BOARD-LOOP §13)",
+    observed: [
+      { file: `${EURO_COPY}.html`, line: 1961, words: '<a href="/info/disclaimers"' },
+      { file: `${EURO_COPY}.html`, line: 2830, words: '<a href="/info/disclaimers"' },
+      { file: `${EURO_COPY}.txt`, line: 433, words: "Disclaimers" },
+      { file: `${EURO_COPY}.txt`, line: 367, words: "Website Privacy Policy" },
+    ],
+    probe: { row: EURO_PROBE.row, url: EURO_PROBE.url, slug: EURO_PROBE.slug },
+    rules: [162],
+  },
+};
+/** ansperformance.eu's note named eurocontrol.int's verdict: tick 55 changed that one parenthetical and nothing else of it. */
+const ANS_TICK54 = "(eurocontrol.int's entry, NO_TERMS since 6.10)";
+const ANS_NOW = "(eurocontrol.int's entry: NO_TERMS on 6.10, TERMS_PENDING again since tick 55, when its footer's unread Disclaimers page was found)";
+/** The verdicts as tick 54 left them: the two reopened entries put back from the fixture, every other entry as it is. */
+const tick54 = (v: Record<string, Entry>): Record<string, Entry> => ({
+  ...v,
+  ...(JSON.parse(readFileSync(LINKS_FIXTURE, "utf8")) as Record<string, Entry>),
+});
 const termsReadBefore = (v: Record<string, Entry>): Record<string, Entry> =>
   Object.fromEntries(
-    Object.entries(v).map(([site, e]) => {
+    Object.entries(tick54(v)).map(([site, e]) => {
       if (!Object.hasOwn(TERMS_READ, site)) return [site, e];
       const at = e.source.indexOf(TERMS_BEFORE);
       return [site, { verdict: "TERMS_PENDING", source: at < 0 ? e.source : e.source.slice(at + TERMS_BEFORE.length), checked: "2026-10-05" }];
@@ -478,10 +587,10 @@ const termsReadBefore = (v: Record<string, Entry>): Record<string, Entry> =>
 /**
  * The verdicts as they stood after the terms read of 6.10 and before kaggle.com's once-only js render: kaggle.com
  * TERMS_PENDING (its tick-45 source, read back after TERMS_BEFORE; checked 2026-10-06, the day its note recorded the
- * plain shell), every other entry as it is.
+ * plain shell), every other entry as tick54() gives it.
  */
 const jsReadBefore = (v: Record<string, Entry>): Record<string, Entry> => ({
-  ...v,
+  ...tick54(v),
   "kaggle.com": { ...termsReadBefore(v)["kaggle.com"], checked: TERMS_CHECKED },
 });
 type Cited =
@@ -577,7 +686,8 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(lines).toHaveLength(101);
     const sites = new Set(lines.map((e) => siteOfUrl(e.url)));
     expect([...sites].sort()).toEqual([...Object.keys(AUDITED), "github.com", "google.com"].sort());
-    const v = verdicts();
+    // As tick 54 left them: tick 55 reopened two sites, and the "tick 55" block holds those as they are.
+    const v = tick54(verdicts());
     const then = tick45(v);
     for (const [site, verdict] of Object.entries(AUDITED)) {
       // As tick 45 judged it...
@@ -587,7 +697,7 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       // scripts/robots-verdict.mjs set NO_TERMS_ROBOTS_OK, whose source still ends in the tick-45 one and whose `checked`
       // is the script's date ("tick 54" below holds the rest). tick45()'s `checked` for those 17 is a constant, so it is
       // not asserted here.
-      if (ROBOTS_OK.includes(site)) {
+      if (ROBOTS_OK_TICK54.includes(site)) {
         expect(verdict, site).toBe("NO_TERMS");
         expect(v[site].verdict, site).toBe("NO_TERMS_ROBOTS_OK");
         expect(v[site].checked, site).toBe(ROBOTS_CHECKED);
@@ -744,10 +854,13 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
         expect(termsGate(url, slug, v).ok, site).toBe(true);
         if (shell) expect(termsGate(url, slug, v, { js: true }).ok, site).toBe(true);
       } else {
-        // Nothing of the site stays active but, for eurocontrol.int (exhaustive-negative since 6.10), its robots.txt probe.
-        const probe = site === EURO_PROBE.site ? [[EURO_PROBE.url, EURO_PROBE.slug]] : [];
-        expect(mine.map((e) => [e.url, e.slug]), site).toEqual(probe);
-        expect(termsGate(url, slug, v).ok, site).toBe(false);
+        // Nothing of the site stays active but, for eurocontrol.int, TERMS_PENDING again since tick 55, its new terms- line
+        // (its robots.txt probe, active from the terms read of 6.10, is paused: "tick 55" below).
+        const found = Object.hasOwn(LINKS_FOUND, site) ? LINKS_FOUND[site] : undefined;
+        expect(mine.map((e) => [e.url, e.slug]), site).toEqual(found ? [[found.url, found.slug]] : []);
+        // The paused line fails the gate, but for eurocontrol.int's privacy notice: a TERMS_PENDING site's terms- line
+        // passes it, and the line stays paused because the page was read.
+        expect(termsGate(url, slug, v).ok, site).toBe(found !== undefined);
         expect(named[0], site).toBe(`${state} — ${url}\t${slug}${flag}`);
       }
     }
@@ -790,12 +903,15 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
   });
 
   it("opens every NO_TERMS note exhaustive-negative, by the verified records and ruling R1, and queues each such site one robots.txt probe", () => {
-    const v = verdicts();
+    // As tick 54 left the verdicts. Since tick 55 agenthon.net's probe is paused (TERMS_PENDING again), so its one probe is
+    // read from the paused lines; the gate's answer to it now is in "tick 55" below.
+    const now = verdicts();
+    const v = tick54(now);
     const then = tick45(v);
     const lines = active();
     for (const [site, verdict] of Object.entries(AUDITED)) {
       if (verdict !== "NO_TERMS") continue;
-      const mine = lines.filter((e) => siteOfUrl(e.url) === site);
+      const mine = Object.hasOwn(LINKS_FOUND, site) ? pausedLines().filter((p) => siteOfUrl(p.url) === site) : lines.filter((e) => siteOfUrl(e.url) === site);
       // Exhaustive-negative as tick 45 left it; since 6.10 still that, or NO_TERMS_ROBOTS_OK as the script writes it,
       // with the same note and the same one probe (no rules page is queued in urls.txt either way).
       expect(isExhaustiveNegative(then[site]), site).toBe(true);
@@ -812,7 +928,7 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     }
     for (const site of RULED_EXHAUSTIVE) {
       expect(then[site].verdict, site).toBe("NO_TERMS");
-      expect(v[site].verdict, site).toBe(ROBOTS_OK.includes(site) ? "NO_TERMS_ROBOTS_OK" : "NO_TERMS");
+      expect(v[site].verdict, site).toBe(ROBOTS_OK_TICK54.includes(site) ? "NO_TERMS_ROBOTS_OK" : "NO_TERMS");
       expect(v[site].note!.endsWith("(ruling R1, 5.10, TERMS-AUDIT-2026-10-05-prize-events.md)"), site).toBe(true);
       expect(v[site].note, site).not.toMatch(/until (that|the main thread's) ruling|is paused, not fetched/);
     }
@@ -820,8 +936,11 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(Object.keys(AUDITED).filter((s) => isExhaustiveNegative(then[s]))).toHaveLength(21);
     // 6.10 (tick 54): 17 of them NO_TERMS_ROBOTS_OK, four still exhaustive-negative NO_TERMS; and eurocontrol.int, TERMS_PENDING
     // on 5.10, exhaustive-negative since its terms page was read as a privacy notice ("tick 54: the terms read on 6.10").
-    expect(Object.keys(AUDITED).filter((s) => isRobotsOkVerdict(v[s])).sort()).toEqual([...ROBOTS_OK].sort());
+    expect(Object.keys(AUDITED).filter((s) => isRobotsOkVerdict(v[s])).sort()).toEqual([...ROBOTS_OK_TICK54].sort());
     expect(Object.keys(AUDITED).filter((s) => isExhaustiveNegative(v[s])).sort()).toEqual([...Object.keys(ROBOTS_NOT_SET), "eurocontrol.int"].sort());
+    // Tick 55: agenthon.net is neither (TERMS_PENDING again), and eurocontrol.int is no longer exhaustive-negative.
+    expect(Object.keys(AUDITED).filter((s) => isRobotsOkVerdict(now[s])).sort()).toEqual([...ROBOTS_OK].sort());
+    expect(Object.keys(AUDITED).filter((s) => isExhaustiveNegative(now[s])).sort()).toEqual(Object.keys(ROBOTS_NOT_SET).sort());
     // mozilladatacollective.com keeps both readings of whose terms govern it, and R3's address rule for its rules pages.
     const mdc = v["mozilladatacollective.com"].note!;
     expect(mdc).toContain("DrivenData");
@@ -830,19 +949,28 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(mdc).toContain("ruling R3");
   });
 
-  it("paused no line of the audit after the rulings (the six probes active again, three queued); since 6.10 only the terms lines the reading shut", () => {
+  it("paused no line of the audit after the rulings (the six probes active again, three queued); since 6.10 only the terms lines the reading shut, and since tick 55 the probes of the two reopened sites", () => {
     const rows = zeroRows();
     const paused = pausedLines().filter((p) => Object.hasOwn(AUDITED, siteOfUrl(p.url)));
-    // Tick 54: the five terms lines the 6.10 reading paused (opensky's is retired, not paused); no probe.
+    // Tick 54: the five terms lines the 6.10 reading paused (opensky's is retired, not paused); no probe. Tick 55: the two
+    // probes of the sites a terms link reopened, each ZERO-TESTS row marked PAUSED 6.10 (tick 55).
     const shut = Object.entries(TERMS_LINES).filter(([, l]) => l.state.startsWith("# paused")).map(([, l]) => l.slug);
-    expect(paused.map((p) => p.slug).sort()).toEqual(shut.sort());
+    expect(paused.map((p) => p.slug).sort()).toEqual([...shut, ...Object.values(LINKS_FOUND).map((f) => f.probe.slug)].sort());
     expect(shut).toHaveLength(5);
-    for (let n = 235; n <= 264; n += 1) expect(rows.get(n)?.row, `row ${n}`).not.toContain("**PAUSED");
+    const pausedRows = new Map(Object.entries(LINKS_FOUND).map(([site, f]) => [f.probe.row, site]));
+    for (let n = 235; n <= 264; n += 1) {
+      const site = pausedRows.get(n);
+      if (site) expect(rows.get(n)?.row, `row ${n}`).toContain(`**PAUSED 6.10 (tick 55): ${site} is TERMS_PENDING again: `);
+      else expect(rows.get(n)?.row, `row ${n}`).not.toContain("**PAUSED");
+    }
     for (const n of UNPAUSED_PROBES) {
       const { comment, line } = listedRow(n);
       expect(comment, `row ${n}`).toMatch(PROBE_COMMENT);
       expect(comment, `row ${n}`).not.toContain("(ruling R1, 5.10)");
-      expect(line, `row ${n}`).toBe(`${rows.get(n)?.url}\t${active().find((l) => l.url === rows.get(n)?.url)?.slug}`);
+      const url = rows.get(n)?.url;
+      const site = pausedRows.get(n);
+      if (site) expect(line, `row ${n}`).toBe(`${PROBE_PAUSED(site)} — ${url}\t${LINKS_FOUND[site].probe.slug}`);
+      else expect(line, `row ${n}`).toBe(`${url}\t${active().find((l) => l.url === url)?.slug}`);
     }
     for (const p of NEW_PROBES) {
       const { comment, line } = listedRow(p.row);
@@ -860,16 +988,23 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(euro.comment).toBe(
       `# research/channel-loop/ZERO-TESTS.md row ${EURO_PROBE.row} — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (6.10.2026).`,
     );
-    expect(euro.line).toBe(`${EURO_PROBE.url}\t${EURO_PROBE.slug}`);
+    // Paused in tick 55, before scripts/robots-verdict.mjs ran on it: eurocontrol.int is TERMS_PENDING again.
+    expect(euro.line).toBe(`${PROBE_PAUSED(EURO_PROBE.site)} — ${EURO_PROBE.url}\t${EURO_PROBE.slug}`);
     expect(rows.get(EURO_PROBE.row)?.row).toBe(
-      `| ${EURO_PROBE.row} | terms audit (tick 54, ruling R1): eurocontrol.int robots.txt, prize-event reading (BOARD-LOOP §13; ruling 30.9 16(d) D2(v)) | ${EURO_PROBE.url} | whether www.eurocontrol.int's robots.txt allows the rules paths listed in research/measurements/ai-allowed-events.urls.txt, for scripts/robots-verdict.mjs to judge |`,
+      `| ${EURO_PROBE.row} | terms audit (tick 54, ruling R1): eurocontrol.int robots.txt, prize-event reading (BOARD-LOOP §13; ruling 30.9 16(d) D2(v)) | ${EURO_PROBE.url} | whether www.eurocontrol.int's robots.txt allows the rules paths listed in research/measurements/ai-allowed-events.urls.txt, for scripts/robots-verdict.mjs to judge **PAUSED 6.10 (tick 55): eurocontrol.int is TERMS_PENDING again: its privacy notice's footer links a Disclaimers page (row 267), so the probe waits on the terms reading; the 12:05 weekly run of 6.10 captured it, and the capture is kept and not judged.** |`,
     );
   });
 
   it("ties each tick-45 and tick-54 ZERO-TESTS row to the urls.txt line under its comment: active, or as the 6.10 reading left it", () => {
     const rows = zeroRows();
-    const bySlug = new Map(Object.values(TERMS_LINES).map((l) => [l.slug, l.state]));
-    for (let n = 235; n <= EURO_PROBE.row; n += 1) {
+    // The terms lines as the 6.10 reading left them, and (tick 55) the two probes paused; the two terms lines it queued
+    // (rows 266-267) are active.
+    const bySlug = new Map<string, string>([
+      ...Object.values(TERMS_LINES).map((l) => [l.slug, l.state] as [string, string]),
+      ...Object.entries(LINKS_FOUND).map(([site, f]) => [f.probe.slug, PROBE_PAUSED(site)] as [string, string]),
+    ]);
+    const last = Math.max(...Object.values(LINKS_FOUND).map((f) => f.row));
+    for (let n = 235; n <= last; n += 1) {
       const { comment, line } = listedRow(n);
       expect(comment, `row ${n}`).toBeDefined();
       const url = rows.get(n)?.url;
@@ -888,7 +1023,7 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       const refused = /^refusal-type\b/.test(verdicts()[site].note ?? "");
       if (n <= 243) expect(rows.get(n)?.row, `row ${n}`).toMatch(refused ? /\*\*RETIRED 6\.10 \(403 to the runner; 16\(d\) D2\(iv\)\)\.\*\* \|$/ : /\*\*READ 6\.10 \(tick 54\): [^|]+\.\*\* \|$/);
     }
-    expect(Math.max(...rows.keys())).toBe(EURO_PROBE.row);
+    expect(Math.max(...rows.keys())).toBe(last);
   });
 
   it("puts no rules page into research/rendered/urls.txt, and the gate refuses every audited rules URL it should", () => {
@@ -908,9 +1043,11 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       expect(termsGate(e.url, e.slug, then).ok, `5.10 ${site} ${e.url}`).toBe(openThen);
     }
     expect(audited().filter((e) => termsGate(e.url, e.slug, then).ok)).toHaveLength(13);
-    // 6.10: 33 after the robots verdicts, 34 with virtualembryo.ai's terms read (NOT_BARRED).
+    // 6.10: 33 after the robots verdicts, 34 with virtualembryo.ai's terms read (NOT_BARRED); 33 again since tick 55, with
+    // agenthon.net's one rules URL refused (TERMS_PENDING again).
     expect(audited().filter((e) => termsGate(e.url, e.slug, termsReadBefore(v)).ok)).toHaveLength(33);
-    expect(audited().filter((e) => termsGate(e.url, e.slug, v).ok)).toHaveLength(34);
+    expect(audited().filter((e) => termsGate(e.url, e.slug, tick54(v)).ok)).toHaveLength(34);
+    expect(audited().filter((e) => termsGate(e.url, e.slug, v).ok)).toHaveLength(33);
     // Every rules URL of a NO_TERMS_ROBOTS_OK site passes; every rules URL of a site still NO_TERMS is refused, for that.
     for (const e of audited()) {
       const site = siteOfUrl(e.url);
@@ -940,19 +1077,23 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
   });
 
   it("counts each render group's URLs and sites from the fixture and the verdicts, as its heading and its list state them", () => {
+    // Each robots.txt probe line of urls.txt, active or (since tick 55) paused: "captured" once its capture is on disk.
     const probes = new Map<string, Probe>(
-      active()
+      [...active(), ...pausedLines()]
         .filter((l) => isRobotsProbe(l.url, l.slug))
         .map((l) => [siteOfUrl(l.url), existsSync(`research/rendered/${l.slug}.meta.json`) ? "captured" : "queued"]),
     );
-    // Every audited rules URL falls in exactly one group, with the verdicts as they are, as they were before the terms read
-    // and as tick 45 left them.
-    const group = (v: Record<string, Entry>) => {
+    // Before tick 55, eurocontrol.int's probe (row 265) was queued: the 12:05 weekly run of 6.10 (364bf71) captured it after
+    // tick 54, and tick 55 paused it unjudged. The states before tick 55 read it as queued, as the note's lines state them.
+    const probesBefore = new Map<string, Probe>(probes).set(EURO_PROBE.site, "queued");
+    // Every audited rules URL falls in exactly one group, with the verdicts as they are, as they were before the terms links
+    // were found, before the js render, before the terms read and as tick 45 left them.
+    const group = (v: Record<string, Entry>, p: Map<string, Probe> = probes) => {
       const counts = RENDER_GROUPS.map(() => new Map<string, number>());
       const urls = RENDER_GROUPS.map(() => [] as string[]);
       for (const e of audited()) {
         const site = siteOfUrl(e.url);
-        const into = RENDER_GROUPS.map((g, i) => (g.holds(site, v[site], probes.get(site) ?? null) ? i : -1)).filter((i) => i >= 0);
+        const into = RENDER_GROUPS.map((g, i) => (g.holds(site, v[site], p.get(site) ?? null) ? i : -1)).filter((i) => i >= 0);
         expect(into, `${site} ${e.url}`).toHaveLength(1);
         counts[into[0]].set(site, (counts[into[0]].get(site) ?? 0) + 1);
         urls[into[0]].push(e.url);
@@ -960,9 +1101,10 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       return { counts, urls, sums: counts.map((m) => [[...m.values()].reduce((a, b) => a + b, 0), m.size]) };
     };
     const now = group(verdicts());
-    const jsBefore = group(jsReadBefore(verdicts()));
-    const robots = group(termsReadBefore(verdicts()));
-    const then = group(tick45(verdicts()));
+    const linksBefore = group(tick54(verdicts()), probesBefore);
+    const jsBefore = group(jsReadBefore(verdicts()), probesBefore);
+    const robots = group(termsReadBefore(verdicts()), probesBefore);
+    const then = group(tick45(verdicts()), probesBefore);
     const counts = now.counts;
     const computed = now.sums;
     const audit = readFileSync(AUDIT, "utf8");
@@ -983,11 +1125,13 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       expect(was !== null, RENDER_GROUPS[i].opens).toBe(changed);
       if (was) expect([Number(was[1]), Number(was[2])], RENDER_GROUPS[i].opens).toEqual(then.sums[i]);
     });
-    expect(then.sums.map((c) => c.join("/"))).toEqual(["13/12", "0/0", "40/9", "29/21", "0/0", "0/0", "19/3", "0/0"]);
-    expect(robots.sums.map((c) => c.join("/"))).toEqual(["13/12", "20/17", "40/9", "9/4", "0/0", "0/0", "19/3", "0/0"]);
-    expect(jsBefore.sums.map((c) => c.join("/"))).toEqual(["14/13", "20/17", "18/2", "9/4", "1/1", "20/5", "19/3", "0/0"]);
+    expect(then.sums.map((c) => c.join("/"))).toEqual(["13/12", "0/0", "40/9", "0/0", "29/21", "0/0", "0/0", "19/3", "0/0"]);
+    expect(robots.sums.map((c) => c.join("/"))).toEqual(["13/12", "20/17", "40/9", "0/0", "9/4", "0/0", "0/0", "19/3", "0/0"]);
+    expect(jsBefore.sums.map((c) => c.join("/"))).toEqual(["14/13", "20/17", "18/2", "0/0", "9/4", "1/1", "20/5", "19/3", "0/0"]);
     // Later on 6.10: kaggle.com's 17 rules URLs leave the shell group for the shut one (BARRED on its js-rendered terms).
-    expect(computed.map((c) => c.join("/"))).toEqual(["14/13", "20/17", "1/1", "9/4", "1/1", "37/6", "19/3", "0/0"]);
+    expect(linksBefore.sums.map((c) => c.join("/"))).toEqual(["14/13", "20/17", "1/1", "0/0", "9/4", "1/1", "37/6", "19/3", "0/0"]);
+    // Tick 55: agenthon.net leaves "Now, on robots.txt" and eurocontrol.int "Robots probe queued", both for the new group.
+    expect(computed.map((c) => c.join("/"))).toEqual(["14/13", "19/16", "1/1", "2/2", "9/4", "0/0", "37/6", "19/3", "0/0"]);
     // Each bullet's per-site list: `site` n, for every site of the group and no other.
     bullets.forEach((b, i) => {
       const listed = Object.fromEntries([...b.matchAll(/`([a-z0-9.-]+\.[a-z]+)` (\d+)/g)].map((m) => [m[1], Number(m[2])]));
@@ -1025,7 +1169,12 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(beforeJs).not.toBeNull();
     expect([terms(beforeJs![1]), terms(beforeJs![3])]).toEqual([jsBefore.sums.map((c) => c[0]), jsBefore.sums.map((c) => c[1])]);
     expect([Number(beforeJs![2]), Number(beforeJs![4])]).toEqual([101, 45]);
-    for (const sums of [computed, jsBefore.sums, robots.sums, then.sums]) {
+    // ...and (tick 55) the 6.10 line after kaggle.com's js render and before the terms links were found.
+    const beforeLinks = section.match(/^6\.10 \(tick 54\), after kaggle\.com's js render and before the terms links were found: ([\d + ]+) = (\d+) URLs, over ([\d + ]+) = (\d+) sites\.$/m);
+    expect(beforeLinks).not.toBeNull();
+    expect([terms(beforeLinks![1]), terms(beforeLinks![3])]).toEqual([linksBefore.sums.map((c) => c[0]), linksBefore.sums.map((c) => c[1])]);
+    expect([Number(beforeLinks![2]), Number(beforeLinks![4])]).toEqual([101, 45]);
+    for (const sums of [computed, linksBefore.sums, jsBefore.sums, robots.sums, then.sums]) {
       expect(sums.reduce((a, c) => a + c[0], 0)).toBe(101);
       expect(sums.reduce((a, c) => a + c[1], 0)).toBe(45);
     }
@@ -1098,28 +1247,33 @@ describe("tick 54: the robots verdicts of 6.10", () => {
     return audit.slice(start, end < 0 ? undefined : end + 1);
   };
 
-  it("sets exactly these 17 of the 21 NO_TERMS sites to NO_TERMS_ROBOTS_OK, and keeps terms-verdicts.json's exact format", () => {
-    const v = verdicts();
-    expect(ROBOTS_OK).toHaveLength(17);
-    expect(Object.keys(AUDITED).filter((s) => v[s].verdict === "NO_TERMS_ROBOTS_OK").sort()).toEqual([...ROBOTS_OK].sort());
-    expect([...ROBOTS_OK, ...Object.keys(ROBOTS_NOT_SET)].sort()).toEqual(Object.keys(AUDITED).filter((s) => AUDITED[s] === "NO_TERMS").sort());
+  it("sets exactly these 17 of the 21 NO_TERMS sites to NO_TERMS_ROBOTS_OK (16 since tick 55), and keeps terms-verdicts.json's exact format", () => {
+    const v = tick54(verdicts());
+    expect(ROBOTS_OK_TICK54).toHaveLength(17);
+    expect(Object.keys(AUDITED).filter((s) => v[s].verdict === "NO_TERMS_ROBOTS_OK").sort()).toEqual([...ROBOTS_OK_TICK54].sort());
+    expect([...ROBOTS_OK_TICK54, ...Object.keys(ROBOTS_NOT_SET)].sort()).toEqual(Object.keys(AUDITED).filter((s) => AUDITED[s] === "NO_TERMS").sort());
+    // Tick 55: agenthon.net's was taken back (TERMS_PENDING again); the other 16 hold.
+    expect(ROBOTS_OK).toHaveLength(16);
+    expect(Object.keys(AUDITED).filter((s) => verdicts()[s].verdict === "NO_TERMS_ROBOTS_OK").sort()).toEqual([...ROBOTS_OK].sort());
     // The script writes the file as it is committed (one-space indent, no final newline): the 17 rewrites kept that.
     expect(serializeVerdicts(JSON.parse(raw()))).toBe(raw());
   });
 
   it("keeps the NO_TERMS source tick 45 wrote for each of the 17, byte for byte, after \"NO_TERMS before:\"", () => {
     const then = tick45(verdicts());
-    const text = ROBOTS_OK.map((site) => `${site}\t${then[site].source}`).join("\n");
+    const text = ROBOTS_OK_TICK54.map((site) => `${site}\t${then[site].source}`).join("\n");
     expect(createHash("sha256").update(text).digest("hex")).toBe(TICK45_SOURCES_SHA256);
   });
 
   it("rests each NO_TERMS_ROBOTS_OK verdict on the frozen copy of the robots.txt capture it read, exactly as the script writes it", () => {
-    const v = verdicts();
+    // The 17 as tick 54 left them: agenthon.net's was taken back in tick 55, and the 16 others are as they are.
+    const v = tick54(verdicts());
     const file = JSON.parse(raw());
     const then = tick45(v);
     const urlsTxt = readFileSync(URLS, "utf8");
     const kinds: Record<string, string[]> = { file: [], absent: [] };
-    for (const site of ROBOTS_OK) {
+    for (const site of ROBOTS_OK_TICK54) {
+      if (ROBOTS_OK.includes(site)) expect(verdicts()[site], site).toEqual(v[site]);
       const e = v[site];
       expect(isRobotsOkVerdict(e), site).toBe(true);
       expect(e.note, site).toMatch(/^exhaustive-negative \(Open Terms Archive: .*tosdr\/tosdr-snapshots.*auditor and verifier\)\. /);
@@ -1235,6 +1389,14 @@ describe("tick 54: the robots verdicts of 6.10", () => {
         expect(out.verdicts, site).toBe(file);
         expect(out.why, site).toBe(`${site} is already NO_TERMS_ROBOTS_OK`);
       }
+      // Tick 55: the two reopened sites are TERMS_PENDING, which the script never judges (no robots verdict may run for
+      // either before its terms are read).
+      for (const site of Object.keys(LINKS_FOUND)) {
+        const out = judgeSite({ site, verdicts: file, urls, today: ROBOTS_CHECKED });
+        expect(out.changed, site).toBe(false);
+        expect(out.verdicts, site).toBe(file);
+        expect(out.why, site).toMatch(new RegExp(`^${site.replace(/\./g, "\\.")} is TERMS_PENDING with the note "terms unread: `));
+      }
       // The four, on the frozen copy of what the script read: declined on every list (on the fixture and the live list
       // for the reason above; on urls.txt, which queues only their probes, for having no page to judge).
       for (const [site, { slug }] of Object.entries(ROBOTS_NOT_SET)) {
@@ -1248,25 +1410,29 @@ describe("tick 54: the robots verdicts of 6.10", () => {
   it("records every robots verdict in the audit note's section after the appendix, with the values the frozen copies hold", () => {
     const audit = readFileSync(AUDIT, "utf8");
     const heads = audit.split("\n").filter((l) => l.startsWith("## "));
-    expect(heads.slice(-4)).toEqual([
+    expect(heads.slice(-5)).toEqual([
       "## Every URL the agents fetched",
       "## Robots verdicts (6.10.2026, tick 54)",
       "## Terms read (6.10.2026, tick 54)",
       "## Shell terms pages rendered once (6.10.2026, tick 54)",
+      "## Terms links found after the verdicts (6.10.2026, tick 55)",
     ]);
     const text = section();
     expect(text).toContain("node scripts/robots-verdict.mjs <site> --urls research/measurements/ai-allowed-events.urls.txt");
     expect(text).toContain("ruling 30.9 16(d) D2(iv)-(v)");
-    const v = verdicts();
+    // The section is tick 54's record. Its "Verdict now" column holds each site's verdict as it is; where that is no longer
+    // the one tick 54 left (agenthon.net, TERMS_PENDING again since tick 55), the cell gives tick 54's beside it, dated.
+    const now = verdicts();
+    const v = tick54(now);
     const rows = text.split("\n").filter((l) => /^\| `[a-z0-9.-]+` \|/.test(l));
-    const sites = [...ROBOTS_OK, ...Object.keys(ROBOTS_NOT_SET)].sort();
+    const sites = [...ROBOTS_OK_TICK54, ...Object.keys(ROBOTS_NOT_SET)].sort();
     expect(rows.map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual([...sites, "nevo.co.il"]);
     for (const row of rows) {
       const m = row.match(
-        /^\| `([a-z0-9.-]+)` \| `(research\/rendered\/robots-[a-z0-9.-]+\.(?:txt|html|meta\.json))`; (\d+|none); (?:`([^`]+)`|none); ([0-9T:.Z-]+); ([0-9a-f]{12}|none) \| (\d+)[^|]* \| ([^|]+) \| ([A-Z_]+) \|$/,
+        /^\| `([a-z0-9.-]+)` \| `(research\/rendered\/robots-[a-z0-9.-]+\.(?:txt|html|meta\.json))`; (\d+|none); (?:`([^`]+)`|none); ([0-9T:.Z-]+); ([0-9a-f]{12}|none) \| (\d+)[^|]* \| ([^|]+) \| ([A-Z_]+)(?: \(([^|]+)\))? \|$/,
       );
       expect(m, row.slice(0, 60)).not.toBeNull();
-      const [, site, path, status, contentType, fetchedAt, sha12, n, answer, verdict] = m!;
+      const [, site, path, status, contentType, fetchedAt, sha12, n, answer, verdict, history] = m!;
       const nevo = site === "nevo.co.il";
       const list = nevo ? readFileSync(URLS, "utf8") : fixture();
       const pages = queuedPaths(list, site).filter((p: { url: string; slug: string }) => !isRobotsProbe(p.url, p.slug));
@@ -1286,7 +1452,12 @@ describe("tick 54: the robots verdicts of 6.10", () => {
       expect(fetchedAt, site).toBe(meta.fetchedAt);
       expect(sha12, site).toBe(meta.sha256 ? meta.sha256.slice(0, 12) : "none");
       expect(Number(n), site).toBe(pages.length);
-      expect(verdict, site).toBe(v[site].verdict);
+      expect(verdict, site).toBe(now[site].verdict);
+      if (now[site].verdict === v[site].verdict) expect(history, site).toBeUndefined();
+      else {
+        expect(Object.hasOwn(LINKS_FOUND, site), site).toBe(true);
+        expect(history, site).toBe(`6.10, tick 54: ${v[site].verdict}, until tick 55 found a terms link in its footer, "Terms links found after the verdicts" below`);
+      }
       // The answer, word for word, by what the capture is and what its rules say of the queued paths: the rule quoted in
       // brackets is the one that decided every path of the site.
       const kind = readableCapture(meta, body).kind;
@@ -1304,30 +1475,39 @@ describe("tick 54: the robots verdicts of 6.10", () => {
       } else {
         expect(answer, site).toBe("no answer (fetch failed): complete disallow, RFC 9309 §2.3.1.4");
       }
+      expect(v[site].verdict === "NO_TERMS_ROBOTS_OK", site).toBe(ROBOTS_OK_TICK54.includes(site));
       expect(verdict === "NO_TERMS_ROBOTS_OK", site).toBe(ROBOTS_OK.includes(site));
     }
+    expect(rows.filter((r) => / \| [A-Z_]+ \(6\.10, tick 54: /.test(r)).map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual(["agenthon.net"]);
   });
 
   it("states the counts and sizes in the section's prose as the verdicts and the frozen copies hold them", () => {
     const text = section();
-    const v = verdicts();
-    const kinds = ROBOTS_OK.map((site) => citedCapture(v[site].source)!.kind);
+    // At tick 54, as the section states them; "Terms links found after the verdicts" states 16 and 19 since tick 55.
+    const v = tick54(verdicts());
+    const kinds = ROBOTS_OK_TICK54.map((site) => citedCapture(v[site].source)!.kind);
     // "Eleven of the 17 served a robots.txt (...) and six answered 404": the two kinds of source.
     const served = text.match(/^(\w+) of the (\d+) served a robots\.txt \(k12-ai-infrastructure\.org's is an empty file, so no rule at all\) and (\w+) answered 404,/m);
     expect(served).not.toBeNull();
     expect([numberWord(served![1]), Number(served![2]), numberWord(served![3])]).toEqual([
       kinds.filter((k) => k === "file").length,
-      ROBOTS_OK.length,
+      ROBOTS_OK_TICK54.length,
       kinds.filter((k) => k === "absent").length,
     ]);
     // k12-ai-infrastructure.org's robots.txt is an empty file: no rule at all.
     const k12 = frozenCapture(citedCapture(v["k12-ai-infrastructure.org"].source)!.path);
     expect(k12.body).toBe("");
     expect(robotsRulesFor(parseRobotsTxt(k12.body))).toEqual([]);
-    // "The 17 sites' 20 rules URLs pass termsGate now".
-    const rulesUrls = audited().filter((e) => ROBOTS_OK.includes(siteOfUrl(e.url)));
-    expect(text).toContain(`The ${ROBOTS_OK.length} sites' ${rulesUrls.length} rules URLs pass \`termsGate\` now`);
+    // "The rules URLs of the sites that hold NO_TERMS_ROBOTS_OK, 19 on 16 sites, pass termsGate now (6.10, tick 54: the 17
+    // sites' 20, until ...)": the count as it is since tick 55, and tick 54's beside it, dated.
+    const rulesUrls = audited().filter((e) => ROBOTS_OK_TICK54.includes(siteOfUrl(e.url)));
+    const rulesNow = audited().filter((e) => ROBOTS_OK.includes(siteOfUrl(e.url)));
+    expect(text).toContain(
+      `The rules URLs of the sites that hold NO_TERMS_ROBOTS_OK, ${rulesNow.length} on ${ROBOTS_OK.length} sites, pass \`termsGate\` now (6.10, tick 54: the ${ROBOTS_OK_TICK54.length} sites' ${rulesUrls.length}, until agenthon.net went back to TERMS_PENDING in tick 55, "Terms links found after the verdicts" below;`,
+    );
+    expect(text).not.toContain(`The ${ROBOTS_OK_TICK54.length} sites' ${rulesUrls.length} rules URLs pass \`termsGate\` now`);
     for (const e of rulesUrls) expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(true);
+    for (const e of rulesNow) expect(termsGate(e.url, e.slug, verdicts()).ok, e.url).toBe(true);
     // flagos.io and theemailgame.com: an HTML page each, of the sizes the copies stored.
     const html = text.match(/flagos\.io and theemailgame\.com: \/robots\.txt answered 200 with an HTML page \(`text\/html`, (\d+) and (\d+) bytes\)/);
     expect(html).not.toBeNull();
@@ -1691,7 +1871,8 @@ describe("tick 54: the terms read on 6.10", () => {
   };
 
   it("gives the nine sites the main thread's verdicts, checked 6.10, each source naming what was read and keeping tick 45's", () => {
-    const v = verdicts();
+    // As tick 54 left them (eurocontrol.int is TERMS_PENDING again since tick 55: "tick 55" below).
+    const v = tick54(verdicts());
     const then = tick45(v);
     expect(Object.keys(TERMS_READ).sort()).toEqual(Object.keys(AUDITED).filter((s) => AUDITED[s] === "TERMS_PENDING").sort());
     for (const [site, verdict] of Object.entries(TERMS_READ)) {
@@ -1719,7 +1900,7 @@ describe("tick 54: the terms read on 6.10", () => {
   });
 
   it("rests each read verdict on a frozen copy of the 6.10 capture, whose cited line holds the decisive words the note quotes", () => {
-    const v = verdicts();
+    const v = tick54(verdicts());
     const urlsTxt = readFileSync(URLS, "utf8");
     const manifest = readFileSync("research/rendered/FROZEN.sha256", "utf8");
     for (const { site, slug, line, words } of DECISIVE) {
@@ -1733,7 +1914,9 @@ describe("tick 54: the terms read on 6.10", () => {
       const body = readFileSync(meta.bodyPath!);
       expect(createHash("sha256").update(body).digest("hex"), site).toBe(meta.sha256);
       expect(readFileSync(`research/rendered/${frozen}.txt`), site).toEqual(readFileSync(`research/rendered/${slug}.txt`));
-      expect(urlsTxt.includes(frozen), site).toBe(false);
+      // No urls.txt line names it (freeze-capture.mjs's own rule: no word of any line is the slug); since tick 55 the comment
+      // of eurocontrol.int's Disclaimers line cites its .html by file and line, a path and not a slug a render would write.
+      expect(listedNames(urlsTxt).has(frozen), site).toBe(false);
       for (const ext of ["txt", "html", "meta.json"]) expect(manifest, `${frozen}.${ext}`).toContain(`  ${frozen}.${ext}\n`);
       // The decisive words at the cited line, and in the note beside the citation.
       expect(lines[line - 1], `${site} :${line}`).toContain(words);
@@ -1754,7 +1937,7 @@ describe("tick 54: the terms read on 6.10", () => {
   });
 
   it("states each verdict's scope finding and condition in its note, the stanford dissent included", () => {
-    const v = verdicts();
+    const v = tick54(verdicts());
     expect(v["devpost.com"].note).toMatch(/^BARRED on access: /);
     expect(v["devpost.com"].note).toContain("the seven *.devpost.com hackathon hosts and info.devpost.com are covered by inference the document supports");
     expect(v["zindi.africa"].note).toMatch(/^BARRED on copying: /);
@@ -1826,7 +2009,7 @@ describe("tick 54: the terms read on 6.10", () => {
   });
 
   it("ties every secondary quote and line citation of the read notes to its line, the words there and in the note", () => {
-    const v = verdicts();
+    const v = tick54(verdicts());
     const lines = new Map<string, string[]>();
     for (const { site, file, line, words, cite, quoted } of SECONDARY) {
       if (!lines.has(file)) lines.set(file, readFileSync(file, "utf8").split("\n"));
@@ -1839,7 +2022,8 @@ describe("tick 54: the terms read on 6.10", () => {
   });
 
   it("answers the terms-read review: ansperformance's second document, eurocontrol's Disclaimers link and R1 record, virtualembryo's Stanford question", () => {
-    const v = verdicts();
+    // eurocontrol.int's entry as tick 54 left it; tick 55 answered the open question ("tick 55" below).
+    const v = tick54(verdicts());
     const audit = readFileSync(AUDIT, "utf8");
     const read = audit.slice(audit.indexOf("## Terms read (6.10.2026, tick 54)"));
     const row = (site: string) => read.split("\n").find((l) => l.startsWith(`| \`${site}\` | `))!;
@@ -1848,7 +2032,9 @@ describe("tick 54: the terms read on 6.10", () => {
     expect(ans).toContain(
       "the footer's second document, EUROCONTROL's 'Privacy statement' (footer.html:222-224), does not stand in the way: it was read on 6.10 (tick 54) and is a privacy notice only",
     );
-    expect(ans).toContain("(eurocontrol.int's entry, NO_TERMS since 6.10)");
+    // Since tick 55 it names eurocontrol.int's entry as it is: TERMS_PENDING again.
+    expect(ans).toContain(ANS_NOW);
+    expect(ans).not.toContain(ANS_TICK54);
     expect(ans).not.toContain("TERMS_PENDING page");
     expect(v["ansperformance.eu"].verdict).toBe("CONDITIONAL_UNMET");
     // eurocontrol.int: the Disclaimers link is in the frozen HTML, the R1 record's two missing steps, and the open question,
@@ -1867,7 +2053,16 @@ describe("tick 54: the terms read on 6.10", () => {
     const euRow = row("eurocontrol.int");
     expect(euRow).toContain("(:433; its link, /info/disclaimers, is at `research/rendered/terms-eurocontrol-2026-10-06.html:1961` and :2830)");
     expect(euRow).toContain("The tick-54 review found the record short of R1's list in two steps");
-    expect(euRow).toContain("Whether the Disclaimers page is read before `scripts/robots-verdict.mjs` runs on the row-265 probe is open for the main thread.");
+    expect(euRow).toContain(
+      'Whether the Disclaimers page is read before `scripts/robots-verdict.mjs` runs on the row-265 probe is open for the main thread (answered 6.10, tick 55: it is read first, "Terms links found after the verdicts" below).',
+    );
+    // Its "Lines now" cell gives the lines as they are since tick 55, and tick 54's beside them, dated.
+    const euLines = euRow.split(" | ").at(-1)!;
+    expect(euLines).toBe(
+      'The terms line is paused as read (a privacy notice, no site terms); since 6.10, tick 55, a terms- line for the footer\'s Disclaimers page is queued (ZERO-TESTS row 267), the robots.txt probe (row 265) is paused with its capture unjudged, and 1 rules URL is refused by `termsGate` (6.10, tick 54: the probe queued for the next weekly run and the rules URL waiting on `scripts/robots-verdict.mjs`; "Terms links found after the verdicts" below) |',
+    );
+    expect([LINKS_FOUND["eurocontrol.int"].row, LINKS_FOUND["eurocontrol.int"].probe.row]).toEqual([267, 265]);
+    expect(rulesOf("eurocontrol.int").map((e) => termsGate(e.url, e.slug, verdicts()).ok)).toEqual([false]);
     // virtualembryo.ai: the Stanford scope question, open for the main thread before its rules page is dispatched.
     const ve = v["virtualembryo.ai"].note!;
     expect(ve).toContain("Open for the main thread (tick-54 review): ");
@@ -1900,8 +2095,13 @@ describe("tick 54: the terms read on 6.10", () => {
     const v = verdicts();
     const pending = Object.keys(v).filter((s) => ["NO_TERMS", "TERMS_PENDING"].includes(v[s].verdict));
     const kindless = pending.filter((s) => !KIND.test(v[s].note ?? ""));
-    expect(kindless.sort()).toEqual([...NO_KIND].sort());
-    for (const [site, word] of Object.entries(NAMED_KINDS)) expect(v[site].note!.startsWith(`${word} `), site).toBe(true);
+    // NO_KIND as the terms read left it, and (tick 55) the two sites a terms link reopened: their terms pages are not fetched
+    // yet, so no kind fits, and each note opens "terms unread:".
+    expect(kindless.sort()).toEqual([...NO_KIND, ...Object.keys(LINKS_FOUND)].sort());
+    for (const site of Object.keys(LINKS_FOUND)) expect(v[site].note!.startsWith("terms unread: "), site).toBe(true);
+    // The kind words; eurocontrol.int's as tick 54 left it (exhaustive-negative, before the Disclaimers link reopened it).
+    const t54 = tick54(v);
+    for (const [site, word] of Object.entries(NAMED_KINDS)) expect(t54[site].note!.startsWith(`${word} `), site).toBe(true);
     // The refusal-type and exhaustive-negative notes kept their words; nevo's gained its [robots-bar] sentence, and still
     // opens exhaustive-negative (only scripts/robots-verdict.mjs may change its verdict).
     for (const site of ["bitsofgold.co.il", "greeninvoice.co.il", "zazzle.com", "medium.com", "knesset.gov.il", "kolzchut.org.il", "www.gov.il"]) {
@@ -1923,8 +2123,9 @@ describe("tick 54: the terms read on 6.10", () => {
 
   it("keeps the copying field when scripts/robots-verdict.mjs sets a verdict (judgeSite, on a site of the real file)", () => {
     // agenthon.net as tick 45 left it, with the copying field the file now gives it, judged on the frozen copy of the
-    // robots.txt it read on 6.10: the entry the script writes keeps the field, last, as the file has it.
-    const v = verdicts();
+    // robots.txt it read on 6.10: the entry the script writes keeps the field, last, as the file has it. (Its tick-54 entry,
+    // from the fixture: agenthon.net is TERMS_PENDING since tick 55.)
+    const v = tick54(verdicts());
     const file = JSON.parse(readFileSync(VERDICTS, "utf8"));
     const site = "agenthon.net";
     const then = tick45(v);
@@ -2175,12 +2376,14 @@ describe("tick 54: the shell terms pages rendered once (6.10)", () => {
     expect(row).toContain("retired 30.9 (tick 31): a JavaScript shell with reCAPTCHA, only the title rendered; re-queued once in js mode 6.10 (ruling 6.10 row 21 (c) 3(3))");
   });
 
-  it("records both in the audit note's last section: decision 3, the two rows and the copying count", () => {
+  it("records both in the audit note's section after the terms read: decision 3, the two rows and the copying count", () => {
     const audit = readFileSync(AUDIT, "utf8");
     const start = audit.indexOf("## Shell terms pages rendered once (6.10.2026, tick 54)");
     expect(start).toBeGreaterThan(audit.indexOf("## Terms read (6.10.2026, tick 54)"));
-    const text = audit.slice(start);
-    expect(text.indexOf("\n## ", 1)).toBe(-1);
+    // The section ends where tick 55's begins, the note's last since then.
+    const end = audit.indexOf("\n## ", start + 1);
+    const text = audit.slice(start, end + 1);
+    expect(audit.slice(end + 1).startsWith("## Terms links found after the verdicts (6.10.2026, tick 55)\n")).toBe(true);
     expect(text).toContain("whatever comes back is the answer (3(2)(vi))");
     expect(text).toContain("read in full by one Opus reader and then by one adversarial Opus verifier");
     expect(text).toContain("the main thread (Fable 5.1, tick 54) ruled on the two records");
@@ -2213,6 +2416,360 @@ describe("tick 54: the shell terms pages rendered once (6.10)", () => {
     expect(post).toContain("NO_TERMS (refusal-type; shell before)");
     expect(text).toContain("eleven entries of `terms-verdicts.json` are barred and 120 unread");
     expect(Object.values(v).filter((e) => e.copying === "barred")).toHaveLength(11);
+    expect(ADDRESS.test(text)).toBe(false);
+  });
+});
+
+/**
+ * Tick 55 (6.10.2026): the terms links found after the verdicts. Two NO_TERMS verdicts rested on "no terms link anywhere"
+ * (ruling 30.9 16(d) D2(iv); ruling R1), and each site's own capture links a terms-like page in its footer, so the main
+ * thread ruled both TERMS_PENDING again (logs/CHANNEL_LOOP.md §9, "Queued 6.10 (tick 54)" item 1), checked 6.10: one plain
+ * terms- line each, queued once by queue-zero-test.mjs with its ZERO-TESTS row; the robots.txt probe of each paused; no
+ * robots verdict for either before the reading (D2(iv): a TERMS_PENDING site gets its terms page and nothing else); their
+ * rules URLs refused by the gate. agenthon.net's NO_TERMS_ROBOTS_OK is the first robots verdict taken back, and
+ * scripts/robots-verdict.mjs needed no change for it.
+ */
+describe("tick 55: the terms links found after the verdicts", () => {
+  const fixture = () => JSON.parse(readFileSync(LINKS_FIXTURE, "utf8")) as Record<string, Entry>;
+  const pendingWhy = (site: string) =>
+    `${site} is TERMS_PENDING: only its terms page (a terms-... slug) may be queued until its terms are read (ruling 30.9 16(d) D2(iv))`;
+
+  it("keeps the two tick-54 entries as a fixture, as terms-verdicts.json held them at 364bf71, and ansperformance.eu's parenthetical on eurocontrol.int names it as it is", () => {
+    const bytes = readFileSync(LINKS_FIXTURE);
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(LINKS_FIXTURE_SHA256);
+    expect(Object.keys(fixture()).sort()).toEqual(Object.keys(LINKS_FOUND).sort());
+    // The tick-54 entries are what the "tick 54" blocks hold: agenthon.net NO_TERMS_ROBOTS_OK as the script writes it,
+    // eurocontrol.int NO_TERMS, exhaustive-negative.
+    expect(isRobotsOkVerdict(fixture()["agenthon.net"])).toBe(true);
+    expect(isExhaustiveNegative(fixture()["eurocontrol.int"])).toBe(true);
+    // ansperformance.eu's note names eurocontrol.int's entry as it is now, and the tick-54 words are gone from it. Only the
+    // parenthetical is checked: the rest of that note, and every other entry, may change in later ticks without this test.
+    const ans = verdicts()["ansperformance.eu"].note!;
+    expect(ans.split(ANS_NOW)).toHaveLength(2);
+    expect(ans).not.toContain(ANS_TICK54);
+    // Where 364bf71 is reachable (a full clone), the fixture is byte for byte its two entries, and ansperformance.eu's note
+    // then held the tick-54 parenthetical once. A shallow CI checkout has no 364bf71; the pinned sha256 still holds the
+    // fixture. Both are facts about 364bf71, which no later commit can change.
+    let base: string | null = null;
+    try {
+      base = execFileSync("git", ["show", `${LINKS_BASE}:${VERDICTS}`], { stdio: ["ignore", "pipe", "ignore"], encoding: "utf8" });
+    } catch {
+      base = null;
+    }
+    if (base === null) return;
+    const then = JSON.parse(base).sites as Record<string, Entry>;
+    for (const [site, e] of Object.entries(fixture())) expect(e, site).toEqual(then[site]);
+    expect(then["ansperformance.eu"].note!.split(ANS_TICK54)).toHaveLength(2);
+    expect(then["ansperformance.eu"].note!).not.toContain(ANS_NOW);
+  });
+
+  it("sets both TERMS_PENDING, checked 6.10, each source naming the terms URL and where its link was observed, and keeping tick 54's", () => {
+    const v = verdicts();
+    const t54 = tick54(v);
+    for (const [site, f] of Object.entries(LINKS_FOUND)) {
+      const e = v[site];
+      expect([e.verdict, e.checked, e.copying], site).toEqual(["TERMS_PENDING", "2026-10-06", "unread"]);
+      expect(e.copying, site).toBe(t54[site].copying);
+      expect(Object.keys(e), site).toEqual(["verdict", "source", "checked", "note", "copying"]);
+      // The source: the terms URL first (the terms- line's URL), where the link was observed, and the tick-54 source after
+      // the separator, once, byte for byte.
+      expect(t54[site].verdict, site).toBe(f.before);
+      expect(e.source.startsWith(`${f.url} (link observed in a capture: `), site).toBe(true);
+      expect(e.source.slice(0, e.source.indexOf(" (")), site).toBe(f.url);
+      expect(e.source, site).toContain(`${f.observed[0].file}:${f.observed[0].line}`);
+      expect(e.source, site).toContain(
+        'Tick 55, ruled by the main thread (tick 54 §9 item 1; research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md, "Terms links found after the verdicts (6.10.2026, tick 55)")',
+      );
+      expect(e.source.endsWith(`${f.marker}${t54[site].source}`), site).toBe(true);
+      expect(e.source.split(f.marker), site).toHaveLength(2);
+      // The note: no kind word (the page is not fetched yet), the terms line and the paused probe by row, no robots verdict
+      // before the reading, and every rules line of the site, pinned.
+      expect(e.note, site).toMatch(/^terms unread: the footer of /);
+      expect(e.note, site).toContain(`${f.observed[0].file.replace(/\.(html|txt)$/, "")}.`);
+      expect(e.note, site).toContain(`(a terms- line, ZERO-TESTS row ${f.row}; ruling 30.9 16(d) D2(iii)-(iv)), plain and once`);
+      expect(e.note, site).toContain(`its robots.txt probe (${f.probe.url}, ZERO-TESTS row ${f.probe.row}) is paused`);
+      expect(e.note, site).toContain("scripts/robots-verdict.mjs is not run for the site before");
+      expect(e.note, site).toContain("(D2(iv): a TERMS_PENDING site gets its terms page and nothing else)");
+      expect(e.note, site).toContain("so the premise the NO_TERMS verdict rested on, no terms link anywhere (ruling 30.9 16(d) D2(iv); ruling R1");
+      expect(pinnedLines(e.note ?? ""), site).toEqual(f.rules);
+      expect(rulesOf(site).map((r) => r.n), site).toEqual(f.rules);
+      expect(isExhaustiveNegative(e) || isRobotsOkVerdict(e), site).toBe(false);
+      expect(ADDRESS.test(e.note ?? "") || ADDRESS.test(e.source), site).toBe(false);
+    }
+    expect(v["agenthon.net"].note).toContain("is reversed, the first robots verdict taken back");
+    expect(v["agenthon.net"].note).toContain(`the footer's Rules page (/rules/, ${AGENTHON_COPY}.html:2581)`);
+    expect(v["eurocontrol.int"].note).toContain("is answered: it is read first (tick 54 §9 item 1)");
+    expect(v["eurocontrol.int"].note).toContain("The privacy-notice line (ZERO-TESTS row 242) stays paused as read");
+    // What follows the reading is not decided in advance: the verdict and the probe are the main thread's call then.
+    expect(v["eurocontrol.int"].note).toContain(
+      "Whether it bars automated access or copying is unknown until read, and what the verdict and the probe become once it is read is the main thread's call.",
+    );
+    for (const site of Object.keys(LINKS_FOUND)) expect(v[site].note, site).not.toMatch(/goes back to NO_TERMS|probe resumes/);
+    // ansperformance.eu's note names eurocontrol.int's entry as it is now.
+    expect(v["ansperformance.eu"].note).toContain(ANS_NOW);
+  });
+
+  it("observes each link in a frozen copy whose cited lines hold it, and the link resolves to the queued terms URL", () => {
+    const urlsTxt = readFileSync(URLS, "utf8");
+    const listed: Set<string> = listedNames(urlsTxt);
+    const manifest = readFileSync("research/rendered/FROZEN.sha256", "utf8");
+    for (const [site, f] of Object.entries(LINKS_FOUND)) {
+      for (const { file, line, words } of f.observed) {
+        expect(readFileSync(file, "utf8").split("\n")[line - 1], `${file}:${line}`).toContain(words);
+      }
+      const slug = f.observed[0].file.replace(/^research\/rendered\//, "").replace(/\.(html|txt)$/, "");
+      const meta = JSON.parse(readFileSync(`research/rendered/${slug}.meta.json`, "utf8"));
+      const href = f.observed[0].words.match(/href="([^"]+)"/)![1];
+      expect(new URL(href, meta.url).href, site).toBe(f.url);
+      expect(siteOfUrl(meta.url), site).toBe(site);
+      // A frozen copy: it names itself and its live capture, its body is what its sha256 says, FROZEN.sha256 records its
+      // files, and no urls.txt line names it, so no render rewrites the lines cited.
+      expect(meta.slug, site).toBe(slug);
+      expect(meta.frozen?.from, site).toBe(`research/rendered/${slug.slice(0, -"-2026-10-06".length)}.meta.json`);
+      expect(createHash("sha256").update(readFileSync(meta.bodyPath)).digest("hex"), site).toBe(meta.sha256);
+      for (const ext of ["txt", "html", "meta.json"]) expect(manifest, `${slug}.${ext}`).toContain(`  ${slug}.${ext}\n`);
+      expect(listed.has(slug), site).toBe(false);
+      expect(meta.status, site).toBe(200);
+    }
+    // agenthon.net's: the prize capture of the home page of 6.10, as 007f7f0 stored it, frozen in tick 55 (a read page,
+    // nothing flagged). eurocontrol.int's: the privacy notice's copy the terms read of tick 54 froze.
+    const ag = JSON.parse(readFileSync(`${AGENTHON_COPY}.meta.json`, "utf8"));
+    expect([ag.url, ag.fetchedAt, ag.frozen.commit, ag.frozen.on, ag.frozen.flagged]).toEqual([
+      "https://www.agenthon.net/?ref=mlcontests",
+      "2026-10-06T08:46:30.971Z",
+      "007f7f0",
+      "2026-10-06",
+      undefined,
+    ]);
+    expect(classifyCapture(readCapture(AGENTHON_COPY.replace(/^research\/rendered\//, ""))).kind).toBe("ok");
+    const eu = JSON.parse(readFileSync(`${EURO_COPY}.meta.json`, "utf8"));
+    expect([eu.url, eu.frozen.commit]).toEqual(["https://www.eurocontrol.int/info/privacy-and-website-terms-use", RENDER_COMMIT]);
+  });
+
+  it("ties every line, row, fetch time and commit the tick-55 texts cite to a listed frozen-copy line, the site's ZERO-TESTS rows and the copy's meta", () => {
+    const v = verdicts();
+    const t54 = tick54(v);
+    const rows = zeroRows();
+    const urlsLines = readFileSync(URLS, "utf8").split("\n");
+    const audit = readFileSync(AUDIT, "utf8");
+    const section = audit.slice(audit.indexOf("## Terms links found after the verdicts (6.10.2026, tick 55)"));
+    const tableRow = (site: string) => section.split("\n").find((l) => l.startsWith(`| \`${site}\` | `))!;
+    const prose = section
+      .split("\n")
+      .filter((l) => !l.startsWith("|"))
+      .join("\n");
+    // The source as tick 55 wrote it: everything before the separator, after which it keeps tick 54's byte for byte.
+    const newSource = (site: string) => v[site].source.slice(0, v[site].source.indexOf(LINKS_FOUND[site].marker));
+    /**
+     * Every line a text cites in a research/rendered file: "<file>:N" or "<file>:N-M", and a bare ":N" or ":N-M" after a
+     * space or "(" read against the file named last before it (a time such as 08:46:30 or 12:05 has a digit before its
+     * colon, and a pinned "ai-allowed-events.urls.txt@548be52:N" is pinnedLines' to check). A range cites every line in it.
+     */
+    const lineCites = (text: string, at: string) => {
+      const out: string[] = [];
+      let file: string | null = null;
+      const re = /(research\/rendered\/[a-z0-9.-]+?\.(?:html|txt|meta\.json))(?::(\d+)(?:-(\d+))?)?|(?<=[\s(]):(\d+)(?:-(\d+))?(?![\d:])/g;
+      for (const m of text.matchAll(re)) {
+        if (m[1]) file = m[1];
+        const from = m[2] ?? m[4];
+        if (from === undefined) continue;
+        expect(file, `${at}: ${m[0]} names no file before it`).not.toBeNull();
+        const to = m[3] ?? m[5] ?? from;
+        expect(Number(to) >= Number(from), `${at}: ${m[0]}`).toBe(true);
+        for (let n = Number(from); n <= Number(to); n += 1) out.push(`${file}:${n}`);
+      }
+      return out;
+    };
+    /** Every ZERO-TESTS row a text cites: "row N", "rows N and M", "rows N-M", "row-N"; not a ruling's ("ruling 6.10 row 21"). */
+    const rowCites = (text: string) => {
+      const out: number[] = [];
+      for (const m of text.matchAll(/(?<!ruling [\d.]+ )\brows? (\d+)(?:(-| and )(\d+))?\b|\brow-(\d+)\b/g)) {
+        const from = Number(m[1] ?? m[4]);
+        const to = m[3] === undefined ? from : Number(m[3]);
+        for (let n = from; n <= (m[2] === " and " ? from : to); n += 1) out.push(n);
+        if (m[2] === " and ") out.push(to);
+      }
+      return out;
+    };
+    const listed = new Map(Object.entries(LINKS_FOUND).map(([site, f]) => [site, new Set(f.observed.map((o) => `${o.file}:${o.line}`))]));
+    const all = new Set([...listed.values()].flatMap((s) => [...s]));
+    const citedBy = new Map<string, Set<string>>([...listed.keys()].map((site) => [site, new Set<string>()]));
+    for (const [site, f] of Object.entries(LINKS_FOUND)) {
+      const comment = listedRow(f.row).comment!;
+      const texts: [string, string][] = [
+        ["source", newSource(site)],
+        ["note", v[site].note!],
+        ["urls.txt comment", comment],
+        ["audit table", tableRow(site)],
+      ];
+      for (const [what, text] of texts) {
+        const at = `${site} ${what}`;
+        const cites = lineCites(text, at);
+        expect(cites.length, at).toBeGreaterThan(0);
+        for (const c of cites) {
+          expect(listed.get(site)!.has(c), `${at} cites ${c}`).toBe(true);
+          citedBy.get(site)!.add(c);
+        }
+        // Each row it cites is a ZERO-TESTS row of this site: its terms line, its probe, or (eurocontrol.int) the
+        // privacy-notice line the 6.10 reading paused.
+        for (const n of rowCites(text)) expect(siteOfUrl(rows.get(n)?.url ?? "https://row.missing/"), `${at} cites row ${n}`).toBe(site);
+      }
+      expect(rowCites(comment), site).toEqual([f.row]);
+      // The capture each source and table row names: its URL, its fetch time and the commit its frozen copy was made from,
+      // as the copy's meta holds them.
+      const meta = JSON.parse(readFileSync(`${f.observed[0].file.replace(/\.(html|txt)$/, "")}.meta.json`, "utf8"));
+      const captured = [...newSource(site).matchAll(/the capture is of (\S+), fetched (\S+) by [^,()]+, frozen as ([0-9a-f]{7}) stored it\)/g)];
+      expect(captured.map((m) => [m[1], m[2], m[3]]), site).toEqual([[meta.url, meta.fetchedAt, meta.frozen.commit]]);
+      const cell = tableRow(site).split(" | ")[2];
+      const times = [...cell.matchAll(/fetched (\d{4}-\d\d-\d\dT[\d:.]+Z)/g)].map((m) => m[1]);
+      for (const t of times) expect([meta.fetchedAt, meta.fetchedAt.replace(/\.\d+Z$/, "Z")], site).toContain(t);
+      const commits = [...cell.matchAll(/as ([0-9a-f]{7}) stored it/g)].map((m) => m[1]);
+      expect(commits, site).toEqual([meta.frozen.commit]);
+      expect(t54[site].verdict, site).toBe(f.before);
+    }
+    // The section's prose: every line it cites is one of either site's, and every row one of either site's.
+    for (const c of lineCites(prose, "audit prose")) {
+      expect(all.has(c), `audit prose cites ${c}`).toBe(true);
+      for (const [site, set] of listed) if (set.has(c)) citedBy.get(site)!.add(c);
+    }
+    for (const n of rowCites(prose)) expect(Object.keys(LINKS_FOUND), `audit prose cites row ${n}`).toContain(siteOfUrl(rows.get(n)?.url ?? "https://row.missing/"));
+    // ...and every listed line is cited somewhere, so the list holds nothing the texts do not rest on.
+    for (const [site, set] of listed) expect([...citedBy.get(site)!].sort(), site).toEqual([...set].sort());
+    // The privacy-notice line both eurocontrol.int texts name is the row of its paused terms-eurocontrol line.
+    const privacy = [...rows].filter(([, r]) => r.url === "https://www.eurocontrol.int/info/privacy-and-website-terms-use").map(([n]) => n);
+    expect(privacy).toEqual([242]);
+    expect(listedRow(privacy[0]).line!.endsWith(`\t${TERMS_LINES["eurocontrol.int"].slug}`)).toBe(true);
+    expect(urlsLines.filter((l) => l.endsWith(`\t${TERMS_LINES["eurocontrol.int"].slug}`))).toEqual([listedRow(privacy[0]).line]);
+    expect(v["eurocontrol.int"].note).toContain(`The privacy-notice line (ZERO-TESTS row ${privacy[0]}) stays paused as read`);
+    expect(tableRow("eurocontrol.int")).toContain(`the privacy-notice line (row ${privacy[0]}) paused as read`);
+  });
+
+  it("queues one plain terms- line for each through queue-zero-test.mjs, under its ZERO-TESTS row's comment, the site's only active line", () => {
+    const v = verdicts();
+    const rows = zeroRows();
+    const text = readFileSync(URLS, "utf8");
+    const parsed = parseUrlList(text) as { url: string; slug: string; js?: boolean }[];
+    for (const [site, f] of Object.entries(LINKS_FOUND)) {
+      // The one line naming the URL, active and plain, under the row's comment, in the comment form of the tick-45 terms-
+      // lines: the row, the site TERMS_PENDING, where the URL comes from (the observed frozen copy), the once-fetch.
+      expect(text.split("\n").filter((l) => l.includes(f.url)), site).toEqual([`${f.url}\t${f.slug}`]);
+      const { comment, line } = listedRow(f.row);
+      expect(line, site).toBe(`${f.url}\t${f.slug}`);
+      expect(comment!.startsWith(`# research/channel-loop/ZERO-TESTS.md row ${f.row} — ${site} TERMS_PENDING (tick 55, a terms link found after the `), site).toBe(true);
+      expect(comment, site).toContain(`): URL from the footer link href="${new URL(f.url).pathname}" at ${f.observed[0].file}:${f.observed[0].line}`);
+      expect(comment!.endsWith(", rendered grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (6.10.2026)."), site).toBe(true);
+      // Its ZERO-TESTS row, in the form of the tick-45 terms rows.
+      expect(rows.get(f.row)?.row, site).toBe(
+        `| ${f.row} | ${f.candidate} | ${f.url} | whether ${site}'s site-use terms bar automated access or storing captures, before its rules pages are rendered |`,
+      );
+      // The site's only active line, which the gate passes plain: a TERMS_PENDING site's terms page.
+      expect(active().filter((e) => siteOfUrl(e.url) === site).map((e) => [e.url, e.slug]), site).toEqual([[f.url, f.slug]]);
+      expect(parsed.find((e) => e.slug === f.slug)?.js, site).toBeFalsy();
+      expect(termsGate(f.url, f.slug, v), site).toEqual({ ok: true, site, verdict: "TERMS_PENDING" });
+    }
+    // The two rows are the only ZERO-TESTS rows tick 55 queued (not "the last rows": a later tick adds its own after them).
+    const tick55Rows = [...rows].filter(([, r]) => r.row.includes(" | terms audit (tick 55): ")).map(([n]) => n);
+    expect(tick55Rows).toEqual(Object.values(LINKS_FOUND).map((f) => f.row));
+  });
+
+  it("pauses each site's robots.txt probe with the reason the ruling gives, keeps its capture, and no robots verdict runs", () => {
+    const v = verdicts();
+    const file = JSON.parse(readFileSync(VERDICTS, "utf8"));
+    const text = readFileSync(URLS, "utf8");
+    for (const [site, f] of Object.entries(LINKS_FOUND)) {
+      const { line } = listedRow(f.probe.row);
+      expect(line, site).toBe(`${PROBE_PAUSED(site)} — ${f.probe.url}\t${f.probe.slug}`);
+      expect(text.split("\n").filter((l) => l.endsWith(`\t${f.probe.slug}`)), site).toEqual([line]);
+      expect(pausedLines().filter((p) => p.slug === f.probe.slug).map((p) => p.url), site).toEqual([f.probe.url]);
+      // The gate refuses the probe now (a TERMS_PENDING site gets its terms page and nothing else), and passed it at tick 54.
+      expect(termsGate(f.probe.url, f.probe.slug, v), site).toEqual({ ok: false, site, verdict: "TERMS_PENDING", why: pendingWhy(site) });
+      expect(termsGate(f.probe.url, f.probe.slug, tick54(v)).ok, site).toBe(true);
+      // The capture stays on disk, and robots-verdict.mjs, run on any list, declines the site: it judges only an
+      // exhaustive-negative NO_TERMS site.
+      expect(existsSync(`research/rendered/${f.probe.slug}.meta.json`), site).toBe(true);
+      for (const urls of [readFileSync(FIXTURE, "utf8"), readFileSync(PRIZE_URLS, "utf8"), text]) {
+        const out = judgeSite({ site, verdicts: file, urls, today: ROBOTS_CHECKED });
+        expect(out.changed, site).toBe(false);
+        expect(out.why, site).toContain("NO_TERMS_ROBOTS_OK is set only for a NO_TERMS site whose note opens exhaustive-negative");
+      }
+    }
+    // Each probe's ZERO-TESTS row says why it is paused; agenthon.net's names the script that set the verdict reversed.
+    expect(zeroRows().get(LINKS_FOUND["agenthon.net"].probe.row)?.row).toContain(
+      "**PAUSED 6.10 (tick 55): agenthon.net is TERMS_PENDING again: its home page's footer links a Terms page (row 266), so the robots verdict scripts/robots-verdict.mjs set from this probe's capture is reversed and the probe waits on the terms reading; its capture is kept.** |",
+    );
+    // eurocontrol.int's privacy-notice row (242), read on 6.10, points at the Disclaimers row tick 55 queued, dated.
+    expect(zeroRows().get(242)?.row).toMatch(
+      /the robots\.txt probe is row 265\.\*\* \*\*6\.10 \(tick 55\): eurocontrol\.int is TERMS_PENDING again: the notice's footer links a Disclaimers page, queued as row 267; this line stays paused as read, and the probe \(row 265\) is paused\.\*\* \|$/,
+    );
+    // eurocontrol.int's probe: captured by the 12:05 weekly run of 6.10 (a robots.txt the site served), and nothing rests on it.
+    const euMeta = JSON.parse(readFileSync(`research/rendered/${EURO_PROBE.slug}.meta.json`, "utf8"));
+    expect([euMeta.url, euMeta.status]).toEqual([EURO_PROBE.url, 200]);
+    expect(euMeta.contentType).toMatch(/^text\/plain\b/);
+    expect(readFileSync(VERDICTS, "utf8")).not.toContain(`research/rendered/${EURO_PROBE.slug}.`);
+    // urls-pause-comments.mjs --check finds nothing stale, and lists eurocontrol.int's privacy-notice line as one the gate
+    // would pass, which stays paused: that page was read.
+    const sync = syncPauseComments(text, v, { today: "6.10.2026" });
+    expect(sync.changes).toEqual([]);
+    const unpause = (sync.unpause as { site: string; slug: string }[]).filter((u) => Object.hasOwn(LINKS_FOUND, u.site)).map((u) => u.slug);
+    expect(unpause).toEqual(["terms-eurocontrol"]);
+    expect(applyVerdicts(text, v).paused).toEqual([]);
+  });
+
+  it("refuses every rules URL of both sites, in the audited list and in the live prize list, until their terms are read", () => {
+    const v = verdicts();
+    for (const site of Object.keys(LINKS_FOUND)) {
+      for (const e of rulesOf(site)) expect(termsGate(e.url, e.slug, v), e.url).toEqual({ ok: false, site, verdict: "TERMS_PENDING", why: pendingWhy(site) });
+      // agenthon.net's rules URL passed at tick 54 (NO_TERMS_ROBOTS_OK); eurocontrol.int's never did.
+      for (const e of rulesOf(site)) expect(termsGate(e.url, e.slug, tick54(v)).ok, e.url).toBe(site === "agenthon.net");
+      // The live list too, whatever the weekly job has made of it.
+      for (const e of linesOf(readFileSync(PRIZE_URLS, "utf8")).filter((x) => siteOfUrl(x.url) === site)) {
+        expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(false);
+      }
+    }
+    // agenthon.net's footer Rules page, the event's own rules, waits behind the terms like every other page of the site.
+    expect(termsGate("https://www.agenthon.net/rules/", "agenthon-rules", v).why).toBe(pendingWhy("agenthon.net"));
+  });
+
+  it("records both in the audit note's last section: the table, the first reversal of a robots verdict, and the counts as the verdicts give them", () => {
+    const audit = readFileSync(AUDIT, "utf8");
+    const start = audit.indexOf("## Terms links found after the verdicts (6.10.2026, tick 55)");
+    expect(start).toBeGreaterThan(audit.indexOf("## Shell terms pages rendered once (6.10.2026, tick 54)"));
+    const text = audit.slice(start);
+    expect(text.indexOf("\n## ", 1)).toBe(-1);
+    const v = verdicts();
+    const t54 = tick54(v);
+    const rows = text.split("\n").filter((l) => /^\| `[a-z0-9.-]+` \|/.test(l));
+    expect(rows.map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual(Object.keys(LINKS_FOUND));
+    for (const row of rows) {
+      const cells = row.split(" | ");
+      expect(cells, row.slice(0, 40)).toHaveLength(6);
+      const site = cells[0].match(/`([a-z0-9.-]+)`/)![1];
+      const f = LINKS_FOUND[site];
+      expect(cells[1].startsWith(`${t54[site].verdict} (`), site).toBe(true);
+      expect(cells[2].startsWith(`\`${f.observed[0].file}:${f.observed[0].line}\``), site).toBe(true);
+      expect(cells[3], site).toBe(`${f.url} (row ${f.row})`);
+      expect(cells[4], site).toBe(v[site].verdict);
+      expect(cells[5], site).toContain(`the robots.txt probe (row ${f.probe.row}) paused`);
+      expect(pinnedLines(cells[5]), site).toEqual(f.rules);
+    }
+    expect(text).toContain("**The first reversal of a robots verdict.**");
+    // The counts: 16 NO_TERMS_ROBOTS_OK sites (17 at tick 54), their 19 rules URLs (20), and 33 of the 101 audited rules URLs
+    // through the gate (34).
+    const cleared = audited().filter((e) => ROBOTS_OK.includes(siteOfUrl(e.url)));
+    const clearedThen = audited().filter((e) => ROBOTS_OK_TICK54.includes(siteOfUrl(e.url)));
+    expect([ROBOTS_OK.length, cleared.length, ROBOTS_OK_TICK54.length, clearedThen.length]).toEqual([16, 19, 17, 20]);
+    for (const e of cleared) expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(true);
+    expect(text).toContain(`Now ${ROBOTS_OK.length} sites are NO_TERMS_ROBOTS_OK and their ${cleared.length} rules URLs pass \`termsGate\``);
+    expect(text).toContain(
+      `The "Robots verdicts" section above is tick 54's record (${ROBOTS_OK_TICK54.length} sites, ${clearedThen.length} rules URLs); where a statement of it no longer holds, agenthon.net's verdict and the count of rules URLs that pass \`termsGate\`, it now gives the value since tick 55 with tick 54's beside it, dated, and so does eurocontrol.int's "Lines now" cell in "Terms read".`,
+    );
+    const open = audited().filter((e) => termsGate(e.url, e.slug, v).ok).length;
+    const openThen = audited().filter((e) => termsGate(e.url, e.slug, t54).ok).length;
+    expect([open, openThen]).toEqual([33, 34]);
+    expect(text).toContain(`so the gate admits ${open} of the 101 audited rules URLs`);
+    expect(text).toContain(`against ${openThen} at the end of tick 54`);
+    // The kindless notes: the 23 the terms read named and these two.
+    expect(text).toContain('so the notes with no kind word are 25, the 23 named in "Terms read" above and these two');
     expect(ADDRESS.test(text)).toBe(false);
   });
 });
