@@ -740,21 +740,21 @@ https://cms-static-pages-assets.displate.com/DISPLATE_TERMS_OF_USE_US_26_06clean
 # research/channel-loop/ZERO-TESTS.md row 235 — kaggle.com TERMS_PENDING (tick 45 prize-terms audit): URL from tosdr/tosdr-snapshots Kaggle/Terms of Service.html:76 (og:url) at b44ae1b, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)); every snapshot of the page is a JavaScript shell, so the capture may hold no terms text (5.10.2026).
 https://www.kaggle.com/terms	terms-kaggle
 # research/channel-loop/ZERO-TESTS.md row 236 — devpost.com TERMS_PENDING (tick 45 prize-terms audit): URL from challengepost/reimagine app/views/reimagine2/devpost/_footer.html.erb:101 at abc3b7d, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
-https://info.devpost.com/legal/terms-of-service	terms-devpost
+# paused (terms audit): devpost.com — see TERMS_BARRED in scripts/render-watch.mjs — https://info.devpost.com/legal/terms-of-service	terms-devpost
 # research/channel-loop/ZERO-TESTS.md row 237 — grand-challenge.org TERMS_PENDING (tick 45 prize-terms audit): URL derived from the platform's own source (exception, ruling R2, 5.10.2026): DIAGNijmegen/rse-grand-challenge app/config/settings.py:767 (the platform's own terms-URL template) on the domain README.md:1 and app/grandchallenge/subdomains/utils.py:24 fix, at ff2fb5c, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)); a 404, or a redirect to another host, retires the line (5.10.2026).
-https://grand-challenge.org/policies/terms-of-service/	terms-grand-challenge
+# paused (terms read, left paused, 6.10.2026): grand-challenge.org is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://grand-challenge.org/policies/terms-of-service/	terms-grand-challenge
 # research/channel-loop/ZERO-TESTS.md row 238 — zindi.africa TERMS_PENDING (tick 45 prize-terms audit): URL from research/colony-sweep/scouts/bounties-grants--data-challenges.md:67 (a scout's to-do, weak); Zindi's own rules name a Terms of Use (ZindiAfrica/AI-for-Equity-Challenges-Getting-Started-with-AWS-Resources SUAOutsmartingOutbreaksChallenge.md:166 at 12deb40, github grade); plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
-https://zindi.africa/terms	terms-zindi
+# paused (terms audit): zindi.africa — see TERMS_BARRED in scripts/render-watch.mjs — https://zindi.africa/terms	terms-zindi
 # research/channel-loop/ZERO-TESTS.md row 239 — stanford.edu TERMS_PENDING (tick 45 prize-terms audit): URL from SU-SWS/decanter core/src/templates/components/global-footer/global-footer.twig:34-35 at 63cda9d (Stanford's universal footer), github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
-https://www.stanford.edu/site/terms/	terms-stanford
+# paused (terms read, left paused, 6.10.2026): stanford.edu is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://www.stanford.edu/site/terms/	terms-stanford
 # research/channel-loop/ZERO-TESTS.md row 240 — adaptionlabs.ai TERMS_PENDING (tick 45 prize-terms audit): URL from adaptionlabs/adaption-api-docs src/content/docs/resources/faq.mdx:66 at 7ba014b, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
 https://adaptionlabs.ai/terms-of-service	terms-adaptionlabs
 # research/channel-loop/ZERO-TESTS.md row 241 — virtualembryo.ai TERMS_PENDING (tick 45 prize-terms audit): URL from xxx12e/vec-community-kit rules-watch/pages/terms.json:138 at 2cf9662 and gh-dv-openclaw/vec-submit-check README.md:202 at 521cce3, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
 https://virtualembryo.ai/challenge/terms	terms-virtualembryo
 # research/channel-loop/ZERO-TESTS.md row 242 — eurocontrol.int TERMS_PENDING (tick 45 prize-terms audit): URL from euctrl-pru/aiu-portal config.toml:594 and themes/pru-theme/layouts/partials/footer.html:222 at 6a64528, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
-https://www.eurocontrol.int/info/privacy-and-website-terms-use	terms-eurocontrol
+# paused (terms read: a privacy notice, no site terms, 6.10.2026): eurocontrol.int is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.eurocontrol.int/info/privacy-and-website-terms-use	terms-eurocontrol
 # research/channel-loop/ZERO-TESTS.md row 243 — opensky-network.org TERMS_PENDING (tick 45 prize-terms audit): URL from openskynetwork/opensky-api README.md:4 and docs/free/index.rst:28 at c4af9c9, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)); the site says it may block hyperscaler IPs (5.10.2026).
-https://opensky-network.org/about/terms-of-use	terms-opensky
+# retired (ruling 30.9 16(d) D2(iv): the site refused the runner) — https://opensky-network.org/about/terms-of-use	terms-opensky
 # research/channel-loop/ZERO-TESTS.md row 244 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://hub.crunchdao.com/robots.txt	robots-crunchdao
 # research/channel-loop/ZERO-TESTS.md row 245 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
@@ -797,3 +797,5 @@ https://www.health-data-hub.fr/robots.txt	robots-health-data-hub
 https://2026.ijcai.org/robots.txt	robots-ijcai-2026
 # research/channel-loop/ZERO-TESTS.md row 264 — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://competitions.mozilladatacollective.com/robots.txt	robots-mozilladatacollective
+# research/channel-loop/ZERO-TESTS.md row 265 — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (6.10.2026).
+https://www.eurocontrol.int/robots.txt	robots-eurocontrol

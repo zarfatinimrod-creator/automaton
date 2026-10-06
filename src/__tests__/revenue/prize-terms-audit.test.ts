@@ -11,6 +11,7 @@ import {
   robotsDecision,
   robotsRulesFor,
   robotsTxtUrl,
+  termsBarred,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/render-watch.mjs";
 import {
@@ -59,6 +60,18 @@ import {
  * the tick-45 audit as it was (tick45() reads it back out of the file: a NO_TERMS_ROBOTS_OK source keeps the NO_TERMS
  * source after "; NO_TERMS before: "), and the "tick 54" block holds the 6.10 progression, each verdict re-derived by
  * the script's own judgeSite from the committed captures and the fixture.
+ *
+ * Tick 54 (6.10.2026), later the same day: the terms pages of the nine TERMS_PENDING sites, captured by that render, were
+ * read. Six were read pages, frozen first (scripts/freeze-capture.mjs, <slug>-2026-10-06) and read in full by one Opus
+ * reader and one adversarial Opus verifier each, with the main thread's verdicts: devpost.com and zindi.africa BARRED
+ * (TERMS_BARRED gains devpost.com, zindi.africa and zindi.world), grand-challenge.org and stanford.edu CONDITIONAL_UNMET,
+ * virtualembryo.ai NOT_BARRED, eurocontrol.int NO_TERMS (exhaustive-negative: a privacy notice only, so one robots.txt
+ * probe is queued). opensky-network.org refused the runner (403: NO_TERMS, refusal-type, its line retired); kaggle.com and
+ * adaptionlabs.ai served shells and stay TERMS_PENDING. Each changed source ends "; TERMS_PENDING before: " and the
+ * tick-45 source, so tick45() reads tick 45 back out of the file as it does for the robots verdicts; termsReadBefore()
+ * gives the state between the two (robots verdicts set, terms unread). Ruling 6.10 row 21's fold 2 rode along: every
+ * entry has a "copying" field and the NO_TERMS/TERMS_PENDING notes open with their kind word. The "tick 54: the terms
+ * read on 6.10" block holds that state.
  */
 const VERDICTS = "research/channel-loop/terms-verdicts.json";
 const URLS = "research/rendered/urls.txt";
@@ -68,7 +81,7 @@ const PRIZE_URLS = "research/measurements/ai-allowed-events.urls.txt";
 const PIN = "548be52";
 const FIXTURE = `src/__tests__/revenue/fixtures/ai-allowed-events-${PIN}.urls.txt`;
 const FIXTURE_SHA256 = "3b37fb001dc04e50c313f704ded1cddde8a405b27b72819a19a04eeb2c03986c";
-type Entry = { verdict: string; source: string; checked: string; note?: string };
+type Entry = { verdict: string; source: string; checked: string; note?: string; copying?: string };
 type Line = { url: string; slug: string; n: number };
 const verdicts = () => JSON.parse(readFileSync(VERDICTS, "utf8")).sites as Record<string, Entry>;
 const active = () => parseUrlList(readFileSync(URLS, "utf8")) as { url: string; slug: string }[];
@@ -272,21 +285,34 @@ const RULINGS_SECTION = [
 ];
 /**
  * The render groups of the audit note's "What the reading can render", in order: the opening of each group's bullet, and
- * which rules URLs of the fixture belong to it (by the verdict of the URL's site; "probed" is a site with an active
- * robots- line in urls.txt). The last group held xiuwenz2.github.io until the masking fold (5.10, tick 48) made it
- * CONDITIONAL_MET; it is empty now, and the note's bullet says 0 URLs. The second group is the robots verdicts of 6.10
- * (tick 54): a NO_TERMS site scripts/robots-verdict.mjs set to NO_TERMS_ROBOTS_OK leaves the fourth group, which on 5.10
- * held all 21 probed sites, for it. The counts test reads the groups twice, with the verdicts as they are and as tick45()
- * gives them back, and the note states both.
+ * which rules URLs of the fixture belong to it (by the verdict of the URL's site; `probe` is the state of the site's active
+ * robots- line in urls.txt: "captured" when research/rendered/<slug>.meta.json exists, "queued" when the weekly run has
+ * not fetched it yet, null when the site has none). The last group held xiuwenz2.github.io until the masking fold (5.10,
+ * tick 48) made it CONDITIONAL_MET; it is empty now, and the note's bullet says 0 URLs. The second group is the robots
+ * verdicts of 6.10 (tick 54): a NO_TERMS site scripts/robots-verdict.mjs set to NO_TERMS_ROBOTS_OK leaves the fourth group,
+ * which on 5.10 held all 21 probed sites, for it. The terms read of 6.10 (tick 54) moved the third group's nine sites:
+ * virtualembryo.ai to "Now", eurocontrol.int to the fifth (its probe queued, not yet fetched), and the five the reading
+ * shut to the sixth (BARRED, CONDITIONAL_UNMET or refusal-type, checked 6.10); the seventh keeps the sites graded before.
+ * The counts test reads the groups three times, with the verdicts as they are, as termsReadBefore() gives them (after the
+ * robots verdicts, before the terms read) and as tick45() gives them, and the note states all three.
  */
-const RENDER_GROUPS: { opens: string; holds: (site: string, e: Entry, probed: boolean) => boolean }[] = [
+type Probe = "captured" | "queued" | null;
+const RENDER_GROUPS: { opens: string; holds: (site: string, e: Entry, probe: Probe) => boolean }[] = [
   { opens: "- **Now: ", holds: (_, e) => ["CONDITIONAL_MET", "NOT_BARRED"].includes(e.verdict) },
   { opens: "- **Now, on robots.txt ", holds: (_, e) => isRobotsOkVerdict(e) },
-  { opens: "- **After Tuesday's terms fetch ", holds: (_, e) => e.verdict === "TERMS_PENDING" },
-  { opens: "- **Probed 6.10, NO_TERMS_ROBOTS_OK not set ", holds: (_, e, probed) => isExhaustiveNegative(e) && probed },
+  { opens: "- **Terms page a shell after the 6.10 fetch ", holds: (_, e) => e.verdict === "TERMS_PENDING" },
+  { opens: "- **Probed 6.10, NO_TERMS_ROBOTS_OK not set ", holds: (_, e, probe) => isExhaustiveNegative(e) && probe === "captured" },
+  { opens: "- **Robots probe queued for the next weekly run ", holds: (_, e, probe) => isExhaustiveNegative(e) && probe === "queued" },
+  {
+    opens: "- **Shut by the 6.10 terms fetch ",
+    holds: (_, e) =>
+      e.checked === TERMS_CHECKED &&
+      (e.verdict === "BARRED" || e.verdict === "CONDITIONAL_UNMET" || (e.verdict === "NO_TERMS" && /^refusal-type\b/.test(e.note ?? ""))),
+  },
   {
     opens: "- **Graded with no capture, on their terms: ",
-    holds: (site, e) => e.verdict === "BARRED" || (e.verdict === "CONDITIONAL_UNMET" && !NAMED_ADDRESSES.includes(site)),
+    holds: (site, e) =>
+      e.checked !== TERMS_CHECKED && (e.verdict === "BARRED" || (e.verdict === "CONDITIONAL_UNMET" && !NAMED_ADDRESSES.includes(site))),
   },
   {
     opens: "- **Graded with no capture until render-watch masks addresses before commit: ",
@@ -358,11 +384,76 @@ const TICK45_SOURCES_SHA256 = "8883d8aa97ad830158d48142f8a85ce35ad331a107afded91
  */
 const tick45 = (v: Record<string, Entry>): Record<string, Entry> =>
   Object.fromEntries(
-    Object.entries(v).map(([site, e]) => {
+    Object.entries(termsReadBefore(v)).map(([site, e]) => {
       if (e.verdict !== "NO_TERMS_ROBOTS_OK") return [site, e];
       const at = e.source.indexOf(BEFORE);
       const before: Entry = { verdict: "NO_TERMS", source: at < 0 ? "" : e.source.slice(at + BEFORE.length), checked: "2026-10-05" };
       return [site, e.note === undefined ? before : { ...before, note: e.note }];
+    }),
+  );
+/**
+ * Tick 54 (6.10.2026): the nine sites whose terms page the 6.10 render captured, and their verdicts after the reading.
+ * All nine were TERMS_PENDING on 5.10. Seven changed verdict, and their sources end in TERMS_BEFORE and the tick-45 source;
+ * kaggle.com and adaptionlabs.ai kept theirs (a shell is no reading) and only their note and checked date changed.
+ */
+const TERMS_READ: Record<string, string> = {
+  "devpost.com": "BARRED",
+  "zindi.africa": "BARRED",
+  "grand-challenge.org": "CONDITIONAL_UNMET",
+  "stanford.edu": "CONDITIONAL_UNMET",
+  "virtualembryo.ai": "NOT_BARRED",
+  "eurocontrol.int": "NO_TERMS",
+  "opensky-network.org": "NO_TERMS",
+  "kaggle.com": "TERMS_PENDING",
+  "adaptionlabs.ai": "TERMS_PENDING",
+};
+const TERMS_CHECKED = "2026-10-06";
+/** What the tick-54 fold puts between a read entry's new source and the TERMS_PENDING source it replaced. */
+const TERMS_BEFORE = "; TERMS_PENDING before: ";
+/**
+ * The nine TERMS_PENDING sources tick 45 wrote, which the seven changed sources keep after TERMS_BEFORE and the two shells
+ * keep whole: the sha256 of one "<site>\t<source>" line per site, in TERMS_READ order, joined by "\n". Checked at tick 54
+ * against terms-verdicts.json at 227b3cb, the file before the fold.
+ */
+const TICK45_TERMS_SOURCES_SHA256 = "b70ca8c699288f7151bd537d1500698f305a8edb9b6da5efcb7ea3c0eed755fa";
+/**
+ * The verdicts as they stood after the robots verdicts of 6.10 and before the terms read: each of the nine TERMS_READ entries
+ * read back to the TERMS_PENDING entry tick 45 left (its source after TERMS_BEFORE, or its whole source for the two shells,
+ * checked 2026-10-05 as every audited entry was at 227b3cb, a constant); every other entry as it is.
+ */
+/**
+ * Each of the nine sites' terms- line in urls.txt after the 6.10 reading: "active", or the comment that now precedes
+ * " — <url>\t<slug>" (queue-zero-test.mjs --apply-verdicts paused them; the reason was then reworded by hand where
+ * the verdict came from reading the terms, in a form urls-pause-comments.mjs keeps; opensky's took the Knesset line's form).
+ */
+const TERMS_LINES: Record<string, { slug: string; state: string }> = {
+  "kaggle.com": { slug: "terms-kaggle", state: "active" },
+  "devpost.com": { slug: "terms-devpost", state: "# paused (terms audit): devpost.com — see TERMS_BARRED in scripts/render-watch.mjs" },
+  "grand-challenge.org": {
+    slug: "terms-grand-challenge",
+    state: "# paused (terms read, left paused, 6.10.2026): grand-challenge.org is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json",
+  },
+  "zindi.africa": { slug: "terms-zindi", state: "# paused (terms audit): zindi.africa — see TERMS_BARRED in scripts/render-watch.mjs" },
+  "stanford.edu": {
+    slug: "terms-stanford",
+    state: "# paused (terms read, left paused, 6.10.2026): stanford.edu is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json",
+  },
+  "adaptionlabs.ai": { slug: "terms-adaptionlabs", state: "active" },
+  "virtualembryo.ai": { slug: "terms-virtualembryo", state: "active" },
+  "eurocontrol.int": {
+    slug: "terms-eurocontrol",
+    state: "# paused (terms read: a privacy notice, no site terms, 6.10.2026): eurocontrol.int is NO_TERMS in research/channel-loop/terms-verdicts.json",
+  },
+  "opensky-network.org": { slug: "terms-opensky", state: "# retired (ruling 30.9 16(d) D2(iv): the site refused the runner)" },
+};
+/** eurocontrol.int's robots.txt probe, queued by queue-zero-test.mjs at tick 54 (ruling R1: exhaustive-negative NO_TERMS). */
+const EURO_PROBE = { row: 265, site: "eurocontrol.int", url: "https://www.eurocontrol.int/robots.txt", slug: "robots-eurocontrol" };
+const termsReadBefore = (v: Record<string, Entry>): Record<string, Entry> =>
+  Object.fromEntries(
+    Object.entries(v).map(([site, e]) => {
+      if (!Object.hasOwn(TERMS_READ, site)) return [site, e];
+      const at = e.source.indexOf(TERMS_BEFORE);
+      return [site, { verdict: "TERMS_PENDING", source: at < 0 ? e.source : e.source.slice(at + TERMS_BEFORE.length), checked: "2026-10-05" }];
     }),
   );
 type Cited =
@@ -473,6 +564,14 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
         expect(v[site].verdict, site).toBe("NO_TERMS_ROBOTS_OK");
         expect(v[site].checked, site).toBe(ROBOTS_CHECKED);
         expect(v[site].source.endsWith(`${BEFORE}${then[site].source}`), site).toBe(true);
+      } else if (Object.hasOwn(TERMS_READ, site)) {
+        // 6.10 (tick 54): one of the nine terms pages read or tried; its source keeps tick 45's after TERMS_BEFORE, or
+        // whole for the two shells ("tick 54: the terms read on 6.10" below holds the rest).
+        expect(verdict, site).toBe("TERMS_PENDING");
+        expect(v[site].verdict, site).toBe(TERMS_READ[site]);
+        expect(v[site].checked, site).toBe(TERMS_CHECKED);
+        if (v[site].verdict === "TERMS_PENDING") expect(v[site].source, site).toBe(then[site].source);
+        else expect(v[site].source.endsWith(`${TERMS_BEFORE}${then[site].source}`), site).toBe(true);
       } else {
         expect(then[site], site).toBe(v[site]);
         expect(v[site].verdict, site).toBe(verdict);
@@ -587,26 +686,46 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(ADDRESS.test(audit.slice(0, audit.indexOf("## Every URL the agents fetched")))).toBe(false);
   });
 
-  it("queues exactly one terms- line for each TERMS_PENDING site, at the terms URL its verdict names, and nothing else of it", () => {
+  it("queued exactly one terms- line for each TERMS_PENDING site, at the terms URL its verdict names; since 6.10 the read ones are paused or retired", () => {
     const v = verdicts();
+    const then = tick45(v);
     const lines = active();
+    const text = readFileSync(URLS, "utf8").split("\n");
     for (const [site, verdict] of Object.entries(AUDITED)) {
       if (verdict !== "TERMS_PENDING") continue;
+      const { slug, state } = TERMS_LINES[site];
+      const url = then[site].source.slice(0, then[site].source.indexOf(" ("));
+      expect(then[site].source.startsWith(`${url} (`), site).toBe(true);
+      // Tick 45 queued it; 5.10's verdicts pass it, except where TERMS_BARRED, which is code and not a verdict, now names
+      // the site (devpost.com and zindi.africa since 6.10).
+      const gateThen = termsGate(url, slug, then);
+      if (TERMS_READ[site] === "BARRED") expect(gateThen.why, site).toContain("is in TERMS_BARRED");
+      else expect(gateThen.ok, site).toBe(true);
       const mine = lines.filter((e) => siteOfUrl(e.url) === site);
-      expect(mine, site).toHaveLength(1);
-      expect(mine[0].slug, site).toMatch(/^terms-/);
-      expect(v[site].source.startsWith(`${mine[0].url} (`), site).toBe(true);
-      expect(termsGate(mine[0].url, mine[0].slug, v).ok, site).toBe(true);
+      // The one line of the site that names that URL, active or commented out.
+      const named = text.filter((l) => l.endsWith(`${url}\t${slug}`));
+      expect(named, site).toHaveLength(1);
+      if (state === "active") {
+        expect(mine.map((e) => [e.url, e.slug]), site).toEqual([[url, slug]]);
+        expect(termsGate(url, slug, v).ok, site).toBe(true);
+      } else {
+        // Nothing of the site stays active but, for eurocontrol.int (exhaustive-negative since 6.10), its robots.txt probe.
+        const probe = site === EURO_PROBE.site ? [[EURO_PROBE.url, EURO_PROBE.slug]] : [];
+        expect(mine.map((e) => [e.url, e.slug]), site).toEqual(probe);
+        expect(termsGate(url, slug, v).ok, site).toBe(false);
+        expect(named[0], site).toBe(`${state} — ${url}\t${slug}`);
+      }
     }
   });
 
-  it("queues grand-challenge.org's derived terms URL under ruling R2's exception, which urls.txt's header records after its one rule", () => {
+  it("queued grand-challenge.org's derived terms URL under ruling R2's exception, which urls.txt's header records after its one rule", () => {
     const v = verdicts();
-    const e = v[DERIVED_TERMS.site];
+    // As tick 45 left it (TERMS_PENDING, the derived URL first in its source); 6.10 read the page and paused the line.
+    const e = tick45(v)[DERIVED_TERMS.site];
     expect(e.verdict).toBe("TERMS_PENDING");
     expect(e.source.startsWith(`${DERIVED_TERMS.url} (`)).toBe(true);
-    expect(e.note).toMatch(/^terms unread\. Queued under ruling R2 \(5\.10/);
-    expect(e.note).not.toContain("Held (tick 45 review");
+    expect(v[DERIVED_TERMS.site].verdict).toBe("CONDITIONAL_UNMET");
+    expect(v[DERIVED_TERMS.site].note).not.toContain("Held (tick 45 review");
     // The header: the one rule's paragraph, then the exception, word for word; the one rule itself unchanged.
     const header = urlsHeader();
     expect(header).toContain(
@@ -614,12 +733,15 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
         EXCEPTION,
     );
     expect(header.split("Exception (ruling").length).toBe(2);
-    // The line is active, and its comment cites the template line and the domain line.
-    expect(active().filter((l) => l.url === DERIVED_TERMS.url).map((l) => [l.url, l.slug])).toEqual([[DERIVED_TERMS.url, DERIVED_TERMS.slug]]);
-    expect(termsGate(DERIVED_TERMS.url, DERIVED_TERMS.slug, v).ok).toBe(true);
-    expect(pausedLines().filter((p) => p.url === DERIVED_TERMS.url)).toEqual([]);
+    // The URL answered (200, the Terms of Service), so R2's "a 404, or a redirect to another host, retires the line" did
+    // not fire: the line was fetched once, read, and is paused since 6.10 (CONDITIONAL_UNMET), its comment unchanged and
+    // still citing the template line and the domain line.
+    expect(active().filter((l) => l.url === DERIVED_TERMS.url)).toEqual([]);
+    expect(termsGate(DERIVED_TERMS.url, DERIVED_TERMS.slug, tick45(v)).ok).toBe(true);
+    expect(termsGate(DERIVED_TERMS.url, DERIVED_TERMS.slug, v).ok).toBe(false);
+    expect(pausedLines().filter((p) => p.url === DERIVED_TERMS.url).map((p) => p.slug)).toEqual([DERIVED_TERMS.slug]);
     const { comment, line: under } = listedRow(DERIVED_TERMS.row);
-    expect(under).toBe(`${DERIVED_TERMS.url}\t${DERIVED_TERMS.slug}`);
+    expect(under).toBe(`${TERMS_LINES[DERIVED_TERMS.site].state} — ${DERIVED_TERMS.url}\t${DERIVED_TERMS.slug}`);
     expect(comment).toContain("URL derived from the platform's own source (exception, ruling R2, 5.10.2026)");
     expect(comment).toContain("app/config/settings.py:767");
     expect(comment).toContain("app/grandchallenge/subdomains/utils.py:24");
@@ -657,9 +779,10 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     }
     expect(Object.values(AUDITED).filter((x) => x === "NO_TERMS")).toHaveLength(21);
     expect(Object.keys(AUDITED).filter((s) => isExhaustiveNegative(then[s]))).toHaveLength(21);
-    // 6.10 (tick 54): 17 of them NO_TERMS_ROBOTS_OK, four still exhaustive-negative NO_TERMS.
+    // 6.10 (tick 54): 17 of them NO_TERMS_ROBOTS_OK, four still exhaustive-negative NO_TERMS; and eurocontrol.int, TERMS_PENDING
+    // on 5.10, exhaustive-negative since its terms page was read as a privacy notice ("tick 54: the terms read on 6.10").
     expect(Object.keys(AUDITED).filter((s) => isRobotsOkVerdict(v[s])).sort()).toEqual([...ROBOTS_OK].sort());
-    expect(Object.keys(AUDITED).filter((s) => isExhaustiveNegative(v[s])).sort()).toEqual(Object.keys(ROBOTS_NOT_SET).sort());
+    expect(Object.keys(AUDITED).filter((s) => isExhaustiveNegative(v[s])).sort()).toEqual([...Object.keys(ROBOTS_NOT_SET), "eurocontrol.int"].sort());
     // mozilladatacollective.com keeps both readings of whose terms govern it, and R3's address rule for its rules pages.
     const mdc = v["mozilladatacollective.com"].note!;
     expect(mdc).toContain("DrivenData");
@@ -668,10 +791,13 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(mdc).toContain("ruling R3");
   });
 
-  it("pauses no line of the audit after the rulings: the six probes are active again and three were queued", () => {
+  it("paused no line of the audit after the rulings (the six probes active again, three queued); since 6.10 only the terms lines the reading shut", () => {
     const rows = zeroRows();
     const paused = pausedLines().filter((p) => Object.hasOwn(AUDITED, siteOfUrl(p.url)));
-    expect(paused).toEqual([]);
+    // Tick 54: the five terms lines the 6.10 reading paused (opensky's is retired, not paused); no probe.
+    const shut = Object.entries(TERMS_LINES).filter(([, l]) => l.state.startsWith("# paused")).map(([, l]) => l.slug);
+    expect(paused.map((p) => p.slug).sort()).toEqual(shut.sort());
+    expect(shut).toHaveLength(5);
     for (let n = 235; n <= 264; n += 1) expect(rows.get(n)?.row, `row ${n}`).not.toContain("**PAUSED");
     for (const n of UNPAUSED_PROBES) {
       const { comment, line } = listedRow(n);
@@ -690,17 +816,31 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       expect(siteOfUrl(p.url)).toBe(p.site);
     }
     for (let n = 244; n <= 264; n += 1) expect(listedRow(n).comment, `row ${n}`).toMatch(PROBE_COMMENT);
+    // Tick 54: eurocontrol.int's probe, queued by queue-zero-test.mjs in the same form, dated 6.10.
+    const euro = listedRow(EURO_PROBE.row);
+    expect(euro.comment).toBe(
+      `# research/channel-loop/ZERO-TESTS.md row ${EURO_PROBE.row} — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (6.10.2026).`,
+    );
+    expect(euro.line).toBe(`${EURO_PROBE.url}\t${EURO_PROBE.slug}`);
+    expect(rows.get(EURO_PROBE.row)?.row).toBe(
+      `| ${EURO_PROBE.row} | terms audit (tick 54, ruling R1): eurocontrol.int robots.txt, prize-event reading (BOARD-LOOP §13; ruling 30.9 16(d) D2(v)) | ${EURO_PROBE.url} | whether www.eurocontrol.int's robots.txt allows the rules paths listed in research/measurements/ai-allowed-events.urls.txt, for scripts/robots-verdict.mjs to judge |`,
+    );
   });
 
-  it("ties each tick-45 ZERO-TESTS row to the active urls.txt line under its comment", () => {
+  it("ties each tick-45 and tick-54 ZERO-TESTS row to the urls.txt line under its comment: active, or as the 6.10 reading left it", () => {
     const rows = zeroRows();
-    for (let n = 235; n <= 264; n += 1) {
+    const bySlug = new Map(Object.values(TERMS_LINES).map((l) => [l.slug, l.state]));
+    for (let n = 235; n <= EURO_PROBE.row; n += 1) {
       const { comment, line } = listedRow(n);
       expect(comment, `row ${n}`).toBeDefined();
-      expect(line!.startsWith("#"), `row ${n}`).toBe(false);
-      expect(line!.split("\t")[0], `row ${n}`).toBe(rows.get(n)?.url);
+      const url = rows.get(n)?.url;
+      const slug = line!.split("\t").at(-1)!;
+      const state = bySlug.get(slug) ?? "active";
+      expect(line, `row ${n}`).toBe(state === "active" ? `${url}\t${slug}` : `${state} — ${url}\t${slug}`);
+      // The row says what happened to a line the reading shut: READ 6.10 for a paused or kept one, RETIRED for opensky's.
+      if (n <= 243) expect(rows.get(n)?.row, `row ${n}`).toMatch(state.startsWith("# retired") ? /\*\*RETIRED 6\.10 \(403 to the runner; 16\(d\) D2\(iv\)\)\.\*\* \|$/ : /\*\*READ 6\.10 \(tick 54\): [^|]+\.\*\* \|$/);
     }
-    expect(Math.max(...rows.keys())).toBe(264);
+    expect(Math.max(...rows.keys())).toBe(EURO_PROBE.row);
   });
 
   it("puts no rules page into research/rendered/urls.txt, and the gate refuses every audited rules URL it should", () => {
@@ -720,7 +860,9 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       expect(termsGate(e.url, e.slug, then).ok, `5.10 ${site} ${e.url}`).toBe(openThen);
     }
     expect(audited().filter((e) => termsGate(e.url, e.slug, then).ok)).toHaveLength(13);
-    expect(audited().filter((e) => termsGate(e.url, e.slug, v).ok)).toHaveLength(33);
+    // 6.10: 33 after the robots verdicts, 34 with virtualembryo.ai's terms read (NOT_BARRED).
+    expect(audited().filter((e) => termsGate(e.url, e.slug, termsReadBefore(v)).ok)).toHaveLength(33);
+    expect(audited().filter((e) => termsGate(e.url, e.slug, v).ok)).toHaveLength(34);
     // Every rules URL of a NO_TERMS_ROBOTS_OK site passes; every rules URL of a site still NO_TERMS is refused, for that.
     for (const e of audited()) {
       const site = siteOfUrl(e.url);
@@ -750,14 +892,19 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
   });
 
   it("counts each render group's URLs and sites from the fixture and the verdicts, as its heading and its list state them", () => {
-    const probed = new Set(active().filter((l) => isRobotsProbe(l.url, l.slug)).map((l) => siteOfUrl(l.url)));
-    // Every audited rules URL falls in exactly one group, with the verdicts as they are and as tick 45 left them.
+    const probes = new Map<string, Probe>(
+      active()
+        .filter((l) => isRobotsProbe(l.url, l.slug))
+        .map((l) => [siteOfUrl(l.url), existsSync(`research/rendered/${l.slug}.meta.json`) ? "captured" : "queued"]),
+    );
+    // Every audited rules URL falls in exactly one group, with the verdicts as they are, as they were before the terms read
+    // and as tick 45 left them.
     const group = (v: Record<string, Entry>) => {
       const counts = RENDER_GROUPS.map(() => new Map<string, number>());
       const urls = RENDER_GROUPS.map(() => [] as string[]);
       for (const e of audited()) {
         const site = siteOfUrl(e.url);
-        const into = RENDER_GROUPS.map((g, i) => (g.holds(site, v[site], probed.has(site)) ? i : -1)).filter((i) => i >= 0);
+        const into = RENDER_GROUPS.map((g, i) => (g.holds(site, v[site], probes.get(site) ?? null) ? i : -1)).filter((i) => i >= 0);
         expect(into, `${site} ${e.url}`).toHaveLength(1);
         counts[into[0]].set(site, (counts[into[0]].get(site) ?? 0) + 1);
         urls[into[0]].push(e.url);
@@ -765,6 +912,7 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       return { counts, urls, sums: counts.map((m) => [[...m.values()].reduce((a, b) => a + b, 0), m.size]) };
     };
     const now = group(verdicts());
+    const robots = group(termsReadBefore(verdicts()));
     const then = group(tick45(verdicts()));
     const counts = now.counts;
     const computed = now.sums;
@@ -786,8 +934,9 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       expect(was !== null, RENDER_GROUPS[i].opens).toBe(changed);
       if (was) expect([Number(was[1]), Number(was[2])], RENDER_GROUPS[i].opens).toEqual(then.sums[i]);
     });
-    expect(then.sums.map((c) => c.join("/"))).toEqual(["13/12", "0/0", "40/9", "29/21", "19/3", "0/0"]);
-    expect(computed.map((c) => c.join("/"))).toEqual(["13/12", "20/17", "40/9", "9/4", "19/3", "0/0"]);
+    expect(then.sums.map((c) => c.join("/"))).toEqual(["13/12", "0/0", "40/9", "29/21", "0/0", "0/0", "19/3", "0/0"]);
+    expect(robots.sums.map((c) => c.join("/"))).toEqual(["13/12", "20/17", "40/9", "9/4", "0/0", "0/0", "19/3", "0/0"]);
+    expect(computed.map((c) => c.join("/"))).toEqual(["14/13", "20/17", "18/2", "9/4", "1/1", "20/5", "19/3", "0/0"]);
     // Each bullet's per-site list: `site` n, for every site of the group and no other.
     bullets.forEach((b, i) => {
       const listed = Object.fromEntries([...b.matchAll(/`([a-z0-9.-]+\.[a-z]+)` (\d+)/g)].map((m) => [m[1], Number(m[2])]));
@@ -815,7 +964,12 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(before).not.toBeNull();
     expect([terms(before![1]), terms(before![3])]).toEqual([then.sums.map((c) => c[0]), then.sums.map((c) => c[1])]);
     expect([Number(before![2]), Number(before![4])]).toEqual([101, 45]);
-    for (const sums of [computed, then.sums]) {
+    // ...and the 6.10 line between the two: the robots verdicts set, the terms not yet read.
+    const between = section.match(/^6\.10 \(tick 54\), after the robots verdicts and before the terms read: ([\d + ]+) = (\d+) URLs, over ([\d + ]+) = (\d+) sites\.$/m);
+    expect(between).not.toBeNull();
+    expect([terms(between![1]), terms(between![3])]).toEqual([robots.sums.map((c) => c[0]), robots.sums.map((c) => c[1])]);
+    expect([Number(between![2]), Number(between![4])]).toEqual([101, 45]);
+    for (const sums of [computed, robots.sums, then.sums]) {
       expect(sums.reduce((a, c) => a + c[0], 0)).toBe(101);
       expect(sums.reduce((a, c) => a + c[1], 0)).toBe(45);
     }
@@ -880,9 +1034,12 @@ describe("tick 54: the robots verdicts of 6.10", () => {
   const fixture = () => readFileSync(FIXTURE, "utf8");
   /** The frozen copy of the capture the script read for one of the four sites it declined. */
   const declinedCapture = (slug: string) => frozenCapture(`research/rendered/${slug}-${FROZEN_ON}.meta.json`);
+  /** The audit note's robots section, up to the terms-read section the reading of 6.10 put after it. */
   const section = () => {
     const audit = readFileSync(AUDIT, "utf8");
-    return audit.slice(audit.indexOf("## Robots verdicts (6.10.2026, tick 54)"));
+    const start = audit.indexOf("## Robots verdicts (6.10.2026, tick 54)");
+    const end = audit.indexOf("\n## ", start + 1);
+    return audit.slice(start, end < 0 ? undefined : end + 1);
   };
 
   it("sets exactly these 17 of the 21 NO_TERMS sites to NO_TERMS_ROBOTS_OK, and keeps terms-verdicts.json's exact format", () => {
@@ -1032,10 +1189,10 @@ describe("tick 54: the robots verdicts of 6.10", () => {
     }
   });
 
-  it("records every robots verdict in the audit note's last section, with the values the frozen copies hold", () => {
+  it("records every robots verdict in the audit note's section after the appendix, with the values the frozen copies hold", () => {
     const audit = readFileSync(AUDIT, "utf8");
     const heads = audit.split("\n").filter((l) => l.startsWith("## "));
-    expect(heads.slice(-2)).toEqual(["## Every URL the agents fetched", "## Robots verdicts (6.10.2026, tick 54)"]);
+    expect(heads.slice(-3)).toEqual(["## Every URL the agents fetched", "## Robots verdicts (6.10.2026, tick 54)", "## Terms read (6.10.2026, tick 54)"]);
     const text = section();
     expect(text).toContain("node scripts/robots-verdict.mjs <site> --urls research/measurements/ai-allowed-events.urls.txt");
     expect(text).toContain("ruling 30.9 16(d) D2(iv)-(v)");
@@ -1130,5 +1287,612 @@ describe("tick 54: the robots verdicts of 6.10", () => {
     expect(ruling).toContain("5. **Every nevo cite leaves the product:**");
     expect(existsSync("research/rendered/nevo-vat-law-2026-09-29.txt")).toBe(true);
     expect(text).not.toContain("lawsofisrael mirror");
+  });
+});
+
+/**
+ * Tick 54 (6.10.2026): the terms read. The 6.10 render captured the terms page of each of the nine TERMS_PENDING sites;
+ * six were read pages, frozen first and read by one Opus reader and one adversarial Opus verifier each, and the main
+ * thread gave the verdicts (the audit note's "Terms read (6.10.2026, tick 54)"). Ruling 6.10 row 21's fold 2
+ * (RULING-2026-10-06-robots-and-terms.md, "Folds" item 2) went in with it: a "copying" field on every entry and the kind
+ * word that opens every NO_TERMS/TERMS_PENDING note decision 3(1)'s five kinds describe.
+ */
+describe("tick 54: the terms read on 6.10", () => {
+  const RENDER = "5f4853a";
+  /**
+   * The decisive line of each read page: the frozen copy, the line, and words of the clause the verdict rests on (for
+   * virtualembryo.ai, which no clause bars, the document's own title and date; for eurocontrol.int, which holds no site
+   * terms, the privacy notice's heading). The note quotes the words and cites the copy at the line.
+   */
+  const DECISIVE: { site: string; slug: string; line: number; words: string }[] = [
+    {
+      site: "devpost.com",
+      slug: "terms-devpost",
+      line: 159,
+      words: "manual or automated software, devices, scripts robots, or other means or processes to access, “scrape,” “crawl” or “spider” the Site",
+    },
+    {
+      site: "zindi.africa",
+      slug: "terms-zindi",
+      line: 68,
+      words:
+        "You must not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store or transmit any of the material on our Website",
+    },
+    {
+      site: "grand-challenge.org",
+      slug: "terms-grand-challenge",
+      line: 150,
+      words: "You agree not to reproduce, duplicate, copy, sell, resell or exploit any portion of the Platform or Services",
+    },
+    {
+      site: "stanford.edu",
+      slug: "terms-stanford",
+      line: 125,
+      words:
+        "User may download material from the Sites only for User’s own personal, non-commercial use. User may not otherwise copy, reproduce, retransmit, distribute, publish, commercially exploit or otherwise transfer any material.",
+    },
+    { site: "virtualembryo.ai", slug: "terms-virtualembryo", line: 13, words: "Effective 10 August 2026" },
+    { site: "eurocontrol.int", slug: "terms-eurocontrol", line: 367, words: "Website Privacy Policy" },
+  ];
+  /** The four sites whose copying ruling 6.10 row 21 decision 4(2) names barred, and where each note cites its clause. */
+  const RULING_COPY_BARRED: Record<string, string> = {
+    "worksheets4kids.co.il": "research/rendered/terms-worksheets4kids-2026-09-29.txt:195",
+    "btl.gov.il": "research/rendered/terms-btl-2026-09-29.txt:303",
+    "apify.com": "research/channel-loop/terms/apify-general-terms-2026-10-04.md:88",
+    "indiebook.co.il": "TERMS-AUDIT-2026-09-29.md:129",
+  };
+  /**
+   * The four sites whose copying clause this reading quoted: barred too, each note citing the clause. (The brief named only
+   * the ruling's four; decision 4(2) makes a site "unread" only "until an Opus pass reads its clause", and these were read.)
+   */
+  const READ_COPY_BARRED: Record<string, string> = {
+    "devpost.com": "research/rendered/terms-devpost-2026-10-06.txt:159",
+    "zindi.africa": "research/rendered/terms-zindi-2026-10-06.txt:68",
+    "grand-challenge.org": "research/rendered/terms-grand-challenge-2026-10-06.txt:150",
+    "stanford.edu": "research/rendered/terms-stanford-2026-10-06.txt:125",
+  };
+  const COPY_CLAUSE: Record<string, string> = {
+    "devpost.com": "Unauthorized copying or use of any Devpost Content or Intellectual Property Rights without the express written consent of Devpost is strictly prohibited.",
+    "zindi.africa": "store or transmit any of the material on our Website",
+    "grand-challenge.org": "without the express written permission by Radboudumc",
+    "stanford.edu": "User may not otherwise copy, reproduce, retransmit, distribute, publish",
+    "codabench.org": "'Any reproduction in whole or in part is prohibited without prior consent of its owner.'",
+    "tipalti.com":
+      "\"You may not download or save a copy of the Site or any portion thereof, including, without limitation, any materials and logos, for any purpose, without Tipalti’s prior written consent.\"",
+  };
+  /**
+   * The tick-54 review's two: the other sites whose verdicts already rested on a read copying clause (codabench.org's
+   * CONDITIONAL_UNMET on its organisers' content clause, tipalti.com's TERMS_BARRED entry on its website terms), set barred
+   * by the same rule as READ_COPY_BARRED. The file and line each note cites, which holds the clause.
+   */
+  const REVIEW_COPY_BARRED: Record<string, { file: string; line: number }> = {
+    "codabench.org": { file: "research/channel-loop/terms/codabench-privacy-and-terms-2026-10-05.md", line: 39 },
+    "tipalti.com": { file: "research/rendered/terms-tipalti-website.txt", line: 245 },
+  };
+  /**
+   * Sites whose notes quote a copying clause only as an open caveat beside a verdict that rests on something else: they
+   * stay "unread" for fold 10(i)'s copying audit (the _about's rule), each note holding the caveat's words.
+   */
+  const CAVEAT_UNREAD: Record<string, string> = {
+    "aimo-interp.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "build-arena.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "fomo26.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "lbl.gov": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "neural-interfaces26.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "realpdecompetition.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "robosyn-bench.net": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "roco-spring.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "szczurek-lab.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "xiuwenz2.github.io": "'You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the Service'",
+    "posthog.com": "'Please do not duplicate, copy, or use our website'",
+    "ansperformance.eu": "'It may be copied in whole or in part, provided that EUROCONTROL is mentioned as the source and it is not used for commercial purposes",
+  };
+  /** The _about's sentence on the copying field and the kind words, whole. */
+  const ABOUT_COPYING =
+    'Since 6.10 (RULING-2026-10-06-robots-and-terms.md, row 21) every entry carries a fifth field after "note", "copying": "barred" when the read terms bar copying, reproducing, distributing or publishing the content (the note cites the clause, and the verdict rests on it: a copying clause quoted only as an open caveat beside a verdict that rests on something else stays "unread" for fold 10(i)\'s copying audit; decision 4(1)-(3) keeps full copies of its pages out of the tree once fold 9\'s trim and artifact route exist), "allowed" when they were read and bar none of it, and "unread" otherwise, which is not "allowed" (decision 4(2)); and the note of a NO_TERMS or TERMS_PENDING site whose terms page could not be read opens with its kind word, refusal-type, exhaustive-negative, unanswered, shell or "deferred to <site>" (decision 3(1)).';
+  /**
+   * The secondary quotes and line citations of the six read notes: the frozen copy (or another file), the line, words the
+   * line holds, and the fragment of the note that cites it (the words in it when quoted). The decisive clauses are in
+   * DECISIVE; these are the scope, binding and condition lines the verdicts also rest on.
+   */
+  const fz = (slug: string, ext = "txt") => `research/rendered/${slug}-2026-10-06.${ext}`;
+  const SECONDARY: { site: string; file: string; line: number; words: string; cite: string; quoted: boolean }[] = [
+    { site: "devpost.com", file: fz("terms-devpost"), line: 111, words: "the Devpost website, www.devpost.com", cite: 'the Site is "the Devpost website, www.devpost.com" (:111)', quoted: true },
+    {
+      site: "devpost.com",
+      file: fz("terms-devpost"),
+      line: 114,
+      words: "By using and/or visiting our Site, you agree to the terms and conditions outlined in this Agreement",
+      cite: 'visiting binds (:114, "By using and/or visiting our Site, you agree to the terms and conditions outlined in this Agreement")',
+      quoted: true,
+    },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 123, words: "other visitors to the Site", cite: 'Users include "other visitors to the Site" (:123)', quoted: true },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 128, words: "“Hackathon Content” means User Content", cite: "Hackathon Content is User Content (:128)", quoted: false },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 129, words: "Hackathon Website", cite: "the hackathon pages sit inside it (:129, :170, :185)", quoted: false },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 170, words: "Hackathon Website", cite: "the hackathon pages sit inside it (:129, :170, :185)", quoted: false },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 185, words: "Hackathon Website", cite: "the hackathon pages sit inside it (:129, :170, :185)", quoted: false },
+    {
+      site: "devpost.com",
+      file: fz("terms-devpost"),
+      line: 143,
+      words: "All Users agree NOT to post or make available content",
+      cite: 'in the list "All Users agree NOT to post or make available content" of :143',
+      quoted: true,
+    },
+    {
+      site: "devpost.com",
+      file: fz("terms-devpost"),
+      line: 252,
+      words: "Unauthorized copying or use of any Devpost Content or Intellectual Property Rights without the express written consent of Devpost is strictly prohibited.",
+      cite: '"Unauthorized copying or use of any Devpost Content or Intellectual Property Rights without the express written consent of Devpost is strictly prohibited." (:252)',
+      quoted: true,
+    },
+    { site: "devpost.com", file: fz("terms-devpost"), line: 250, words: "the “Devpost Content”", cite: ":250 bars transmitting Devpost Content", quoted: false },
+    {
+      site: "zindi.africa",
+      file: fz("terms-zindi"),
+      line: 47,
+      words: "the legitimate purpose of building and submitting a Competition solution",
+      cite: ':47 limits content downloaded from the Website to "the legitimate purpose of building and submitting a Competition solution"',
+      quoted: true,
+    },
+    {
+      site: "zindi.africa",
+      file: fz("terms-zindi"),
+      line: 74,
+      words: "Any use of the Website not expressly permitted by these Terms of Use",
+      cite: ':74 makes "Any use of the Website not expressly permitted by these Terms of Use" a breach',
+      quoted: true,
+    },
+    {
+      site: "zindi.africa",
+      file: fz("terms-zindi"),
+      line: 14,
+      words: "your access to and use of www.zindi.africa, including any content, functionality and services offered on or through www.zindi.africa",
+      cite: '"your access to and use of www.zindi.africa, including any content, functionality and services offered on or through www.zindi.africa" (:14)',
+      quoted: true,
+    },
+    { site: "zindi.africa", file: fz("terms-zindi"), line: 15, words: "By using the Website, you accept and agree to be bound", cite: "bind on use (:15)", quoted: false },
+    { site: "zindi.africa", file: fz("terms-zindi", "html"), line: 50, words: "https://zindi.world/terms", cite: "research/rendered/terms-zindi-2026-10-06.html:50, https://zindi.world/terms", quoted: true },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 122, words: "for Research Use Only", cite: '"for Research Use Only" (:122)', quoted: true },
+    {
+      site: "grand-challenge.org",
+      file: fz("terms-grand-challenge"),
+      line: 50,
+      words: "solely for scientific or academic purposes",
+      cite: '"solely for scientific or academic purposes" (:50)',
+      quoted: true,
+    },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 124, words: "explicitly NOT for clinical use", cite: "aimed at clinical use (:124)", quoted: false },
+    {
+      site: "grand-challenge.org",
+      file: fz("terms-grand-challenge"),
+      line: 76,
+      words: "Accounts registered by “bots” or other automated methods are not permitted.",
+      cite: '"Accounts registered by “bots” or other automated methods are not permitted." (:76)',
+      quoted: true,
+    },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 56, words: "accesses or uses the Platform", cite: '"accesses or uses the Platform" (:56, :34)', quoted: true },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 34, words: "By using grand-challenge.org, you are agreeing to be bound", cite: '"accesses or uses the Platform" (:56, :34)', quoted: false },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 164, words: "govern your use of", cite: "govern the Platform and its Services (:164)", quoted: false },
+    { site: "grand-challenge.org", file: fz("terms-grand-challenge"), line: 54, words: "hosting an AI challenge", cite: '"hosting an AI challenge" (:54)', quoted: true },
+    {
+      site: "stanford.edu",
+      file: fz("terms-stanford"),
+      line: 97,
+      words: "available at stanford.edu, stanfordalumni.org or other Stanford sites",
+      cite: '"available at stanford.edu, stanfordalumni.org or other Stanford sites" (:97)',
+      quoted: true,
+    },
+    { site: "stanford.edu", file: fz("terms-stanford"), line: 99, words: "any Stanford-affiliated entity", cite: '"any Stanford-affiliated entity" (:99)', quoted: true },
+    {
+      site: "virtualembryo.ai",
+      file: fz("terms-virtualembryo"),
+      line: 43,
+      words: "Reverse engineer, disrupt, or attack the Services.",
+      cite: '"Reverse engineer, disrupt, or attack the Services." (:43)',
+      quoted: true,
+    },
+    {
+      site: "virtualembryo.ai",
+      file: fz("terms-virtualembryo"),
+      line: 54,
+      words: "All website content, datasets, documentation, software, graphics, logos, and trademarks remain the property of the organizers or their licensors unless otherwise stated.",
+      cite: ':54 is an ownership notice ("All website content, datasets, documentation, software, graphics, logos, and trademarks remain the property of the organizers or their licensors unless otherwise stated.")',
+      quoted: true,
+    },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 55, words: "Participants may use released competition materials only", cite: ":55 limits participants' use of released competition materials", quoted: false },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 84, words: "Challenge Rules", cite: "separate from the Challenge Rules (:84)", quoted: true },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 14, words: "(collectively, the “Services”)", cite: "documentation included (:14, :16)", quoted: false },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 16, words: "documentation", cite: "documentation included (:14, :16)", quoted: true },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 75, words: "https://virtualembryo.ai", cite: "at https://virtualembryo.ai (:75)", quoted: true },
+    { site: "virtualembryo.ai", file: fz("terms-virtualembryo"), line: 45, words: "Violate applicable laws or the Official Rules.", cite: "violating them is barred to every user (:45)", quoted: false },
+    {
+      site: "virtualembryo.ai",
+      file: fz("terms-virtualembryo"),
+      line: 109,
+      words: "Lab, Stanford University. All rights reserved.",
+      cite: 'the page\'s footer reads "© 2026 … Lab, Stanford University. All rights reserved." (:109)',
+      quoted: true,
+    },
+    {
+      site: "virtualembryo.ai",
+      file: fz("terms-stanford"),
+      line: 97,
+      words: "available at stanford.edu, stanfordalumni.org or other Stanford sites",
+      cite: 'govern any website "available at stanford.edu, stanfordalumni.org or other Stanford sites" (research/rendered/terms-stanford-2026-10-06.txt:97)',
+      quoted: true,
+    },
+    { site: "virtualembryo.ai", file: fz("terms-stanford"), line: 99, words: "any Stanford-affiliated entity", cite: '"Stanford" including "any Stanford-affiliated entity" (:99)', quoted: true },
+    {
+      site: "virtualembryo.ai",
+      file: fz("terms-stanford"),
+      line: 125,
+      words: "only for User’s own personal, non-commercial use",
+      cite: 'allow download "only for User’s own personal, non-commercial use" (:125)',
+      quoted: true,
+    },
+    { site: "eurocontrol.int", file: fz("terms-eurocontrol"), line: 433, words: "Disclaimers", cite: 'the footer\'s "Disclaimers" item (:433)', quoted: true },
+    { site: "eurocontrol.int", file: fz("terms-eurocontrol"), line: 439, words: "© EUROCONTROL", cite: 'the bare footer "© EUROCONTROL" (:439)', quoted: true },
+    {
+      site: "eurocontrol.int",
+      file: fz("terms-eurocontrol", "html"),
+      line: 1961,
+      words: 'href="/info/disclaimers"',
+      cite: 'its link is https://www.eurocontrol.int/info/disclaimers (href="/info/disclaimers" at research/rendered/terms-eurocontrol-2026-10-06.html:1961 and :2830)',
+      quoted: true,
+    },
+    {
+      site: "eurocontrol.int",
+      file: fz("terms-eurocontrol", "html"),
+      line: 2830,
+      words: 'href="/info/disclaimers"',
+      cite: 'its link is https://www.eurocontrol.int/info/disclaimers (href="/info/disclaimers" at research/rendered/terms-eurocontrol-2026-10-06.html:1961 and :2830)',
+      quoted: true,
+    },
+    {
+      site: "eurocontrol.int",
+      file: "research/channel-loop/terms/ansperformance-disclaimer-2026-10-05.md",
+      line: 28,
+      words: "It may be copied in whole or in part",
+      cite: "the copyright notice of ansperformance.eu's data (research/channel-loop/terms/ansperformance-disclaimer-2026-10-05.md:28)",
+      quoted: false,
+    },
+    {
+      site: "ansperformance.eu",
+      file: fz("terms-eurocontrol"),
+      line: 367,
+      words: "Website Privacy Policy",
+      cite: 'its contents headed "Website Privacy Policy" (research/rendered/terms-eurocontrol-2026-10-06.txt:367)',
+      quoted: true,
+    },
+  ];
+  /** Decision 3(1)'s five kinds, by the first word of the note. */
+  const KIND = /^(refusal-type|exhaustive-negative|unanswered|shell|deferred to [a-z0-9.-]+)\b/;
+  /** The kind word fold 2 and this reading give each named site. */
+  const NAMED_KINDS: Record<string, string> = {
+    "mr.gov.il": "unanswered:",
+    "israelpost.co.il": "shell:",
+    "streetlib.com": "shell:",
+    "streetlib.it": "shell:",
+    "kaggle.com": "shell:",
+    "adaptionlabs.ai": "shell:",
+    "data.gov.il": "deferred to www.gov.il:",
+    "eurocontrol.int": "exhaustive-negative:",
+    "opensky-network.org": "refusal-type:",
+  };
+  /**
+   * The NO_TERMS and TERMS_PENDING sites none of the five kinds fits yet, because none records a terms page the runner
+   * could not read: sixteen with no terms URL known (the 29.9 audit's NO_TERMS_CAPTURE class), odoo.com and stripe.com
+   * (their terms URL answered with no site terms), sumit.co.il (its terms URL redirect-looped), amazonaws.com and
+   * spreadshirt.net (read beside a related site), un.org (its terms page answered 200 on 6.10 and is unread) and
+   * wikimedia.org (its bot policies were read 30.9). The list can only shrink.
+   */
+  const NO_KIND = [
+    "accessalyze.com",
+    "accessiguard.app",
+    "amazonaws.com",
+    "digital-invoice.co.il",
+    "ganim-mall.co.il",
+    "govi.co.il",
+    "h-erp.co.il",
+    "haganenet.co.il",
+    "huntr.com",
+    "kiezelpay.com",
+    "lemidatova.com",
+    "mybooks.co.il",
+    "odoo.com",
+    "quicklyinvoice.com",
+    "repebble.com",
+    "rivhit.co.il",
+    "society6.com",
+    "spreadshirt.net",
+    "stripe.com",
+    "sumit.co.il",
+    "swiftness.co.il",
+    "un.org",
+    "wikimedia.org",
+  ];
+  const frozenTerms = (slug: string) => {
+    const frozen = `${slug}-${FROZEN_ON}`;
+    const meta = JSON.parse(readFileSync(`research/rendered/${frozen}.meta.json`, "utf8")) as Capture["meta"];
+    return { frozen, meta, lines: readFileSync(`research/rendered/${frozen}.txt`, "utf8").split("\n") };
+  };
+
+  it("gives the nine sites the main thread's verdicts, checked 6.10, each source naming what was read and keeping tick 45's", () => {
+    const v = verdicts();
+    const then = tick45(v);
+    expect(Object.keys(TERMS_READ).sort()).toEqual(Object.keys(AUDITED).filter((s) => AUDITED[s] === "TERMS_PENDING").sort());
+    for (const [site, verdict] of Object.entries(TERMS_READ)) {
+      expect(v[site].verdict, site).toBe(verdict);
+      expect(v[site].checked, site).toBe(TERMS_CHECKED);
+    }
+    // The tick-45 sources, byte for byte: after TERMS_BEFORE in the seven changed sources, whole in the two shells'.
+    const text = Object.keys(TERMS_READ).map((site) => `${site}\t${then[site].source}`).join("\n");
+    expect(createHash("sha256").update(text).digest("hex")).toBe(TICK45_TERMS_SOURCES_SHA256);
+    for (const { site, slug } of DECISIVE) {
+      expect(v[site].source.startsWith(`research/rendered/${slug}-${FROZEN_ON}.txt (`), site).toBe(true);
+      expect(v[site].source, site).toContain("one Opus reader and one adversarial Opus verifier, verdict by the main thread (tick 54;");
+      expect(v[site].source, site).toContain(`frozen as ${RENDER} stored it`);
+      expect(v[site].source.split(TERMS_BEFORE), site).toHaveLength(2);
+    }
+    expect(v["opensky-network.org"].source.startsWith("research/rendered/terms-opensky.meta.json (")).toBe(true);
+    expect(v["opensky-network.org"].source.split(TERMS_BEFORE)).toHaveLength(2);
+    for (const site of ["kaggle.com", "adaptionlabs.ai"]) expect(v[site].source.includes(TERMS_BEFORE), site).toBe(false);
+    // The kinds the verdicts carry.
+    expect(isExhaustiveNegative(v["eurocontrol.int"])).toBe(true);
+    expect(isExhaustiveNegative(v["opensky-network.org"])).toBe(false);
+  });
+
+  it("rests each read verdict on a frozen copy of the 6.10 capture, whose cited line holds the decisive words the note quotes", () => {
+    const v = verdicts();
+    const urlsTxt = readFileSync(URLS, "utf8");
+    const manifest = readFileSync("research/rendered/FROZEN.sha256", "utf8");
+    for (const { site, slug, line, words } of DECISIVE) {
+      const { frozen, meta, lines } = frozenTerms(slug);
+      // A frozen copy of the live capture as the 6.10 render stored it, byte for byte, which no urls.txt line names.
+      expect(meta.slug, site).toBe(frozen);
+      expect(meta.frozen?.from, site).toBe(`research/rendered/${slug}.meta.json`);
+      expect(meta.frozen?.commit, site).toBe(RENDER);
+      expect(meta.fetchedAt.slice(0, 10), site).toBe(FROZEN_ON);
+      expect(meta.status, site).toBe(200);
+      const body = readFileSync(meta.bodyPath!);
+      expect(createHash("sha256").update(body).digest("hex"), site).toBe(meta.sha256);
+      expect(readFileSync(`research/rendered/${frozen}.txt`), site).toEqual(readFileSync(`research/rendered/${slug}.txt`));
+      expect(urlsTxt.includes(frozen), site).toBe(false);
+      for (const ext of ["txt", "html", "meta.json"]) expect(manifest, `${frozen}.${ext}`).toContain(`  ${frozen}.${ext}\n`);
+      // The decisive words at the cited line, and in the note beside the citation.
+      expect(lines[line - 1], `${site} :${line}`).toContain(words);
+      expect(v[site].note, site).toContain(`research/rendered/${frozen}.txt:${line}`.replace(`:${line}`, site === "virtualembryo.ai" ? ":12-13" : `:${line}`));
+      if (site !== "virtualembryo.ai") expect(v[site].note, site).toContain(words);
+    }
+    // virtualembryo.ai: the document's title at :12, its incorporation of the Official Rules at :17, both in the note.
+    const ve = frozenTerms("terms-virtualembryo").lines;
+    expect(ve[11]).toBe("Website Terms of Use");
+    expect(ve[16]).toContain("Official Rules, which form part of these Terms");
+    expect(v["virtualembryo.ai"].note).toContain('The Official Rules "form part of these Terms" (:17)');
+    expect(v["virtualembryo.ai"].note).toContain("a bar found there reopens this verdict");
+    // eurocontrol.int: a privacy notice, its sections 1-9 at :153-273, and the bare footer at :439.
+    const eu = frozenTerms("terms-eurocontrol").lines;
+    expect(eu[152]).toMatch(/^1\. What is EUROCONTROL’s website\?/);
+    expect(eu[438]).toBe("© EUROCONTROL");
+    expect(eu[432]).toBe("Disclaimers");
+  });
+
+  it("states each verdict's scope finding and condition in its note, the stanford dissent included", () => {
+    const v = verdicts();
+    expect(v["devpost.com"].note).toMatch(/^BARRED on access: /);
+    expect(v["devpost.com"].note).toContain("the seven *.devpost.com hackathon hosts and info.devpost.com are covered by inference the document supports");
+    expect(v["zindi.africa"].note).toMatch(/^BARRED on copying: /);
+    expect(v["zindi.africa"].note).toContain("research/rendered/terms-zindi-2026-10-06.html:50");
+    expect(v["zindi.africa"].note).toContain("zindi.africa redirects there [inference]");
+    expect(v["grand-challenge.org"].note).toMatch(/^CONDITIONAL_UNMET: /);
+    expect(v["grand-challenge.org"].note).toContain("the five <name>.grand-challenge.org challenge hosts are covered by inference");
+    expect(v["stanford.edu"].note).toMatch(/^CONDITIONAL_UNMET: /);
+    expect(v["stanford.edu"].note).toContain("The verifier read BARRED");
+    expect(v["stanford.edu"].note).toContain("the main thread kept CONDITIONAL_UNMET, and the outcome is the same");
+    expect(v["stanford.edu"].note).toContain("aimslab.stanford.edu and quantiphy.stanford.edu are covered on the text");
+    expect(v["virtualembryo.ai"].note).toMatch(/^NOT_BARRED: /);
+    expect(v["eurocontrol.int"].note).toMatch(/^exhaustive-negative: the tick-45 record searched Open Terms Archive, tosdr\/tosdr-snapshots and EUROCONTROL's own GitHub organisation/);
+    expect(v["eurocontrol.int"].note).toContain(EURO_PROBE.url);
+    expect(v["eurocontrol.int"].note).toContain("ZERO-TESTS row 265");
+    expect(v["opensky-network.org"].note).toMatch(/^refusal-type: the terms page answered HTTP 403 Forbidden on 6\.10 \(research\/rendered\/terms-opensky\.meta\.json/);
+    // opensky: the live meta that refused is the evidence; its line is retired, so the weekly run never rewrites it.
+    const os = JSON.parse(readFileSync("research/rendered/terms-opensky.meta.json", "utf8"));
+    expect([os.status, os.error, os.fetchedAt.slice(0, 10)]).toEqual([403, "HTTP 403 Forbidden", FROZEN_ON]);
+    expect(active().some((l) => l.slug === "terms-opensky")).toBe(false);
+    // The two shells: kind K4 for kaggle, and adaptionlabs' nav-only page in the words of the main thread's verdict.
+    expect(v["kaggle.com"].note).toMatch(/^shell: the plain capture of 6\.10 /);
+    expect(v["kaggle.com"].note).toContain("is a JavaScript shell with 21 characters of text");
+    expect(v["kaggle.com"].note).toContain("ruling 6.10 row 21 decision 3 kind K4");
+    expect(v["kaggle.com"].note).toContain("--js --terms-shell");
+    expect(v["kaggle.com"].note).toContain("run by the main thread");
+    expect(v["adaptionlabs.ai"].note).toMatch(
+      /^shell: nav-only shell: the 6\.10 plain capture is 200, 51 KB of HTML and 85 characters of text \(the navigation\), which capture-check grades short, not js-shell; the js route of decision 3 waits on the classifier naming this kind /,
+    );
+    // No note names a person's address.
+    for (const site of Object.keys(TERMS_READ)) {
+      expect(ADDRESS.test(v[site].note ?? ""), site).toBe(false);
+      expect(ADDRESS.test(v[site].source), site).toBe(false);
+    }
+  });
+
+  it("gives every site a copying field: barred with its clause cited, allowed for virtualembryo.ai, unread for the rest", () => {
+    const v = verdicts();
+    const raw = JSON.parse(readFileSync(VERDICTS, "utf8"));
+    for (const [site, e] of Object.entries(v)) expect(["barred", "allowed", "unread"], site).toContain(e.copying);
+    const barred = Object.keys(v).filter((s) => v[s].copying === "barred").sort();
+    expect(barred).toEqual([...Object.keys(RULING_COPY_BARRED), ...Object.keys(READ_COPY_BARRED), ...Object.keys(REVIEW_COPY_BARRED)].sort());
+    for (const [site, cite] of Object.entries({ ...RULING_COPY_BARRED, ...READ_COPY_BARRED })) expect(v[site].note, site).toContain(cite);
+    // The review's two: the note cites the file and line, which hold the clause the note quotes.
+    for (const [site, { file, line }] of Object.entries(REVIEW_COPY_BARRED)) {
+      expect(v[site].note, site).toContain(`(${file}:${line})`);
+      expect(v[site].note, site).toMatch(/^copying barred \(tick-54 review; |\. Copying barred \(tick-54 review; /);
+      expect(readFileSync(file, "utf8").split("\n")[line - 1], site).toContain(COPY_CLAUSE[site].slice(1, -1));
+    }
+    expect(v["tipalti.com"].note).toContain("the clause TERMS_BARRED in scripts/render-watch.mjs rests on");
+    expect(termsBarred("tipalti.com")?.why).toContain("research/rendered/terms-tipalti-website.txt:245");
+    // A clause quoted only as a caveat beside a verdict resting on something else waits for fold 10(i).
+    for (const [site, words] of Object.entries(CAVEAT_UNREAD)) {
+      expect(v[site].copying, site).toBe("unread");
+      expect(v[site].note, site).toContain(words);
+    }
+    for (const site of Object.keys(RULING_COPY_BARRED)) expect(v[site].note, site).toContain("copying barred (ruling 6.10 row 21 (d), decision 4(2))");
+    for (const [site, words] of Object.entries(COPY_CLAUSE)) expect(v[site].note, site).toContain(words);
+    expect(Object.keys(v).filter((s) => v[s].copying === "allowed")).toEqual(["virtualembryo.ai"]);
+    expect(v["virtualembryo.ai"].note).toContain("copying: allowed, read 6.10");
+    expect(Object.keys(v).filter((s) => v[s].copying === "unread")).toHaveLength(Object.keys(v).length - 11);
+    // The field sits after "note" (or after "checked" when there is none) in every entry, and the _about says what it is.
+    for (const [site, e] of Object.entries(raw.sites as Record<string, Entry>)) expect(Object.keys(e).at(-1), site).toBe("copying");
+    expect(raw._about).toContain('every entry carries a fifth field after "note", "copying"');
+    expect(raw._about.endsWith(` ${ABOUT_COPYING}`)).toBe(true);
+    expect(raw._about).toContain("which is not \"allowed\" (decision 4(2))");
+    expect(raw._about).toContain('refusal-type, exhaustive-negative, unanswered, shell or "deferred to <site>" (decision 3(1))');
+  });
+
+  it("ties every secondary quote and line citation of the read notes to its line, the words there and in the note", () => {
+    const v = verdicts();
+    const lines = new Map<string, string[]>();
+    for (const { site, file, line, words, cite, quoted } of SECONDARY) {
+      if (!lines.has(file)) lines.set(file, readFileSync(file, "utf8").split("\n"));
+      expect(lines.get(file)![line - 1], `${file}:${line}`).toContain(words);
+      expect(v[site].note, `${site} :${line}`).toContain(cite);
+      expect(cite, `${site} :${line}`).toMatch(new RegExp(`:${line}(?!\\d)`));
+      if (quoted) expect(cite, `${site} :${line}`).toContain(words);
+    }
+    expect(SECONDARY.filter((s) => s.site === "eurocontrol.int").map((s) => s.line)).toEqual([433, 439, 1961, 2830, 28]);
+  });
+
+  it("answers the terms-read review: ansperformance's second document, eurocontrol's Disclaimers link and R1 record, virtualembryo's Stanford question", () => {
+    const v = verdicts();
+    const audit = readFileSync(AUDIT, "utf8");
+    const read = audit.slice(audit.indexOf("## Terms read (6.10.2026, tick 54)"));
+    const row = (site: string) => read.split("\n").find((l) => l.startsWith(`| \`${site}\` | `))!;
+    // ansperformance.eu: its second linked document was read 6.10 and is a privacy notice only.
+    const ans = v["ansperformance.eu"].note!;
+    expect(ans).toContain(
+      "the footer's second document, EUROCONTROL's 'Privacy statement' (footer.html:222-224), does not stand in the way: it was read on 6.10 (tick 54) and is a privacy notice only",
+    );
+    expect(ans).toContain("(eurocontrol.int's entry, NO_TERMS since 6.10)");
+    expect(ans).not.toContain("TERMS_PENDING page");
+    expect(v["ansperformance.eu"].verdict).toBe("CONDITIONAL_UNMET");
+    // eurocontrol.int: the Disclaimers link is in the frozen HTML, the R1 record's two missing steps, and the open question,
+    // which holds the verdict at NO_TERMS until the main thread answers it (robots-verdict.mjs keeps the note).
+    const eu = v["eurocontrol.int"].note!;
+    expect(eu).not.toContain("holds no URL");
+    expect(eu).toContain(
+      "The tick-54 review found the record short of R1's list in two steps: the tick-45 URL record (TERMS-AUDIT-2026-10-05-prize-events.md, eurocontrol.int's entries) lists the euctrl-pru organisation, the eurocontrol organisation's repository listing, two repository searches and a user search, but no grep of their repositories' contents for terms, legal, privacy, impressum or mentions légales files, and no search of this repository",
+    );
+    const OPEN = "Open for the main thread before scripts/robots-verdict.mjs is run on the row-265 probe: whether the Disclaimers page is read first.";
+    expect(eu.endsWith(OPEN)).toBe(true);
+    expect(v["eurocontrol.int"].verdict).toBe("NO_TERMS");
+    for (const u of ["https://github.com/euctrl-pru`", "https://github.com/orgs/eurocontrol/repositories?type=all`", "https://github.com/search?type=users&q=eurocontrol`"]) {
+      expect(audit, u).toContain(u);
+    }
+    const euRow = row("eurocontrol.int");
+    expect(euRow).toContain("(:433; its link, /info/disclaimers, is at `research/rendered/terms-eurocontrol-2026-10-06.html:1961` and :2830)");
+    expect(euRow).toContain("The tick-54 review found the record short of R1's list in two steps");
+    expect(euRow).toContain("Whether the Disclaimers page is read before `scripts/robots-verdict.mjs` runs on the row-265 probe is open for the main thread.");
+    // virtualembryo.ai: the Stanford scope question, open for the main thread before its rules page is dispatched.
+    const ve = v["virtualembryo.ai"].note!;
+    expect(ve).toContain("Open for the main thread (tick-54 review): ");
+    expect(ve).toContain(
+      "Neither the reader nor the verifier weighed whether virtualembryo.ai is such a site; the main thread rules on it before the rules page (the /challenge line, the one URL prize-dispatch --skip-captured offers) is dispatched, and if it is, this site takes stanford.edu's verdict and copying field.",
+    );
+    expect(v["virtualembryo.ai"].verdict).toBe("NOT_BARRED");
+    expect(row("virtualembryo.ai")).toContain("Open for the main thread (tick-54 review): the footer names a Stanford University lab");
+    // kaggle.com: the --js --terms-shell route was built 6.10 (the base this branch merged), not "being built".
+    expect(v["kaggle.com"].note).toContain("(decision 3(2); built 6.10, commit 5a3ee24)");
+    expect(v["kaggle.com"].note).not.toContain("being built");
+    expect(readFileSync("scripts/queue-zero-test.mjs", "utf8")).toContain("--terms-shell");
+    expect(row("kaggle.com")).toContain("(built 6.10, commit 5a3ee24)");
+    // The audit's copying paragraph counts the review's two and names the caveat-only sites.
+    expect(audit).toContain('"allowed" for virtualembryo.ai, and "unread" for the other 121, which is not "allowed".');
+    expect(audit).toContain("for the two other sites whose verdicts already rested on a read copying clause (codabench.org,");
+    expect(Object.keys(v).length - 11).toBe(121);
+    // No note or row names a person: the footer's words before " Lab," (the lab's name) stay out of both.
+    const footer = readFileSync(fz("terms-virtualembryo"), "utf8").split("\n")[108];
+    const named = footer.slice(0, footer.indexOf(" Lab,"));
+    expect(named.length).toBeGreaterThan("© 2026 ".length);
+    expect(ve.includes(named)).toBe(false);
+    expect(row("virtualembryo.ai").includes(named)).toBe(false);
+  });
+
+  it("opens every NO_TERMS and TERMS_PENDING note with its kind word, but for the sites no kind fits yet, which are named", () => {
+    const v = verdicts();
+    const pending = Object.keys(v).filter((s) => ["NO_TERMS", "TERMS_PENDING"].includes(v[s].verdict));
+    const kindless = pending.filter((s) => !KIND.test(v[s].note ?? ""));
+    expect(kindless.sort()).toEqual([...NO_KIND].sort());
+    for (const [site, word] of Object.entries(NAMED_KINDS)) expect(v[site].note!.startsWith(`${word} `), site).toBe(true);
+    // The refusal-type and exhaustive-negative notes kept their words; nevo's gained its [robots-bar] sentence, and still
+    // opens exhaustive-negative (only scripts/robots-verdict.mjs may change its verdict).
+    for (const site of ["bitsofgold.co.il", "greeninvoice.co.il", "zazzle.com", "medium.com", "knesset.gov.il", "kolzchut.org.il", "www.gov.il"]) {
+      expect(v[site].note, site).toMatch(/^refusal-type\b/);
+    }
+    expect(isExhaustiveNegative(v["nevo.co.il"])).toBe(true);
+    expect(v["nevo.co.il"].note).toContain(
+      "[robots-bar] (ruling 6.10 row 21 (a)): the ten captures of 29.9 are D1(1) — compliance and decisions not to act only, never a product input",
+    );
+    expect(v["israelpost.co.il"].note).toContain("decision 3(3) applies the once-only js render of rule 2 to this page");
+    expect(v["data.gov.il"].note).toContain("it takes the kind of www.gov.il's terms, refusal-type today");
+    // wikisource points at decision 2's two triggers, and stays CONDITIONAL_UNMET until one of them.
+    expect(v["wikisource.org"].verdict).toBe("CONDITIONAL_UNMET");
+    expect(v["wikisource.org"].note).toContain("the first of decision 2(2)'s two triggers");
+    expect(v["wikisource.org"].note).toContain("(i) a brand site live at a URL the loop controls");
+    expect(v["wikisource.org"].note).toContain("(ii) step 8 done, the brand mailbox in the UA");
+    expect(v["wikisource.org"].note).not.toContain("FABLE_QUEUE row 21 (b)");
+  });
+
+  it("keeps the copying field when scripts/robots-verdict.mjs sets a verdict (judgeSite, on a site of the real file)", () => {
+    // agenthon.net as tick 45 left it, with the copying field the file now gives it, judged on the frozen copy of the
+    // robots.txt it read on 6.10: the entry the script writes keeps the field, last, as the file has it.
+    const v = verdicts();
+    const file = JSON.parse(readFileSync(VERDICTS, "utf8"));
+    const site = "agenthon.net";
+    const then = tick45(v);
+    const sites = { ...then, [site]: { ...then[site], copying: v[site].copying } };
+    const capture = frozenCapture(citedCapture(v[site].source)!.path);
+    const out = judgeSite({ site, verdicts: { ...file, sites }, urls: readFileSync(FIXTURE, "utf8"), readCapture: readerOf(capture), today: ROBOTS_CHECKED });
+    expect(out.changed).toBe(true);
+    expect(out.verdicts.sites[site].copying).toBe("unread");
+    expect(Object.keys(out.verdicts.sites[site])).toEqual(["verdict", "source", "checked", "note", "copying"]);
+    expect(out.verdicts.sites[site]).toEqual(v[site]);
+  });
+
+  it("records the reading in the audit note's last section: how it was read, the nine rows, the shells and the copying field", () => {
+    const audit = readFileSync(AUDIT, "utf8");
+    const text = audit.slice(audit.indexOf("## Terms read (6.10.2026, tick 54)"));
+    expect(text.indexOf("\n## ", 1)).toBe(-1);
+    expect(text).toContain("read in full by one Opus reader and then by one adversarial Opus verifier");
+    expect(text).toContain("the main thread (Fable 5.1, tick 54) ruled on the two records");
+    const v = verdicts();
+    const rows = text.split("\n").filter((l) => /^\| `[a-z0-9.-]+` \|/.test(l));
+    expect(rows.map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual([
+      "devpost.com",
+      "zindi.africa",
+      "grand-challenge.org",
+      "stanford.edu",
+      "virtualembryo.ai",
+      "eurocontrol.int",
+      "opensky-network.org",
+      "kaggle.com",
+      "adaptionlabs.ai",
+    ]);
+    for (const row of rows) {
+      const cells = row.split(" | ");
+      expect(cells, row.slice(0, 40)).toHaveLength(7);
+      const site = cells[0].match(/`([a-z0-9.-]+)`/)![1];
+      expect(cells[1].startsWith(v[site].verdict), site).toBe(true);
+      const d = DECISIVE.find((x) => x.site === site);
+      if (d) expect(row, site).toContain(`research/rendered/${d.slug}-${FROZEN_ON}.txt`);
+    }
+    const stanford = rows.find((r) => r.startsWith("| `stanford.edu` |"))!;
+    expect(stanford).toContain("CONDITIONAL_UNMET (the verifier read BARRED)");
+    expect(stanford).toContain("Dissent: the verifier read BARRED");
+    expect(text).toContain("**The two shells.**");
+    expect(text).toContain("**The copying field and the kind words (ruling 6.10 row 21, fold 2).**");
+    expect(text).toContain("**Notes with no kind word yet.** Twenty-three other NO_TERMS or TERMS_PENDING notes");
+    expect(NO_KIND).toHaveLength(23);
+    expect(ADDRESS.test(text)).toBe(false);
   });
 });

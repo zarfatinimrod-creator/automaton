@@ -1,0 +1,26 @@
+{
+  "url": "https://www.eurocontrol.int/info/privacy-and-website-terms-use",
+  "slug": "terms-eurocontrol-2026-10-06",
+  "fetchedAt": "2026-10-06T07:15:33.483Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 136485,
+  "sha256": "ec0f1cadd3f316003eab9a558410bc9f8aacf0f13c6e087202f7b9888014ee4a",
+  "truncated": false,
+  "redacted": 36,
+  "error": null,
+  "bodyPath": "research/rendered/terms-eurocontrol-2026-10-06.html",
+  "textPath": "research/rendered/terms-eurocontrol-2026-10-06.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://www.eurocontrol.int/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-06",
+    "from": "research/rendered/terms-eurocontrol.meta.json",
+    "commit": "5f4853a",
+    "why": "A dated copy of the render-watch capture of terms-eurocontrol as commit 5f4853a stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keep pointing at the lines the terms reading of 6.10 (tick 54: one Opus reader, one adversarial Opus verifier, the main thread's verdict) rests on. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-eurocontrol stays in urls.txt, paused after the reading (a privacy notice, no site terms)."
+  }
+}

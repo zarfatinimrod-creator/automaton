@@ -233,6 +233,81 @@ describe("serializeVerdicts", () => {
     const raw = readFileSync(join(ROOT, "research", "channel-loop", "terms-verdicts.json"), "utf8");
     expect(serializeVerdicts(JSON.parse(raw))).toBe(raw);
   });
+
+  it("puts an entry's fields in one fixed order, copying after note, whatever order they came in (ruling 6.10 row 21 (d))", () => {
+    // Since 6.10 every entry carries a fifth field, "copying" (RULING-2026-10-06-robots-and-terms.md decision 4(2)). The
+    // file keeps one exact format: verdict, source, checked, note, copying, then any field not named, in its own order.
+    const shuffled = {
+      _about: "test file",
+      sites: {
+        "a.example": { copying: "barred", note: "n", checked: "2026-10-06", source: "s", verdict: "BARRED" },
+        "b.example": { copying: "unread", checked: "2026-09-29", verdict: "NOT_BARRED", source: "s" },
+        "c.example": { extra: 1, verdict: "NO_TERMS", source: "s", checked: "2026-09-29", note: "n", copying: "unread" },
+      },
+    };
+    const out = JSON.parse(serializeVerdicts(shuffled));
+    expect(Object.keys(out)).toEqual(["_about", "sites"]);
+    expect(Object.keys(out.sites["a.example"])).toEqual(["verdict", "source", "checked", "note", "copying"]);
+    expect(Object.keys(out.sites["b.example"])).toEqual(["verdict", "source", "checked", "copying"]);
+    expect(Object.keys(out.sites["c.example"])).toEqual(["verdict", "source", "checked", "note", "copying", "extra"]);
+    expect(out).toEqual(shuffled);
+    // One-space indent, no final newline, as committed.
+    expect(serializeVerdicts(shuffled)).toBe(JSON.stringify(out, null, 1));
+    // A file with copying out of place is not in the format: serializing it moves the field, so the committed-file
+    // test above fails on it.
+    const misplaced = '{\n "sites": {\n  "a.example": {\n   "copying": "unread",\n   "verdict": "NO_TERMS",\n   "source": "s",\n   "checked": "2026-09-29"\n  }\n }\n}';
+    expect(serializeVerdicts(JSON.parse(misplaced))).not.toBe(misplaced);
+  });
+
+  it("holds every committed entry to that order, with a copying field in {barred, allowed, unread}", () => {
+    const raw = readFileSync(join(ROOT, "research", "channel-loop", "terms-verdicts.json"), "utf8");
+    const order = ["verdict", "source", "checked", "note", "copying"];
+    for (const [site, entry] of Object.entries(JSON.parse(raw).sites as Record<string, Record<string, unknown>>)) {
+      const keys = Object.keys(entry);
+      expect(keys, site).toEqual(order.filter((k) => keys.includes(k)));
+      expect(["barred", "allowed", "unread"], site).toContain(entry.copying);
+    }
+  });
+});
+
+describe("judgeSite keeps every field it does not set (6.10, tick 54)", () => {
+  // The verdict file gained "copying" on 6.10 (ruling 6.10 row 21 (d), decision 4(2)). judgeSite used to rebuild the entry
+  // from verdict, source, checked and note alone, so setting NO_TERMS_ROBOTS_OK would have dropped the field.
+  const WITH_COPYING = {
+    ...VERDICTS,
+    sites: {
+      ...VERDICTS.sites,
+      "law.example": { ...VERDICTS.sites["law.example"], copying: "unread", extra: "kept" },
+    },
+  };
+
+  it("keeps copying, and any other field, on the entry it rewrites, in the file's order", () => {
+    const out = judge({ verdicts: WITH_COPYING });
+    expect(out.changed).toBe(true);
+    const entry = out.verdicts.sites["law.example"];
+    expect(entry.verdict).toBe("NO_TERMS_ROBOTS_OK");
+    expect(entry.note).toBe(NOTE);
+    expect(entry.copying).toBe("unread");
+    expect(entry.extra).toBe("kept");
+    expect(Object.keys(entry)).toEqual(["verdict", "source", "checked", "note", "copying", "extra"]);
+    // The input is not mutated, and the serialized file carries the field where every entry does.
+    expect(WITH_COPYING.sites["law.example"].verdict).toBe("NO_TERMS");
+    expect(serializeVerdicts(out.verdicts)).toContain('"note": "' + NOTE.replace(/"/g, '\\"') + '",\n   "copying": "unread",');
+  });
+
+  it("keeps a barred copying field as it is: the robots verdict says nothing about copying", () => {
+    const barred = { ...WITH_COPYING, sites: { ...WITH_COPYING.sites, "law.example": { ...WITH_COPYING.sites["law.example"], copying: "barred" } } };
+    expect(judge({ verdicts: barred }).verdicts.sites["law.example"].copying).toBe("barred");
+  });
+
+  it("writes copying back through the CLI with --apply", () => {
+    const f = fixture("User-agent: *\nDisallow: /search\n", WITH_COPYING);
+    expect(f.run("--apply").status).toBe(0);
+    const after = JSON.parse(f.verdicts());
+    expect(after.sites["law.example"].verdict).toBe("NO_TERMS_ROBOTS_OK");
+    expect(after.sites["law.example"].copying).toBe("unread");
+    expect(f.verdicts()).toBe(serializeVerdicts(after));
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -244,12 +319,12 @@ afterAll(() => {
   for (const dir of tmpDirs) rmSync(dir, { recursive: true, force: true });
 });
 
-function fixture(robotsBody: string | null) {
+function fixture(robotsBody: string | null, verdicts: object = VERDICTS) {
   const dir = mkdtempSync(join(tmpdir(), "robots-verdict-test-"));
   tmpDirs.push(dir);
   const rendered = join(dir, "rendered");
   mkdirSync(rendered);
-  writeFileSync(join(dir, "terms-verdicts.json"), serializeVerdicts(VERDICTS));
+  writeFileSync(join(dir, "terms-verdicts.json"), serializeVerdicts(verdicts));
   writeFileSync(join(dir, "urls.txt"), URLS);
   if (robotsBody !== null) {
     writeFileSync(join(rendered, "robots-law.txt"), robotsBody);

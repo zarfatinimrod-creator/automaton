@@ -19,6 +19,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `remask-run.json` | `scripts/remask-run.sh` | `remask-run.test.ts` | tick 53 |
 | `render-dispatch.json` | `scripts/render-dispatch.sh` | `render-dispatch.test.ts` | ticks 52, 54 |
 | `render-watch.json` | `scripts/render-watch.mjs` (the address mask; the User-Agent and `UA_CONTACT`, tick 54) | `render-watch.test.ts` (+ `render-watch-robots.test.ts` for the T54-U entries) | ticks 48, 50, 54 |
+| `robots-verdict.json` | `scripts/robots-verdict.mjs` (`judgeSite` keeps every field it does not set; `serializeVerdicts`' one field order, copying after note) | `robots-verdict.test.ts` | tick 54 |
 | `sim-tree.json` | `scripts/sim-tree.sh` | `sim-tree.test.ts` | ticks 51, 52 |
 
 ## An entry
@@ -61,6 +62,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 
   | Plan | Entries | Full run |
   | --- | --- | --- |
+  | `robots-verdict.json` | 4 | 13 (tick 54 terms-read builder, in its worktree, alone; the test file takes about 2 s a run) |
   | `page-views.json` | 5 | 23 (tick 54 builder, inside sim-tree.sh, alone; the two test files take about 2 s a run) |
   | `prize-dispatch.json` | 28 | 69 |
   | `render-watch.json` | 64 | 117 with the first 53 (tick 54's 9 UA entries alone: 52, in sim-tree.sh beside the next two; the two address-mask entries T54-M1, T54-M2 came from the base) |

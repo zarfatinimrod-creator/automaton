@@ -1,0 +1,25 @@
+{
+  "url": "https://www.stanford.edu/site/terms/",
+  "slug": "terms-stanford-2026-10-06",
+  "fetchedAt": "2026-10-06T07:15:29.403Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 351829,
+  "sha256": "48c4c45e134be29e58d0f24dc8b8659f3d46457ada7fe323d3aa93a1ec305186",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-stanford-2026-10-06.html",
+  "textPath": "research/rendered/terms-stanford-2026-10-06.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://www.stanford.edu/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-06",
+    "from": "research/rendered/terms-stanford.meta.json",
+    "commit": "5f4853a",
+    "why": "A dated copy of the render-watch capture of terms-stanford as commit 5f4853a stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keep pointing at the lines the terms reading of 6.10 (tick 54: one Opus reader, one adversarial Opus verifier, the main thread's verdict) rests on. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-stanford stays in urls.txt, paused after the reading."
+  }
+}

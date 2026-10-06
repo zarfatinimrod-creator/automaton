@@ -1,0 +1,26 @@
+{
+  "url": "https://grand-challenge.org/policies/terms-of-service/",
+  "slug": "terms-grand-challenge-2026-10-06",
+  "fetchedAt": "2026-10-06T07:15:25.514Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 29970,
+  "sha256": "2bcc9577f089f4acbe614167bbb74cf66d9d9c22bf87075263f5aa8652f6485e",
+  "truncated": false,
+  "redacted": 4,
+  "error": null,
+  "bodyPath": "research/rendered/terms-grand-challenge-2026-10-06.html",
+  "textPath": "research/rendered/terms-grand-challenge-2026-10-06.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://grand-challenge.org/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-06",
+    "from": "research/rendered/terms-grand-challenge.meta.json",
+    "commit": "5f4853a",
+    "why": "A dated copy of the render-watch capture of terms-grand-challenge as commit 5f4853a stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keep pointing at the lines the terms reading of 6.10 (tick 54: one Opus reader, one adversarial Opus verifier, the main thread's verdict) rests on. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-grand-challenge stays in urls.txt, paused after the reading."
+  }
+}

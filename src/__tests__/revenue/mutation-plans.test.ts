@@ -42,6 +42,7 @@ describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
       "remask-run.json",
       "render-dispatch.json",
       "render-watch.json",
+      "robots-verdict.json",
       "sim-tree.json",
     ]) {
       expect(PLANS).toContain(name);

@@ -27,8 +27,9 @@
  *   4. every page is checked with render-watch's own parser (parseRobotsTxt, robotsRulesFor, robotsDecision), for
  *      the product token MehudakRenderWatch, else `*`
  *   5. only if every page is allowed does the entry become NO_TERMS_ROBOTS_OK, with a source line citing the
- *      capture (file, URL, fetchedAt, sha256) and the ruling, the old NO_TERMS source kept at its end, and the note
- *      kept. Nothing else in the file changes, and the file keeps its exact format (serializeVerdicts)
+ *      capture (file, URL, fetchedAt, sha256) and the ruling, the old NO_TERMS source kept at its end, and every field
+ *      it does not set kept as it was (the note; since 6.10 the copying field, RULING-2026-10-06-robots-and-terms.md
+ *      decision 4(2)). Nothing else in the file changes, and the file keeps its exact format (serializeVerdicts)
  *
  * Dry run by default: it prints each page's answer and what it would write. --apply writes terms-verdicts.json. It
  * never touches urls.txt: un-pausing a site's lines is a separate, reviewed edit.
@@ -53,9 +54,32 @@ import {
 
 const RULING = "research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v)";
 
-/** terms-verdicts.json exactly as it is committed: one-space indent, no trailing newline. */
+/**
+ * The order of a site entry's fields in terms-verdicts.json. "copying" (since 6.10: "barred" | "allowed" | "unread",
+ * RULING-2026-10-06-robots-and-terms.md decision 4(2)) comes after "note", or after "checked" when there is no note; a
+ * field not listed here keeps its own order after these.
+ */
+export const ENTRY_FIELDS = ["verdict", "source", "checked", "note", "copying"];
+
+/** A site entry with its fields in ENTRY_FIELDS order, then any other field in the order it had. A new object. */
+export function orderEntry(entry) {
+  const out = {};
+  for (const k of ENTRY_FIELDS) if (Object.hasOwn(entry, k)) out[k] = entry[k];
+  for (const [k, v] of Object.entries(entry)) if (!Object.hasOwn(out, k)) out[k] = v;
+  return out;
+}
+
+/**
+ * terms-verdicts.json exactly as it is committed: one-space indent, no trailing newline, and every site entry's fields
+ * in ENTRY_FIELDS order, so the file has one exact format whatever order a writer built an entry in.
+ */
 export function serializeVerdicts(verdicts) {
-  return JSON.stringify(verdicts, null, 1);
+  const sites = verdicts?.sites;
+  if (sites === null || typeof sites !== "object" || Array.isArray(sites)) return JSON.stringify(verdicts, null, 1);
+  const ordered = Object.fromEntries(
+    Object.entries(sites).map(([site, entry]) => [site, entry !== null && typeof entry === "object" && !Array.isArray(entry) ? orderEntry(entry) : entry]),
+  );
+  return JSON.stringify({ ...verdicts, sites: ordered }, null, 1);
 }
 
 /** A `# paused …` line ending in URL<TAB>slug[<TAB>js]: [, url, slug]. Also read by scripts/urls-pause-comments.mjs. */
@@ -232,14 +256,16 @@ export function judgeSite({ site, verdicts, urls, readCapture = (url) => readRob
   }
 
   const n = pages.length;
-  const next = {
+  // Every field this does not set (the note, the copying field since 6.10, anything a later fold adds) is kept as it
+  // was, in the file's field order (orderEntry): the robots verdict says nothing about them.
+  const next = orderEntry({
+    ...entry,
     verdict: "NO_TERMS_ROBOTS_OK",
     source:
       `${cites.join("; ")}: all ${n} queued path${n === 1 ? "" : "s"} allowed for ${ROBOTS_PRODUCT_TOKEN} ` +
       `(scripts/robots-verdict.mjs); ruling ${RULING}; NO_TERMS before: ${entry.source}`,
     checked: today,
-    ...(entry.note ? { note: entry.note } : {}),
-  };
+  });
   return {
     changed: true,
     why: `every queued path of ${site} is allowed`,
