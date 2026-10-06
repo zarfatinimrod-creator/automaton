@@ -187,10 +187,10 @@
   {
     "id": "T57-RF1-page-fetched",
     "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
-    "find": "open to dispatch; the page has not been fetched.",
-    "replace": "open to dispatch; the page has been fetched.",
+    "find": "open to dispatch; the tick-57 dispatch fetched the page on 6.10 at 20:02 UTC (`prize-www-eurocontrol-int-air-navigation-services-perf-fd12ebb3`, fetched 2026-10-06T20:02:35.407Z, status 200), and it was read on 6.10: EUROCONTROL's Air navigation services performance review landing page, not the rules, so the row was re-graded BLOCKED on 6.10 (tick 58), its rules pages sitting on ansperformance.eu, which is CONDITIONAL_UNMET.",
+    "replace": "open to dispatch; the page has not been fetched.",
     "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
-    "note": "tick 57 review R57-6: the tick-57 paragraph says the prize page was fetched (it was pinned by phrases; pinned whole since the review fix)"
+    "note": "tick 57 review R57-6, turned round in tick 58: the clause says the prize page was not fetched, false since the tick-57 dispatch fetched it (render commit 23e17e7; the paragraph is pinned whole)"
   },
   {
     "id": "T57-RF2-copying-allowed",
@@ -424,5 +424,205 @@
     "replace": "agenthon.net is still TERMS_PENDING, its robots.txt probe (row 247) paused, and this line stays paused as read.** |",
     "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
     "note": "tick 57 review fix: row 266's tick-57 mark states the site's old verdict"
+  },
+  {
+    "id": "T58-RC1-bytes-inverted",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "cite.kind === \"file\" && live.bytes.equals(frozen.bytes)",
+    "replace": "cite.kind === \"file\" && !live.bytes.equals(frozen.bytes)",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: --recheck's bytes comparison inverted, so an unchanged robots.txt reads as changed and a changed one as unchanged"
+  },
+  {
+    "id": "T58-RC2-copy-not-written",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "          freezeCapture({ ...f.options, dryRun: false });",
+    "replace": "          freezeCapture({ ...f.options, dryRun: true });",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: --apply writes the entry but not the frozen copy it cites (nor its FROZEN.sha256 lines)"
+  },
+  {
+    "id": "T58-RC3-manifest-not-updated",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "  recordFiles(options.dir, plan.frozenSlug);\n  return plan;",
+    "replace": "  return plan;",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: the refresh's new frozen copy is written but FROZEN.sha256 does not follow"
+  },
+  {
+    "id": "T58-RC4-source-old-copy",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "source: `${judged.cites.join(\"; \")}${parsed.rest}`",
+    "replace": "source: entry.source",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a refresh leaves the source naming the old frozen copy"
+  },
+  {
+    "id": "T58-RC5-revert-keeps-ok",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "      verdict: \"NO_TERMS\",\n",
+    "replace": "      verdict: \"NO_TERMS_ROBOTS_OK\",\n",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a revert leaves the verdict NO_TERMS_ROBOTS_OK, so the disallowed path still passes termsGate"
+  },
+  {
+    "id": "T58-RC6-kind-word-dropped",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "      note: withSentence(entry.note, sentence),\n",
+    "replace": "      note: sentence,\n",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a revert replaces the note by its sentence, dropping the kind word exhaustive-negative (and the history)"
+  },
+  {
+    "id": "T58-RC7-apply-in-dry-run",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "    if (values.apply && (r.outcome === \"refresh\" || r.outcome === \"revert\")) {",
+    "replace": "    if (r.outcome === \"refresh\" || r.outcome === \"revert\") {",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a dry run freezes and writes as --apply does"
+  },
+  {
+    "id": "T58-RC8-other-verdict-listed",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "let names = Object.keys(sites).filter((s) => sites[s]?.verdict === \"NO_TERMS_ROBOTS_OK\");",
+    "replace": "let names = Object.keys(sites).filter((s) => sites[s]?.verdict === \"NO_TERMS_ROBOTS_OK\" || sites[s]?.verdict === \"NO_TERMS\");",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: --recheck takes up NO_TERMS sites as well as NO_TERMS_ROBOTS_OK ones"
+  },
+  {
+    "id": "T58-RC9-guard-removed",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "  if (entry?.verdict !== \"NO_TERMS_ROBOTS_OK\") {\n    return out(\"skipped\"",
+    "replace": "  if (false) {\n    return out(\"skipped\"",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: recheckSite re-checks (and would rewrite) a site whose verdict is not NO_TERMS_ROBOTS_OK"
+  },
+  {
+    "id": "T58-RC10-refresh-note-unchanged",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "note: withSentence(entry.note, sentence) });",
+    "replace": "note: entry.note });",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a refresh adds no dated sentence to the note"
+  },
+  {
+    "id": "T58-RC11-404-after-file-unchanged",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "now.kind === \"absent\" ? cite.kind === \"absent\" :",
+    "replace": "now.kind === \"absent\" ? true :",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a 200 robots.txt that became a 404 reads as unchanged, never re-judged or frozen"
+  },
+  {
+    "id": "T58-RC12-unreachable-as-unchanged",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "  if (unreachable.length) return out(\"unreachable\", unreachable.map((h) => h.why).join(\"; \"));\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a missing, refused or unreachable live capture reads as unchanged"
+  },
+  {
+    "id": "T58-RC13-sha-check-skipped",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "if (cite.kind === \"file\" && sha256(frozen.bytes).slice(0, 12) !== cite.sha12) {",
+    "replace": "if (false) {",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a frozen copy whose bytes are not the ones its citation hashes is taken as the copy"
+  },
+  {
+    "id": "T58-RC14-live-cite-accepted",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "  if (!frozen.meta?.frozen) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a source that cites the live capture (which the weekly run rewrites) is re-checked against itself"
+  },
+  {
+    "id": "T58-RC15-revert-checked-kept",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "      checked: today,\n      note: withSentence",
+    "replace": "      note: withSentence",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a revert keeps the old checked date"
+  },
+  {
+    "id": "T58-RC16-format-check-removed",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "if (values.apply && serializeVerdicts(verdicts) !== raw) {",
+    "replace": "if (false) {",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: --apply rewrites a verdicts file that was not in serializeVerdicts' format"
+  },
+  {
+    "id": "T58-RC17-stale-body-frozen",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "  return new Map([...files].filter(([ext]) => keep.has(ext)));",
+    "replace": "  return files;",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a stale body beside a 404's meta is frozen with it"
+  },
+  {
+    "id": "T58-RC18-exit-0-lost",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "  return count(\"refresh\") + count(\"revert\") > 0 ? 0 : 3;",
+    "replace": "  return 3;",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: --recheck exits 3 when it changed (or would change) something"
+  },
+  {
+    "id": "T58-RC19-revert-history-dropped",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "ruling ${RULING}; NO_TERMS_ROBOTS_OK before: ${entry.source}`",
+    "replace": "ruling ${RULING}`",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a revert's source loses the NO_TERMS_ROBOTS_OK source it replaces"
+  },
+  {
+    "id": "T58-RC20-commit-not-named",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "  return own ? sourceVersion(root, slug) :",
+    "replace": "  return false ? sourceVersion(root, slug) :",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a freeze from the repository's own research/rendered names no commit and takes uncommitted bytes"
+  },
+  {
+    "id": "T58-RC21-dedupe-dropped",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "    if (isRobotsProbe(p.url, p.slug) || seen.has(key)) return false;",
+    "replace": "    if (isRobotsProbe(p.url, p.slug)) return false;",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: a page queued in two lists is judged and counted twice"
+  },
+  {
+    "id": "T58-RC22-default-lists",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "const lists = values.urls?.length ? values.urls : [URLS, PRIZE_URLS];",
+    "replace": "const lists = values.urls?.length ? values.urls : [URLS];",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 58: --recheck reads only research/rendered/urls.txt by default, missing the prize lines"
+  },
+  {
+    "id": "T58-E1-fetched-at",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "fetched 2026-10-06T20:02:35.407Z, status 200), and it was read",
+    "replace": "fetched 2026-10-06T20:02:35.406Z, status 200), and it was read",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 58: the eurocontrol.int paragraph's fetch time is not the prize capture's"
+  },
+  {
+    "id": "T58-E2-grade",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "so the row was re-graded BLOCKED on 6.10 (tick 58)",
+    "replace": "so the row was re-graded NONE on 6.10 (tick 58)",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 58: the eurocontrol.int paragraph names the wrong grade"
+  },
+  {
+    "id": "T58-E3-rules-host-verdict",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "on ansperformance.eu, which is CONDITIONAL_UNMET.",
+    "replace": "on ansperformance.eu, which is CONDITIONAL_MET.",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 58: the eurocontrol.int paragraph gives the rules host a verdict it does not have"
   }
 ]

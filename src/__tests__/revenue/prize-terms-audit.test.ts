@@ -4016,6 +4016,14 @@ describe("tick 57: eurocontrol.int's robots verdict (R1's repository grep ruled 
     const open = audited().filter((e) => termsGate(e.url, e.slug, t57e).ok).length;
     const open56 = audited().filter((e) => termsGate(e.url, e.slug, tick56(v)).ok).length;
     const openLater = audited().filter((e) => termsGate(e.url, e.slug, v).ok).length;
+    // The prize page: "has not been fetched" until the tick-57 dispatch fetched it (render commit 23e17e7); read on 6.10, it
+    // is EUROCONTROL's landing page, not the rules, and the row was re-graded BLOCKED in tick 58, the rules host being
+    // ansperformance.eu (tick-58 fix of the clause). Its fetch, status, title line and the rules host's verdict are read here.
+    const prize = JSON.parse(readFileSync(`research/rendered/${PRIZE_LINE.slug}.meta.json`, "utf8"));
+    const prizeText = readFileSync(`research/rendered/${PRIZE_LINE.slug}.txt`, "utf8");
+    expect([prize.url, prize.status, prize.error, prize.fetchedAt.slice(0, 16)]).toEqual([PRIZE_LINE.url, 200, null, "2026-10-06T20:02"]);
+    expect(prizeText.split("\n")[0]).toBe("Air navigation services performance review | EUROCONTROL");
+    expect(prizeText.split("\n").length - 1).toBe(828);
     // Pinned whole, every count and capture fact computed (tick-57 review: three false edits of its unpinned prose, the page
     // "fetched", copying "allowed" and the group move reversed, got through a list of phrases).
     expect(para).toBe(
@@ -4028,7 +4036,10 @@ describe("tick 57: eurocontrol.int's robots verdict (R1's repository grep ruled 
         "The script wrote the live capture's path into the source, and the source was then repointed to the frozen copy, " +
         `\`${EU_ROBOTS}.txt\` (as ${meta.frozen!.commit} stored it: fetched ${meta.fetchedAt}, sha256 ${meta.sha256!.slice(0, 12)}, the live capture's bytes), exactly as the script's \`judgeSite\` writes it when the capture it reads is that copy, ` +
         "so the weekly run, which rewrites the live capture whenever its body changes, never moves what the verdict rests on. " +
-        "The rules URL passes `termsGate` now, and `scripts/prize-dispatch.mjs --skip-captured --why` lists the prize line as passing, open to dispatch; the page has not been fetched. " +
+        "The rules URL passes `termsGate` now, and `scripts/prize-dispatch.mjs --skip-captured --why` lists the prize line as passing, open to dispatch; " +
+        `the tick-57 dispatch fetched the page on 6.10 at ${prize.fetchedAt.slice(11, 16)} UTC (\`${PRIZE_LINE.slug}\`, fetched ${prize.fetchedAt}, status ${prize.status}), ` +
+        `and it was read on 6.10: EUROCONTROL's ${prizeText.split(" | ")[0]} landing page, not the rules, so the row was re-graded BLOCKED on 6.10 (tick 58), ` +
+        `its rules pages sitting on ansperformance.eu, which is ${v["ansperformance.eu"].verdict}. ` +
         "The two terms lines stay paused as read (`scripts/urls-pause-comments.mjs --fix` rewrote their comments' verdict word to NO_TERMS_ROBOTS_OK), the probe stays on the weekly watch, and ZERO-TESTS row 265 says VERDICT SET 6.10 (tick 57). " +
         `Of the audited sites, ${okNow.length} are NO_TERMS_ROBOTS_OK now (the ${ok56.length} of tick 55 and eurocontrol.int) and their ${clearedNow} rules URLs pass the gate, which admits ${open} of the 101 audited rules URLs (${open56} in ticks 55 and 56; since agenthon.net's robots verdict, later in tick 57, ${okLater.length} sites, ${clearedLater} rules URLs and ${openLater}, "Terms read, third round" below); ` +
         'in the render groups above eurocontrol.int moves from "Robots probe captured, robots verdict not yet run", empty since, to "Now, on robots.txt". ' +
