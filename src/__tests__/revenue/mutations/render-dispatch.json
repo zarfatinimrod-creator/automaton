@@ -166,5 +166,13 @@
     "replace": "  if true; then",
     "test": "src/__tests__/revenue/render-dispatch.test.ts",
     "note": "tick 52 fixer: every slug is said to be unchanged, the refreshed ones too"
+  },
+  {
+    "id": "T54-D1",
+    "file": "scripts/render-dispatch.sh",
+    "find": "const gate = termsGate(url, slug, verdicts, { js: flag === \"js\" });",
+    "replace": "const gate = termsGate(url, slug, verdicts);",
+    "test": "src/__tests__/revenue/render-dispatch.test.ts",
+    "note": "tick 54 D1: step 1's gate ignores the line's js flag, so a K4 shell site's once-only js terms line is refused"
   }
 ]

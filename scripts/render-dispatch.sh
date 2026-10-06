@@ -22,8 +22,9 @@
 #      parser must accept the lines
 #      (RENDER_WATCH_URLS=<the file> node scripts/render-watch.mjs --needs-browser, which also says whether a js line
 #      needs the browser); then every line needs a slug and a site that passes termsGate (scripts/queue-zero-test.mjs,
-#      the gate scripts/prize-dispatch.mjs applies), or it is refused with the gate's reason. Nothing is dispatched
-#      unless every line passes.
+#      the gate scripts/prize-dispatch.mjs applies), given the line's js flag (a K4 shell site's once-only js terms
+#      line passes only with it: RULING-2026-10-06-robots-and-terms.md 3(2)), or it is refused with the gate's reason.
+#      Nothing is dispatched unless every line passes.
 #   2. dispatch: the body {"ref": <ref>, "inputs": {"urls": <the file>}} is written by python3 (never by hand), and
 #      POSTed with `gh api -X POST repos/<owner>/<repo>/actions/workflows/render-watch.yml/dispatches --input <body>`;
 #      owner and repo are read from `git remote get-url origin` of this checkout.
@@ -105,13 +106,13 @@ let refused = 0;
 readFileSync(file, "utf8").replace(/^\uFEFF/, "").split(/\r?\n/).forEach((raw, i) => {
   const t = raw.trim();
   if (t === "" || t.startsWith("#")) return;
-  const [url, slug] = t.split(/\s+/);
+  const [url, slug, flag] = t.split(/\s+/);
   if (!slug) {
     console.error(`render-dispatch: refused: line ${i + 1}: no slug after the URL (a line is URL<TAB>slug[<TAB>js])`);
     refused += 1;
     return;
   }
-  const gate = termsGate(url, slug, verdicts);
+  const gate = termsGate(url, slug, verdicts, { js: flag === "js" });
   if (!gate.ok) {
     console.error(`render-dispatch: refused: line ${i + 1}: ${gate.site ?? "(not a URL)"}: ${gate.why}`);
     refused += 1;

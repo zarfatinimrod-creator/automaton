@@ -34,7 +34,11 @@ const {
   ROBOTS_MAX_BYTES,
   ROBOTS_MAX_REDIRECTS,
   ROBOTS_PRODUCT_TOKEN,
+  UA_CONTACT,
+  UA_VERSION,
+  uaContactProblems,
   USER_AGENT,
+  userAgentFor,
 } = rw;
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -75,9 +79,10 @@ function repositoryIdentifiers(): string[] {
   return [url, path, owner].filter((s) => s.length >= 3);
 }
 
-describe("the identifying User-Agent (ruling 30.9 16(d) D2(v))", () => {
-  it("is exactly the brand's product token, a version and the brand URL", () => {
-    expect(USER_AGENT).toBe("MehudakRenderWatch/1.0 (+https://il-biz-tools.netlify.app)");
+describe("the identifying User-Agent (ruling 30.9 16(d) D2(v); its contact, ruling 6.10 row 21 (b))", () => {
+  it("is exactly the brand's product token, a version, and no contact: the brand holds none yet", () => {
+    // RULING-2026-10-06-robots-and-terms.md 2(1): the parenthesis states two true things and no URL.
+    expect(USER_AGENT).toBe("MehudakRenderWatch/1.0 (robots.txt honoured; contact pending)");
     expect(ROBOTS_PRODUCT_TOKEN).toBe("MehudakRenderWatch");
     expect(USER_AGENT.startsWith(`${ROBOTS_PRODUCT_TOKEN}/`)).toBe(true);
     // RFC 9309 §2.2.1: a product token is letters, underscores and hyphens only.
@@ -89,8 +94,21 @@ describe("the identifying User-Agent (ruling 30.9 16(d) D2(v))", () => {
     expect(USER_AGENT).not.toMatch(/Mozilla|Chrome|Safari|AppleWebKit|Gecko/);
     const ids = repositoryIdentifiers();
     for (const id of ids) expect(USER_AGENT.toLowerCase(), "a repository identifier").not.toContain(id.toLowerCase());
-    // The only URL in it is the brand's.
-    expect(USER_AGENT.match(/https?:\/\/[^\s)]+/g)).toEqual(["https://il-biz-tools.netlify.app"]);
+  });
+
+  it("holds no URL while UA_CONTACT is empty, and a URL only once the brand site's capture answered 200", () => {
+    // Not skipped either way: today the first branch runs; the day UA_CONTACT fills, the second does, and
+    // uaContactProblems (tested below on fixtures) must find the brand-<host> capture in research/rendered.
+    if (UA_CONTACT === "") {
+      expect(USER_AGENT).not.toMatch(/https?:|www\.|\.app\b|\.com\b|@/i);
+      expect(USER_AGENT).toBe(userAgentFor("", "1.0"));
+      expect(UA_VERSION).toBe("1.0");
+    } else {
+      // Decision 2(2): the contact first, the version bumped from 1.0 on each change.
+      expect(USER_AGENT).toBe(`${ROBOTS_PRODUCT_TOKEN}/${UA_VERSION} (${UA_CONTACT}; robots.txt honoured)`);
+      expect(UA_VERSION).not.toBe("1.0");
+    }
+    expect(uaContactProblems(UA_CONTACT, join(ROOT, "research", "rendered"))).toEqual([]);
   });
 
   it("is what a plain GET, a robots.txt fetch and the browser all send", async () => {
@@ -105,6 +123,58 @@ describe("the identifying User-Agent (ruling 30.9 16(d) D2(v))", () => {
     expect(browserContextOptions().userAgent).toBe(USER_AGENT);
     // The copied Chrome string is gone from the source, not just from the constant.
     expect(readFileSync(join(ROOT, "scripts", "render-watch.mjs"), "utf8")).not.toMatch(/Chrome\/\d+/);
+  });
+});
+
+describe("userAgentFor and uaContactProblems — the day UA_CONTACT fills (decision 2(2))", () => {
+  let dir: string;
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), "ua-contact-"));
+  });
+  afterEach(() => rmSync(dir, { recursive: true, force: true }));
+  const meta = (host: string, body: Record<string, unknown>) =>
+    writeFileSync(join(dir, `brand-${host}.meta.json`), JSON.stringify(body));
+  // A mailbox is built from parts, so no address is ever written into this file.
+  const MAILBOX = ["support", "brand.example"].join("@");
+
+  it("puts the contact first and keeps what the runner does; with none, says contact pending", () => {
+    expect(userAgentFor("", "1.0")).toBe("MehudakRenderWatch/1.0 (robots.txt honoured; contact pending)");
+    expect(userAgentFor("+https://brand.example", "1.1")).toBe("MehudakRenderWatch/1.1 (+https://brand.example; robots.txt honoured)");
+    expect(userAgentFor(`+https://brand.example; ${MAILBOX}`, "1.2")).toBe(
+      `MehudakRenderWatch/1.2 (+https://brand.example; ${MAILBOX}; robots.txt honoured)`,
+    );
+    expect(userAgentFor("", "1.0")).not.toContain("+");
+  });
+
+  it("asks nothing of a contact without a URL: none, or the brand mailbox alone (2(2)(ii) before (i))", () => {
+    expect(uaContactProblems("", dir)).toEqual([]);
+    expect(uaContactProblems(MAILBOX, dir)).toEqual([]);
+  });
+
+  it("refuses a URL with no research/rendered/brand-<host>.meta.json", () => {
+    const problems = uaContactProblems("+https://brand.example", dir);
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain(join(dir, "brand-brand.example.meta.json"));
+    expect(problems[0]).toMatch(/no capture/);
+  });
+
+  it("refuses a brand capture that did not answer 200, or answered with an error, or is of another host", () => {
+    meta("brand.example", { url: "https://brand.example/", status: 404, error: null });
+    expect(uaContactProblems("+https://brand.example", dir).join()).toMatch(/status 404/);
+    meta("brand.example", { url: "https://brand.example/", status: 200, error: "body cut at 5 MB" });
+    expect(uaContactProblems("+https://brand.example", dir).join()).toMatch(/error "body cut at 5 MB"/);
+    meta("brand.example", { url: "https://stranger.example/", status: 200, error: null });
+    expect(uaContactProblems("+https://brand.example", dir).join()).toMatch(/not a URL on brand\.example/);
+    writeFileSync(join(dir, "brand-brand.example.meta.json"), "{ not json");
+    expect(uaContactProblems("+https://brand.example", dir).join()).toMatch(/not JSON/);
+  });
+
+  it("passes a URL whose brand capture answered 200, and checks every URL in the contact", () => {
+    meta("brand.example", { url: "https://Brand.example./", status: 200, error: null });
+    expect(uaContactProblems(`+https://brand.example; ${MAILBOX}`, dir)).toEqual([]);
+    const two = uaContactProblems("+https://brand.example; https://other.example/about", dir);
+    expect(two).toHaveLength(1);
+    expect(two[0]).toContain("brand-other.example.meta.json");
   });
 });
 

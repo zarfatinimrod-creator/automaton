@@ -219,15 +219,90 @@ export const DELAY_MS = 1_000;
 export const ROBOTS_PRODUCT_TOKEN = "MehudakRenderWatch";
 
 /**
- * An identifying User-Agent: the product token, a version, and the brand's own URL, so a site can see
- * who is asking and say no to it by name in its robots.txt. Sent by both modes and by the robots.txt
- * fetch. It names the brand and nothing else — never a username, never the repository's URL
- * (MISSION.md:276-279; ruling 30.9 16(d) D2(v)). It replaced a copied Chrome string on 30.9: some pages
- * may now answer 403 where they rendered to a browser, and that 403 is the site's answer to an honest
- * crawler, recorded as such. Nothing is done to get past a block — no proxy, no retry storm, no cookie
- * games. A site that says no is recorded as saying no.
+ * The contact element of the User-Agent. It names only a surface the brand holds and that answers
+ * (research/channel-loop/RULING-2026-10-06-robots-and-terms.md 2(1), ruling 6.10 row 21 (b)), and today the brand
+ * holds none: il-biz-tools.netlify.app is a target, not a deployed site, and a *.netlify.app name the brand does
+ * not hold can come to point at a stranger. So it is empty, and the User-Agent says "contact pending" instead.
+ *
+ * It fills on the first of two events, and again on the second (decision 2(2)):
+ *   (i)  a brand site is live at a URL the loop controls: "live" means a deploy record written by the deploy
+ *        workflow into a committed file (not by hand) AND one render-watch capture of that URL with status 200
+ *        whose text carries the brand name (research/rendered/brand-<host>.meta.json; uaContactProblems checks
+ *        the capture's half) — then UA_CONTACT is "+<URL>";
+ *   (ii) step 8 is done, the brand mailbox: its address joins in Wikimedia's form, "+<URL>; <address>", or stands
+ *        alone if (i) has not happened. The address is the brand's, never a personal one.
+ * Each change bumps UA_VERSION (1.1, then 1.2), so a host's logs tell the strings apart. Never the repository's
+ * URL, never a username (MISSION.md:304-308): the test refuses both.
  */
-export const USER_AGENT = `${ROBOTS_PRODUCT_TOKEN}/1.0 (+https://il-biz-tools.netlify.app)`;
+export const UA_CONTACT = "";
+
+/** The version in the User-Agent: 1.0 while UA_CONTACT is empty; bumped on each change of UA_CONTACT (above). */
+export const UA_VERSION = "1.0";
+
+/**
+ * The User-Agent for a contact and a version: the product token, the version, and a parenthesis that states only
+ * true things — "robots.txt honoured; contact pending" with no contact, "<contact>; robots.txt honoured" with one
+ * (the contact first, in decision 2(2)'s "(+<URL>; …)" form).
+ */
+export function userAgentFor(contact = UA_CONTACT, version = UA_VERSION) {
+  const about = contact ? `${contact}; robots.txt honoured` : "robots.txt honoured; contact pending";
+  return `${ROBOTS_PRODUCT_TOKEN}/${version} (${about})`;
+}
+
+/**
+ * An identifying User-Agent: the product token, a version, and what the runner does, so a site can see who is
+ * asking and say no to it by name in its robots.txt (ROBOTS_PRODUCT_TOKEN, the refusal channel the runner
+ * honours). Sent by both modes and by the robots.txt fetch. It names the brand and nothing else — never a
+ * username, never the repository's URL (MISSION.md:276-279; ruling 30.9 16(d) D2(v)), and no URL at all until
+ * UA_CONTACT holds one (ruling 6.10 row 21 (b)). It replaced a copied Chrome string on 30.9: some pages may now
+ * answer 403 where they rendered to a browser, and that 403 is the site's answer to an honest crawler, recorded as
+ * such. Nothing is done to get past a block — no proxy, no retry storm, no cookie games. A site that says no is
+ * recorded as saying no.
+ */
+export const USER_AGENT = userAgentFor();
+
+/**
+ * Why `contact` may not stand in the User-Agent yet, per decision 2(2)(i): for every URL in it, a render-watch
+ * capture of that URL at <dir>/brand-<host>.meta.json whose meta records that URL's host, no error and status 200.
+ * Returns the reasons, [] when there are none — and for a contact with no URL (an empty one, or a mailbox alone).
+ * The deploy record, the other half of (i), is a committed file the deploy workflow writes; no such workflow exists
+ * yet, so it is for the person who fills UA_CONTACT to cite, and this checks the capture.
+ */
+export function uaContactProblems(contact = UA_CONTACT, dir = DEFAULT_OUT_DIR) {
+  const problems = [];
+  for (const raw of String(contact ?? "").match(/https?:\/\/[^\s;)]+/gi) ?? []) {
+    let host;
+    try {
+      host = new URL(raw).hostname.toLowerCase().replace(/\.+$/, "");
+    } catch {
+      problems.push(`${raw} is not a URL`);
+      continue;
+    }
+    const metaPath = join(dir, `brand-${host}.meta.json`);
+    if (!existsSync(metaPath)) {
+      problems.push(`${raw}: no capture at ${metaPath} (decision 2(2)(i): one render-watch capture of the URL with status 200)`);
+      continue;
+    }
+    let meta;
+    try {
+      meta = JSON.parse(readFileSync(metaPath, "utf8"));
+    } catch {
+      problems.push(`${raw}: ${metaPath} is not JSON`);
+      continue;
+    }
+    let captured = null;
+    try {
+      captured = new URL(meta?.url).hostname.toLowerCase().replace(/\.+$/, "");
+    } catch {
+      captured = null;
+    }
+    if (captured !== host) problems.push(`${raw}: ${metaPath} records ${JSON.stringify(meta?.url ?? null)}, not a URL on ${host}`);
+    else if (meta?.status !== 200 || meta?.error != null) {
+      problems.push(`${raw}: ${metaPath} has status ${meta?.status ?? "none"} and error ${JSON.stringify(meta?.error ?? null)}, not a 200`);
+    }
+  }
+  return problems;
+}
 
 /** Sent by both modes, so a js line asks for the same languages a plain GET does. */
 export const ACCEPT_LANGUAGE = "en-US,en;q=0.9,he;q=0.8";

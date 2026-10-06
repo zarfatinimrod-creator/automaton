@@ -81,11 +81,20 @@ describe("parseUrlList — the js flag", () => {
     expect(() => parseUrlList("https://exa[mple.com/")).toThrow(/not a valid URL/);
   });
 
-  it("parses the real urls.txt unchanged: no line there carries a flag today", () => {
-    const entries = parseUrlList(readFileSync(join(ROOT, "research", "rendered", "urls.txt"), "utf8"));
+  it("parses the real urls.txt, and every js line there sits under the comment of the route that cleared it", () => {
+    const text = readFileSync(join(ROOT, "research", "rendered", "urls.txt"), "utf8");
+    const entries = parseUrlList(text);
     // Tick 21's terms audits paused 141 lines (sites whose terms bar or were not read), leaving about 60 active.
     expect(entries.length).toBeGreaterThan(40);
-    expect(entries.every((e: { js?: boolean }) => !("js" in e))).toBe(true);
+    // A js line comes from scripts/queue-zero-test.mjs: --js --terms <slug> ends the comment above it with the terms
+    // it rests on; --js --terms-shell (ruling 6.10 row 21 (c)) writes a comment opening with the ruling's words. None
+    // was in the list until 6.10; a js line typed in by hand with neither comment fails here.
+    const lines = text.split("\n");
+    for (const e of entries.filter((x: { js?: boolean }) => x.js === true) as { slug: string; lineNumber: number }[]) {
+      expect(lines[e.lineNumber - 2] ?? "", e.slug).toMatch(
+        /JS render; terms read at research\/rendered\/[a-z0-9._-]+\.txt\.$|^# ruling 6\.10 row 21 \(c\), once-only js render of a shell terms page /,
+      );
+    }
   });
 });
 
