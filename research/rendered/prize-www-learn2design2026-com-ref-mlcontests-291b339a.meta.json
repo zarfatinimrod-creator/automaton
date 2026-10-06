@@ -1,0 +1,19 @@
+{
+  "url": "https://www.learn2design2026.com/?ref=mlcontests",
+  "slug": "prize-www-learn2design2026-com-ref-mlcontests-291b339a",
+  "fetchedAt": "2026-10-06T08:46:32.423Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 22769,
+  "sha256": "3ea72f2ba5b632c7e25a5f300a82bd2610e5a7936924783ba9dddfb54bb5bede",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/prize-www-learn2design2026-com-ref-mlcontests-291b339a.html",
+  "textPath": "research/rendered/prize-www-learn2design2026-com-ref-mlcontests-291b339a.txt",
+  "robots": "none",
+  "robotsUrl": "https://www.learn2design2026.com/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

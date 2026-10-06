@@ -184,6 +184,27 @@ describe("syncPauseComments — the verdict word and the date note, nothing else
     expect(out.unpause.some((u: { line: number }) => u.line === 12)).toBe(false);
   });
 
+  it("reads a paused line's js flag: a K4 shell site's js terms line would pass the gate, its plain one would not", () => {
+    // Ruling 6.10 row 21 (c) 3(2): termsGate passes a NO_TERMS shell site's terms page only as a js line.
+    // Only on the URL of the slug's own plain capture (3(3)): the gate reads it from <dir>/<slug>.meta.json.
+    const dir = mkdtempSync(join(tmpdir(), "pause-shell-"));
+    try {
+      writeFileSync(join(dir, "terms-shell.meta.json"), JSON.stringify({ url: "https://shell.example/legal" }));
+      const sites = { "shell.example": { verdict: "NO_TERMS", source: "test", checked: "2026-10-06", note: "shell: a React shell" } };
+      const urls = [
+        `# paused (terms unread, 6.10.2026): shell.example is NO_TERMS in ${V} — https://shell.example/legal\tterms-shell\tjs`,
+        `# paused (terms unread, 6.10.2026): shell.example is NO_TERMS in ${V} — https://shell.example/terms\tterms-shell-2`,
+        `# paused (terms unread, 6.10.2026): shell.example is NO_TERMS in ${V} — https://shell.example/rates\tterms-rates\tjs`,
+        "",
+      ].join("\n");
+      expect(syncPauseComments(urls, sites, { today: "6.10.2026", dir }).unpause).toEqual([
+        { line: 1, site: "shell.example", verdict: "NO_TERMS", slug: "terms-shell", url: "https://shell.example/legal" },
+      ]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it("is idempotent: a second pass over its own output changes nothing", () => {
     const once = sync();
     const twice = sync(once.text, SITES, "5.10.2026");

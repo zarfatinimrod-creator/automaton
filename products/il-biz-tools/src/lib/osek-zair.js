@@ -1,6 +1,6 @@
 // The בעל עסק זעיר self-check (osek-zair.html): taxable income from the business under the deemed-deduction
-// track against regular reporting, and whether turnover is within the cap - for the tax years a text read in this
-// repository gives the cap for (the gazette, or nevo's consolidated text of the VAT law), and no other.
+// track against regular reporting, and whether turnover is within the cap - for the tax years a primary text
+// gives the cap for, and no other.
 //
 // Every figure comes from src/config/osek-zair.json, where each one carries the capture it was read in (a text
 // capture by line, or the gazette by printed page with the quote transcribed in a dated read). This module holds
@@ -14,9 +14,9 @@
 //   - compare over the cap. Section 87ד(ג) lets someone registered at the start of the year who stops qualifying
 //     during it still deduct, up to `yearOfExitRate` of the cap; the tool cannot know whether that was so, so it
 //     names the exception and its ceiling and compares nothing;
-//   - compute a year that is not in `years`, or that is in `pendingYears` (a CPI-linked year whose cap no text
-//     read states). An unverified amount lives in a separate config, which nothing here imports and the build
-//     never ships;
+//   - compute a year that is not in `years`, or that is in `pendingYears` (a CPI-linked year whose cap no
+//     primary text read states). The unverified amount lives in a separate config (named in the pending entry
+//     itself), which nothing here imports and the build never ships;
 //   - check the statutory conditions (books, the 25% related-party test, ...). The page lists them with their
 //     sources for the reader to check.
 // Pure: no DOM, no storage, no network. The page script (assets/page-osek-zair.js) only wires it to the form.
@@ -180,7 +180,7 @@ const pagesOf = (cite) => {
 
 /**
  * One cite as the page prints it: the section and the document for the gazette; the section and the document for
- * a text capture that names its section (the consolidated VAT law); the document alone for the rest.
+ * a text capture whose cite names its section (no cite does today); the document alone for the rest.
  */
 export function citeHe(cite, cfg = config) {
   const doc = cfg.documents[cite.doc];

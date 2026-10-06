@@ -1,0 +1,335 @@
+Tesseract Hackathon 2026 | Pasteur Labs
+
+Challenge
+
+Tracks
+
+Timeline
+
+Prizes
+
+Participate
+
+Resources
+
+Register
+
+Tesseract Hackathon 2026
+
+August 3–31, 2026 &middot; online &middot; solo or teams of up to 4
+
+Compose a differentiable scientific workflow from multiple
+Tesseracts ,
+and use end-to-end gradients to solve a real design, inference, or training problem.
+
+Four weeks to build something that couldn't exist within a single framework. Compete for a
+share of the $20,000 prize pool and a head start on your next research paper.
+
+Register now
+Join the forum
+
+The challenge
+
+Use Tesseract to elevate differentiable systems #
+
+Real scientific workflows span tools, languages, and machines, and that is exactly where
+gradients usually die. This year's challenge is to build a pipeline where they don't:
+multiple Tesseracts, one differentiable function, and an optimization, training, or inference
+loop that puts it to work.
+
+Criteria
+
+01 &middot; composition It composes two or more Tesseracts across a real boundary
+
+The components should disagree about how they compute, yet still compose into an end-to-end differentiable function .
+The boundary can be one of differentiation strategy, language, framework, or hardware. What matters is that it's a boundary that's otherwise hard to cross.
+
+02 &middot; gradients The gradients do the work
+
+They drive a gradient-based optimizer, a training loop, or an inference scheme on a
+problem that can't be solved component by component, such as a coupled equilibrium, an inverse
+design, or a calibration. Show the objective improving and the recovered solution.
+
+03 &middot; framework fit The workflow genuinely needs Tesseract
+
+Your writeup should make the case for why this is a Tesseract problem: what was
+impossible or painful before (a language barrier, incompatible AD strategies, conflicting
+dependencies, a remote GPU, orchestration on HPC) that composition across the boundary resolves. We'd rather see
+a modest problem where Tesseract is clearly load-bearing than an ambitious one where it's
+a costume.
+
+Two things worth knowing
+
+Aim at a real problem
+
+A prototype pointed at something a practitioner in the field would actually care about
+is how you win.
+For a sense of the bar, see last year's
+winning entries
+and the rocket-fin shape optimization
+case study that composes three Tesseracts across CAD, meshing, and an FEA solver.
+
+Hack Tesseract if you need to
+
+Hit a missing feature, a performance bottleneck, or a critical bug? Fork Tesseract and
+patch it yourself . We love to see teams that modify the software to fit their needs, as long as
+it's still recognizably Tesseract .
+
+Tracks
+
+Five ways in #
+
+Pick the track that best describes your headline result. Cross-track submissions are fine;
+choose the track for the result you're proudest of.
+
+01
+
+Inverse design & shape optimization
+
+A geometry/mesh/solver pipeline optimized end to end. Strongest entries cross a tool
+boundary (e.g. CAD or mesher &harr; solver) where the components differentiate differently:
+a finite-difference or surrogate-gradient mesher feeding an autodiff solver, an
+Enzyme-differentiated kernel composed with JAX, or an adjoint solver feeding autodiff
+post-processing.
+
+02
+
+Multi-physics & coupled systems
+
+Two or more solvers from different domains coupled into one optimizable pipeline, with
+gradients flowing through the coupling. Ideally two-way, where each solver feeds back
+into the other and the optimum depends on their coupling.
+
+03
+
+Hybrid ML + mechanistic models
+
+A learned component (closure, sub-grid model, surrogate, neural operator) trained by
+backpropagating through a physics solver that lives behind a Tesseract: the solver keeps
+its own container, language, and AD strategy, and gradients still flow from your loss,
+through the solver, into the network's weights. The interesting cases recover something
+physically meaningful, not just a black-box fit.
+
+04
+
+Differentiable inference & UQ
+
+An expensive or black-box solver wrapped as a Tesseract and dropped into a probabilistic
+workflow (NumPyro, oryx, PyMC, an SBI scheme) for Bayesian calibration or an inverse problem.
+The solver may expose its Jacobian by autodiff or by finite differences; the composition
+with the inference engine is the contribution.
+
+05
+
+Differentiable graphics & rendering
+
+A differentiable renderer, rasterizer, or geometry-processing component composed with a
+physics or ML Tesseract: inverse rendering, image-driven shape or material recovery,
+simulation-in-the-loop rendering. Gradients flow from a rendered image or geometric
+quantity back through the pipeline to the parameters that produced it.
+
+The long game
+
+From hackathon to research paper
+
+A strong entry can have a second life. A novel composition, a working method, and
+results to show are already most of what a research paper needs, so a good
+submission doubles as a running start on your next publication. It's been done
+[1] [2] [3] ,
+and we'll happily work with the strongest teams to get there.
+
+Timeline
+
+Four weeks in August #
+
+Aug 3
+
+Challenge goes live
+
+Registration opens and the clock starts. Join any time during the build period.
+
+Aug 3–31
+
+Build
+
+Four weeks to build, with weekly office hours and the forum for questions and teammates.
+
+Aug 31
+
+Submissions close
+
+11:59 PM, Anywhere on Earth.
+
+Sep 21
+
+Winners announced
+
+Judging and feedback sessions run through mid-September.
+
+Prizes
+
+What's in it for you #
+
+$20,000
+total prize pool
+
+Grand prize — $8,000
+
+The headline prize for the strongest overall submission.
+
+Second prize — $5,000
+
+Runner-up across all tracks.
+
+Best in track — $1,000 &times; 5
+
+The standout submission in each of the five tracks .
+
+Best engineering / Tesseract hack — $1,000
+
+For the entry that shows the deepest engagement with the stack. Clean engineering that scales, or a fork/patch to Tesseract itself.
+
+Best visual — $1,000
+
+For the plot, animation, or demo video that makes your pipeline impossible to forget.
+
+Beyond the cash
+
+Research collaboration
+
+The winning team gets the opportunity to work with our research team on a follow-up project.
+
+Feature & visibility
+
+Top projects are featured on the Tesseract blog , in our docs, and across our channels. Honorable mentions become community case studies.
+
+Prize eligibility and tax details are covered in the
+Terms & Conditions .
+
+Participate
+
+How it works #
+
+Eligibility
+
+Open to everyone: hobbyists, PhD students, postdocs, research engineers, and industry
+researchers. Participate solo or in teams of up to 4 people. Registration is free and
+required to be eligible for prizes.
+
+What to submit
+
+A project that meets the challenge criteria : two or more composed Tesseracts, with end-to-end gradients solving a real problem.
+
+Code written during the hackathon period, licensed under Apache 2.0 .
+
+A public GitHub repository with a README that lets others reproduce your results.
+
+A short technical writeup (2–4 pages, or a detailed README) that names your track and makes the case for why the workflow needs Tesseract.
+
+Optional: a demo video (5 minutes max) showing what you built and why it matters.
+
+How we judge
+
+Submissions are evaluated on, in roughly this order:
+
+Composition across a real boundary. The heart of the challenge.
+
+Gradients doing real work. A visible objective improving on a problem that can't be solved piecewise.
+
+The why-Tesseract case. Tesseract as load-bearing infrastructure, not a costume.
+
+A real application. A prototype with a line of sight to a genuine science or engineering problem beats a toy; domains we don't already have a demo for score higher.
+
+Execution & technical depth. Clean engineering that makes the pipeline scale, or forking and patching Tesseract itself to remove a blocker.
+
+Reproducibility & communication. Can others run it, and does the writeup explain it clearly, with visuals that support understanding?
+
+How to submit
+
+Submit your project through the
+submission form ,
+with a link to your public GitHub repository. Then post your project on LinkedIn, tagging
+Pasteur Labs & ISI and
+Tesseract . That's it!
+
+We also encourage you to share it in the
+forum showcase
+to show the community what you've built.
+
+Resources
+
+Everything you need to start building #
+
+Hackathon template
+Pre-configured starter repo with example Tesseracts and workflow patterns. The fastest way to a working pipeline.
+
+cookiecutter-tesseract
+
+Documentation
+API references, tutorials, and architectural deep dives.
+
+Tesseract Core &middot;
+Tesseract-JAX &middot;
+Tesseract-Torch
+
+Source code
+Repos with examples, demos, and issue trackers.
+
+tesseract-core &middot;
+tesseract-jax &middot;
+tesseract-torch
+
+Demos & showcase
+Starting points to build on, and what others have shared.
+
+Demo gallery &middot;
+Community showcase
+
+Mosaic
+A benchmark suite for differentiable physics solvers, and a growing repository of ready-to-use Tesseracts to build on.
+
+github.com/pasteurlabs/mosaic
+
+Community forum
+The hub for the hackathon: ask questions, find teammates, share progress, and follow announcements in the dedicated hackathon channel.
+
+si-tesseract.discourse.group
+
+Background reading
+Differentiable programming and automatic differentiation in scientific contexts, with and without Tesseract.
+
+Tesseract Core: Universal, autodiff-native software components for Simulation Intelligence
+
+Pipeline-level differentiable programming for the real world
+
+Surrogate-based differentiable pipeline for shape optimization
+
+Case study of a differentiable heterogeneous multiphysics solver for a nuclear fusion application
+
+Mosaic: A Benchmark Suite for Differentiable Physics Solvers
+
+Physics-based deep learning
+
+Automatic differentiation in machine learning: a survey
+
+SciML: open source software for scientific machine learning
+
+Join the challenge
+
+Boundaries were made to be differentiated
+
+Register now, join the forum, and spend four weeks in August building the pipeline
+your research has been missing.
+
+Register now
+Join the forum
+
+Questions? Ask in the
+Hackathon channel on the Tesseract forum.
+
+&copy; 2026 Pasteur Labs, Inc
+
+[redacted:email]@simulation.science |
+Terms and Conditions |
+Privacy Policy |
+2025 edition

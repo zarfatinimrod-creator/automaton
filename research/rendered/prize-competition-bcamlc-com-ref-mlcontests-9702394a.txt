@@ -1,0 +1,146 @@
+Project OmniBus
+
+Project OmniBus
+
+Competition ↗
+
+Closing Ceremony
+
+Sponsors
+
+Information
+
+Simulator
+
+Standings
+
+Contact
+
+MACHINE LEARNING COMPETITION
+Concluded
+
+Reinforcement learning for dynamic school bus routing, scheduling, and real-time replanning. The competition ran Jun 10 – Aug 1, 2026.
+
+Final Results
+Closing Ceremony
+Try Simulator
+Read Details
+
+Join Discord
+
+Competition
+
+Jun 10, 2026
+→
+Aug 1, 2026
+
+Thank you to all participants!
+
+Competition Concluded — Aug 1, 2026
+
+VIEW THE FINAL STANDINGS ↗
+
+Closing Ceremony
+
+Watch the Closing Ceremony
+
+Opening Ceremony ↓
+
+01 / Sponsors
+
+Our Sponsors
+
+Our sponsors make Project OmniBus possible by providing resources, mentorship, and opportunities for all participants.
+
+Jane Street
+
+Art of Problem Solving
+
+Interview Buddy
+
+Saily
+
+NordVPN
+
+NordPass
+
+NordProtect
+
+Incogni
+
+Interactive Demo
+
+Try the Routing Simulator
+
+Pick a routing agent, press play, and watch it make decisions in real time on a
+real road network. See how different algorithms compare on the same scenario.
+
+↺
+⏭
+▶
+⏸
+
+1×
+
+2×
+
+5×
+
+10×
+
+25×
+
+RL Agent
+
+Nearest Neighbor
+
+Clarke-Wright
+
+OR-Tools
+
+Sim
+7:00 AM
+READY
+
+Metrics
+
+0
+Delivered
+
+—
+Waiting
+
+0
+Late
+
+0
+Reward
+
+—
+Avg Ride
+
+0%
+Progress
+
+Bus Fleet
+
+Event Log
+
+05 / Contact
+
+Get in Touch
+
+Email Us
+
+[redacted:email]@bergen.org
+
+Join Discord
+
+Communicate and ask questions
+
+Machine Learning Club
+
+Click here to learn more about the Machine Learning Club
+
+&copy; 2026 Project OmniBus
+Machine Learning Competition

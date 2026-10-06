@@ -1,0 +1,60 @@
+Learn2Design Competition
+
+A physics experiment design competition for gravitational-wave detectors
+Team
+Jonathan Klimesch 1,2 Laurin Sefa 1,3 Soham Basu 1 Priya Kanagasabapathi 1 Sören Arlt 1,2 Xuemei Gu 4 Thomas Christie 1 Colin Doumont 1 Andreas Freise 5 Rana Adhikari 6 Philipp Hennig 1 Mario Krenn 1
+1 Department for Computer Science, Faculty of Science, University of Tübingen, Tübingen, Germany
+2 Feyer, Tübingen, Germany
+3 Zuse School ELIZA, Darmstadt, Germany
+4 Institut für Festkörpertheorie und Optik, Friedrich-Schiller-Universität Jena, Jena, Germany
+5 Nikhef, National Institute for Subatomic Physics, Amsterdam, The Netherlands
+6 Institute for Quantum Information and Matter, California Institute of Technology, Pasadena, CA, USA
+
+Submit optimization algorithms, not fixed designs. Each method tunes roughly 200 continuous parameters for a detector topology under a 4-hour evaluation budget using a differentiable simulator.
+Submit your entry →
+Central question
+Can machine learning discover experimental designs that go beyond
+human intuition while remaining physically meaningful
+and experimentally constrained?
+
+Simulator
+Differometor
+JAX-based autodifferentiable simulator for gravitational-wave detector design.
+
+Design archive
+30,000 high-quality designs
+Released detector blueprints for learning, warm starts, and search.
+
+Prize pool
+EUR 25,000
+Sponsored by SPRIN-D for the top-performing methods on hidden topologies.
+
+What To Do
+Three steps to compete
+
+Step 01
+Study the starter kit
+Use the starter kit in the official GitHub repository , plus the simulator, dataset, and baselines, to understand the search space and evaluation setup.
+
+Step 02
+Design your algorithm
+Tune roughly 200 continuous parameters for each topology within the 4-hour evaluation budget.
+
+Step 03
+Submit one zip folder
+Submit a single Python class implementing the competition interface, one requirement file and any other additional files needed.
+
+Submission
+Key dates and format
+
+Portal status
+Submissions open
+Public leaderboard updates begin in August. Final submission deadline: 15. October 2026.
+
+What to submit
+One algorithm class
+Submit a single .py file, plus an optional requirements.txt .
+
+How scoring works
+Average best loss over 10 hidden topologies
+Lower is better.

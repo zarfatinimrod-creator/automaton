@@ -29,6 +29,7 @@ type Entry = Record<string, unknown>;
 describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
   it("has a plan for each script whose builds were reviewed with mutations, and a README", () => {
     for (const name of [
+      "address-kinds.json",
       "capture-check.json",
       "freeze-capture.json",
       "loop-edit.json",
@@ -36,7 +37,9 @@ describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
       "page-views.json",
       "prize-apply-reading.json",
       "prize-dispatch.json",
+      "queue-zero-test.json",
       "remask-captures.json",
+      "remask-run.json",
       "render-dispatch.json",
       "render-watch.json",
       "sim-tree.json",

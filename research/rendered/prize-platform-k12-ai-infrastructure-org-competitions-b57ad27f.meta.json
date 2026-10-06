@@ -1,0 +1,20 @@
+{
+  "url": "https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/?ref=mlcontests",
+  "slug": "prize-platform-k12-ai-infrastructure-org-competitions-b57ad27f",
+  "fetchedAt": "2026-10-06T08:46:50.354Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 95000,
+  "sha256": "dbcf42583dd283daf1424fd092e496fabdc8ebea730663c68d13248052911bef",
+  "truncated": false,
+  "redacted": 7,
+  "error": null,
+  "bodyPath": "research/rendered/prize-platform-k12-ai-infrastructure-org-competitions-b57ad27f.html",
+  "textPath": "research/rendered/prize-platform-k12-ai-infrastructure-org-competitions-b57ad27f.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://platform.k12-ai-infrastructure.org/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
