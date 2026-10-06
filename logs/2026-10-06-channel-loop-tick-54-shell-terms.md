@@ -83,3 +83,68 @@
 - תזכורות רשימת המשימות של ה-harness שחזרו בהקשר שוב ושוב (לא רלוונטיות לבונה).
 - שתי ריצות של האימות המלא (כדקה וחצי כל אחת) ושתי ריצות של שבעת הקבצים: את הכשל של `prize-intake-rules` היה אפשר לצפות מראש ב-grep על "kaggle" בכל הבדיקות לפני הריצה הראשונה.
 - ריצת `sim-tree.sh` על הבסיס כדי להוכיח ש-`capture-check.test.ts` היה אדום כבר שם: עלות קטנה, והיא מבדילה בין כשל שלי לכשל שירשתי.
+
+## Review fixes
+
+סקירת Opus של הענף (0b0ad8a) לא מצאה ממצא "blocking" ומצאה ממצא "fix" אחד. הוא טופל ב-cfb2413. קצה הבסיס
+`origin/claude/new-session-j071dx` לא זז (עדיין a3cb438, ה-merge-base של הענף), ולכן לא היה מה למזג.
+
+1. **fix — הרשומה של kaggle.com לא תיארה נכון את האימות שלה.** ההערה ב-`terms-verdicts.json` ופסקת "The reading" בהערת הביקורת
+   אמרו שהמאמת "corrected four supporting points" וציינו כמסמך שלא נקרא רק את ה-Acceptable Use Policy. ברשומת המאמת
+   (`tick54-main/kaggle-reading.json`, `verify`) יש שבע הפרכות, בשורות :120, :118, :70, :78, :77, :88 ו-:113.
+   - **ההפרכה ל-:77** מסייגת את הסעיף שהרשומה מכנה מכריע: אפשר לטעון לקריאה צרה יותר (bulk-only), שנשענת על המסייג של :78.
+   - **שש ההפרכות האחרות** מתקנות טיעונים תומכים.
+   - **התיקון:**
+     - ההערה והפסקה מונות עכשיו שבע הפרכות.
+     - המשפט על :77 אומר שהסעיף "very likely" חל אך לא באופן חד-משמעי, ושפסק הדין עומד גם בלעדיו, כי :87 ו-:70 חוסמים כל אחד לבדו.
+     - שש ההפרכות האחרות מפורטות, כל אחת עם השורה שלה. ההפרכה החדשה לגבי :118 אומרת שהרישיון למשתמשים האחרים נכשל לא בגלל שהרץ
+       אינו רשום (:67, :96), אלא בגלל "as permitted by the functionality of the Services", ש-:89 אומר שאינו מסיר שום הגבלה.
+     - נוספו כל המסמכים שלא נקראו: ה-AUP (:75), ה-Privacy Policy וה-Community Guidelines (:60), וה-Competition Rules של כל
+       תחרות (:104).
+     - כל ציטוט נבדק מול העותק הקפוא `terms-kaggle-2026-10-06-a3cb438.txt`.
+   - **פסק הדין לא השתנה:** BARRED, ‏copying ‏"barred".
+   - **ה-why של kaggle.com ב-`TERMS_BARRED`** (`scripts/render-watch.mjs`, רק בתוך הרשימה) הציג גם הוא את :77 בלי סייג. נוספו לו
+     הסייג ו-:70 עם ציטוט, וצוין ש-:87 ו-:70 מספיקים כל אחד לבדו.
+   - **אופן העריכה:**
+     - `terms-verdicts.json` נכתב דרך `serializeVerdicts`, בבדיקה שהקובץ כבר היה בצורה הזאת ושרק שורה אחת השתנתה.
+     - הפסקה בהערת הביקורת נכתבה ב-`loop-edit.mjs replace-in-line`.
+     - בפסקה נשאר משפט היסטוריה קצר: "four supporting points" עד התיקון הזה.
+
+**בדיקות.**
+- `prize-terms-audit.test.ts`:
+  - ב-`KAGGLE_LINES` נוספו שש שורות: ‏:60 (Privacy Policy/Community Guidelines), ‏:67, ‏:96, ‏:104 ו-:118 פעמיים.
+  - הבדיקה דורשת שבע הפרכות ואת סייג :77. היא גם דורשת שהקטע "The other six" יתפצל לשש בדיוק, כל אחת עם השורה שלה, ואת רשימת
+    המסמכים שלא נקראו. היא אוסרת את "four supporting points" בהערה.
+  - אותן דרישות חלות גם על פסקת "The reading" בהערת הביקורת.
+- `render-watch-terms-barred.test.ts`: ‏:70 נוסף ל-`CLAUSES`, והבדיקה דורשת את הסייג ואת הציטוט של :70 ב-why.
+- לא דולגה ולא נמחקה אף בדיקה.
+
+**הערות שלא טופלו (severity "note"), ונשארות ל-thread הראשי:**
+- שורה 233 ב-ZERO-TESTS: הסטטוס של 30.9 שהוסר ממנו ההדגשה.
+- ההבדל בין נוסח 3(2)(vi) בפסק לבין refusal-type של Israel Post.
+- המיקום של הבדיקות ב-describe חדש.
+- רשימת ההעתקים לקיפול 9 (`trim-capture.mjs`).
+- `/tmp/sim-tree.IyCCzp` של הבונה: נמצא מחוץ לתיקיית ה-scratch שלי, ולכן לא נגעתי בו. הוא דורש `rm -rf -- /tmp/sim-tree.IyCCzp`
+  מה-thread הראשי.
+
+את הערת תוכנית המוטציות כן לקחתי, כי CLAUDE.md דורש את זה: ל-`src/__tests__/revenue/mutations/render-watch.json` נוספו T54-TB1 (ה-probe ‏(b)
+של הסוקר: הרשומה של kaggle.com מוערת), T54-TB2 (ה-why בלי הסייג) ו-T54-TB3 (ה-why בלי :70). ה-README עודכן: השורה של התוכנית,
+67 רשומות ו-162 שניות.
+
+**ולידציה.**
+- `scripts/verify.sh` על שבעת הקבצים: exit 0 (7 קבצים, 262 בדיקות).
+- `scripts/verify.sh` המלא: exit 0 (79 קבצים, 2639 עברו, 2 דולגו).
+- `node scripts/mutate.mjs --check --allow-dirty --plan .../render-watch.json`: exit 0 (67 מתוך 67 יחולו).
+- אחרי ה-commit: `scripts/sim-tree.sh --dir <scratch>/sim-rw -- node scripts/mutate.mjs --plan src/__tests__/revenue/mutations/render-watch.json`:
+  exit 0. כל 67 המוטציות נהרגו ואף אחת לא שרדה (162 שניות), והעץ נמחק.
+- תשע מוטציות נתונים (D1-D9) רצו כל אחת ב-`mutate.mjs --file --find --replace` (בלי תוכנית ב-scratch), וכולן נהרגו (exit 0):
+  - בהערה: seven→four, הסרת "the verdict stands without it", הסרת ה-Privacy Policy/Community Guidelines מהמסמכים שלא נקראו,
+    הסרת התיקון של :108, והסרת משפט :77.
+  - בהערת הביקורת: seven→four, ‏":87 and :70"→":87", הסרת התיקון של :118, והסרת ה-Competition Rules ‏(:104).
+- בסקירה לא שרדה אף מוטציה, ולכן אין מוטציות ששרדו להריץ מחדש.
+- `git grep` על השם, על הקבצים שהשתנו: exit 1 (אין התאמה).
+- `git status` נקי אחרי כל ריצה.
+
+**אסימונים.** הכבד היה קריאת רשומת המאמת המלאה (`verify` ב-JSON) כדי לספור את ההפרכות ולמפות כל אחת לשורה. זה הכרחי, כי
+הממצא היה בדיוק ספירה שגויה. הניסיון הראשון לכתוב את ה-JSON הניח `JSON.stringify(...,1)+"\n"`, ושמירה בסקריפט עצרה אותו
+לפני שנכתב משהו. הקובץ נכתב ב-`serializeVerdicts`, בלי שורה ריקה בסוף.
