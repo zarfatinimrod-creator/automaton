@@ -28,6 +28,11 @@
  * fields are split on whitespace (a TAB is the documented separator). A line with a third field (a flag) or with no
  * slug is refused, with its line number: the intake writes neither.
  *
+ * DISPATCHING. The printed lines are dispatched with scripts/render-dispatch.sh, never pasted by hand:
+ * `node scripts/prize-dispatch.mjs > <file>`, then `scripts/render-dispatch.sh <file> <ref>`, which checks the lines
+ * again with render-watch's parser and this gate, dispatches render-watch.yml with them as its `urls` input, waits for
+ * the run, fast-forwards the branch and runs capture-check and an address count on the new captures.
+ *
  * Exit codes: 0 — at least one line printed; 3 — the file was read and nothing passes (or every passing line is
  * already captured, with --skip-captured); 1 — a usage or read error (a --verdicts file with no "sites" object is
  * one), a refused line, or a parseUrlList refusal (and nothing on stdout). It writes no file.

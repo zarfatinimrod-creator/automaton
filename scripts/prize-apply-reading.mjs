@@ -30,7 +30,7 @@
  *   - the clause cell has no unescaped "|" (an escaped "\|" is kept as written) and no newline; any other run of
  *     whitespace becomes one space, and the cell is trimmed (the hand helper's rule)
  *   - no address in it in any form: a plain one (any @ between word characters), a percent-encoded @, a script escape
- *     (@, \x40), a character reference (&#64;, &#x40;) or a mask ([redacted:email], with or without a domain): a
+ *     (\u0040, \x40), a character reference (&#64;, &#x40;) or a mask ([redacted:email], with or without a domain): a
  *     cell names kinds of address, never one. A refusal names the form, never the text
  *   - every pointer `research/rendered/<file>[:<line>[-<line>]]` names a render-watch capture (<slug>.txt, .html,
  *     .pdf, .json or .xml; never urls.txt or a .meta.json) that exists in --rendered with its <slug>.meta.json beside
