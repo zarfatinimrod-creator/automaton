@@ -338,6 +338,14 @@ const RULING_D2V = "research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v)
 /** What scripts/robots-verdict.mjs puts between its own source and the NO_TERMS source it replaced. */
 const BEFORE = "; NO_TERMS before: ";
 /**
+ * The 17 NO_TERMS sources tick 45 wrote, which each NO_TERMS_ROBOTS_OK source keeps after "; NO_TERMS before: ": the
+ * sha256 of one "<site>\t<source>" line per site, in ROBOTS_OK order, joined by "\n". Checked at tick 54 against
+ * terms-verdicts.json at 5f4853a, the file before the script ran, where each was the entry's whole source (and each note
+ * was the note it has now). tick45() reads the source back out of the robots source, so without this pin a changed
+ * tick-45 source would be read back changed and pass.
+ */
+const TICK45_SOURCES_SHA256 = "8883d8aa97ad830158d48142f8a85ce35ad331a107afded91992ea1424e553ef";
+/**
  * The verdicts as tick 45 left them: each NO_TERMS_ROBOTS_OK entry read back to the NO_TERMS entry the script rewrote
  * (the source after "; NO_TERMS before: ", checked 2026-10-05 as every audited entry was, and the note it kept); every
  * other entry as it is.
@@ -817,6 +825,12 @@ describe("tick 54: the robots verdicts of 6.10", () => {
     expect(serializeVerdicts(JSON.parse(raw()))).toBe(raw());
   });
 
+  it("keeps the NO_TERMS source tick 45 wrote for each of the 17, byte for byte, after \"NO_TERMS before:\"", () => {
+    const then = tick45(verdicts());
+    const text = ROBOTS_OK.map((site) => `${site}\t${then[site].source}`).join("\n");
+    expect(createHash("sha256").update(text).digest("hex")).toBe(TICK45_SOURCES_SHA256);
+  });
+
   it("rests each NO_TERMS_ROBOTS_OK verdict on the committed robots.txt capture its source names, exactly as the script writes it", () => {
     const v = verdicts();
     const file = JSON.parse(raw());
@@ -858,12 +872,13 @@ describe("tick 54: the robots verdicts of 6.10", () => {
         expect(readableCapture(meta, body), site).toEqual({ kind: "absent" });
       }
       // Set by the script, not by hand: given the NO_TERMS entry tick 45 left, the fixture and the committed captures,
-      // judgeSite allows every rules path and writes this entry, field for field.
+      // judgeSite allows every rules path and writes these four fields as they stand (the fields it writes; a field a
+      // later fold adds to every entry is not its to write).
       const out = judgeSite({ site, verdicts: { ...file, sites: then }, urls: fixture(), today: ROBOTS_CHECKED });
       expect(out.changed, site).toBe(true);
       expect(out.checked.map((c: { url: string; allowed: boolean }) => [c.url, c.allowed]), site).toEqual(rules.map((r) => [r.url, true]));
-      expect(out.verdicts.sites[site], site).toEqual(e);
-      expect(Object.keys(out.verdicts.sites[site]), site).toEqual(Object.keys(e));
+      const written = ({ verdict, source, checked, note }: Entry) => ({ verdict, source, checked, note });
+      expect(written(out.verdicts.sites[site]), site).toEqual(written(e));
     }
     expect(kinds.absent.sort()).toEqual([...ROBOTS_404].sort());
     expect(kinds.file).toHaveLength(11);
