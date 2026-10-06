@@ -190,5 +190,101 @@
     "replace": "",
     "test": "src/__tests__/revenue/sim-tree.test.ts",
     "note": "tick 51 fixer F4: a --dir another run created after the existence check is refused as 'cannot create' and not named as existing"
+  },
+  {
+    "id": "T52-no-term-trap",
+    "file": "scripts/sim-tree.sh",
+    "find": "trap 'stopped TERM 15' TERM",
+    "replace": ":",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 builder (tick 51 item 2): SIGTERM kills sim-tree on the spot, leaving the tree with no removal hint"
+  },
+  {
+    "id": "T52-foreground",
+    "file": "scripts/sim-tree.sh",
+    "find": ") <&0 &\nchild=$!\nwait \"$child\" || code=$?",
+    "replace": ") <&0 || code=$?",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 builder: the command runs in the foreground, so a SIGTERM's trap waits until the command ends"
+  },
+  {
+    "id": "T52-command-left-running",
+    "file": "scripts/sim-tree.sh",
+    "find": "    kill -TERM \"$child\" 2>/dev/null || true\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 builder: sim-tree stops but its command keeps running in the kept tree"
+  },
+  {
+    "id": "T52-exit-code",
+    "file": "scripts/sim-tree.sh",
+    "find": "  exit $((128 + $2))",
+    "replace": "  exit 1",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 builder: a sim-tree stopped by a signal exits 1, not 128 + the signal"
+  },
+  {
+    "id": "F52-no-pipe-trap",
+    "file": "scripts/sim-tree.sh",
+    "find": "trap 'stopped PIPE 13' PIPE",
+    "replace": ":",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 review RV-C1: SIGPIPE (stderr piped to head) kills sim-tree with no removal hint"
+  },
+  {
+    "id": "F52-no-int-trap",
+    "file": "scripts/sim-tree.sh",
+    "find": "trap 'stopped INT 2' INT",
+    "replace": ":",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 review RV-C2: SIGINT kills sim-tree with no removal hint"
+  },
+  {
+    "id": "F52-no-hup-trap",
+    "file": "scripts/sim-tree.sh",
+    "find": "trap 'stopped HUP 1' HUP",
+    "replace": ":",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 review RV-C4: SIGHUP kills sim-tree with no removal hint"
+  },
+  {
+    "id": "F52-unquoted-hint",
+    "file": "scripts/sim-tree.sh",
+    "find": "  echo \"sim-tree: stopped by SIG$1; kept $tree; remove it with: rm -rf -- $q\" >&2 || true",
+    "replace": "  echo \"sim-tree: stopped by SIG$1; kept $tree; remove it with: rm -rf -- $tree\" >&2 || true",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 review RV-C3: the stop hint's path is not shell-quoted (unsafe to paste with a space in it)"
+  },
+  {
+    "id": "F52-no-wait-for-command",
+    "file": "scripts/sim-tree.sh",
+    "find": "    # Until the command has done what it does on TERM, at most stop_seconds; then KILL.\n    local polls=0\n    while kill -0 \"$child\" 2>/dev/null; do\n      if [ \"$polls\" -ge $((stop_seconds * 10)) ]; then\n        kill -KILL \"$child\" 2>/dev/null || true\n        echo \"sim-tree: the command did not stop within ${stop_seconds} s of TERM; sent it KILL\" >&2 || true\n        break\n      fi\n      polls=$((polls + 1))\n      sleep 0.1\n    done\n    wait \"$child\" 2>/dev/null || true\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 review: sim-tree reports the tree kept and exits while its command still writes in it"
+  },
+  {
+    "id": "F52-no-kill",
+    "file": "scripts/sim-tree.sh",
+    "find": "        kill -KILL \"$child\" 2>/dev/null || true\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 fixer: a command that ignores TERM is waited for without a bound"
+  },
+  {
+    "id": "F52-silent-kill",
+    "file": "scripts/sim-tree.sh",
+    "find": "        echo \"sim-tree: the command did not stop within ${stop_seconds} s of TERM; sent it KILL\" >&2 || true\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 fixer: the KILL after SIM_TREE_STOP_SECONDS is not said"
+  },
+  {
+    "id": "F52-stop-seconds-unchecked",
+    "file": "scripts/sim-tree.sh",
+    "find": "[[ \"$stop_seconds\" =~ ^[0-9]+$ ]] || refuse",
+    "replace": "true || refuse",
+    "test": "src/__tests__/revenue/sim-tree.test.ts",
+    "note": "tick 52 fixer: a SIM_TREE_STOP_SECONDS that is not a number is not refused"
   }
 ]

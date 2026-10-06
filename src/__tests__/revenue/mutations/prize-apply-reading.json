@@ -1,0 +1,322 @@
+[
+  {
+    "id": "skip-address-check",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "for (const [form, re] of ADDRESS_FORMS) if (re.test(clause))",
+    "replace": "for (const [form, re] of []) if (re.test(clause))",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: no address form is refused, so a plain, %40, escaped or masked address reaches the public table"
+  },
+  {
+    "id": "skip-pointer-check",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    problems.push(...p.problems);",
+    "replace": "    void p.problems;",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a pointer to a missing capture, one with no meta or a line past its end is written anyway"
+  },
+  {
+    "id": "write-on-refusal",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "  if (refused.length) {",
+    "replace": "  if (refused.length) {\n    writeFileSync(table, out.join(nl));",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a refused run still writes the items that passed"
+  },
+  {
+    "id": "match-by-prefix",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    at.set(key, [...(at.get(key) ?? []), i]);",
+    "replace": "    for (let k = 1; k <= key.length; k += 1) at.set(key.slice(0, k), [...(at.get(key.slice(0, k)) ?? []), i]);",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a key matches a row whose URL merely starts with it, not the row whose URL it is"
+  },
+  {
+    "id": "drop-idempotence",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    it.change = out[i] !== lines[i];",
+    "replace": "    it.change = true;",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a row that already holds the cells counts as a change, so a second run is never a no-op"
+  },
+  {
+    "id": "reader-grade",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "  const { finalGrade: grade, finalQualifies: qualifies, finalClauseCell: clause } = v;",
+    "replace": "  const { finalQualifies: qualifies, finalClauseCell: clause } = v;\n  const grade = it.read?.proposedGrade;",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: the reader's grade is written instead of the verifier's, so a verifier's change is lost"
+  },
+  {
+    "id": "allow-pipe",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    if (/(?<!\\\\)\\|/.test(clause))",
+    "replace": "    if (false && /(?<!\\\\)\\|/.test(clause))",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: an unescaped pipe is written, splitting the row into more cells"
+  },
+  {
+    "id": "qualifies-with-blocked",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "  else if (qualifies !== \"\" && grade !== \"RENDERED\")",
+    "replace": "  else if (false)",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a yes or no is written beside a grade that is not RENDERED"
+  },
+  {
+    "id": "allow-newline",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    if (/[\\r\\n]/.test(clause))",
+    "replace": "    if (false && /[\\r\\n]/.test(clause))",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a clause with a newline is collapsed and written instead of refused"
+  },
+  {
+    "id": "lf-only",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "  const nl = text.includes(\"\\r\\n\") ? \"\\r\\n\" : \"\\n\";",
+    "replace": "  const nl = \"\\n\";",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a CRLF table loses the CR of every rewritten row"
+  },
+  {
+    "id": "line-past-end-off-by-one",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "      else if (n > count)",
+    "replace": "      else if (n > count + 1)",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a pointer to the line after the last one passes"
+  },
+  {
+    "id": "line-zero",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "      if (n < 1)",
+    "replace": "      if (n < 0)",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a pointer to line 0 passes"
+  },
+  {
+    "id": "skip-meta-check",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    if (!existsSync(join(rendered, `${capture[1]}.meta.json`))) {",
+    "replace": "    if (false) {",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a file render-watch did not capture (no meta beside it) passes as a capture"
+  },
+  {
+    "id": "urls-txt-is-a-capture",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    const capture = name === \"urls.txt\" || name.endsWith(\".meta.json\") ? null : CAPTURE_FILE_RE.exec(name);",
+    "replace": "    const capture = CAPTURE_FILE_RE.exec(name);",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: urls.txt or a .meta.json is read as a capture"
+  },
+  {
+    "id": "allow-two-items",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    if (named.get(it.key) > 1)",
+    "replace": "    if (named.get(it.key) > 2)",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: two items for one key are both applied, the last one winning"
+  },
+  {
+    "id": "drop-test-exit",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "  return r.error ? 1 : code;",
+    "replace": "  return r.error ? 1 : 0;",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a failing prize test run still exits 0 after --apply"
+  },
+  {
+    "id": "ignore-no-tests",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "  if (values[\"no-tests\"]) return 0;",
+    "replace": "  if (false) return 0;",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: --no-tests runs the prize tests anyway"
+  },
+  {
+    "id": "dry-run-exit-0",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    return changed ? 3 : 0;",
+    "replace": "    return 0;",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a dry run that would change rows exits 0, as if nothing would"
+  },
+  {
+    "id": "key-with-note",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "it.event.url.trim().split(/\\s+/)[0]",
+    "replace": "it.event.url.trim()",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: the note a workflow writes after the URL becomes part of the key"
+  },
+  {
+    "id": "key-exit-1",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    return keyProblem ? 2 : 1;",
+    "replace": "    return 1;",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a key matching no row or two rows exits 1, not the hand helper's 2"
+  },
+  {
+    "id": "grade-any-case",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "!GRADES.has(grade)",
+    "replace": "!GRADES.has(String(grade).toUpperCase())",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 builder: a grade in the wrong case (rendered) is written"
+  },
+  {
+    "id": "F52-ascii-address",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "/[\\p{L}\\p{M}\\p{N}._%+-]@[\\p{L}\\p{M}\\p{N}-]/u",
+    "replace": "/[A-Za-z0-9._%+-]@[A-Za-z]/",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 review RV-A4: an address whose domain starts with a digit or a letter outside ASCII is written"
+  },
+  {
+    "id": "F52-ascii-local",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "/[\\p{L}\\p{M}\\p{N}._%+-]@[",
+    "replace": "/[A-Za-z0-9._%+-]@[",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: an address whose local part ends in an accented letter is written"
+  },
+  {
+    "id": "F52-no-lookalike",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "  [\"a look-alike @ (fullwidth U+FF20 or small U+FE6B)\", /[\\uFF20\\uFE6B]/u],\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: an address with a fullwidth or small at sign is written"
+  },
+  {
+    "id": "F52-no-commat",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "|&commat;/i],",
+    "replace": "/i],",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: an address with &commat; is written"
+  },
+  {
+    "id": "F52-ref-needs-semicolon",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "&#0*(?:64|65312|65131)(?![0-9])",
+    "replace": "&#0*(?:64|65312|65131);",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: &#64 without its semicolon (a browser still reads it as @) is written"
+  },
+  {
+    "id": "F52-no-lookalike-percent",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "/%40|%EF%BC%A0|%EF%B9%AB/i",
+    "replace": "/%40/i",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: an address with a percent-encoded look-alike at sign is written"
+  },
+  {
+    "id": "F52-no-brace-escape",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "|\\\\u\\{0*40\\}/i",
+    "replace": "/i",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: an address with the \\u{40} escape is written"
+  },
+  {
+    "id": "F52-states-before-write",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "const s = rowStates(next, rendered);",
+    "replace": "const s = rowStates(text, rendered);",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 review RV-A8: --apply prints the row states of the table before the write"
+  },
+  {
+    "id": "F52-table-shape-ignored",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "const rows = parseAiAllowedTable(text); // throws on a table the job did not write",
+    "replace": "let rows = []; try { rows = parseAiAllowedTable(text); } catch { rows = []; }",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 review RV-A9: a table the job did not write is not refused for its own reason (the row with 7 cells)"
+  },
+  {
+    "id": "F52-mixed-endings",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "if (nl === \"\\r\\n\" && /(?:^|[^\\r])\\n/.test(text))",
+    "replace": "if (false)",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: a table that mixes CRLF and LF is not refused as such (every key then 'matches 0 rows')"
+  },
+  {
+    "id": "F52-rows-any-section",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    if (!inRows || !line.startsWith(\"| \") || !line.includes(\"<http\")) return;",
+    "replace": "    if (!line.startsWith(\"| \") || !line.includes(\"<http\")) return;",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: a row-shaped line outside the quarter sections is taken for a row"
+  },
+  {
+    "id": "F52-reversed-range",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "      if (to !== undefined && to < from) problems.push(",
+    "replace": "      if (false) problems.push(",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: a range that ends before it starts (9-2) passes"
+  },
+  {
+    "id": "F52-first-number-only",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "(?:,[ \\t]*\\d+(?:[-–]\\d+)?)*))?/g;",
+    "replace": "))?/g;",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: in a list of lines (2, 99) only the first number is checked"
+  },
+  {
+    "id": "F52-no-overwrite-guard",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "  if (values.apply && !values.overwrite) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 review: --apply replaces cells a row already holds (an older output undoes a later hand edit)"
+  },
+  {
+    "id": "F52-overwrite-ignored",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "  if (values.apply && !values.overwrite) {",
+    "replace": "  if (values.apply) {",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: --overwrite does not let --apply replace held cells"
+  },
+  {
+    "id": "F52-replaces-never",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    it.replaces = it.change && held;",
+    "replace": "    it.replaces = false;",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 fixer: a replacement of held cells is neither marked in the dry run nor refused by --apply"
+  },
+  {
+    "id": "F52-rendered-without-verdict",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "  if (grade === \"RENDERED\" && qualifies === \"\") problems.push(",
+    "replace": "  if (false) problems.push(",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 review: RENDERED with an empty qualifies cell is written, leaving the row unsettled"
+  },
+  {
+    "id": "F52-rendered-without-pointer",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    if (grade === \"RENDERED\" && p.pointers === 0 && clause.trim() !== \"\") {",
+    "replace": "    if (false) {",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 review: a RENDERED clause that names no capture is written, leaving the row unsettled"
+  },
+  {
+    "id": "F52-empty-clause",
+    "file": "scripts/prize-apply-reading.mjs",
+    "find": "    if (clause.trim() === \"\") problems.push(",
+    "replace": "    if (false) problems.push(",
+    "test": "src/__tests__/revenue/prize-apply-reading.test.ts",
+    "note": "tick 52 review: an empty clause cell is written"
+  }
+]

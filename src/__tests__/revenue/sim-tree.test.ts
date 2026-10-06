@@ -491,3 +491,115 @@ describe("scripts/sim-tree.sh: the checkout is never touched", () => {
     expect(readdirSync(tmp)).toEqual([]);
   }, 120_000);
 });
+
+/**
+ * Stopped by a signal (logs/CHANNEL_LOOP.md §9, tick 51 item 2): a sim-tree killed while its command ran (SIGPIPE when
+ * its stderr was piped to `head`, a kill, a Ctrl-C) used to die on the spot and leave its tree with no removal hint.
+ * Once the tree exists, INT, TERM, HUP and PIPE are trapped: the command is stopped, the tree is kept, its path and the
+ * quoted removal command are printed, and the exit is 128 + the signal's number. The trap runs as the signal arrives,
+ * not when the command would have ended.
+ */
+describe("scripts/sim-tree.sh: stopped by a signal", () => {
+  /** A process that exists and is not a zombie (a container's init may not reap one). */
+  const alive = (pid: number) => {
+    try {
+      return !/^\d+ \(.*\) Z /.test(readFileSync(`/proc/${pid}/stat`, "utf8"));
+    } catch {
+      return false;
+    }
+  };
+  const until = async (ok: () => boolean, ms = 10_000) => {
+    const end = Date.now() + ms;
+    while (!ok()) {
+      if (Date.now() > end) return false;
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    return true;
+  };
+
+  /**
+   * sim-tree running `script` (bash -c) with TMPDIR a directory whose path holds a space (so the removal hint's quoting
+   * shows), once the command has written its pid to $PID_FILE: the child, its stderr so far, the pid, and a promise of
+   * its exit (the process's own end, not its pipes': a command's leftovers may hold those open longer).
+   */
+  async function started(script: string, env: Record<string, string> = {}) {
+    const { repo, tmp } = makeRepo();
+    const spaced = join(tmp, "with space");
+    mkdirSync(spaced);
+    const pidFile = join(tmp, "..", "command.pid");
+    // No SIM_TREE from outside: when this file runs inside a sim tree (a mutation plan), a mutant that does not set it
+    // would hand the command the outer tree's, and the command would write there.
+    const { SIM_TREE: _outer, ...outside } = process.env;
+    const c = spawn("bash", [SCRIPT, "--", "bash", "-c", script], {
+      cwd: repo,
+      env: { ...outside, ...gitEnv, TMPDIR: spaced, PID_FILE: pidFile, ...env },
+    });
+    const out = { stderr: "" };
+    c.stderr.on("data", (d) => (out.stderr += d));
+    const exited = new Promise<{ code: number | null; signal: NodeJS.Signals | null }>((done) => c.on("exit", (code, signal) => done({ code, signal })));
+    expect(await until(() => existsSync(pidFile) && readFileSync(pidFile, "utf8").trim() !== "")).toBe(true);
+    return { c, out, exited, pid: Number(readFileSync(pidFile, "utf8")) };
+  }
+  const quoted = (path: string) => spawnSync("bash", ["-c", 'printf %q "$1"', "_", path], { encoding: "utf8" }).stdout;
+
+  const SIGNALS: [NodeJS.Signals, number][] = [
+    ["SIGTERM", 143],
+    ["SIGINT", 130],
+    ["SIGHUP", 129],
+    ["SIGPIPE", 141],
+  ];
+  for (const [signal, exit] of SIGNALS) {
+    it(`${signal} while the command sleeps: the command stops, the tree is kept with its quoted removal hint, exit ${exit}`, async () => {
+      const s = await started('echo $$ > "$PID_FILE"; exec sleep 15');
+      const sent = Date.now();
+      s.c.kill(signal);
+      expect(await s.exited).toEqual({ code: exit, signal: null });
+      expect(Date.now() - sent).toBeLessThan(10_000);
+      const tree = treeOf(s.out.stderr);
+      expect(tree).toContain(" ");
+      const q = quoted(tree);
+      expect(q).not.toBe(tree);
+      expect(s.out.stderr).toContain(`sim-tree: stopped by ${signal}; kept ${tree}; remove it with: rm -rf -- ${q}\n`);
+      // The command stopped on TERM: it was not left to the KILL after SIM_TREE_STOP_SECONDS.
+      expect(s.out.stderr).not.toMatch(/did not stop/);
+      expect(existsSync(join(tree, "file.txt"))).toBe(true);
+      expect(await until(() => !alive(s.pid))).toBe(true);
+      rmSync(tree, { recursive: true, force: true });
+    }, 30_000);
+  }
+
+  it("waits for what the command does on TERM before it reports the tree kept and exits", async () => {
+    // The command takes a second to clean up on TERM (mutate.mjs restores the file it mutated), then writes in the tree.
+    const s = await started(
+      // `late` is relative: the command's working directory is the tree.
+      "echo $$ > \"$PID_FILE\"; sleep 30 </dev/null >/dev/null 2>&1 & k=$!; trap 'sleep 1; kill $k; touch late; exit 143' TERM; wait",
+    );
+    s.c.kill("SIGTERM");
+    expect(await s.exited).toEqual({ code: 143, signal: null });
+    const tree = treeOf(s.out.stderr);
+    // At the moment sim-tree is gone, the command has finished: its last write is there and it is not running.
+    expect(existsSync(join(tree, "late"))).toBe(true);
+    expect(alive(s.pid)).toBe(false);
+    expect(s.out.stderr).not.toMatch(/did not stop/);
+    rmSync(tree, { recursive: true, force: true });
+  }, 30_000);
+
+  it("a command that ignores TERM is sent KILL after SIM_TREE_STOP_SECONDS, and that is said", async () => {
+    const s = await started("echo $$ > \"$PID_FILE\"; trap '' TERM; exec sleep 30", { SIM_TREE_STOP_SECONDS: "1" });
+    const sent = Date.now();
+    s.c.kill("SIGTERM");
+    expect(await s.exited).toEqual({ code: 143, signal: null });
+    expect(Date.now() - sent).toBeLessThan(8_000);
+    expect(s.out.stderr).toMatch(/sim-tree: the command did not stop within 1 s of TERM; sent it KILL/);
+    expect(await until(() => !alive(s.pid), 3_000)).toBe(true);
+    rmSync(treeOf(s.out.stderr), { recursive: true, force: true });
+  }, 30_000);
+
+  it("refuses a SIM_TREE_STOP_SECONDS that is not a whole number, creating nothing", () => {
+    const { repo, tmp } = makeRepo();
+    const r = sim(repo, tmp, sh("true"), { SIM_TREE_STOP_SECONDS: "soon" });
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(/SIM_TREE_STOP_SECONDS is not a whole number/);
+    expect(readdirSync(tmp)).toEqual([]);
+  });
+});
