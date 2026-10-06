@@ -1,0 +1,720 @@
+GitHub - F1y1113/worldnav-challenge · GitHub
+
+Skip to content
+
+Navigation Menu
+
+Sign in Appearance settings
+
+Platform AI CODE CREATION GitHub Copilot Write better code with AI
+GitHub Copilot app Direct agents from issue to merge
+MCP Registry Integrate external tools
+
+DEVELOPER WORKFLOWS Actions Automate any workflow
+Codespaces Instant dev environments
+Issues Plan and track work
+Code Review Manage code changes
+Code Quality Enforce quality at merge
+
+APPLICATION SECURITY GitHub Advanced Security Find and fix vulnerabilities
+Code security Secure your code as you build
+Secret protection Stop leaks before they start
+
+EXPLORE Why GitHub
+Documentation
+Blog
+Changelog
+Marketplace
+
+View all features
+
+Solutions BY COMPANY SIZE Enterprises
+Small and medium teams
+Startups
+Nonprofits
+
+BY USE CASE App Modernization
+DevSecOps
+DevOps
+CI/CD
+View all use cases
+
+BY INDUSTRY Healthcare
+Financial services
+Manufacturing
+Government
+View all industries
+
+View all solutions
+
+Resources EXPLORE BY TOPIC AI
+Software Development
+DevOps
+Security
+View all topics
+
+EXPLORE BY TYPE Customer stories
+Events & webinars
+Ebooks & reports
+Business insights
+GitHub Skills
+
+SUPPORT & SERVICES Documentation
+Customer support
+Community forum
+Trust center
+Partners
+
+View all resources
+
+Open Source COMMUNITY GitHub Sponsors Fund open source developers
+
+PROGRAMS Security Lab
+Maintainer Community
+GitHub Stars
+Archive Program
+
+REPOSITORIES Topics
+Trending
+Collections
+
+Enterprise ENTERPRISE SOLUTIONS Enterprise platform AI-powered developer platform
+
+AVAILABLE ADD-ONS GitHub Advanced Security Enterprise-grade security features
+Copilot for Business Enterprise-grade AI features
+Premium Support Enterprise-grade 24/7 support
+
+Pricing
+
+Search /
+
+Sign in
+Sign up Appearance settings
+
+You signed in with another tab or window. Reload to refresh your session.
+You signed out in another tab or window. Reload to refresh your session.
+You switched accounts on another tab or window. Reload to refresh your session.
+
+Dismiss alert
+
+F1y1113
+
+/
+
+worldnav-challenge
+
+Public
+
+Notifications
+You must be signed in to change notification settings
+
+Fork
+0
+
+Star
+0
+
+Code
+
+Issues
+0
+
+Pull requests
+0
+
+Actions
+
+Projects
+
+Security and quality
+0
+
+Insights
+
+Additional navigation options
+
+Code
+
+Issues
+
+Pull requests
+
+Actions
+
+Projects
+
+Security and quality
+
+Insights
+
+main
+
+Branches Tags
+
+Go to file
+
+Code Open more actions menu
+
+Latest commit
+
+History
+36 Commits
+36 Commits
+
+Folders and files
+Name
+Name
+Last commit message
+
+Last commit date
+
+assets
+
+assets
+
+track_assets
+
+track_assets
+
+README.md
+
+README.md
+
+demonstration.py
+
+demonstration.py
+
+download_data.sh
+
+download_data.sh
+
+index.html
+
+index.html
+
+View all files
+
+Repository files navigation
+
+README
+
+More items
+
+🤖 RoboWorld Challenge 2026: Track 1 — WorldNav
+Language-Conditioned World Navigation
+
+Official Track Documentation for Track 1
+
+Built on the LCVN benchmark — "Language-Conditioned World Modeling for Visual Navigation"
+( LCVN repository | LCVN dataset | LCVN paper )
+
+🏆 Prize Pool: $2,800 per track (1st: $1,500 · 2nd: $800 · 3rd: $500) + Rising Star Award
+
+🌍 Challenge Overview
+
+WorldNav invites participants to develop world-model-based or vision-language-action (VLA) agents for language-conditioned visual navigation . Given a single initial egocentric RGB observation and a natural-language instruction, the agent must generate the full future navigation trajectory without a goal image or intermediate environmental feedback.
+
+The track encourages methods that couple imagination with control: world models that predict future observations to guide action selection, unified autoregressive models that interleave observation and action prediction, and VLA models that map vision and language to navigation actions. Policy-only methods are also welcome.
+
+🎯 Task Definition
+
+Component
+
+Description
+
+Input
+
+One initial egocentric RGB image and one natural-language instruction.
+
+Output
+
+A variable-length sequence of robot-relative forward, leftward, and yaw updates.
+
+Termination
+
+The agent decides when the trajectory ends; the submitted action sequence is scored as a whole.
+
+Setting
+
+Open-loop generation: no goal image or intermediate environmental feedback is available.
+
+Agents may generate the trajectory autoregressively, using their own predicted future observations or states to plan subsequent actions. The instruction remains the navigation goal throughout the rollout.
+
+📅 Competition Details
+
+Event: RoboWorld Challenge 2026, affiliated with the RoboPAD Workshop at NeurIPS 2026 .
+
+Registration: Follow the registration link on the challenge website .
+
+Submission platform: CodaBench — WorldNav .
+
+🗂️ Phases
+
+Phase
+
+Evaluation data
+
+Leaderboard
+
+Phase 1: Validation
+
+Released val_seen and val_unseen splits
+
+Ranked by the mean of the val_seen and val_unseen Scores (50% each). Both split files are required.
+
+Phase 2: Final Evaluation
+
+Held-out test split
+
+Ranked by the test Score.
+
+Phase 1 supports method development and validation; it does not determine shortlisting, final rankings, or awards. Final rankings and awards are determined entirely by the Phase 2 test Score. Scores from the two phases are not combined.
+
+🗓️ Timeline
+
+Event
+
+Date
+
+Phase 1 opens
+
+See the active phase dates on CodaBench
+
+Phase 1 deadline
+
+October 31, 2026, 15:59 UTC
+
+Phase 2 opens
+
+November 2026
+
+Phase 2 deadline
+
+November 20, 2026
+
+Awards announcement
+
+December 2026
+
+See the CodaBench competition page for the exact Phase 2 opening and closing times and schedule updates.
+
+🏆 Awards
+
+Place
+
+Award
+
+🥇 1st
+
+$1,500 USD + Certificate
+
+🥈 2nd
+
+$800 USD + Certificate
+
+🥉 3rd
+
+$500 USD + Certificate
+
+Details of the Rising Star Award are available through the challenge website .
+
+📊 Dataset
+
+The track uses the LCVN dataset , comprising 39,016 trajectories and 117,048 human-verified instructions sourced from Go Stanford, ReCon, SCAND, HuRoN, and TartanDrive.
+
+Each trajectory is paired with three instruction styles:
+
+Concise: Short instructions containing essential directional cues.
+
+Intricate: Detailed instructions describing visual context, objects, people, and scene layout.
+
+Landmark-grounded: Instructions anchored to salient environmental landmarks.
+
+Dataset Splits
+
+Split
+
+Trajectories
+
+Instructions
+
+Use
+
+Train
+
+28,813
+
+86,439
+
+Training
+
+Validation Seen
+
+3,602
+
+10,806
+
+In-domain validation
+
+Validation Unseen
+
+1,500
+
+4,500
+
+Unseen-domain validation
+
+Test
+
+5,101
+
+15,303
+
+Final evaluation
+
+Total
+
+39,016
+
+117,048
+
+Go Stanford, ReCon, SCAND, and HuRoN provide the training and in-domain evaluation data. The unseen validation split is drawn exclusively from TartanDrive. The test split contains trajectories from both TartanDrive and in-domain sources.
+
+The training and validation splits are available on Hugging Face . Phase 2 provides the test inference inputs: initial RGB observations and language instructions. Reference test trajectories and target annotations remain withheld for official evaluation.
+
+🚀 Getting Started
+
+1. Download the Data
+
+From this track repository, run:
+
+# Download and extract all released splits.
+bash download_data.sh
+
+# Alternatively, download only the Phase 1 validation splits.
+SPLITS= " val_seen val_unseen " bash download_data.sh
+
+The released archives are train.tar (57.6 GB), val_seen.tar (7.4 GB), and val_unseen.tar (20.3 GB).
+
+After extraction, the expected directory structure is:
+
+data/
+└── lcvn/
+├── train/
+│ ├── {trajectory_id}/
+│ │ ├── 0.jpg
+│ │ ├── 1.jpg
+│ │ ├── ...
+│ │ ├── n.jpg
+│ │ └── traj_data.pkl
+│ └── ...
+├── val_seen/
+│ └── ...
+└── val_unseen/
+└── ...
+
+Each {trajectory_id}/ folder contains a sequence of egocentric RGB frames ( 0.jpg , 1.jpg , ..., n.jpg ) and a traj_data.pkl file storing trajectory metadata such as navigation actions, pose-related information, and language instructions.
+
+2. Set Up a Baseline
+
+Clone the LCVN implementation:
+
+git clone https://github.com/F1y1113/LCVN.git
+cd LCVN
+
+Follow the model-specific environment setup, data preparation, training, and inference instructions in the LCVN README . LCVN-Uni and LCVN-WM + LCVN-AC use separate environments.
+
+3. Prepare a Submission
+
+Download the example submission ZIP from CodaBench . It shows the phase's episode IDs and JSON schema; replace the illustrative actions with your predictions and follow Submission Format .
+
+🧠 Baseline Models
+
+Two complementary LCVN approaches serve as the reference baselines:
+
+Baseline
+
+Approach
+
+LCVN-Uni
+
+A unified autoregressive multimodal model fine-tuned from Anole-7B that jointly predicts the next action and next observation in a single forward pass.
+
+LCVN-WM + LCVN-AC
+
+A language-conditioned diffusion world model paired with an actor-critic agent trained entirely in the world model's latent space using intrinsic rollout rewards.
+
+Implementations and usage instructions are provided in the LCVN repository . See the LCVN paper for details.
+
+📏 Evaluation
+
+Submissions are evaluated against one recorded navigation trajectory. The leaderboard reports the original trajectory measures Success Rate (SR) , Absolute Trajectory Error (ATE) , and Relative Pose Error (RPE) , together with two continuous measures of the complete route and heading.
+
+Metric
+
+Direction
+
+Description
+
+SR
+
+Higher is better
+
+Fraction of episodes whose final predicted position meets the reference endpoint criterion.
+
+ATE
+
+Lower is better
+
+Global trajectory accuracy, measured by the Euclidean distance between aligned predicted and reference poses.
+
+RPE
+
+Lower is better
+
+Local trajectory consistency, measured by discrepancies in relative motion between consecutive predicted and reference poses.
+
+Full-route fidelity
+
+Higher is better
+
+Similarity of the entire ordered predicted route to the recorded route, with excess travel penalized.
+
+Heading and turn fidelity
+
+Higher is better
+
+Agreement of facing direction during travel and of the direction, location and amount of turns.
+
+🏁 Composite Score
+
+Submissions are ranked by the following Score (higher is better):
+
+$$
+\mathrm{Score}
+= \frac{100}{N}\sum_{i=1}^{N}
+\frac{\mathrm{FullRouteFidelity}_i(1+\mathrm{HeadingTurnFidelity}_i)}{2}
+\left(
+0.70+0.10\mathrm{SR}_i+\frac{0.10}{1+\mathrm{ATE}_i}+\frac{0.10}{1+\mathrm{RPE}_i}
+\right)
+$$
+
+N is the number of episodes. SR_i is binary success; ATE_i and RPE_i are per-episode errors in dataset coordinate units. Score averages episode contributions. See demonstration.py for the five metric calculations.
+
+📥 Submission Format
+
+Submit predictions as one ZIP archive through CodaBench .
+
+Phase
+
+Required files at the ZIP archive root
+
+Phase 1
+
+val_seen.json and val_unseen.json
+
+Phase 2
+
+test.json
+
+Prediction File Structure
+
+The example below illustrates the JSON structure with one episode and three motion commands. It is abbreviated; use the downloadable example submission for the full list of phase episode IDs. The list ends the trajectory, with no separate Stop token.
+
+{
+"split" : " val_unseen " ,
+"episodes" : [
+{
+"episode_id" : " 20210826_40_0001_02_0 " ,
+"actions" : [[ 0.25 , 0.0 , 0.0 ], [ 0.0 , 0.0 , 0.15 ], [ 0.12 , -0.05 , 0.0 ]]
+}
+]
+}
+
+Field
+
+Description
+
+split
+
+val_seen , val_unseen , or test , matching the filename.
+
+episodes
+
+Predictions for every episode in the phase manifest.
+
+episode_id
+
+Manifest identifier; include each exactly once.
+
+actions
+
+Variable-length [dx, dy, dyaw] sequence. dx is forward, dy is leftward in the agent's current local frame , and dyaw is in radians.
+
+At test time, use only the initial RGB image and instruction; the private scorer reconstructs the route from a withheld initial pose. For global training deltas (ΔX, ΔY) , use released training yaw ψ : dx = cos(ψ)ΔX + sin(ψ)ΔY , dy = −sin(ψ)ΔX + cos(ψ)ΔY , and wrap heading updates: dyaw = np.arctan2(np.sin(dyaw), np.cos(dyaw)) to the canonical range [−π, π) .
+
+See CodaBench → Submission & Evaluation for action limits and the complete example ZIP.
+
+Package and Upload
+
+For Phase 1 :
+
+zip -j submission.zip val_seen.json val_unseen.json
+
+For Phase 2 , create a separate archive:
+
+zip -j submission_test.zip test.json
+
+Place only the required JSON files at the archive root; do not include a parent directory or unrelated files. Upload the archive to the corresponding CodaBench phase, then check the scoring log for validation results and evaluation metrics.
+
+Submission Limits
+
+Each participant may submit 100 times per day and 100 times in total per phase . The leaderboard retains the team's best-scoring submission.
+
+❓ Frequently Asked Questions
+
+1. Do I have to use a world model?
+
+No. World-model agents, VLA models, and policy-only methods are all eligible. The track particularly encourages approaches that use predicted future states to guide planning.
+
+2. Do I need to run a simulator or submit executable agent code?
+
+No simulator or executable agent code is required for the scored submission. Upload the prediction files described in Submission Format ; the evaluation server scores the submitted trajectories.
+
+3. Can the agent receive new observations during inference?
+
+Only the initial RGB observation and the instruction are provided. The agent may generate and use its own predicted future observations, but it cannot access intermediate observations from the environment.
+
+4. Are test annotations available?
+
+No. Phase 2 provides the initial observations and instructions needed for inference. Reference test trajectories and target annotations remain withheld.
+
+5. Which episodes must my submission include?
+
+Include every episode in the official manifest exactly once. Phase 1 requires 10,806 val_seen episodes and 4,500 val_unseen episodes, covering the three instruction styles. Copy episode identifiers directly from the manifests.
+
+6. What should I do if my submission is rejected?
+
+Check the CodaBench scoring log. A SUBMISSION REJECTED: message identifies a submission issue, such as missing episodes, duplicate identifiers, or an incorrect archive layout. Correct the reported issue and resubmit. A SCORING DATA ERROR (organizer): message indicates an organizer-side problem; report it to the competition contact email below.
+
+🔗 Contact and Resources
+
+For technical or competition questions, contact [redacted:email]@outlook.com .
+
+Resource
+
+Link
+
+Challenge website and registration
+
+RoboWorld 2026
+
+Associated workshop
+
+RoboPAD at NeurIPS 2026
+
+GitHub Repository
+
+worldnav-challenge
+
+Track page
+
+WorldNav
+
+Example submission and leaderboard
+
+CodaBench
+
+Metric calculation demonstration
+
+demonstration.py
+
+Baseline implementation
+
+LCVN repository
+
+Dataset
+
+LCVN on Hugging Face
+
+Paper
+
+Language-Conditioned World Modeling for Visual Navigation
+
+📄 License and Terms
+
+Refer to the LCVN repository , dataset page , and original source datasets for the applicable code and data licenses. Participation is governed by the Track 1 Terms and Conditions on CodaBench .
+
+📚 Citation
+
+If you use the LCVN benchmark or the WorldNav track resources, please cite:
+
+@misc { dong2026languageconditionedworldmodelingvisual ,
+title = { Language-Conditioned World Modeling for Visual Navigation } ,
+author = { Yifei Dong and Fengyi Wu and Yilong Dai and Lingdong Kong and Guangyu Chen and Xu Zhu and Qiyu Hu and Tianyu Wang and Johnalbert Garnica and Feng Liu and Siyu Huang and Qi Dai and Zhi-Qi Cheng } ,
+year = { 2026 } ,
+eprint = { 2603.26741 } ,
+archivePrefix = { arXiv } ,
+primaryClass = { cs.CV } ,
+url = { https://arxiv.org/abs/2603.26741 }
+}
+
+@misc { roboworld2026track1 ,
+title = { Track 1 | WorldNav: Language-Conditioned World Navigation } ,
+author = { RoboWorld Challenge 2026 Organizers } ,
+year = { 2026 } ,
+howpublished = { https://f1y1113.github.io/worldnav-challenge/ }
+}
+
+🤝 Acknowledgements
+
+WorldNav is organized by the RoboWorld Challenge 2026 team as part of an independently organized challenge associated with the RoboPAD Workshop at NeurIPS 2026 . We thank the LCVN authors and contributors, the DFoT, UniWM, and LUMOS teams, and CodaBench for the evaluation infrastructure.
+
+About
+f1y1113.github.io/worldnav-challenge/
+Resources
+Readme
+Activity
+
+Stars
+0 stars
+Watchers
+0 watching
+Forks
+0 forks
+
+Report repository
+
+Releases
+
+Packages
+
+Contributors
+
+Languages
+
+Footer
+
+&copy; 2026 GitHub, Inc.
+
+Footer navigation
+
+Terms
+
+Privacy
+
+Security
+
+Status
+
+Community
+
+Docs
+
+Contact
+
+Manage cookies
+
+Do not share my personal information
+
+You can’t perform that action at this time.
