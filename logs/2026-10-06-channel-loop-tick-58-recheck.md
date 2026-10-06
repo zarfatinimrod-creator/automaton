@@ -147,3 +147,92 @@
 - הדפסת כל 18 ה-source המלאים בבת אחת (47KB) — מספיק היה ראש ה-source עד "NO_TERMS before:", כפי שעשיתי מיד אחר כך.
 - הרצת `--recheck` בסימולציה פעמיים (dry ו-apply) והדפסת הפלט המלא של `checkManifest` (מאות שורות חסרות בהעתק החלקי) — הדבר
   היחיד שהיה צריך משם הוא שאין בעיה בשני העותקים החדשים.
+
+## Review fixes
+
+תיקוני הסקירה של `2e2f721` (אותו יום, Opus fixer). הסוקר מצא ממצא blocking אחד, שני ממצאי fix וכמה הערות; כל ה-exit codes
+שלמטה נמדדו בהרצה, לא הועתקו.
+
+### מה התבקש
+לתקן כל ממצא blocking ו-fix (הערה רק כשהיא קלה ובטוחה), בלי להחליש בדיקה ובלי לשנות את התכנון שבתדריך; להריץ מחדש verify
+ממוקד ומלא, כל תוכנית מוטציות שנגעתי בה, כל מוטציה ששרדה אצל הסוקר (נוספת לתוכנית ונהרגת), ואת ההוכחה מקצה לקצה של refresh ו-revert.
+
+### מה עשיתי
+1. **מיזוג הבסיס.** `origin/claude/new-session-j071dx` (ה-ref המקומי, `a2c44b4`, כולל `c276517`) התקדם מעבר לבסיס `9f549cc`, ולכן
+   מוזג ב-`--no-ff` (`fe5a023`). בלי rebase, בלי stash, בלי fetch.
+2. **Blocking: 200 שהפך ל-404 ליד גוף ישן, במצב מאגר.** קודם בדיקה (TDD): מאגר git בתיקייה זמנית, לכידה של 6.10 עם robots.txt של
+   יותר מ-1,000 תווים, commit של מטא 404 שמשאיר את ה-.txt על הדיסק, ו-commit לא קשור אחריו. היא נכשלה בדיוק כמו אצל הסוקר
+   (`froze robots-law -> robots-law-2026-10-06 (already frozen)`). התיקון: `liveVersion` משווה את המטא ש-`sourceVersion` החזיר למטא
+   החי. כשהם שונים (ה-fallback של fetch שנכשל), הגרסה היא הקבצים שעל הדיסק (נקיים: `sourceVersion` כבר בדק) עם ה-commit האחרון
+   שכתב את המטא; `planCopy` כבר משאיר רק את המטא ואת מה שהוא מציין (`namedFiles`), כך שהגוף הישן לא נכנס לעותק. בנוסף שומר ב-`recheckSite`:
+   עותק מתוכנן שאינו התשובה החיה (סוג אחר, סטטוס אחר או בתים אחרים) הוא שגיאה, ושום דבר לא מוקפא ולא נכתב.
+3. **Fix 1: `--apply` השאיר את ה-CI אדום.** בחרתי באפשרות הראשונה של הסוקר, שחזור, ולא רק ברשימת pins: `isRecheckOf(now, before)`,
+   `parseRevertSource` ו-`beforeRechecks(sites, base)` ב-`robots-verdict.mjs`, ו-fixture של 18 רשומות ה-NO_TERMS_ROBOTS_OK כפי
+   שהיו ב-`5c980e3` (sha256 נעוץ, השוואה ל-`git show` כשה-commit זמין). `verdicts()` של `prize-terms-audit.test.ts` עובר דרך
+   `verdictsOf`, וכך גם הקריאות הישירות של הקובץ במבחני טיקים 54, 56 ו-57 וההרצות החוזרות של `judgeSite` בהם. שני מבחני ה-CLI
+   "declines … on the committed files" רצים על עותק scratch של הקובץ המשוחזר, ומבחן ה-parse של המקורות הקיימים מכסה גם אתר שהוחזר.
+   רשומה ששונתה ביד, או verdict חדש אחרי revert, לא מוחזרת, ולכן המבחנים עדיין רואים אותה. מבחן טיק 55 שנעץ את הלכידה החיה של
+   eurocontrol.int (status 200) קורא עכשיו את העותק הקפוא שלה, שמחזיק את אותה עובדה ולא נכתב מחדש. T57-D7 ו-T57B-D4 בתוכנית הוזזו
+   מהמשפט האחרון של ההערה, שמשפט re-check היה מעלים.
+4. **Fix 2: בדיקות שלמות בלי מבחן.** מבחנים ל-URL, ל-fetchedAt, לסוג (קובץ מול 404) ולסטטוס (410 מול 404) של העותק הקפוא, כל אחד עם
+   ההודעה המדויקת; שינוי באותו אורך בבתים (RV1); ספירת הנתיבים של המקור מול זו של המשפט (RV9); dry run על קובץ לא קנוני משאיר אותו
+   כמות שהוא (RV15, הערה).
+5. **תוכנית המוטציות.** נוספו 26 רשומות T58-FX: שבע הניצולות של הסוקר (RV1, RV9, RV15, RV17, RV18, RV20, RV21), `liveVersion`, השומר,
+   `isRecheckOf`, `parseRevertSource`, `beforeRechecks` והשחזור במבחן. T58-RC20 הוזז לקוד החדש. בריצה הראשונה (102) שרדה FX2: מסנן
+   `namedFiles` שני ב-`liveVersion`, ש-`planCopy` כבר מפעיל. זו מוטציה שקולה, ולכן היא הוסרה מהתוכנית והמסנן הוסר מהקוד.
+
+### קבצים ששונו
+`scripts/robots-verdict.mjs`, `src/__tests__/revenue/robots-verdict.test.ts`, `src/__tests__/revenue/prize-terms-audit.test.ts`,
+`src/__tests__/revenue/fixtures/terms-verdicts-5c980e3-robots-ok.json` (חדש), `src/__tests__/revenue/mutations/robots-verdict.json`,
+`src/__tests__/revenue/mutations/README.md`, `research/rendered/README.md` והיומן הזה. לא נגעתי ב-`terms-verdicts.json`, ב-`urls.txt`,
+ב-`research/measurements/*` או בקבצי הלולאה.
+
+### החלטות
+- **שחזור, לא רק תיעוד:** טיק 07:11 של יום שלישי לא צריך לכתוב fixtures ביד על כל שינוי של robots.txt. ההגנה מפני הסתרה:
+  `isRecheckOf` מקבל רק את צורת השכתוב המדויקת (refresh: רק הציטוט ומשפטי re-check; revert: הצורה, היום וההיסטוריה).
+- **`urls-pause-comments --fix` לא נכנס ל-`--recheck`:** לפי התכנון `--recheck` לא משנה דבר ב-urls.txt. זה צעד מתועד, שנחוץ רק
+  ל-agenthon.net ול-eurocontrol.int.
+- **revert ממשיך לקבוע את `checked` ליום,** כמו אצל הבונה.
+- **הערות שהשארתי להכרעת המשנה הראשי:** N במשפט מול המקור (לפי התכנון, ועכשיו גם נבדק); revert בגלל דף terms מושהה שכבר נקרא;
+  robots.txt שלא השתנה לא נשפט מחדש (השאלה הפתוחה של הבונה); המילים "the row" בפסקה של eurocontrol.int.
+
+### שגיאות וניסיונות שנכשלו
+- **ריצות vitest שנתקעו:** שלוש ריצות `npx vitest run` בלי נתיב (שכוללות בדיקות מחוץ ל-`src/__tests__/revenue`) נתקעו כ-15 דקות.
+  עצרתי את שלושת תהליכי ה-vitest שלי לפי PID (לא לפי תבנית) והרצתי שוב על `src/__tests__/revenue`.
+- **ארטיפקט בהוכחה:** ריצת e2e אחת העתיקה את ה-worktree לפני שעדכנתי את T58-RC20, ולכן mutation-plans נכשל שם. הרצתי שוב.
+- **מבחן רגיש לעומס:** `sim-tree.test.ts` ("stopped by a signal") נכשל פעמיים כשרצו 3-4 ריצות במקביל. הוא עובר ב-verify המלא על ה-worktree.
+
+### בדיקות ו-exit codes
+| בדיקה | תוצאה |
+|---|---|
+| verify ממוקד (robots-verdict, prize-terms-audit, frozen-citations, mutation-plans, queue-zero-test, prize-dispatch) | exit 0, 6 קבצים, 265 מבחנים |
+| verify מלא | exit 0, 80 קבצים, 2757 עברו, 2 דולגו |
+| `freeze-capture --cited` | exit 0 |
+| `--recheck` dry על המאגר האמיתי | exit 3, 18 מתוך 18 unchanged |
+| `mutate.mjs --check` | 101 מתוך 101 חלות |
+| תוכנית המוטציות ב-sim-tree | 101 מתוך 101 נהרגו, 755 s (ריצה ראשונה: 102, 101 נהרגו, FX2 שרדה, 767 s) |
+
+**הוכחה מקצה לקצה** על עותקים של המאגר (sim-tree): הלכידות החיות שונו כפי שריצה שבועית הייתה כותבת אותן, ואז commit, dry,
+`--apply`, `--fix` (אחרי revert), commit, ריצה שנייה, `--cited`, `sha256sum -c` ו-verify מלא:
+- **16 האתרים שאינם agenthon.net ו-eurocontrol.int:**
+  - refresh: הריצה השנייה exit 3, verify מלא exit 0.
+  - revert: הריצה השנייה exit 3, verify מלא exit 0.
+  - 200 שהפך ל-404: ‏10 refresh. aicrowd, ‏health-data-hub ו-wundernn קיבלו עותק של המטא לבד שמצטט 404, משפט אחד, ו-commit
+    המטא נקרא בשם. הריצה השנייה exit 3, verify מלא exit 0.
+- **כל 18 האתרים:**
+  - refresh: נכשל רק mutation-plans (T57-D2, ‏D5, ‏D6, ‏T57B-D2).
+  - revert עם `--fix`: נכשלים mutation-plans (6 רשומות) ו-7 מבחנים שנועצים את הערת ההשהיה של שני האתרים. זה תואם בדיוק לרשימה
+    שבכותרת.
+- **לפני התיקון,** על אותם עותקים: revert של 18 האתרים הפיל 35 מבחנים, ו-refresh הפיל 11.
+
+ה-grep של השם וה-grep של כתובות על כל קובץ ששונה: ריקים.
+
+### עבודה ידנית שכדאי להפוך לאוטומטית
+- **סימולציה של יום שלישי:** "לשנות לכידות robots חיות, להריץ `--recheck --apply`, ואז את כל הבדיקות". בניתי אותה ב-scratch
+  (`mutate-live.mjs` ו-`e2e-final.sh`). סקריפט `scripts/recheck-sim.sh` היה מאפשר לטיק 07:11 לבדוק לפני commit מה עוד יידרש.
+- **הערות ההשהיה ב-urls.txt:** שחזור שלהן לפני re-check (כמו `beforeRechecks`) היה סוגר את שבעת המבחנים של agenthon.net
+  ו-eurocontrol.int.
+
+### על מה בוזבזו אסימונים
+- **שלוש ריצות vitest מלאות שנתקעו** (כ-19 דקות), כי לא הגבלתי אותן לנתיב.
+- **ריצת e2e דרך `verify.sh`,** שמדפיס רק את 10 ה-FAIL הראשונים. היה צריך להריץ שוב עם דוח JSON כדי לקבל את כל הרשימה.
