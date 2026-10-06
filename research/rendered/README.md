@@ -340,10 +340,12 @@ instead of fetched. What that does and does not do:
   commented out) and no meta of it, or of a frozen copy of it, has `renderedWith`; the plain capture of the same URL
   is here (meta and HTML) with `robots` `allowed` or `none`; `scripts/capture-check.mjs`'s classifier grades it
   `js-shell`; and the site is `TERMS_PENDING`, or `NO_TERMS` with a note opening `shell` (the terms gate passes such a
-  site's terms page only as a `js` line). The line goes in under the URL's own line, with a comment naming the
-  ruling and the plain capture's sha256 prefix. Freeze the plain shell first (`freeze-capture.mjs <slug>
-  --allow-flagged`; the script says whether a frozen copy exists). Whatever the render brings back is the answer:
-  read it, set the verdict, and retire the line before the next weekly run, which would otherwise render it again.
+  site's terms page only as a `js` line). The line takes the place of the URL's active plain line, or goes under its
+  commented-out one, below a comment naming the ruling and the plain capture's sha256 prefix. Freeze the plain shell
+  first (`freeze-capture.mjs <slug> --allow-flagged`, then `--cited` to repoint what cites it by line: the active line
+  makes it a live capture; the script says whether a frozen copy exists). Whatever the render brings back is the
+  answer: read it, set the verdict, and retire the line before the next weekly run, which would otherwise render it
+  again.
 - **No browser, no silent week.** The workflow installs the browser only when the list has a `js`
   line. If it still cannot start one, or the browser stops during the run, the `js` lines from then on
   are skipped — including the one that was rendering when it stopped — and nothing is written for them:

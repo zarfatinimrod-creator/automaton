@@ -136,7 +136,7 @@ describe("the terms audit's barred sites (29.9.2026)", () => {
 describe("terms-verdicts.json gates every active line (terms audit round 2)", () => {
   const verdicts = JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites as Record<string, { verdict: string; source: string }>;
   const VERDICTS = ["NOT_BARRED", "CONDITIONAL_MET", "TERMS_PENDING", "CONDITIONAL_UNMET", "BARRED", "NO_TERMS", "NO_TERMS_ROBOTS_OK"];
-  const entries = () => parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string }[];
+  const entries = () => parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string; js?: boolean }[];
 
   it("gives every site a known verdict and a source", () => {
     for (const [site, v] of Object.entries(verdicts)) {
@@ -157,12 +157,16 @@ describe("terms-verdicts.json gates every active line (terms audit round 2)", ()
       const exhaustiveNote = /^exhaustive-negative\b/.test(entry?.note ?? "");
       const exhaustive = v === "NO_TERMS" && exhaustiveNote;
       const robotsOk = v === "NO_TERMS_ROBOTS_OK" && exhaustiveNote && (entry?.source ?? "").includes("scripts/robots-verdict.mjs");
+      // Since 6.10 (RULING-2026-10-06-robots-and-terms.md 3(2)): a NO_TERMS site whose note opens "shell" (K4) may have
+      // its terms page active as a js line, the once-only render queue-zero-test --js --terms-shell queues.
+      const shellJs = v === "NO_TERMS" && /^shell\b/.test(entry?.note ?? "") && e.slug.startsWith("terms-") && e.js === true;
       return !(
         v === "NOT_BARRED" ||
         v === "CONDITIONAL_MET" ||
         robotsOk ||
         (v === "TERMS_PENDING" && e.slug.startsWith("terms-")) ||
-        (probe && exhaustive)
+        (probe && exhaustive) ||
+        shellJs
       );
     });
     expect(bad.map((e) => e.slug)).toEqual([]);

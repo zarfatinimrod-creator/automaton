@@ -126,9 +126,9 @@
   {
     "id": "T54-Q16",
     "file": "scripts/queue-zero-test.mjs",
-    "find": "    if (!out[own].trim().startsWith(\"#\")) out[own] =",
-    "replace": "    if (false) out[own] =",
+    "find": "out.splice(active ? own : own + 1, active ? 1 : 0, comment, line);",
+    "replace": "out.splice(own + 1, 0, comment, line);",
     "test": "src/__tests__/revenue/queue-zero-test.test.ts",
-    "note": "tick 54 Q16: the URL's active plain line is not superseded (two lines share the slug)"
+    "note": "tick 54 Q16: the URL's active plain line is kept beside the js line (two lines share the slug)"
   }
 ]

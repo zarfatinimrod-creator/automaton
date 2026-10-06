@@ -50,11 +50,13 @@
  * bot-challenge, not short, not status, not ok); the site is TERMS_PENDING or NO_TERMS and its note names no other
  * kind (refusal-type, exhaustive-negative, unanswered, deferred); and termsGate passes the js line — for a NO_TERMS
  * site, only when its note opens with the kind word "shell" (isShellTermsVerdict). Anything else is refused with the
- * reason. The line goes in under the URL's existing one (an active plain line is commented out as superseded), with
- * a comment naming the ruling and the plain capture's sha256 prefix. Freezing the plain shell first (3(2)(iv),
- * freeze-capture.mjs --allow-flagged) is the caller's step; the script says whether a frozen copy exists. After the
- * render, whatever came back is the answer: read it, set the verdict, retire the line (3(2)(vi)). Nothing in
- * render-watch stops a still-active line from rendering again on the next weekly run.
+ * reason. The line, under a comment naming the ruling and the plain capture's sha256 prefix, takes the place of the
+ * URL's active plain line (two lines may not share a slug), or goes in under its commented-out one, so a ZERO-TESTS
+ * row's own line is still the first active line under its comment. Freezing the plain shell first (3(2)(iv),
+ * freeze-capture.mjs --allow-flagged, then --cited to repoint what cites it by line, since the line makes the capture
+ * active) is the caller's step; the script says whether a frozen copy exists. After the render, whatever came back
+ * is the answer: read it, set the verdict, retire the line (3(2)(vi)). Nothing in render-watch stops a still-active
+ * line from rendering again on the next weekly run.
  *
  *   node scripts/queue-zero-test.mjs --override 174-179
  *
@@ -646,16 +648,17 @@ export function queueTermsShell({
     `scripts/capture-check.mjs; ${site} is ${verdict}. Whatever comes back is the answer: read it, set the verdict, ` +
     `retire this line; no second attempt in any mode (${date}).`;
   const line = `${url}\t${slug}\tjs`;
-  // Under the URL's own line, active or commented out, so a ZERO-TESTS row's --override finds it; an active plain line
-  // of it is commented out, since two lines may not share a slug.
+  // In place of the URL's own active plain line (two lines may not share a slug; the comment records the plain capture
+  // by its sha256), or under its commented-out one, which stays as the record: either way a ZERO-TESTS row's --override
+  // finds the js line as the row's own.
   const own = lines.findIndex((l) => {
     const [u, s] = tail(l);
     return u === url && s === slug;
   });
   const out = [...lines];
   if (own >= 0) {
-    if (!out[own].trim().startsWith("#")) out[own] = `# superseded by the js line below (${TERMS_SHELL_RULING}) — ${out[own]}`;
-    out.splice(own + 1, 0, comment, line);
+    const active = !out[own].trim().startsWith("#");
+    out.splice(active ? own : own + 1, active ? 1 : 0, comment, line);
   } else {
     if (out.at(-1) === "") out.pop();
     out.push(comment, line, "");
@@ -739,7 +742,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       console.error(
         out.frozen.length
           ? `the plain shell is frozen as ${out.frozen.join(", ")} (3(2)(iv))`
-          : `the plain shell is not frozen yet: freeze it before the render (3(2)(iv)): node scripts/freeze-capture.mjs ${values.slug} --allow-flagged --why "plain GET saw a shell (ruling 6.10 row 21 (c))"`,
+          : `the plain shell is not frozen yet: freeze it before the render (3(2)(iv)), then repoint what cites it by line (an active line makes it a live capture): node scripts/freeze-capture.mjs ${values.slug} --allow-flagged --why "plain GET saw a shell (ruling 6.10 row 21 (c))"; node scripts/freeze-capture.mjs --cited [--apply]`,
       );
     } catch (err) {
       console.error(`queue-zero-test: ${err.message}`);

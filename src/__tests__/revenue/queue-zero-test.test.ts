@@ -312,26 +312,27 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     queueTermsShell({ urls: URLS_TXT, url: "https://pending.example/terms", slug: "terms-pending", date: "6.10.2026", verdicts: V, dir, ...over });
   const refuses = (over: Record<string, unknown>, why: RegExp) => expect(() => go(over)).toThrow(why);
 
-  it("queues a TERMS_PENDING site's shell: the js line under the plain one, which it supersedes, citing the ruling and the sha256 prefix", () => {
+  it("queues a TERMS_PENDING site's shell: the js line in place of the plain one, under a comment citing the ruling and the sha256 prefix", () => {
     const out = go({});
     const lines = out.urls.split("\n");
     const at = lines.indexOf("https://pending.example/terms\tterms-pending\tjs");
-    expect(at).toBe(4);
-    expect(lines[2]).toBe(`# superseded by the js line below (${TERMS_SHELL_RULING}) — https://pending.example/terms\tterms-pending`);
-    expect(lines[3]).toBe(out.comment);
+    expect(at).toBe(3);
+    expect(lines[1]).toBe("# research/channel-loop/ZERO-TESTS.md row 1 — pending.example's terms (5.10.2026).");
+    expect(lines[2]).toBe(out.comment);
+    expect(lines).not.toContain("https://pending.example/terms\tterms-pending");
     expect(out.comment.startsWith("# ruling 6.10 row 21 (c), once-only js render of a shell terms page (")).toBe(true);
     expect(out.comment).toContain(`(sha256 ${SHA.slice(0, 12)}, fetched 2026-09-30, robots allowed) is js-shell by scripts/capture-check.mjs; pending.example is TERMS_PENDING.`);
     expect(out.sha256Prefix).toBe(SHA.slice(0, 12));
     expect(out.comment).toContain("research/rendered/terms-pending ");
     expect(out.comment).toMatch(/\(6\.10\.2026\)\.$/);
     expect(out.line).toBe("https://pending.example/terms\tterms-pending\tjs");
-    expect(parseUrlList(out.urls)).toEqual([{ url: "https://pending.example/terms", slug: "terms-pending", lineNumber: 5, js: true }]);
+    expect(parseUrlList(out.urls)).toEqual([{ url: "https://pending.example/terms", slug: "terms-pending", lineNumber: 4, js: true }]);
     // The frozen copy of the plain shell is found by its bytes; terms-pending-rates is another slug.
     expect(out.frozen).toEqual(["terms-pending-2026-09-30.meta.json"]);
     // The ZERO-TESTS row's own line is now the js line.
     expect(overrideLines(out.urls, 1, 1).lines).toEqual(["https://pending.example/terms\tterms-pending\tjs"]);
     // Everything else in the list is as it was.
-    expect(out.urls.replace(/\n# superseded[^\n]*\n# ruling 6\.10[^\n]*\n/, "\n").replace("\tterms-pending\tjs", "\tterms-pending")).toBe(URLS_TXT);
+    expect(out.urls.replace(/\n# ruling 6\.10[^\n]*\n/, "\n").replace("\tterms-pending\tjs", "\tterms-pending")).toBe(URLS_TXT);
   });
 
   it("queues a NO_TERMS shell site (note kind \"shell\") under its retired line, and the gate keeps that js line active", () => {
@@ -387,7 +388,7 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     refuses({ slug: "terms-frozenjs" }, /an earlier js capture of terms-frozenjs exists \(terms-frozenjs-2026-10-01\.meta\.json/);
     expect(jsCapturesOf("terms-pending", dir)).toEqual([]);
     const queued = go({}).urls;
-    refuses({ urls: queued }, /urls\.txt line 5 is already a js line for terms-pending \(active or commented out\): the js render is once only/);
+    refuses({ urls: queued }, /urls\.txt line 4 is already a js line for terms-pending \(active or commented out\): the js render is once only/);
     const retired = queued.replace("\nhttps://pending.example/terms\tterms-pending\tjs", "\n# retired (read 7.10) — https://pending.example/terms\tterms-pending\tjs");
     refuses({ urls: retired }, /already a js line for terms-pending/);
   });

@@ -7,7 +7,7 @@ import { decisionFiles } from "../../../scripts/freeze-capture.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { parseUrlList, redactSecrets } from "../../../scripts/render-watch.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
-import { PATH_LIMITS, applyVerdicts, isExhaustiveNegative, isRobotsProbe, siteOf, termsGate } from "../../../scripts/queue-zero-test.mjs";
+import { PATH_LIMITS, TERMS_SHELL_RULING, applyVerdicts, isExhaustiveNegative, isRobotsProbe, siteOf, termsGate } from "../../../scripts/queue-zero-test.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { PAUSED_LINE } from "../../../scripts/robots-verdict.mjs";
 
@@ -79,7 +79,11 @@ const zeroRows = () => {
 const listedRow = (n: number) => {
   const text = readFileSync(URLS, "utf8").split("\n");
   const at = text.findIndex((l) => l.startsWith(`# research/channel-loop/ZERO-TESTS.md row ${n} — `));
-  return { comment: at < 0 ? undefined : text[at], line: at < 0 ? undefined : text[at + 1] };
+  // The row's line is the one under its comment; a terms page re-queued by queue-zero-test --js --terms-shell has that
+  // route's comment between them (ruling 6.10 row 21 (c)), and only that comment is stepped over.
+  let i = at + 1;
+  while (at >= 0 && i < text.length && text[i].startsWith(`# ${TERMS_SHELL_RULING} `)) i += 1;
+  return { comment: at < 0 ? undefined : text[at], line: at < 0 ? undefined : text[i] };
 };
 /** urls.txt's header (everything before its first section rule), its comment lines unwrapped into one text. */
 const urlsHeader = () => {
