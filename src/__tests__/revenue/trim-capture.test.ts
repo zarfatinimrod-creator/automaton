@@ -428,6 +428,8 @@ describe("trim-capture on a fixture store", () => {
       expect(r.out).toContain("cited html:2-21 by research/notes/n.md:8");
       expect(r.out).not.toMatch(/cited txt:(2-22|5-30) /);
       expect(r.out).toContain("2 wide range(s) keeping nothing;");
+      // Each cited range of a capture once, however many lines cite it (txt:25-27 twice), and no wide one: 6 of the copy, 1 of bar-json.
+      expect(r.out).toContain("; 7 cited range(s) kept;");
     }
     const lines = full.split("\n");
     const after = readFileSync(join(dir, "bar-live-2026-10-01.txt"), "utf8").split("\n");

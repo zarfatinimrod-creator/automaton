@@ -20,9 +20,10 @@
  * inTree } of the full body (.html, .json, .xml, .pdf, .bin); cited says why each line was kept (the citing file:line);
  * wide lists the cited ranges longer than WIDE_LINES, which keep nothing (below); passes records each later pass that
  * re-trimmed the capture (the SECOND PASS, below); captureCheck is capture-check's kind of the full capture;
- * fullBytesIn names the commit whose tree holds every full file;
- * history says that git history keeps the full bytes and that rewriting public history is the owner's decision (the §6
- * public/private one), a fact for that decision and not an ask. The .txt keeps its line count: every cited line, with
+ * fullBytesIn names the commit whose tree holds every full file (on a capture render-watch's route stored, it says
+ * "not retained (...)": the full bytes are nowhere, amendment 1); history says that git history keeps the full bytes and
+ * that rewriting public history is the owner's decision (the §6 public/private one), a fact for that decision and not
+ * an ask. The .txt keeps its line count: every cited line, with
  * CONTEXT (2) lines either side, is kept verbatim and every other line is emptied, so no citation by line moves and
  * `freeze-capture.mjs --cited` stays as it was. The body leaves the tree; its sha256 stays in the meta. One exception,
  * which the ruling's text did not foresee: a body a decision-bearing file cites BY LINE (`<slug>.html:50`,
