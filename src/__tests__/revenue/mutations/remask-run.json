@@ -1,0 +1,114 @@
+[
+  {
+    "id": "RR-skip-idempotence",
+    "file": "scripts/remask-run.sh",
+    "find": "step 3 dry-run-again \"${remask[@]}\" --dry-run\n",
+    "replace": "rc=0\n",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: the second dry run (idempotence) is skipped, so a non-idempotent apply is committed"
+  },
+  {
+    "id": "RR-skip-sha256sum",
+    "file": "scripts/remask-run.sh",
+    "find": "step 4 sha256sum bash -c 'cd \"$1\" && sha256sum -c --quiet FROZEN.sha256' sha256sum \"$rendered_abs\"\n",
+    "replace": "rc=0\n",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: sha256sum -c is skipped, so a stale FROZEN.sha256 is committed"
+  },
+  {
+    "id": "RR-commit-on-failing-step",
+    "file": "scripts/remask-run.sh",
+    "find": "tail -n 20 \"$OUT/$1-$3.log\" >&2 || true; exit \"$4\"; }",
+    "replace": "tail -n 20 \"$OUT/$1-$3.log\" >&2 || true; }",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: a failing step is reported but the chain goes on and commits"
+  },
+  {
+    "id": "RR-dirty-tree",
+    "file": "scripts/remask-run.sh",
+    "find": "[ -z \"$(git status --porcelain --untracked-files=all)\" ] || refuse",
+    "replace": "true || refuse",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: the chain runs on a tree with uncommitted changes"
+  },
+  {
+    "id": "RR-untracked-allowed",
+    "file": "scripts/remask-run.sh",
+    "find": "[ -z \"$(git status --porcelain --untracked-files=all)\" ] || refuse",
+    "replace": "[ -z \"$(git status --porcelain --untracked-files=no)\" ] || refuse",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: an untracked file does not stop the run (and git add -A would take one inside the captures)"
+  },
+  {
+    "id": "RR-invent-trailer",
+    "file": "scripts/remask-run.sh",
+    "find": "  trailers=\"$(git log -1 --grep='^render: re-mask' --format='%(trailers:only,unfold)' | sed '/^$/d')\"",
+    "replace": "  trailers=\"Co-Authored-By: remask-run\"",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: the commit carries a trailer the script wrote instead of the earlier re-mask commit's"
+  },
+  {
+    "id": "RR-no-real-day",
+    "file": "scripts/remask-run.sh",
+    "find": "[ \"$(date -u -d \"$date_arg\" +%F 2>/dev/null || true)\" = \"$date_arg\" ]",
+    "replace": "true",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: a date shaped YYYY-MM-DD that is not a real day (2026-02-30) is not refused up front"
+  },
+  {
+    "id": "RR-run-from-subdir",
+    "file": "scripts/remask-run.sh",
+    "find": "&& [ \"$(pwd -P)\" = \"$ROOT\" ] ||",
+    "replace": "||",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: a run from a subdirectory of the repository is not refused"
+  },
+  {
+    "id": "RR-forbidden-optional",
+    "file": "scripts/remask-run.sh",
+    "find": "[ -n \"${REMASK_RUN_FORBIDDEN_RE:-}\" ] || refuse",
+    "replace": "true || refuse",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: the run starts without the owner-identifier pattern"
+  },
+  {
+    "id": "RR-forbidden-match-ignored",
+    "file": "scripts/remask-run.sh",
+    "find": "0) log \"[8/9] $f: $hits added line(s) match the owner-identifier pattern\"; found=1 ;;",
+    "replace": "0) log \"[8/9] $f: $hits added line(s) match the owner-identifier pattern\" ;;",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: an added line matching the owner-identifier pattern is committed"
+  },
+  {
+    "id": "RR-verify-ignored",
+    "file": "scripts/remask-run.sh",
+    "find": "[ \"$rc\" -eq 0 ] || fail 7",
+    "replace": "true || fail 7",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: a failing verify does not stop the chain"
+  },
+  {
+    "id": "RR-nothing-to-do-goes-on",
+    "file": "scripts/remask-run.sh",
+    "find": "nothing written, nothing committed\"; exit 0 ;;",
+    "replace": "nothing written, nothing committed\" ;;",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: a dry run with nothing to do goes on to the apply"
+  },
+  {
+    "id": "RR-no-commit-commits",
+    "file": "scripts/remask-run.sh",
+    "find": "if [ \"$commit\" -eq 0 ]; then\n  log \"[9/9] --no-commit",
+    "replace": "if false; then\n  log \"[9/9] --no-commit",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: --no-commit commits anyway"
+  },
+  {
+    "id": "RR-no-summary-in-message",
+    "file": "scripts/remask-run.sh",
+    "find": "  cat \"$OUT/dry-run-summary.txt\"\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 builder: the commit message leaves out the dry run's counts"
+  }
+]
