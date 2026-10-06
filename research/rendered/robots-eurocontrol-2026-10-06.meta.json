@@ -1,0 +1,25 @@
+{
+  "url": "https://www.eurocontrol.int/robots.txt",
+  "slug": "robots-eurocontrol-2026-10-06",
+  "fetchedAt": "2026-10-06T12:07:27.881Z",
+  "status": 200,
+  "contentType": "text/plain; charset=UTF-8",
+  "byteLength": 2212,
+  "sha256": "45d83d13c223ed11ff1cfa07288d70d33eb38d00890f2651396f51d25ad76abf",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/robots-eurocontrol-2026-10-06.txt",
+  "textPath": null,
+  "robots": "allowed",
+  "robotsUrl": "https://www.eurocontrol.int/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-06",
+    "from": "research/rendered/robots-eurocontrol.meta.json",
+    "commit": "364bf71",
+    "why": "A dated copy of the render-watch capture of robots-eurocontrol as commit 364bf71 stored it (the 12:05 weekly run of 6.10, fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs in tick 56 so that research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keeps pointing at the robots.txt the dry run of scripts/robots-verdict.mjs read for eurocontrol.int when the probe line became active again (the site NO_TERMS, exhaustive-negative, after its Disclaimers page was read). The slug is not in urls.txt, so render-watch never rewrites these files; the live slug robots-eurocontrol stays on the weekly watch, and scripts/robots-verdict.mjs reads the live capture, never this copy."
+  }
+}
