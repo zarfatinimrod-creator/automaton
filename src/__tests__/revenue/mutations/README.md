@@ -64,7 +64,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
   | `page-views.json` | 5 | 23 (tick 54 builder, inside sim-tree.sh, alone; the two test files take about 2 s a run) |
   | `prize-dispatch.json` | 28 | 69 |
   | `render-watch.json` | 62 | 117 with the first 53 (tick 54's 9 entries alone: 52, in sim-tree.sh beside the next two) |
-  | `queue-zero-test.json` | 16 | 133 (tick 54, in sim-tree.sh beside `render-watch.json`'s and `render-dispatch.json`'s new entries) |
+  | `queue-zero-test.json` | 16 | 108 (tick 54, alone in sim-tree.sh, after the route's in-place line; 133 the first time, beside `render-watch.json`'s and `render-dispatch.json`'s new entries) |
   | `freeze-capture.json` | 23 | 171 |
   | `loop-edit.json` | 46 | 188, 191 |
   | `address-kinds.json` | 22 | 198 (tick 53 fixer, beside the whole revenue suite; the builder's 17 entries: 156) |
