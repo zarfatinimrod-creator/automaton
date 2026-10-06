@@ -796,6 +796,19 @@ const READ3 = [
   },
 ];
 /**
+ * Tick 57, review fix: the marks a read row gained after its READ mark, by row. The Terms line's row (266) says, in its
+ * tick-56 mark, "agenthon.net stays TERMS_PENDING"; when the last two documents were read it gained a dated tick-57 mark,
+ * as eurocontrol.int's privacy-notice row (242) gained its tick-55 and tick-56 marks. The blocks above check a row's READ
+ * mark and then these after it; "tick 57, third round" pins the new one.
+ */
+const LATER_MARKS: Record<number, string[]> = {
+  266: [
+    "**6.10 (tick 57): the Data & Software Licensing Policy (row 268) and the Privacy Notice (row 269) were read, neither site terms; agenthon.net is NO_TERMS, exhaustive-negative, then NO_TERMS_ROBOTS_OK on its robots.txt (row 247), and this line stays paused as read.**",
+  ],
+};
+/** A read row's marks as its fourth cell ends now: the READ mark, then any later ones, one space apart. */
+const marksSince = (row: number, mark: string) => [mark, ...(LATER_MARKS[row] ?? [])].join(" ");
+/**
  * Every line range the tick-56 texts cite (the two entries' new sources and notes, the comments of rows 268-269, the
  * ZERO-TESTS marks, the audit note's tick-56 section), with words the range holds. A cited range must be one of these,
  * exactly (a changed line number fails), and each of these must be cited somewhere.
@@ -3097,7 +3110,7 @@ describe("tick 55: the terms links found after the verdicts", () => {
       expect(comment!.endsWith(", rendered grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (6.10.2026)."), site).toBe(true);
       // Its ZERO-TESTS row, in the form of the tick-45 terms rows, and since tick 56 its READ mark after it.
       expect(rows.get(f.row)?.row, site).toBe(
-        `| ${f.row} | ${f.candidate} | ${f.url} | whether ${site}'s site-use terms bar automated access or storing captures, before its rules pages are rendered ${READ2[site].mark} |`,
+        `| ${f.row} | ${f.candidate} | ${f.url} | whether ${site}'s site-use terms bar automated access or storing captures, before its rules pages are rendered ${marksSince(f.row, READ2[site].mark)} |`,
       );
       // At tick 55 the gate passed it plain, a TERMS_PENDING site's terms page.
       expect(termsGate(f.url, f.slug, t55), site).toEqual({ ok: true, site, verdict: "TERMS_PENDING" });
@@ -3549,7 +3562,7 @@ describe("tick 56: the second terms read (agenthon.net's Terms of Participation,
     for (const [site, r] of Object.entries(READ2)) {
       expect(listedRow(r.row).line, site).toBe(`${r.paused} — ${r.url}\t${r.slug}`);
       expect(lines.filter((l) => l.includes(r.url)), site).toEqual([`${r.paused} — ${r.url}\t${r.slug}`]);
-      expect(rows.get(r.row)?.row.endsWith(` ${r.mark} |`), site).toBe(true);
+      expect(rows.get(r.row)?.row.endsWith(` ${marksSince(r.row, r.mark)} |`), site).toBe(true);
       expect(t56[site].verdict, site).toBe(r.verdict);
     }
     // agenthon.net's Terms line passed the gate in tick 56 (a TERMS_PENDING site's terms- line), and passes it since tick
@@ -4516,5 +4529,42 @@ describe("tick 57, third round: agenthon.net's Licensing Policy and Privacy Noti
     );
     expect(audit).toContain('("Terms link found after the verdict"; agenthon.net alone in tick 56, and neither since tick 57).');
     expect(rangeCites(paragraph("**Lines, rows and counts.** "))).toEqual([]);
+  });
+
+  it("adds a dated tick-57 mark to the Terms line's row (266) after its tick-56 READ mark, naming only the site's rows", () => {
+    // Review fix (tick 57): row 266's tick-56 mark says the site "stays TERMS_PENDING", true as of tick 56; the dated
+    // mark after it says what tick 57 found, as rows 268 and 269 do.
+    const rows = zeroRows();
+    const r = READ2[SITE];
+    expect(LATER_MARKS[r.row]).toHaveLength(1);
+    const [mark57] = LATER_MARKS[r.row];
+    expect(rows.get(r.row)?.row.endsWith(` ${r.mark} ${mark57} |`)).toBe(true);
+    expect(rows.get(r.row)?.row.split(" | ")).toHaveLength(4);
+    expect(mark57.startsWith("**6.10 (tick 57): ")).toBe(true);
+    expect(mark57).toContain("agenthon.net is NO_TERMS, exhaustive-negative, then NO_TERMS_ROBOTS_OK on its robots.txt (row 247), and this line stays paused as read.");
+    expect(mark57).not.toMatch(/TERMS_PENDING/);
+    expect(verdicts()[SITE].verdict).toBe("NO_TERMS_ROBOTS_OK");
+    // The rows it names are the site's: 268 and 269 (the two documents), 247 (the probe).
+    const named = [...mark57.matchAll(/\brow (\d+)\b/g)].map((m) => Number(m[1]));
+    expect(named).toEqual([...READ3.map((x) => x.row), PROBE.row]);
+    for (const n of named) expect(siteOfUrl(rows.get(n)!.url), `row ${n}`).toBe(SITE);
+    expect(rangeCites(mark57)).toEqual([]);
+    // Only row 266 gained a later mark in this fold; rows 268 and 269 end with their READ marks.
+    expect(Object.keys(LATER_MARKS)).toEqual([String(r.row)]);
+    for (const x of READ3) expect(rows.get(x.row)?.row.endsWith(` ${x.mark} |`), `row ${x.row}`).toBe(true);
+  });
+
+  it("names agenthon.net in no other entry of terms-verdicts.json, nor in _about, so no cross-reference to its verdict can go stale", () => {
+    // Review fix (tick 57): the fold found no other entry naming the site, so none needed correcting; this keeps it so. A
+    // note elsewhere naming agenthon.net would state its verdict as of its writing, false once the verdict moves again
+    // (it moved three times on 6.10). A later fold that adds one changes this test, and must make the sentence true.
+    const file = JSON.parse(readFileSync(VERDICTS, "utf8")) as Record<string, unknown> & { sites: Record<string, Entry> };
+    const names = (x: unknown) => /agenthon/i.test(JSON.stringify(x));
+    expect(Object.keys(file).filter((k) => k !== "sites" && names(file[k]))).toEqual([]);
+    expect(Object.keys(file.sites).filter((s) => s !== SITE && names(file.sites[s]))).toEqual([]);
+    expect(names(file.sites[SITE])).toBe(true);
+    // The raw bytes agree: every occurrence is the site's key or inside its entry.
+    const count = (t: string) => (t.match(/agenthon/gi) ?? []).length;
+    expect(count(readFileSync(VERDICTS, "utf8"))).toBe(1 + count(JSON.stringify(file.sites[SITE])));
   });
 });

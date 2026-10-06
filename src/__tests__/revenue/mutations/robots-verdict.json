@@ -384,5 +384,45 @@
     "replace": "\"verdict\": \"NO_TERMS\"",
     "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
     "note": "tick 57, third round: the fixture no longer holds agenthon.net's entry as 23e17e7 had it"
+  },
+  {
+    "id": "T57B-RV1-xref-ansperformance",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "Rules lines: research/measurements/ai-allowed-events.urls.txt@548be52:154, :155, :156, :157, :158, :159, :160.\"",
+    "replace": "Rules lines: research/measurements/ai-allowed-events.urls.txt@548be52:154, :155, :156, :157, :158, :159, :160. Like agenthon.net, still TERMS_PENDING on its two unread policy documents, it waits on a reading.\"",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix (the review's RV57B-X1, which survived): a false cross-reference to agenthon.net's old verdict in ansperformance.eu's note"
+  },
+  {
+    "id": "T57B-RV2-xref-adaptionlabs",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "Rules line: research/measurements/ai-allowed-events.urls.txt@548be52:63, unqueued until the terms are read.\"",
+    "replace": "Rules line: research/measurements/ai-allowed-events.urls.txt@548be52:63, unqueued until the terms are read, as agenthon.net's is.\"",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix (the review's RV57B-X2, which survived): a false cross-reference to agenthon.net's unqueued line in adaptionlabs.ai's note"
+  },
+  {
+    "id": "T57B-RV3-xref-about",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"_about\": \"Terms verdict for every site render-watch has a line for",
+    "replace": "\"_about\": \"Terms verdict for every site render-watch has a line for (agenthon.net's pending)",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix: a cross-reference to agenthon.net in the _about, which no other test pins at its opening"
+  },
+  {
+    "id": "T57B-RV4-row-266-mark-removed",
+    "file": "research/channel-loop/ZERO-TESTS.md",
+    "find": " **6.10 (tick 57): the Data & Software Licensing Policy (row 268) and the Privacy Notice (row 269) were read, neither site terms; agenthon.net is NO_TERMS, exhaustive-negative, then NO_TERMS_ROBOTS_OK on its robots.txt (row 247), and this line stays paused as read.** |",
+    "replace": " |",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix: ZERO-TESTS row 266 keeps only its tick-56 mark, \"agenthon.net stays TERMS_PENDING\", with no dated tick-57 mark after it"
+  },
+  {
+    "id": "T57B-RV5-row-266-mark-verdict",
+    "file": "research/channel-loop/ZERO-TESTS.md",
+    "find": "agenthon.net is NO_TERMS, exhaustive-negative, then NO_TERMS_ROBOTS_OK on its robots.txt (row 247), and this line stays paused as read.** |",
+    "replace": "agenthon.net is still TERMS_PENDING, its robots.txt probe (row 247) paused, and this line stays paused as read.** |",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix: row 266's tick-57 mark states the site's old verdict"
   }
 ]
