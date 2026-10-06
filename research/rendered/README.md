@@ -100,8 +100,9 @@ the second and third of those. To move one:
    digits alone (`#cafe`) becomes a bare mask too. `remask-captures.mjs`, run again, masks what the
    masker now finds in the stored captures; a capture re-masked twice keeps one `remasked`, whose `on` is the later
    run's date and whose `addresses` is the sum of both runs. A re-mask runs as `scripts/remask-run.sh <YYYY-MM-DD>`
-   (dry run, apply, dry run again, `sha256sum -c`, `freeze-capture.mjs --cited`, `address-kinds.mjs`, verify, an
-   owner-name grep, one commit), each step checked by its exit code, never by hand.
+   (dry run, apply, dry run again, `sha256sum -c`, `freeze-capture.mjs --cited`, `address-kinds.mjs` (reported, not
+   gating), verify, an owner-name grep, one commit, held back while a pin of the old bytes goes stale), each gating
+   step checked by its exit code, never by hand; it needs `REMASK_RUN_FORBIDDEN_RE` in the environment.
 3. **Answer the specific question the research file asked**, not a question the page happens to
    answer. Each entry in `urls.txt` carries the sentence that put it there, quoted from the file
    that wants it.

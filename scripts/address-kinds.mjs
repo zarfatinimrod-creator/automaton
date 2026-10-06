@@ -13,7 +13,10 @@
  * found, as render-dispatch's report found it), and counted:
  *   masked          `[redacted:email]` as render-watch writes it, by the kind of the domain it kept (domainKind,
  *                   scripts/remask-captures.mjs: free-mail provider, organisation or university, mailing-list host,
- *                   government, placeholder), or "no domain kept" for a bare mask
+ *                   government, placeholder), or "no domain kept" for a bare mask; a mask glued to what is left of a
+ *                   local part outside ASCII (a letter outside ASCII just before it, or a character reference or script
+ *                   escape for one: render-watch's masker takes only the ASCII tail of such a local part) is not
+ *                   masked but raw, in the form "partly masked", role "not read"
  *   raw             an address-shaped string the mask did not take: a local part, an @ in any of the forms a capture
  *                   may hold it, and a domain that is not a file name; by its form (plain, %40, script escape \u0040
  *                   or \x40, character reference &#64; &#x40; &commat;, look-alike at sign U+FF20 / U+FE6B, Cloudflare
@@ -82,7 +85,7 @@ const ROLES = new Set([
 
 export const KIND_NO_DOMAIN = "no domain kept";
 export const BY_DESIGN = ["asset name", "URL userinfo", "local part after /", "package@version", "forum handle"];
-export const RAW_FORMS = ["plain", "%40", "script escape", "character reference", "look-alike at sign", "Cloudflare hex", "other form the masker finds"];
+export const RAW_FORMS = ["plain", "%40", "script escape", "character reference", "look-alike at sign", "Cloudflare hex", "partly masked", "other form the masker finds"];
 
 const decodePercent = (s) => s.replace(/%([0-9a-f]{2})/gi, (_m, h) => String.fromCharCode(Number.parseInt(h, 16)));
 const bump = (map, key, n = 1) => map.set(key, (map.get(key) ?? 0) + n);
@@ -92,6 +95,19 @@ const masksAdded = (bytes, contentType = "text/plain") => {
   const { bytes: out } = redactSecrets(bytes, contentType);
   return { added: maskCount(out.toString("latin1")) - maskCount(bytes.toString("latin1")), text: out.toString("latin1") };
 };
+// Just before a mask: a letter outside ASCII, or a reference or escape that may spell one (decoded below).
+const BEFORE_MASK = /(?:&#[xX]([0-9a-fA-F]{1,6});|&#(\d{1,7});|&([A-Za-z]{2,8});|\\u([0-9a-fA-F]{4})|\\x([0-9a-fA-F]{2})|([^\x00-\x7F]))$/u;
+// The named references that spell a letter outside ASCII (&eacute;, &ntilde;, &oslash;, &aelig;, &szlig;, &thorn;...).
+const LETTER_NAME = /^(?:[A-Za-z]{1,2}(?:acute|grave|circ|uml|tilde|ring|cedil|slash|caron|lig)|szlig|eth|ETH|thorn|THORN)$/;
+const NON_ASCII_LETTER = /^[^\x00-\x7F]$/u;
+/** Is the mask at text[index] glued to what is left of a local part outside ASCII? */
+function partlyMasked(text, index) {
+  const m = BEFORE_MASK.exec(text.slice(Math.max(0, index - 12), index));
+  if (!m) return false;
+  if (m[3]) return LETTER_NAME.test(m[3]);
+  const ch = m[6] ?? String.fromCodePoint(Number.parseInt(m[1] ?? m[2] ?? m[4] ?? m[5], m[2] ? 10 : 16));
+  return NON_ASCII_LETTER.test(ch) && /[\p{L}\p{M}]/u.test(ch);
+}
 const kindsOfMasks = (text) => {
   const kinds = new Map();
   for (const m of text.matchAll(MASK)) bump(kinds, m[1] ? domainKind(m[1]) : KIND_NO_DOMAIN);
@@ -145,8 +161,7 @@ function byDesignForm(text, hit) {
  * told it is: a binary body, a PDF, is one it never rewrites, so nothing in it is taken).
  */
 export function countText(text, bytes = Buffer.from(text, "utf8"), contentType = "text/plain") {
-  const masked = { count: 0, kinds: kindsOfMasks(text) };
-  for (const n of masked.kinds.values()) masked.count += n;
+  const masked = { count: 0, kinds: new Map() };
   const raw = { count: 0, kinds: new Map(), forms: new Map(), roles: new Map(), maskerTakes: 0 };
   const byDesign = { count: 0, forms: new Map() };
   const takenKinds = new Map();
@@ -164,6 +179,15 @@ export function countText(text, bytes = Buffer.from(text, "utf8"), contentType =
     byDesign.count += 1;
     bump(byDesign.forms, form);
   };
+
+  for (const m of text.matchAll(MASK)) {
+    const kind = m[1] ? domainKind(m[1]) : KIND_NO_DOMAIN;
+    if (partlyMasked(text, m.index)) addRaw("partly masked", kind, "not read", false);
+    else {
+      masked.count += 1;
+      bump(masked.kinds, kind);
+    }
+  }
 
   for (const hit of text.matchAll(RAW)) {
     const atStart = hit.index + hit[1].length;
@@ -197,7 +221,7 @@ export function countText(text, bytes = Buffer.from(text, "utf8"), contentType =
   const extra = whole.added - raw.maskerTakes;
   if (extra > 0) {
     const kinds = kindsOfMasks(whole.text);
-    for (const [k, n] of masked.kinds) bump(kinds, k, -n);
+    for (const [k, n] of kindsOfMasks(text)) bump(kinds, k, -n);
     for (const [k, n] of takenKinds) bump(kinds, k, -n);
     let left = extra;
     for (const [k, n] of [...kinds].sort(([a], [b]) => (a < b ? -1 : 1))) {

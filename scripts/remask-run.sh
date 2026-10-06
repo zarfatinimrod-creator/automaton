@@ -23,14 +23,19 @@
 #                            (scripts/verify.sh and scripts/brand-check.mjs hold none), so the caller gives it; without
 #                            it, or with one grep cannot read, nothing runs.
 #   REMASK_RUN_OUT           where each step's output goes, one log per step (default: a fresh mktemp -d); the dry
-#                            run's summary is dry-run-summary.txt there.
+#                            run's summary is dry-run-summary.txt there, and the commit message commit-message.txt.
+#   REMASK_RUN_TRAILERS      the commit's trailer lines, given by the caller (the running session's own Co-Authored-By
+#                            and session lines), one per line, each "Key: value"; used verbatim in place of the copy from
+#                            the last re-mask commit, whose trailers name the session and model that made that commit,
+#                            not this one. A line that is not a trailer refuses the run. Unset: the copy (step 9).
 #   VERIFY_TYPECHECK_CMD, VERIFY_TEST_CMD  passed through to scripts/verify.sh, which honours them (a test stands in
 #                            its runners); unset, step 7 is the real typecheck and the whole revenue suite.
 #
 # The steps, in order; each prints its command and exit code to stderr, and its output goes to its log:
 #   1. node scripts/remask-captures.mjs --dry-run: exit 3 means there is work, 0 that there is none (the script says so
 #      and exits 0, nothing else run), anything else stops the chain. Its summary (from "would change:" on: counts and
-#      kinds only, never an address) goes to dry-run-summary.txt and to stderr.
+#      kinds only, never an address) goes to dry-run-summary.txt and to stderr; its "pins that go stale: N" is kept
+#      for step 9 (a summary without that line stops the chain).
 #   2. node scripts/remask-captures.mjs --apply --date <date>: exit 0.
 #   3. node scripts/remask-captures.mjs --dry-run again: exit 0 (the apply is idempotent: a second one changes nothing).
 #   4. sha256sum -c --quiet FROZEN.sha256 in the captures' directory: exit 0.
@@ -40,15 +45,23 @@
 #   7. scripts/verify.sh: exit 0.
 #   8. grep -ciE "$REMASK_RUN_FORBIDDEN_RE" over the lines the apply added to those files (git diff -U0): nothing may
 #      match; a match stops the chain naming the file and the count of lines, never the line.
-#   9. unless --no-commit: git add -A <the captures' directory>, then one commit: "render: re-mask the stored captures,
-#      <date>; git history keeps the earlier bytes", a body naming the date and the dry run's summary, and the trailers
-#      of the last commit whose subject starts "render: re-mask", copied verbatim (git log --format=%(trailers)); the
-#      script never writes a trailer of its own, and refuses to start when there is no such commit to copy them from.
+#   9. when the dry run named pins that go stale (a note's or a test's sha256 or byte count of the bytes before the
+#      mask, remask-captures.mjs's stalePins), nothing is committed, --no-commit or not: the chain stops with exit 1
+#      naming each pin as file:line, the apply's changes left uncommitted and the commit message in
+#      $REMASK_RUN_OUT/commit-message.txt, so each pin is updated to the new bytes and the commit made by hand (a pin
+#      cannot be updated before the apply: the new bytes do not exist yet). Otherwise, unless --no-commit:
+#      git add -A <the captures' directory>, then one commit: "render: re-mask the stored captures, <date>; git
+#      history keeps the earlier bytes", a body naming the date and the dry run's summary, and REMASK_RUN_TRAILERS or
+#      else the trailers of the last commit whose subject (not a body line) starts "render: re-mask", copied verbatim
+#      (git log --format=%(trailers)); the script never writes a trailer of its own, and refuses to start when there is
+#      neither.
 #
 # Exit: 0 the chain ran through (or there was nothing to re-mask); 2 refused before anything ran (not at the root of
 # this repository, a date that is not YYYY-MM-DD, uncommitted changes, no REMASK_RUN_FORBIDDEN_RE, a --rendered outside
-# the repository, no trailers to copy); otherwise the exit code of the step that failed (1 for a forbidden match),
-# with nothing committed.
+# the repository, no trailers to copy, a REMASK_RUN_TRAILERS line that is not a trailer); otherwise the exit code of
+# the step that failed (1 for a forbidden match or a stale pin), with nothing committed. A stop after the apply (step
+# 2 on) says that the apply's changes are uncommitted and that git checkout -- <the captures' directory> restores the
+# earlier bytes.
 #
 # src/__tests__/revenue/remask-run.test.ts runs it in fixture repositories built at run time, never on this one's
 # research/rendered.
@@ -84,9 +97,15 @@ case "$rendered_abs/" in "$ROOT"/?*) ;; *) refuse "--rendered is not inside this
 rendered_rel="${rendered_abs#"$ROOT"/}"
 [ -z "$(git status --porcelain --untracked-files=all)" ] || refuse "the working tree has uncommitted changes or untracked files; commit them first"
 trailers=""
-if [ "$commit" -eq 1 ]; then
-  trailers="$(git log -1 --grep='^render: re-mask' --format='%(trailers:only,unfold)' | sed '/^$/d')"
-  [ -n "$trailers" ] || refuse "no earlier commit whose subject starts 'render: re-mask' carries trailers to copy (the script never writes its own); use --no-commit and commit by hand"
+if [ "$commit" -eq 1 ] && [ -n "${REMASK_RUN_TRAILERS:-}" ]; then
+  trailers="$(sed '/^$/d' <<< "$REMASK_RUN_TRAILERS")"
+  ! grep -qvE '^[A-Za-z0-9][A-Za-z0-9-]*: [^ ].*$' <<< "$trailers" || refuse "REMASK_RUN_TRAILERS holds a line that is not a trailer (Key: value)"
+elif [ "$commit" -eq 1 ]; then
+  # The last commit whose subject starts "render: re-mask" (a body line naming it is not a re-mask commit). awk reads
+  # the whole log, so git log never meets a closed pipe.
+  src="$(git log --format='%H%x09%s' | awk -F'\t' '!found && index($2, "render: re-mask") == 1 { print $1; found = 1 }')"
+  [ -z "$src" ] || trailers="$(git log -1 --format='%(trailers:only,unfold)' "$src" | sed '/^$/d')"
+  [ -n "$trailers" ] || refuse "no earlier commit whose subject starts 'render: re-mask' carries trailers to copy (the script never writes its own); set REMASK_RUN_TRAILERS, or use --no-commit and commit by hand"
 fi
 
 OUT="${REMASK_RUN_OUT:-$(mktemp -d "${TMPDIR:-/tmp}/remask-run.XXXXXX")}"
@@ -102,7 +121,11 @@ step() {
   rc=0; "$@" > "$OUT/$n-$name.log" 2>&1 || rc=$?
   log "[$n/9] $name: exit $rc"
 }
-fail() { log "[$1/9] stopped: $2 (its output: $OUT/$1-$3.log)"; tail -n 20 "$OUT/$1-$3.log" >&2 || true; exit "$4"; }
+applied=0
+restore_hint() {
+  [ "$applied" -eq 0 ] || log "the apply's changes are uncommitted; git checkout -- $rendered_rel restores the earlier bytes (git history keeps them)"
+}
+fail() { log "[$1/9] stopped: $2 (its output: $OUT/$1-$3.log)"; tail -n 20 "$OUT/$1-$3.log" >&2 || true; restore_hint; exit "$4"; }
 
 # ---- 1. dry run -------------------------------------------------------------------------------------------------------
 step 1 dry-run "${remask[@]}" --dry-run
@@ -115,8 +138,11 @@ sed -n '/^would change:/,$p' "$OUT/1-dry-run.log" > "$OUT/dry-run-summary.txt"
 [ -s "$OUT/dry-run-summary.txt" ] || fail 1 "the dry run printed no summary" dry-run 1
 log "[1/9] the dry run's summary ($OUT/dry-run-summary.txt):"
 sed 's/^/  /' "$OUT/dry-run-summary.txt" >&2
+pins="$(sed -n 's/^  pins that go stale: \([0-9][0-9]*\) .*/\1/p' "$OUT/dry-run-summary.txt")"
+[ -n "$pins" ] || fail 1 "the dry run's summary has no 'pins that go stale' line" dry-run 1
 
 # ---- 2. apply ---------------------------------------------------------------------------------------------------------
+applied=1
 step 2 apply "${remask[@]}" --apply --date "$date_arg"
 [ "$rc" -eq 0 ] || fail 2 "the apply failed (exit $rc)" apply "$rc"
 
@@ -151,7 +177,8 @@ log "[8/9] grep -ciE \"\$REMASK_RUN_FORBIDDEN_RE\" over the lines the apply adde
 found=0
 for f in "${changed[@]}"; do
   if git ls-files --error-unmatch -- "$f" > /dev/null 2>&1; then
-    git diff -U0 --no-color -- "$f" | sed -n '/^+++/d; s/^+//p' > "$OUT/8-added.txt"
+    # The lines after the first hunk header that start with +: an added line whose own text starts with ++ included.
+    git diff -U0 --no-color -- "$f" | awk '/^@@/ { hunk = 1; next } hunk && /^\+/ { print substr($0, 2) }' > "$OUT/8-added.txt"
   else
     cp -- "$f" "$OUT/8-added.txt"
   fi
@@ -166,10 +193,6 @@ log "[8/9] owner-identifier grep: $([ "$found" -eq 0 ] && echo "nothing found" |
 [ "$found" -eq 0 ] || { log "[8/9] stopped: an added line matches the owner-identifier pattern; nothing committed"; exit 1; }
 
 # ---- 9. commit --------------------------------------------------------------------------------------------------------
-if [ "$commit" -eq 0 ]; then
-  log "[9/9] --no-commit: the changes stay uncommitted (git status shows them); commit them with the dry run's summary"
-  exit 0
-fi
 {
   echo "render: re-mask the stored captures, $date_arg; git history keeps the earlier bytes"
   echo
@@ -184,6 +207,18 @@ fi
   echo
   printf '%s\n' "$trailers"
 } > "$OUT/commit-message.txt"
+add_trailers="$([ -n "$trailers" ] || echo ', after adding your trailers to it')"
+if [ "$pins" -gt 0 ]; then
+  log "[9/9] stopped, nothing committed: the dry run named $pins pin(s) of the bytes before the mask that are now stale:"
+  sed -n '/^  pins that go stale:/,$p' "$OUT/dry-run-summary.txt" | sed -n 's/^    \([^ ]*\) → .*/  \1/p' | while IFS= read -r pin; do log "$pin"; done
+  log "[9/9] update each to the new bytes, then git add -A $rendered_rel <the pins' files> and git commit -F $OUT/commit-message.txt$add_trailers"
+  restore_hint
+  exit 1
+fi
+if [ "$commit" -eq 0 ]; then
+  log "[9/9] --no-commit: the changes stay uncommitted (git status shows them); commit them with git commit -F $OUT/commit-message.txt$add_trailers"
+  exit 0
+fi
 step 9 add git add -A -- "$rendered_rel"
 [ "$rc" -eq 0 ] || fail 9 "git add (exit $rc)" add "$rc"
 step 9 commit git commit -q -F "$OUT/commit-message.txt"

@@ -149,5 +149,45 @@
       "src/__tests__/revenue/render-dispatch.test.ts"
     ],
     "note": "tick 52 fixer (moved, tick 53): a capture read as latin1 hides the addresses outside ASCII from the count"
+  },
+  {
+    "id": "AK-no-handle-regex",
+    "file": "scripts/address-kinds.mjs",
+    "find": "  for (const _ of text.matchAll(HANDLE)) addByDesign(\"forum handle\");\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 fixer: a plain forum handle (@ after a space, then a dotted name) is not counted (review REV-AK-no-handle-regex)"
+  },
+  {
+    "id": "AK-plus-tag-role",
+    "file": "scripts/address-kinds.mjs",
+    "find": "const base = decodePercent(String(local)).toLowerCase().split(\"+\")[0];",
+    "replace": "const base = decodePercent(String(local)).toLowerCase();",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 fixer: a role local part with a +tag is read as other (review REV-AK-plus-tag-role)"
+  },
+  {
+    "id": "AK-partly-as-masked",
+    "file": "scripts/address-kinds.mjs",
+    "find": "    if (partlyMasked(text, m.index)) addRaw(",
+    "replace": "    if (false) addRaw(",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 fixer: a mask glued to what is left of a local part outside ASCII counts as masked, exit 0 (review finding 5)"
+  },
+  {
+    "id": "AK-partly-no-named-ref",
+    "file": "scripts/address-kinds.mjs",
+    "find": "  if (m[3]) return LETTER_NAME.test(m[3]);",
+    "replace": "  if (m[3]) return false;",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 fixer: a named character reference for a letter outside ASCII (&eacute;) before a mask is not read as part of a local part"
+  },
+  {
+    "id": "AK-partly-any-named-ref",
+    "file": "scripts/address-kinds.mjs",
+    "find": "  if (m[3]) return LETTER_NAME.test(m[3]);",
+    "replace": "  if (m[3]) return true;",
+    "test": "src/__tests__/revenue/address-kinds.test.ts",
+    "note": "tick 53 fixer: any named reference before a mask (&nbsp;) is read as a letter, so a whole mask counts as partly masked"
   }
 ]

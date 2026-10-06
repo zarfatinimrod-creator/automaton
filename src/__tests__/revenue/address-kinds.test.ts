@@ -27,6 +27,7 @@ const GOV = ["agency", "gov"].join(".");
 const UNI = ["physics", "uni", "edu"].join(".");
 const LISTS = ["lists", "project", "org"].join(".");
 const ROLE = ["sup", "port"].join("");
+const HANDLE = ["some", "handle"].join(".");
 
 let n = 0;
 function file(name: string, text: string | Buffer): string {
@@ -73,13 +74,14 @@ describe("address-kinds.mjs", () => {
       `npm i ${at("react", "18.2.0")}`, // package@version
       `<a href="https:${esc}${esc}www.video.example${esc}${at("", "channel.name")}">c</a>`, // a handle after an escaped /
       `<p>\\u003e${at("", "handle.team")}</p>`, // a handle after an escaped bracket
+      `<p>follow ${at("", HANDLE)} there</p>`, // a plain handle after a space
     ].join("\n");
     const r = run(file("forms.html", text));
     expect(r.code, r.all).toBe(0);
-    expect(r.out).toContain("masked 0; raw 0; left by design 8");
-    expect(r.out).toContain("  left by design: URL userinfo 2, asset name 1, forum handle 2, local part after / 2, package@version 1");
+    expect(r.out).toContain("masked 0; raw 0; left by design 9");
+    expect(r.out).toContain("  left by design: URL userinfo 2, asset name 1, forum handle 3, local part after / 2, package@version 1");
     expect(r.err).not.toMatch(/WARNING/);
-    never(r.all, ["reader", "s3cret", "0123abcd", LISTS, "channel.name", "handle.team"]);
+    never(r.all, ["reader", "s3cret", "0123abcd", LISTS, "channel.name", "handle.team", HANDLE]);
   });
 
   it("counts a %40 address and a Cloudflare value under their own forms, with their kinds and roles (exit 3)", () => {
@@ -104,6 +106,28 @@ describe("address-kinds.mjs", () => {
     expect(r.out).toContain("raw 4 (organisation or university 4)");
     expect(r.out).toContain("  raw by form: character reference 1, look-alike at sign 1, other form the masker finds 1, plain 1; the masker takes 1 of them");
     never(r.all, [PERSON, UNI, "jos\u00e9"]);
+  });
+
+  it("reads a role local part with a +tag as a role", () => {
+    const r = run(file("tagged.txt", `Write to ${at([ROLE, "desk"].join("+"), UNI)} today.\n`));
+    expect(r.code, r.all).toBe(3);
+    expect(r.out).toContain("  raw by local-part role: role 1");
+    never(r.all, [ROLE, "desk", UNI]);
+  });
+
+  it("counts a mask glued to what is left of a local part outside ASCII as raw, partly masked (exit 3)", () => {
+    const text = [
+      `${["garc", "\u00ed"].join("")}${mask(UNI)}`, // a letter outside ASCII left before the mask
+      `${["jos", "&eacute;"].join("")}${mask(UNI)}`, // a named character reference for one
+      `${["mar", "&#237;"].join("")}${mask(GOV)}`, // a numeric one
+      `x&nbsp;${mask(UNI)}`, // a space before the mask: masked, harmless
+    ].join("\n");
+    const r = run(file("partly.html", text));
+    expect(r.code, r.all).toBe(3);
+    expect(r.out).toContain("masked 1 (organisation or university 1); raw 3 (government 1, organisation or university 2)");
+    expect(r.out).toContain("  raw by form: partly masked 3; the masker takes 0 of them");
+    expect(r.out).toContain("  raw by local-part role: not read 3");
+    never(r.all, ["garc", "jos", "mar", UNI, GOV]);
   });
 
   it("reads a binary body as the masker does: it never rewrites one, so nothing in it is taken", () => {

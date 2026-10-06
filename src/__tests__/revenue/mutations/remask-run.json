@@ -18,8 +18,8 @@
   {
     "id": "RR-commit-on-failing-step",
     "file": "scripts/remask-run.sh",
-    "find": "tail -n 20 \"$OUT/$1-$3.log\" >&2 || true; exit \"$4\"; }",
-    "replace": "tail -n 20 \"$OUT/$1-$3.log\" >&2 || true; }",
+    "find": "tail -n 20 \"$OUT/$1-$3.log\" >&2 || true; restore_hint; exit \"$4\"; }",
+    "replace": "tail -n 20 \"$OUT/$1-$3.log\" >&2 || true; restore_hint; }",
     "test": "src/__tests__/revenue/remask-run.test.ts",
     "note": "tick 53 builder: a failing step is reported but the chain goes on and commits"
   },
@@ -42,7 +42,7 @@
   {
     "id": "RR-invent-trailer",
     "file": "scripts/remask-run.sh",
-    "find": "  trailers=\"$(git log -1 --grep='^render: re-mask' --format='%(trailers:only,unfold)' | sed '/^$/d')\"",
+    "find": "  [ -z \"$src\" ] || trailers=\"$(git log -1 --format='%(trailers:only,unfold)' \"$src\" | sed '/^$/d')\"",
     "replace": "  trailers=\"Co-Authored-By: remask-run\"",
     "test": "src/__tests__/revenue/remask-run.test.ts",
     "note": "tick 53 builder: the commit carries a trailer the script wrote instead of the earlier re-mask commit's"
@@ -110,5 +110,77 @@
     "replace": "",
     "test": "src/__tests__/revenue/remask-run.test.ts",
     "note": "tick 53 builder: the commit message leaves out the dry run's counts"
+  },
+  {
+    "id": "RR-trailers-any-line",
+    "file": "scripts/remask-run.sh",
+    "find": "  src=\"$(git log --format='%H%x09%s' | awk -F'\\t' '!found && index($2, \"render: re-mask\") == 1 { print $1; found = 1 }')\"",
+    "replace": "  src=\"$(git log -1 --grep='^render: re-mask' --format=%H)\"",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 fixer: the trailers come from the last commit with any message line starting \"render: re-mask\", a body line included (review REV-RR-trailers-any-line)"
+  },
+  {
+    "id": "RR-trailers-override-ignored",
+    "file": "scripts/remask-run.sh",
+    "find": "if [ \"$commit\" -eq 1 ] && [ -n \"${REMASK_RUN_TRAILERS:-}\" ]; then",
+    "replace": "if false; then",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 fixer: REMASK_RUN_TRAILERS is ignored, so the last re-mask commit's trailers (another session's, another model's) are copied"
+  },
+  {
+    "id": "RR-dryrun-fail-as-nothing",
+    "file": "scripts/remask-run.sh",
+    "find": "  0) log \"[1/9] nothing to re-mask",
+    "replace": "  0|1) log \"[1/9] nothing to re-mask",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 fixer: a dry run that fails reads as nothing to do and exits 0 (review REV-RR-dryrun-fail-as-nothing)"
+  },
+  {
+    "id": "RR-apply-ignored",
+    "file": "scripts/remask-run.sh",
+    "find": "[ \"$rc\" -eq 0 ] || fail 2",
+    "replace": "true || fail 2",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 fixer: a failing apply does not stop the chain at step 2 (review REV-RR-apply-ignored)"
+  },
+  {
+    "id": "RR-cited-ignored",
+    "file": "scripts/remask-run.sh",
+    "find": "[ \"$rc\" -eq 0 ] || fail 5",
+    "replace": "true || fail 5",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 fixer: a failing freeze-capture --cited does not stop the chain (review REV-RR-cited-ignored)"
+  },
+  {
+    "id": "RR-step6-gating",
+    "file": "scripts/remask-run.sh",
+    "find": "[ \"$rc\" -eq 0 ] || [ \"$rc\" -eq 3 ] || fail 6",
+    "replace": "[ \"$rc\" -eq 0 ] || fail 6",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 fixer: address-kinds' exit 3 stops the chain, though step 6 only reports (review REV-RR-step6-gating)"
+  },
+  {
+    "id": "RR-stale-pins-committed",
+    "file": "scripts/remask-run.sh",
+    "find": "if [ \"$pins\" -gt 0 ]; then",
+    "replace": "if false; then",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 fixer: the chain commits past a pin of the bytes before the mask that went stale (review finding 3)"
+  },
+  {
+    "id": "RR-step8-drops-plusplus",
+    "file": "scripts/remask-run.sh",
+    "find": "git diff -U0 --no-color -- \"$f\" | awk '/^@@/ { hunk = 1; next } hunk && /^\\+/ { print substr($0, 2) }' > \"$OUT/8-added.txt\"",
+    "replace": "git diff -U0 --no-color -- \"$f\" | sed -n '/^+++/d; s/^+//p' > \"$OUT/8-added.txt\"",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 fixer: step 8 drops an added line whose own text starts with ++, so it is never grepped"
+  },
+  {
+    "id": "RR-no-restore-hint",
+    "file": "scripts/remask-run.sh",
+    "find": "[ \"$applied\" -eq 0 ] || log \"the apply's changes are uncommitted",
+    "replace": "true || log \"the apply's changes are uncommitted",
+    "test": "src/__tests__/revenue/remask-run.test.ts",
+    "note": "tick 53 fixer: a stop after the apply does not say that the changes are uncommitted and how to restore the earlier bytes"
   }
 ]

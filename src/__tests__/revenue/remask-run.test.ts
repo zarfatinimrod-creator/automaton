@@ -15,7 +15,8 @@ import { frozenMeta, MANIFEST } from "../../../scripts/freeze-capture.mjs";
  * ran by hand in ticks 49 and 50. Each test builds its own fixture repository at run time: a copy of the scripts the
  * chain runs (the script works in the repository it sits in, so the copy's REPO_ROOT is the fixture), a small
  * research/rendered with one capture holding an address assembled from parts and one frozen copy recorded in
- * FROZEN.sha256, and a first commit whose subject starts "render: re-mask" and carries the trailers the run must copy.
+ * FROZEN.sha256, a first commit whose subject starts "render: re-mask" and carries the trailers the run must copy, and
+ * a later commit that only mentions "render: re-mask" in its body, with a trailer of its own the run must not copy.
  * Step 7 runs the copied scripts/verify.sh with stand-in runners (VERIFY_TYPECHECK_CMD, VERIFY_TEST_CMD), so no test
  * suite runs inside a test. Nothing here touches this checkout's research/rendered: the last test proves it with git
  * status, before and after.
@@ -48,6 +49,8 @@ const ADDRESS = at(LOCAL, DOMAIN);
 const IDENTITY = at("fixture-bot", ["example", "invalid"].join("."));
 // The trailers the fixture's earlier re-mask commit carries, which the run must copy verbatim.
 const TRAILERS = [`Co-Authored-By: Fixture Bot <${IDENTITY}>`, "Fixture-Session: https://example.invalid/session/1"];
+// A later commit's trailer, under a subject that is not a re-mask's: never the source of the run's trailers.
+const DECOY_TRAILER = "Other-Trailer: Not The Re-mask One";
 const gitEnv = {
   GIT_CONFIG_GLOBAL: EMPTY_GITCONFIG,
   GIT_CONFIG_NOSYSTEM: "1",
@@ -82,7 +85,7 @@ function meta(slug: string, body: string, ext: string) {
 
 let made = 0;
 /** A fixture repository: the chain's scripts, one capture with an address, one frozen copy, one earlier re-mask commit. */
-function repo({ staleManifest = false, trailers = true } = {}) {
+function repo({ staleManifest = false, trailers = true, leftover = false, pin = false } = {}) {
   const root = join(scratch, `repo-${(made += 1)}`);
   const dir = join(root, "research", "rendered");
   mkdirSync(join(root, "scripts"), { recursive: true });
@@ -90,7 +93,9 @@ function repo({ staleManifest = false, trailers = true } = {}) {
   for (const f of COPY) copyFileSync(join(ROOT, "scripts", f), join(root, "scripts", f));
   for (const f of ["remask-run.sh", "verify.sh"]) chmodSync(join(root, "scripts", f), 0o755);
   const w = (name: string, text: string) => writeFileSync(join(dir, name), text);
-  const html = `<html><body>\n<p>Write to ${ADDRESS} for the rules.</p>\n</body></html>\n`;
+  // leftover: a second address in a form the masker leaves (&commat;), so address-kinds finds it after the apply.
+  const second = leftover ? `\n<p>Or ${["fixture", "other"].join(".")}&commat;${DOMAIN}.</p>` : "";
+  const html = `<html><body>\n<p>Write to ${ADDRESS} for the rules.</p>${second}\n</body></html>\n`;
   w("page.html", html);
   w("page.txt", `Write to ${ADDRESS} for the rules.\n`);
   w("page.meta.json", `${JSON.stringify(meta("page", html, "html"), null, 2)}\n`);
@@ -102,11 +107,13 @@ function repo({ staleManifest = false, trailers = true } = {}) {
   const recorded = ["html", "meta.json", "txt"].map((e) => `quiet-2026-09-28.${e}`).sort();
   w(MANIFEST, recorded.map((f) => `${staleManifest && f.endsWith(".txt") ? "0".repeat(64) : sha(readFileSync(join(dir, f)))}  ${f}\n`).join(""));
   w("urls.txt", "# fixture list\nhttps://site.example/page\tpage\n");
-  writeFileSync(join(root, "notes.md"), "a tracked file\n");
+  // pin: a tracked note holding the capture's sha256, which the re-mask makes stale.
+  writeFileSync(join(root, "notes.md"), pin ? `page.html is pinned at sha256 ${sha(html)}\n` : "a tracked file\n");
   git(root, "init", "-q");
   git(root, "add", "-A");
   const subject = trailers ? "render: re-mask the fixture's captures, once" : "fixture: captures";
   git(root, "commit", "-q", "-m", `${subject}\n\nThe fixture's first commit.\n\n${trailers ? TRAILERS.join("\n") : ""}`);
+  git(root, "commit", "-q", "--allow-empty", "-m", `docs: unrelated subject\n\nrender: re-mask is described here in a body line.\n\n${DECOY_TRAILER}`);
   return { root, dir, head: git(root, "rev-parse", "HEAD") };
 }
 type Repo = ReturnType<typeof repo>;
@@ -153,6 +160,7 @@ describe("remask-run.sh", () => {
     expect(message).toContain(summary);
     expect(message).toContain("Git history keeps the earlier bytes of every file this commit changes.");
     expect(message.endsWith(`\n\n${TRAILERS.join("\n")}`)).toBe(true);
+    expect(message).not.toContain(DECOY_TRAILER);
     expect(git(r.root, "log", "-1", "--format=%(trailers:only,unfold)").trim()).toBe(TRAILERS.join("\n"));
     expect(x.all).not.toContain(LOCAL);
     expect(message).not.toContain(LOCAL);
@@ -189,7 +197,9 @@ describe("remask-run.sh", () => {
     refused(run(r, [DATE], { REMASK_RUN_FORBIDDEN_RE: undefined }));
     refused(run(r, [DATE], { REMASK_RUN_FORBIDDEN_RE: "(" }));
     refused(run(r, [DATE, "--rendered", scratch]));
-    // No earlier "render: re-mask" commit to copy trailers from: refused, never invented (--no-commit needs none).
+    refused(run(r, [DATE], { REMASK_RUN_TRAILERS: "not a trailer line" }));
+    // No earlier commit whose subject starts "render: re-mask" (a body line naming it does not count): refused, never
+    // invented (--no-commit needs none).
     const bare = repo({ trailers: false });
     const x = run(bare, [DATE]);
     expect(x.code, x.all).toBe(2);
@@ -214,8 +224,88 @@ describe("remask-run.sh", () => {
     expect(x.code, x.all).toBe(1);
     expect(x.err).toMatch(/\[4\/9\] sha256sum: exit 1/);
     expect(x.err).toContain("[4/9] stopped");
+    expect(x.err).toContain("git checkout -- research/rendered");
     expect(x.err).not.toContain("[5/9]");
     expect(head(r)).toBe(r.head);
+  });
+
+  it("stops at step 1 when the dry run fails (a meta that is not JSON): exit 1, nothing written, nothing committed", () => {
+    const r = repo();
+    writeFileSync(join(r.dir, "page.meta.json"), "not json\n");
+    git(r.root, "commit", "-q", "-am", "a broken meta");
+    const before = head(r);
+    const x = run(r, [DATE]);
+    expect(x.code, x.all).toBe(1);
+    expect(x.err).toMatch(/\[1\/9\] dry-run: exit 1/);
+    expect(x.err).toContain("[1/9] stopped");
+    expect(x.err).not.toContain("[2/9]");
+    expect(status(r)).toBe("");
+    expect(head(r)).toBe(before);
+  });
+
+  it("stops at step 2 when the apply fails, and at step 5 when freeze-capture --cited fails", () => {
+    const r = repo();
+    // A stand-in remask-captures whose dry run finds work and whose apply fails.
+    writeFileSync(
+      join(r.root, "scripts", "remask-captures.mjs"),
+      [
+        'export const domainKind = () => "organisation or university";',
+        "if (process.argv.includes(\"--apply\")) process.exit(1);",
+        'console.log("would change: 1 capture, 1 file (1 .txt); 1 address masked");',
+        'console.log("  pins that go stale: 0 (a hash or byte count of the bytes before the mask)");',
+        "process.exit(3);",
+        "",
+      ].join("\n"),
+    );
+    git(r.root, "commit", "-q", "-am", "a stand-in remask-captures");
+    const before = head(r);
+    const x = run(r, [DATE]);
+    expect(x.code, x.all).toBe(1);
+    expect(x.err).toMatch(/\[2\/9\] apply: exit 1/);
+    expect(x.err).toContain("[2/9] stopped");
+    expect(x.err).not.toContain("[3/9]");
+    expect(head(r)).toBe(before);
+
+    const s = repo();
+    // freeze-capture.mjs --cited fails when run as a script; imported (by remask-captures), it is the real module.
+    const fc = join(s.root, "scripts", "freeze-capture.mjs");
+    writeFileSync(fc, `${readFileSync(fc, "utf8")}\nif (process.argv[1]?.endsWith("freeze-capture.mjs") && process.argv.includes("--cited")) process.exit(1);\n`);
+    git(s.root, "commit", "-q", "-am", "a freeze-capture whose --cited fails");
+    const sBefore = head(s);
+    const y = run(s, [DATE]);
+    expect(y.code, y.all).toBe(1);
+    expect(y.err).toMatch(/\[4\/9\] sha256sum: exit 0/);
+    expect(y.err).toMatch(/\[5\/9\] cited: exit 1/);
+    expect(y.err).toContain("[5/9] stopped");
+    expect(y.err).not.toContain("[6/9]");
+    expect(head(s)).toBe(sBefore);
+  });
+
+  it("does not commit past a pin of the bytes before the mask: stops at step 9 naming file:line, the changes left for the hand", () => {
+    const r = repo({ pin: true });
+    const x = run(r, [DATE]);
+    expect(x.code, x.all).toBe(1);
+    expect(x.err).toContain("pins that go stale: 1");
+    expect(x.err).toMatch(/^remask-run: {3}notes\.md:1$/m);
+    expect(x.err).toContain("[9/9] stopped");
+    expect(head(r)).toBe(r.head);
+    expect(page(r)).not.toContain(ADDRESS);
+    expect(readFileSync(join(x.dir, "commit-message.txt"), "utf8")).toContain("pins that go stale: 1");
+    expect(x.all).not.toContain(sha(readFileSync(join(r.dir, "page.html"))).slice(0, 8));
+  });
+
+  it("takes the trailers from REMASK_RUN_TRAILERS when given, and goes on when address-kinds finds a raw string (step 6 reports)", () => {
+    const r = repo({ leftover: true });
+    const mine = [`Co-Authored-By: Caller Bot <${IDENTITY}>`, "Caller-Session: https://example.invalid/session/2"];
+    const x = run(r, [DATE], { REMASK_RUN_TRAILERS: mine.join("\n") });
+    expect(x.code, x.all).toBe(0);
+    expect(x.err).toMatch(/\[6\/9\] address-kinds: exit 3/);
+    expect(x.err).toContain("[9/9] committed");
+    const message = git(r.root, "log", "-1", "--format=%B");
+    expect(message.endsWith(`\n\n${mine.join("\n")}`)).toBe(true);
+    expect(message).not.toContain(TRAILERS[1]);
+    expect(x.all).not.toContain(LOCAL);
+    expect(x.all).not.toContain(["fixture", "other"].join("."));
   });
 
   it("stops at step 3 when a second dry run still finds work (an apply that is not idempotent)", () => {
@@ -228,6 +318,7 @@ describe("remask-run.sh", () => {
         'export const domainKind = () => "organisation or university";',
         'if (process.argv.includes("--apply")) { writeFileSync("research/rendered/page.txt", "rewritten by the stand-in\\n"); process.exit(0); }',
         'console.log("would change: 1 capture, 1 file (1 .txt); 1 address masked");',
+        'console.log("  pins that go stale: 0 (a hash or byte count of the bytes before the mask)");',
         "process.exit(3);",
         "",
       ].join("\n"),
@@ -251,6 +342,10 @@ describe("remask-run.sh", () => {
     expect(head(r)).toBe(r.head);
 
     const s = repo();
+    // page.txt's line starts with "++": its added line reads "+++..." in the diff, and must still be grepped.
+    writeFileSync(join(s.dir, "page.txt"), `++ Write to ${ADDRESS} for the rules.\n`);
+    git(s.root, "commit", "-q", "-am", "a text line that starts with ++");
+    s.head = head(s);
     const g = run(s, [DATE], { REMASK_RUN_FORBIDDEN_RE: "redacted:EMAIL" });
     expect(g.code, g.all).toBe(1);
     expect(g.err).toMatch(/\[8\/9\] research\/rendered\/page\.txt: 1 added line\(s\) match/);
