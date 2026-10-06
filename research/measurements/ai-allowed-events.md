@@ -15,19 +15,19 @@
 
 **The kill.** §13 stops this instrument after two consecutive quarters under 3 qualifying events. It is computed only from closed quarters whose every row is graded; a quarter with an ungraded row never counts toward it. A closed quarter's rows are kept below as the record of its last reading.
 
-Reading: 2026-10-05T16:47:06.499Z (UTC day 2026-10-05) of <https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json>, sha256 `ef0065f792832de1745f3656e40fb44ef996168a84c686cd4feea5d38a19d4d3`.
+Reading: 2026-10-06T03:24:34.098Z (UTC day 2026-10-06) of <https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json>, sha256 `ef0065f792832de1745f3656e40fb44ef996168a84c686cd4feea5d38a19d4d3`.
 
 ## Summary
 
 | Quarter | Deadlines | Position | Events | Graded | Qualifying | Awaiting | Unsettled |
 |---|---|---|---|---|---|---|---|
-| 2026-Q3 | 1 Jul – 30 Sep 2026 | closed | 39 | 3 | at least 0 (a floor) | 36 | 0 |
-| 2026-Q4 | 1 Oct – 31 Dec 2026 | current | 28 | 3 | at least 0 (a floor) | 24 | 1 |
+| 2026-Q3 | 1 Jul – 30 Sep 2026 | closed | 39 | 3 | at least 0 (a floor) | 35 | 1 |
+| 2026-Q4 | 1 Oct – 31 Dec 2026 | current | 28 | 5 | at least 0 (a floor) | 22 | 1 |
 | 2027-Q1 | 1 Jan – 31 Mar 2027 | next | 0 | 0 | not counted (no row graded) | 0 | 0 |
 
 Kill: not computable yet — no two consecutive closed quarters are fully graded.
 
-URLs awaiting a render: 96 in `research/measurements/ai-allowed-events.urls.txt`.
+URLs awaiting a render: 93 in `research/measurements/ai-allowed-events.urls.txt`.
 
 ## 2026-Q4 — deadlines 1 Oct – 31 Dec 2026 (current quarter)
 
@@ -113,3 +113,4 @@ No event on the list has a deadline in this quarter.
 ## Rows a session started but did not settle
 
 - 2026-10-11 · Weak Lensing Uncertainty under Distribution Shift (<https://www.codabench.org/competitions/10902/?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-09-12 · Design LLM Agents to Build Virtual Spacecraft (<https://www.kaggle.com/competitions/build-arena-human-ai-colleberation-engineering-challenge?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.

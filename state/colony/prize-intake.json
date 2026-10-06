@@ -1,16 +1,16 @@
 {
-  "measuredAt": "2026-10-05T16:47:06.499Z",
-  "measuredOn": "2026-10-05",
+  "measuredAt": "2026-10-06T03:24:34.098Z",
+  "measuredOn": "2026-10-06",
   "source": "https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json",
   "sourceSha256": "ef0065f792832de1745f3656e40fb44ef996168a84c686cd4feea5d38a19d4d3",
   "sourceBytes": 230170,
   "listed": 398,
   "undatable": 1,
-  "open": 26,
+  "open": 25,
   "openRegistrationClosed": 1,
   "openNotYetLaunched": 0,
-  "openWithStatedUsdPrize": 22,
-  "openStatedUsdPrizeTotal": 2497625,
+  "openWithStatedUsdPrize": 21,
+  "openStatedUsdPrizeTotal": 2472625,
   "openPrizeUnparsed": 0,
   "openLaunchedUnparsed": 0,
   "openRegistrationDeadlineUnparsed": 0,
@@ -33,16 +33,16 @@
         "eventsInWindow": 39,
         "rowsGraded": 3,
         "qualifying": 0,
-        "awaiting": 36,
-        "unsettled": 0
+        "awaiting": 35,
+        "unsettled": 1
       },
       {
         "quarter": "2026-Q4",
         "position": "current",
         "eventsInWindow": 28,
-        "rowsGraded": 3,
+        "rowsGraded": 5,
         "qualifying": 0,
-        "awaiting": 24,
+        "awaiting": 22,
         "unsettled": 1
       },
       {
@@ -59,7 +59,7 @@
     "untabled": 0,
     "relisted": 0,
     "sameEvent": 0,
-    "urlsAwaiting": 96,
+    "urlsAwaiting": 93,
     "urlsRefused": 0,
     "kill": {
       "fired": null,

@@ -9,12 +9,9 @@
 # research/rendered/<slug>.txt, the pointer a session cites in the table.
 # This is NOT research/rendered/urls.txt, and nothing here is ever appended to it.
 #
-# Every URL is verbatim from the mlcontests list (read 2026-10-05T16:47:06.499Z, sha256 ef0065f792832de1…)
+# Every URL is verbatim from the mlcontests list (read 2026-10-06T03:24:34.098Z, sha256 ef0065f792832de1…)
 # and appears verbatim in its event's row of the table. No rules-page URL is guessed.
 # tiktok.com URLs are refused (logs/CHANNEL_LOOP.md §9: no tiktok.com URL in any render list or override).
-
-# 2026-Q4 · 2026-10-01 · Generative AI for Antimicrobial Peptide Design
-https://szczurek-lab.github.io/amp-challenge-website/?ref=mlcontests	prize-szczurek-lab-github-io-amp-challenge-website-ref-084ef537
 
 # 2026-Q4 · 2026-10-02 · Transcribe Code-Switched Speech in Underserved Languages
 https://competitions.mozilladatacollective.com/competitions/group/lost-in-transcription/?ref=mlcontests	prize-competitions-mozilladatacollective-com-competiti-4208e977
@@ -35,10 +32,6 @@ https://ansperformance.eu/study/data-challenge/dc2026/ranking.html	prize-ansperf
 https://ansperformance.eu/study/data-challenge/dc2026/teams.html	prize-ansperformance-eu-study-data-challenge-dc2026-te-f7aa703d
 https://opensky-network.org/	prize-opensky-network-org-3623488c
 https://www.eurocontrol.int/air-navigation-services-performance-review	prize-www-eurocontrol-int-air-navigation-services-perf-fd12ebb3
-
-# 2026-Q4 · 2026-10-11 · Sim2Real Bimanual Robot Manipulation
-https://robosyn-bench.net/?ref=mlcontests	prize-robosyn-bench-net-ref-mlcontests-09bc8571
-https://github.com/EDEM-AI/RoboSynChallenge	prize-github-com-edem-ai-robosynchallenge-e073c108
 
 # 2026-Q4 · 2026-10-11 · Weak Lensing Uncertainty under Distribution Shift
 https://www.codabench.org/competitions/10902/?ref=mlcontests	prize-www-codabench-org-competitions-10902-ref-mlconte-1e3fd2ef
