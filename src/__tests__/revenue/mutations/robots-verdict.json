@@ -183,5 +183,53 @@
     "replace": "\"verdict\": \"NO_TERMS_ROBOTS_OK\"",
     "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
     "note": "tick 57: the tick-56 fixture no longer holds the entry as 19d203a had it"
+  },
+  {
+    "id": "T57-RF1-page-fetched",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "open to dispatch; the page has not been fetched.",
+    "replace": "open to dispatch; the page has been fetched.",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review R57-6: the tick-57 paragraph says the prize page was fetched (it was pinned by phrases; pinned whole since the review fix)"
+  },
+  {
+    "id": "T57-RF2-copying-allowed",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "the copying field (\"unread\") are kept",
+    "replace": "the copying field (\"allowed\") are kept",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review R57-7: the tick-57 paragraph quotes copying as \"allowed\", which the entry does not hold"
+  },
+  {
+    "id": "T57-RF3-group-move-reversed",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "eurocontrol.int moves from \"Robots probe captured, robots verdict not yet run\", empty since, to \"Now, on robots.txt\".",
+    "replace": "eurocontrol.int moves from \"Now, on robots.txt\" to \"Robots probe captured, robots verdict not yet run\", empty before.",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review R57-15: the tick-57 paragraph has the render-group move the wrong way round"
+  },
+  {
+    "id": "T57-RF4-tick56-pointer-removed",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": " (Since 6.10, tick 57: the group holds 0 URLs on 0 sites, eurocontrol.int's rules URL being in \"Now, on robots.txt\", and the gate admits 34 of the 101; \"eurocontrol.int's robots verdict\" below.)",
+    "replace": "",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix: the tick-56 counts paragraph's present-tense \"1 URL on 1 site\" and \"still admits 33\" stand without the dated pointer"
+  },
+  {
+    "id": "T57-RF5-tick56-pointer-gate",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "and the gate admits 34 of the 101;",
+    "replace": "and the gate admits 33 of the 101;",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix: the tick-56 paragraph's pointer gives the gate's tick-56 count, not the one termsGate gives now"
+  },
+  {
+    "id": "T57-RF6-tick56-pointer-group",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
+    "find": "the group holds 0 URLs on 0 sites, eurocontrol.int",
+    "replace": "the group holds 1 URLs on 1 sites, eurocontrol.int",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 57 review fix: the tick-56 paragraph's pointer keeps the probe group's tick-56 count against its heading"
   }
 ]

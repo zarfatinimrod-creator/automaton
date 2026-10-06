@@ -3585,6 +3585,20 @@ describe("tick 56: the second terms read (agenthon.net's Terms of Participation,
     const open = audited().filter((e) => termsGate(e.url, e.slug, t56).ok).length;
     expect(open).toBe(33);
     expect(text).toContain(`the gate still admits ${open} of the 101 audited rules URLs`);
+    // Since tick 57 the sentence carries a dated pointer to what the probe group and the gate hold now (tick-57 review: the
+    // present-tense "1 URL on 1 site" and "still admits 33" were left standing). The group's counts are its heading's, which
+    // the counts test checks against the fixture and the verdicts; the gate's are termsGate's on the verdicts as they are.
+    const openNow = audited().filter((e) => termsGate(e.url, e.slug, v).ok).length;
+    const g6Now = audit
+      .split("\n")
+      .find((l) => l.startsWith("- **Robots probe captured, robots verdict not yet run "))!
+      .match(/\): (\d+) URLs? on (\d+) sites?\*\* since tick 57 /)!;
+    expect([openNow, Number(g6Now[1]), Number(g6Now[2])]).toEqual([34, 0, 0]);
+    expect(text).toContain(
+      `now headed "Robots probe captured, robots verdict not yet run" (1 URL on 1 site; 0 in tick 55); the gate still admits ${open} of the 101 audited rules URLs. ` +
+        `(Since 6.10, tick 57: the group holds ${g6Now[1]} URLs on ${g6Now[2]} sites, eurocontrol.int's rules URL being in "Now, on robots.txt", and the gate admits ${openNow} of the 101; "eurocontrol.int's robots verdict" below.) ` +
+        "Two prize-event sites are TERMS_PENDING now,",
+    );
     const pending = Object.keys(AUDITED).filter((s) => v[s].verdict === "TERMS_PENDING").sort();
     expect([...new Set([...pending, ...Object.keys(READ2).filter((s) => v[s].verdict === "TERMS_PENDING")])].sort()).toEqual(["adaptionlabs.ai", "agenthon.net"]);
     expect(text).toContain("Two prize-event sites are TERMS_PENDING now, adaptionlabs.ai (kind shell) and agenthon.net, and the notes with no kind word are 24");
@@ -3786,20 +3800,26 @@ describe("tick 57: eurocontrol.int's robots verdict (R1's repository grep ruled 
     const clearedNow = audited().filter((e) => okNow.includes(siteOfUrl(e.url))).length;
     const open = audited().filter((e) => termsGate(e.url, e.slug, v).ok).length;
     const open56 = audited().filter((e) => termsGate(e.url, e.slug, tick56(v)).ok).length;
-    for (const words of [
-      "the grep of the organisations' repository contents was tried on 6.10 (tick 56) with `gh api orgs/<org>/repos` for euctrl-pru and for eurocontrol, and both answered HTTP 403, since this session is bound to its configured repositories; so the step is unreachable from this session, as GitHub-wide code search is in R1 itself, the tick-45 search of the organisations' GitHub presence stands as the search of record, and the step is waived for eurocontrol.int.",
-      "The note's sentence that the ruling neither ran the step nor waived it was replaced by that ruling, written through `serializeVerdicts`.",
-      "Then `node scripts/robots-verdict.mjs eurocontrol.int --urls research/measurements/ai-allowed-events.urls.txt --apply` (exit 0) set NO_TERMS_ROBOTS_OK:",
-      `the one queued page, ${PRIZE_LINE.url} (the prize line ${PRIZE_LINE.slug}), is allowed, no rule matching it,`,
-      `the source was then repointed to the frozen copy, \`${EU_ROBOTS}.txt\` (as ${meta.frozen!.commit} stored it: fetched ${meta.fetchedAt}, sha256 ${meta.sha256!.slice(0, 12)}, the live capture's bytes), exactly as the script's \`judgeSite\` writes it when the capture it reads is that copy`,
-      "lists the prize line as passing, open to dispatch",
-      "`scripts/urls-pause-comments.mjs --fix` rewrote their comments' verdict word to NO_TERMS_ROBOTS_OK",
-      "ZERO-TESTS row 265 says VERDICT SET 6.10 (tick 57)",
-      `Of the audited sites, ${okNow.length} are NO_TERMS_ROBOTS_OK now (the ${ok56.length} of tick 55 and eurocontrol.int) and their ${clearedNow} rules URLs pass the gate, which admits ${open} of the 101 audited rules URLs (${open56} in ticks 55 and 56);`,
-      "ansperformance.eu's note names eurocontrol.int's entry as it is now.",
-    ]) {
-      expect(para, words).toContain(words);
-    }
+    // Pinned whole, every count and capture fact computed (tick-57 review: three false edits of its unpinned prose, the page
+    // "fetched", copying "allowed" and the group move reversed, got through a list of phrases).
+    expect(para).toBe(
+      `**eurocontrol.int's robots verdict (6.10.2026, tick 57).** The main thread ruled on the step of R1 that was not on the record (\`logs/CHANNEL_LOOP.md\` §9, "Queued 6.10 (tick 56)" item 2): ` +
+        "the grep of the organisations' repository contents was tried on 6.10 (tick 56) with `gh api orgs/<org>/repos` for euctrl-pru and for eurocontrol, and both answered HTTP 403, since this session is bound to its configured repositories; so the step is unreachable from this session, as GitHub-wide code search is in R1 itself, the tick-45 search of the organisations' GitHub presence stands as the search of record, and the step is waived for eurocontrol.int. " +
+        "The note's sentence that the ruling neither ran the step nor waived it was replaced by that ruling, written through `serializeVerdicts`. " +
+        "Then `node scripts/robots-verdict.mjs eurocontrol.int --urls research/measurements/ai-allowed-events.urls.txt --apply` (exit 0) set NO_TERMS_ROBOTS_OK: " +
+        `the one queued page, ${PRIZE_LINE.url} (the prize line ${PRIZE_LINE.slug}), is allowed, no rule matching it, by the probe's capture of the 12:05 weekly run of 6.10; ` +
+        `the note and the copying field ("${v[SITE].copying}") are kept, and the NO_TERMS source follows "${BEFORE}". ` +
+        "The script wrote the live capture's path into the source, and the source was then repointed to the frozen copy, " +
+        `\`${EU_ROBOTS}.txt\` (as ${meta.frozen!.commit} stored it: fetched ${meta.fetchedAt}, sha256 ${meta.sha256!.slice(0, 12)}, the live capture's bytes), exactly as the script's \`judgeSite\` writes it when the capture it reads is that copy, ` +
+        "so the weekly run, which rewrites the live capture whenever its body changes, never moves what the verdict rests on. " +
+        "The rules URL passes `termsGate` now, and `scripts/prize-dispatch.mjs --skip-captured --why` lists the prize line as passing, open to dispatch; the page has not been fetched. " +
+        "The two terms lines stay paused as read (`scripts/urls-pause-comments.mjs --fix` rewrote their comments' verdict word to NO_TERMS_ROBOTS_OK), the probe stays on the weekly watch, and ZERO-TESTS row 265 says VERDICT SET 6.10 (tick 57). " +
+        `Of the audited sites, ${okNow.length} are NO_TERMS_ROBOTS_OK now (the ${ok56.length} of tick 55 and eurocontrol.int) and their ${clearedNow} rules URLs pass the gate, which admits ${open} of the 101 audited rules URLs (${open56} in ticks 55 and 56); ` +
+        'in the render groups above eurocontrol.int moves from "Robots probe captured, robots verdict not yet run", empty since, to "Now, on robots.txt". ' +
+        "ansperformance.eu's note names eurocontrol.int's entry as it is now.",
+    );
+    // (The copying field it quotes is the entry's own, and the source's tail after BEFORE is tick 56's source: the test
+    // above. The rules URL under "Now, on robots.txt" and the probe group empty: below.)
     expect([okNow.length, clearedNow, open, open56]).toEqual([17, 20, 34, 33]);
     expect(rangeCites(para)).toEqual([]);
     expect(ADDRESS.test(para)).toBe(false);
