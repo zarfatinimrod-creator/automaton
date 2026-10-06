@@ -703,7 +703,10 @@ export const SECRET_PATTERNS = [
   { kind: "slack-token", re: /\bxox[abprs]-[0-9A-Za-z-]{10,}\b/g },
   // 6.10.2026 (tick 54): a 20-page prize-event dispatch was refused twice for a "Mapbox Secret Access Token"
   // embedded in a forum page (run 37436768438, annotation). sk. is the secret prefix; pk. (public) and tk. are not masked.
-  { kind: "mapbox-secret-token", re: /\bsk\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g },
+  // A Mapbox token is a JWT (payload {"u":…} → eyJ1Ijoi…); the third dispatch of 6.10 was refused with the
+  // two-segment form below in place, so the whole run of token characters after sk.eyJ is masked, whatever
+  // separators and padding the page carries.
+  { kind: "mapbox-secret-token", re: /\bsk\.eyJ[A-Za-z0-9_.+/=-]{20,}/g },
   // Google API keys (AIza…) are on the same push-protection list and web pages embed them for maps and analytics.
   { kind: "google-api-key", re: /\bAIza[0-9A-Za-z_-]{35}\b/g },
   { kind: "private-key", re: /-----BEGIN (?:[A-Z]+ )?PRIVATE KEY-----[\s\S]*?-----END (?:[A-Z]+ )?PRIVATE KEY-----/g },

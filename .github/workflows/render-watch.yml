@@ -276,6 +276,16 @@ jobs:
                 | sed 's/[^[:print:]]//g' | while IFS= read -r line; do
                 echo "::error title=push protection::${line}"
               done
+              # The shape of every token-like string in each named file, never its value: the first six
+              # characters, the length, the dot count and which separator classes occur, so the next
+              # SECRET_PATTERNS entry can be written without seeing the page (the session cannot fetch it).
+              grep -oE 'path: [^ :]+:[0-9]+' "${RUNNER_TEMP}/push.err" | sed 's/^path: //; s/:[0-9]*$//' | sort -u | while IFS= read -r f; do
+                [ -f "$f" ] || continue
+                grep -oE '.{0,2}\b(sk|pk|tk)\.[A-Za-z0-9_.+/=-]{20,}.{0,2}' "$f" | awk '{
+                  t=$0; sub(/^.{0,2}\b/, "", t); s=t; n=gsub(/\./, ".", s);
+                  printf "%s: before=[%s] %s… len=%d dots=%d eq=%d plus=%d slash=%d after=[%s]\n", FILENAME, substr($0,1,2), substr(t,1,6), length(t), n, (t ~ /=/), (t ~ /\+/), (t ~ /\//), substr($0,length($0)-1)
+                }' FILENAME="$f" | sort -u | head -12 | while IFS= read -r shape; do echo "::warning title=push protection shape::${shape}"; done
+              done
               echo "Push refused by push protection; the annotations name the kind and the file:line." >> "$GITHUB_STEP_SUMMARY"
               exit 1
             fi
