@@ -107,7 +107,7 @@ describe('ruling 6.10 row 21 (a): the [robots-bar] capture is no input, and 2026
     expect(config.about).toContain(RULING);
   });
 
-  it('2026 is in pendingYears and not in years, its sentences sourced to the gazette alone, and says when the tool will compute it', () => {
+  it('2026 is in pendingYears and not in years, its sentences sourced to the gazette (a report line only names the law), and says when the tool will compute it', () => {
     expect(config.years['2026']).toBeUndefined();
     const p = config.pendingYears['2026'];
     expect(Object.keys(p)).toEqual(['he', 'unverifiedValueIn', 'cite']);
@@ -134,8 +134,35 @@ describe('ruling 6.10 row 21 (a): the [robots-bar] capture is no input, and 2026
     for (const owed of ['Reshumot', 'a gov.il page of the Tax Authority', 'a Tax Authority circular']) {
       expect(unverified.years['2026'].toVerify).toContain(owed);
     }
+    // Decision 1(4): a consolidation may stand beside a primary text, never in its place.
+    expect(unverified.years['2026'].toVerify).toContain('Wikisource may corroborate beside such a text, never replace it (ruling 6.10 row 21 (a), decision 1(4)).');
     expect(unverified.about).toContain('only when a rendered primary text states it');
     expect(unverified.about).toContain('[robots-bar]');
+  });
+
+  it('the README\'s osek-zair lines name no nevo, state 122,833 only on the unverified row, and say "gazette alone" nowhere while a report line is cited', () => {
+    // Fold 4 names README.md:68; every other line about this tool is held to the same rule. The osek-patur rows keep
+    // their own 122,833 (the ruling's "not decided" item 1), and they are not osek-zair lines.
+    const readme = readFileSync(join(productRoot, 'README.md'), 'utf8');
+    const lines = readme.split('\n');
+    const start = lines.findIndex((l) => l.startsWith('## The בעל עסק זעיר self-check'));
+    const end = lines.findIndex((l, i) => i > start && l.startsWith('## '));
+    expect(start).toBeGreaterThan(0);
+    expect(end).toBeGreaterThan(start);
+    const zair = lines
+      .map((text, i) => ({ n: i + 1, text }))
+      .filter(({ n, text }) => (n > start && n <= end) || /osek-zair|עסק זעיר/.test(text));
+    expect(zair.length).toBeGreaterThan(20);
+    for (const { n, text } of zair) expect(text, `README.md:${n}`).not.toMatch(/nevo|נבו/i);
+    const withCap = zair.filter(({ text }) => /122[,_]?833/.test(text));
+    expect(withCap.map(({ n }) => n)).toHaveLength(1);
+    expect(withCap[0].text.startsWith('| בעל עסק זעיר cap, tax year 2026 |')).toBe(true);
+    expect(withCap[0].text).toContain('`122833` held in `src/config/osek-zair-unverified.json` and **never rendered or shipped**');
+    if (config.pendingYears['2026'].cite.some((c) => c.doc !== 'gazette')) {
+      for (const [where, text] of [['README.md', readme], ['osek-zair.json about', config.about]]) {
+        expect(text, where).not.toMatch(/gazette alone/);
+      }
+    }
   });
 });
 

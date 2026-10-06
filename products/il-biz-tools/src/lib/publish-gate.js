@@ -72,9 +72,9 @@ export const PAGE_RATE_SOURCES = {
   'osek-patur.html': ['src/config/osek-patur.json'],
   // The בעל עסק זעיר check renders the rate, the 2024-2025 caps and the conditions from osek-zair.json, each cited
   // to a capture line. The 2026 cap is not in any primary text read: it waits, unverified, in
-  // osek-zair-unverified.json (with a VAT section reference from an unrendered regulation), which this page does
-  // not render or load, so it is not listed here (listing it would withhold the whole page for a year the page
-  // already refuses).
+  // osek-zair-unverified.json (with a VAT section reference from a regulation whose one capture here is
+  // [robots-bar]), which this page does not render or load, so it is not listed here (listing it would withhold
+  // the whole page for a year the page already refuses).
   'osek-zair.html': ['src/config/osek-zair.json'],
   'net-salary.html': ['src/config/tax-2026.json'],
   'invoice.html': ['src/config/vat.json'],

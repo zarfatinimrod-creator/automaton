@@ -103,7 +103,7 @@ Each JSON file reached then goes through `CONFIG_PUBLISH_RULES` (`src/lib/publis
 | Config | Rule | What ships today |
 |---|---|---|
 | `vat.json`, `osek-patur.json`, `allocation-number.json`, `osek-zair.json` | `verified` — ships only while `"verified": true` | the whole file |
-| `osek-zair-unverified.json` | `verified` | **nothing**: no page loads it (the 2026 cap waits there, beside the VAT section reference 31(3) from an unrendered regulation), and a shipped page that did would stop the build |
+| `osek-zair-unverified.json` | `verified` | **nothing**: no page loads it (the 2026 cap waits there, beside the VAT section reference 31(3) from a regulation read in no text it may use: its one capture here is `[robots-bar]`), and a shipped page that did would stop the build |
 | `tax-2026.json` | `verified` | **nothing**: no shipped page loads it (its page is withheld), and if one did the build would stop |
 | `registrar-fee.json` | whole once verified; until then only `verified`, `renderAmounts`, `updated`, `deadline` | the dates and the two flags, rewritten into a fresh file — **no amount, no notes, no internal sources** |
 | `site.json` | `no-figures` (site metadata) | the whole file |
@@ -206,8 +206,9 @@ turnover hint cites 87ז(א) and a 2025 draft under it, as a draft whose enactme
 What it refuses: **tax** (no text read gives brackets or credit points; the page says why and quotes the Tax
 Authority's own "almost 80% under the tax threshold"), **tax year 2026** (the cap is CPI-linked from 1.1.2026 and no
 primary text read states it; its amount waits in `osek-zair-unverified.json`, which no page loads and the build never
-ships; the page offers 2026 as not computed and says so in `pendingYears.2026`, cited to the gazette alone) and any
-later year (`compareTracks` refuses a year not in `years`),
+ships; the page offers 2026 as not computed and says so in `pendingYears.2026`: the indexation and the 87ז(ב) sentence
+are cited to the gazette, p. 173, and the one report line beside them, line 11, only names the Economic Efficiency
+Law, which the gazette's image pages do not) and any later year (`compareTracks` refuses a year not in `years`),
 **the conditions** (listed with section and page, not checked), and **National Insurance** (the same law amended it;
 the meaning is unread).
 
@@ -230,7 +231,8 @@ with it, and no pinned excerpt of a permitted text of the law was in the reposit
 (`RULING-2026-10-06-robots-and-terms.md`, decision 1(5)). The older secondary sentence ("עוסק זעיר" is also a VAT-law
 term) does not come back: the law's text, where read, shows the definition deleted. The section reference 31(3),
 which a statute mirror of the VAT registration regulations ties to the phrase, is not on the page; it stays in
-`osek-zair-unverified.json` until the regulations are read.
+`osek-zair-unverified.json` until a permitted text of the regulations is read: their one capture here (29.9.2026)
+was marked `[robots-bar]` by the same ruling (decision 1(2)) and cannot settle it.
 
 ## The registrar annual-fee page (`registrar-fee.html`)
 

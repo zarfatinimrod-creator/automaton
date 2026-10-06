@@ -360,8 +360,23 @@ describe('2026: refused on the page, its unverified cap never shown and never sh
     expect(unverified.vatLawSense.why).toContain('line 484');
     expect(unverified.vatLawSense.why).toContain('line 89');
     expect(unverified.vatLawSense.why).toContain('the page now says nothing about the phrase in the VAT law');
-    expect(unverified.vatLawSense.toVerify).toContain('nevo-vat-registration-regs');
     for (const f of [PAGE, 'assets/page-osek-zair.js', 'src/lib/osek-zair.js', 'src/config/osek-zair.json']) expect(read(f), f).not.toContain('31(3)');
+  });
+
+  it('the regulations behind 31(3) were rendered on 29.9 and that capture is [robots-bar]: the entry says so and never sends the next worker to it', () => {
+    // Ruling 6.10 row 21 (a), decision 1(2): the nine live nevo captures are [robots-bar] with the frozen VAT law, the
+    // registration regulations among them. The entry waits for a permitted text, or for the ruling's REOPEN IF.
+    const meta = JSON.parse(readRepo('research/rendered/nevo-vat-registration-regs.meta.json'));
+    expect(meta.fetchedAt.startsWith('2026-09-29T')).toBe(true);
+    const { why, toVerify } = unverified.vatLawSense;
+    expect(why).not.toMatch(/not been rendered|unrendered/);
+    expect(why).toContain(`research/rendered/nevo-vat-registration-regs.txt, fetched ${meta.fetchedAt.slice(11, 19)}Z`);
+    expect(why).toContain('[robots-bar] (ruling 6.10 row 21 (a), decision 1(2)), so it cannot settle this entry');
+    expect(toVerify).toContain('Never settle this entry from the capture of 29.9.2026 (nevo-vat-registration-regs): it is [robots-bar]');
+    expect(toVerify).toContain('Wait for a permitted text');
+    expect(toVerify).toContain("the ruling's REOPEN IF");
+    expect(toVerify).not.toMatch(/When תקנות[^.]*are rendered/);
+    expect(readRepo('research/channel-loop/RULING-2026-10-06-robots-and-terms.md')).toContain('**REOPEN IF**');
   });
 });
 
