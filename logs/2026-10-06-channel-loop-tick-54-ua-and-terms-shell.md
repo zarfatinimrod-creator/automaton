@@ -123,3 +123,47 @@
 - verify מלא ראשון על בסיס ישן (נפל על דבר שלא שלי) — ריצה שהייתה נחסכת לו בדקתי קודם אם הבסיס זז.
 - הסימולציה הראשונה עם `JSON.stringify` — ריצת חבילה מלאה שחלק מכשליה היו חפץ.
 - העיצוב הראשון של מיקום השורה (superseded) — תיקון קוד, בדיקות ומוטציה אחת, והרצת התוכנית מחדש (108 שניות).
+
+## Review fixes
+
+הסקירה מצאה ארבעה ממצאי "fix" ואפס "blocking". מה תוקן בכל אחד:
+
+1. **`termsGate` העביר כל שורת js עם slug שמתחיל `terms-` באתר shell מסוג NO_TERMS, על כל URL באתר** (הסוקר הדגים זאת על
+   דף תעריף הדואר הרשום של Israel Post, שלפי 3(3) אסור לקרוא). התיקון: הענף `termsShell` עובר רק כשה-URL של השורה זהה
+   ל-URL ש-`research/rendered/<slug>.meta.json` רושם (פונקציה חדשה `plainCaptureUrl`; מחזירה null ולא זורקת, ולא קוראת
+   slug עם `/`). `termsGate`, `applyVerdicts` ו-`syncPauseComments` מקבלים `dir` לבדיקות. בדיקת ה-CI ב-
+   `render-watch-terms-barred.test.ts` (חריג `shellJs`) קיבלה את אותו נעיצה, כפרדיקט `mayBeActive` עם בדיקת fixture
+   משלה. נוספו בדיקות: `terms-rates` על דף אחר, `terms-shellsite` על URL אחר, meta בלי url, meta שאינו JSON, slug עם
+   נתיב, ולכידה ישנה של דף אחר באתר (`shellsite-pricing`), שרק תחילית `terms-` חוסמת. ב-`render-dispatch.test.ts` נוספה
+   אפשרות `plainShell` לעולם הבדיקה, ובדיקת דחייה לשורה על דף אחר.
+2. **once-only היה לפי slug ולא לפי URL, ולא קרא את רשומת ההערה.** התיקון ב-`queueTermsShell`: נדחית (א) שורת js של אותו
+   URL תחת כל slug, פעילה או מוערת (השוואה אחרי `new URL().href`); (ב) meta של אותו URL תחת כל slug, חי או קפוא, עם
+   `renderedWith` (`jsCapturesOf(slug, dir, { url })`); (ג) הערה שמכילה `shell: rendered once` (3(2)(vi)), גם ב-NO_TERMS
+   וגם ב-TERMS_PENDING. המקרה של הסוקר (`terms-first` עם js, ואז לכידה פשוטה חדשה של אותו URL) נבדק עכשיו.
+3. **הבסיס זז פעמיים במהלך הסקירה (עד caa79e2), ומיזוג התנגש בשני קבצים.** מוזג `claude/new-session-j071dx` לענף
+   (קומיט 493f056): `prize-terms-audit.test.ts` — רשימת הייבוא של הבסיס ועוד `TERMS_SHELL_RULING`;
+   `mutations/render-watch.json` — שני הצדדים (U1-U9 ו-M1-M2), 64 רשומות; `mutations/README.md` עודכן ל-64.
+4. **לענף ה-CLI של `--terms-shell` לא הייתה בדיקה** (R-J ו-R-K שרדו). נוספה בדיקה שמריצה את הסקריפט כתהליך על עותק
+   בתיקייה זמנית (שלושה סקריפטים, קובץ verdicts ו-research/rendered עם לכידת shell אחת): בלי `--js` — exit 1 ו-urls.txt
+   זהה בייט לבייט; ליד `--terms` — נדחה; `--dry-run` — מדפיס ולא כותב; ריצה אמיתית כותבת, ושנייה נדחית.
+
+ממצאי ה-"note" לא טופלו בקוד, חוץ מזה של `OTHER_KIND`, שהבקשה דרשה כי המוטציות שלו (R-E ו-R-F, המילים `unanswered`
+ו-`exhaustive-negative`) שרדו — נוספו fixtures ובדיקות לשתיהן. גם R-I של הסוקר (תחילית `terms-` בשער), שנהרגה
+בסקירה רק כי לא הייתה נעיצת URL, קיבלה fixture שהורג אותה גם עכשיו.
+
+**תוכנית המוטציות** `mutations/queue-zero-test.json`: Q3, Q6, Q12 עודכנו לקוד שזז (Q6 נבדקת עכשיו על עותק קפוא של ה-slug
+שה-URL שלו שונה, כי לפי URL הוא נתפס בכל מקרה); נוספו F1-F10, R-E, R-F, R-I, R-J, R-K, R-K2 — 32 רשומות.
+
+**בדיקות:**
+
+- `scripts/verify.sh` על ששת הקבצים: exit 0 (typecheck 0, 382 בדיקות), אחרי כל קומיט וגם על העץ הממוזג הסופי.
+- `scripts/verify.sh` מלא: exit 0 (typecheck 0; 79 קבצים, 2609 עברו, 2 מדולגות), לפני המיזוג השני ואחריו.
+- מוטציות ב-`sim-tree.sh`: `queue-zero-test.json` — 31/31 נהרגו (169 שניות), ואחרי R-I — 32/32 (194 שניות); R-E, R-F,
+  R-J, R-K שרדו בסקירה ונהרגו עכשיו. T54-D1 של `render-dispatch.json` (שהעולם שלו השתנה) — נהרגה. מוטציה חד-פעמית
+  שמסירה את `dir` מ-`syncPauseComments` — נהרגה. `mutate.mjs --check` על `queue-zero-test.json` ו-`render-watch.json`: exit 0.
+- dry-run על המאגר האמיתי: `terms-kaggle` — היה נכתב כמו קודם; `terms-israel-post` — נדחה כמו קודם (קיפול 2). בדיקה
+  בזיכרון: עם הערה `shell: x` ל-Israel Post, `terms-rates` על דף הדואר הרשום — נדחה; `terms-israel-post` על דף התנאים —
+  עובר. `urls.txt` ללא שינוי (sha256 זהה), `freeze-capture --cited`: exit 0, "would repoint 0".
+- **הבסיס זז שוב** בזמן התיקון (עד 2242cbf: osek-zair ומיסוך Mapbox). הפעם המיזוג נקי (`git merge-tree` exit 0), מוזג
+  (f4c6a6a), ו-`render-watch.json` נשאר 64 רשומות.
+- grep לזהות (שני המונחים) על הקבצים ששונו: ריק.
