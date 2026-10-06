@@ -44,9 +44,11 @@
  *
  * THE SECOND PASS. A capture trimmed before the wide rule (the 6.10 pass kept wide ranges: `indiebook.md:108`'s "txt in
  * full (body :29-269)", 245 of indiebook-terms.txt's 298 lines) is re-trimmed by --apply: in each of its kept files (the
- * .txt, a body kept at its cited lines) that a wide range cites, now or in the block's `cited` record, every line kept
- * only because of a wide range is emptied. What stays is the old kept lines that a range that is not wide (in the
- * block's record or cited now) still keeps with its CONTEXT; no line comes back. keptLines (and body.keptLines) are
+ * .txt, a body kept at its cited lines) that a wide range cites, now or in the block's record (`cited`, `wide`), every
+ * line kept only because of a wide range is emptied. What stays is the old kept lines that a range that is not wide (in
+ * the block's record or cited now) still keeps with its CONTEXT; no line comes back. A range counts as in the first
+ * pass: one that starts in the file does (running past its end, it is wide by its own length, or keeps what of it the
+ * file has), one that starts past the end does not. keptLines (and body.keptLines) are
  * recomputed; a body left with no kept line leaves the tree (body.inTree false); fullSha256, fullByteLength, lineCount
  * and body.sha256 stay as they are (the full hash is the verification hash and never changes); `cited` and `wide` are
  * rewritten; and `passes` gains { on, ruling (WIDE_RULING), keptLinesBefore, bodyKeptLinesBefore }. The meta's lines
@@ -345,11 +347,13 @@ function citeRecord(cites) {
 
 /**
  * The second pass over a trimmed capture (the wide rule, amendment 1 (5)(iii); header comment). Per kept file (the .txt,
- * or a text body in the tree) that a wide range cites, now (cites, stray ones left out) or in the block's record: the old
- * kept lines that a range that is not wide, now or recorded, still keeps with its context. Returns { ext, before,
- * after, lines, wide } for each file whose kept lines would shrink; none when the wide rule takes nothing more.
+ * or a text body in the tree) that a wide range cites, now (cites) or in the block's record: the old kept lines that a
+ * range that is not wide, now or recorded, still keeps with its context. A range counts as the first pass counts it:
+ * one that starts in the file does (running past its end, it is wide by its own length, or keeps what of it the file
+ * has), one that starts past the end does not. Returns { ext, before, after, lines, wide } for each file whose kept
+ * lines would shrink; none when the wide rule takes nothing more.
  */
-export function widePass({ t, cites, stray = () => false }) {
+export function widePass({ t, cites }) {
   const bodyExt = extOf(t.body?.path);
   const recorded = [...(t.cited ?? []), ...(t.wide ?? [])].map((r) => ({ ext: r.file, range: r.lines, by: r.by, how: "recorded" }));
   const out = [];
@@ -358,7 +362,7 @@ export function widePass({ t, cites, stray = () => false }) {
     [bodyExt, t.body?.keptLines ?? [], t.body?.lineCount, Boolean(t.body?.inTree)],
   ]) {
     if (!ext || lines == null || !inTree || !before.length) continue;
-    const all = [...cites.filter((c) => c.ext === ext && !stray(c)), ...recorded.filter((r) => r.ext === ext && r.range[1] <= lines)];
+    const all = [...cites, ...recorded].filter((c) => c.ext === ext && c.range[0] <= lines);
     const wide = all.filter((c) => isWide(c.range));
     if (!wide.length) continue;
     const after = intersectRanges(keptRanges(keepingRanges(all), lines), before);
@@ -401,6 +405,8 @@ export function planCapture({ slug, dir, files, cites, site, on, commit, capture
     };
     // A reference past the end of the file (or to a file the capture never had) blanked nothing, as on the first run.
     const stray = (c) => c.ext !== "meta.json" && (linesOf(c.ext) == null || c.range[1] > linesOf(c.ext));
+    // What the second pass records as cited now: as the first pass records, every reference that starts in the file.
+    const starts = (c) => c.ext !== "meta.json" && linesOf(c.ext) != null && c.range[0] <= linesOf(c.ext);
     // Where the full bytes are: a commit (this script's trim; null in a store outside git), or nowhere in git
     // (render-watch's route stored the capture: "never in the tree or in git history").
     plan.committed = t.fullBytesIn == null || /^commit [0-9a-f]+\b/.test(String(t.fullBytesIn));
@@ -420,8 +426,8 @@ export function planCapture({ slug, dir, files, cites, site, on, commit, capture
       return plan;
     }
     // The second pass: a capture trimmed before the wide rule keeps lines only a wide range reached; they are emptied.
-    const changes = widePass({ t, cites: resolved, stray });
-    if (changes.length) return retrimPlan({ plan, t, files, metaText, meta, resolved, changes, stray, inside, on, trimText, dir });
+    const changes = widePass({ t, cites: resolved });
+    if (changes.length) return retrimPlan({ plan, t, files, metaText, meta, resolved, changes, stray, starts, inside, on, trimText, dir });
     plan.state = "already";
     plan.late = resolved.filter((c) => c.how !== "cited" && !isWide(c.range) && !stray(c) && !inside(c));
     return plan;
@@ -501,7 +507,7 @@ export function planCapture({ slug, dir, files, cites, site, on, commit, capture
  * left with none leaves the tree), the block rewritten in place with the pass recorded. Throws when a file no longer has
  * the lines its block records, or when a line that a range that is not wide cites, and the trim kept, would be blanked.
  */
-function retrimPlan({ plan, t, files, metaText, meta, resolved, changes, stray, inside, on, trimText, dir }) {
+function retrimPlan({ plan, t, files, metaText, meta, resolved, changes, stray, starts, inside, on, trimText, dir }) {
   const slug = plan.slug;
   const block = { ...t };
   for (const ch of changes) {
@@ -531,7 +537,7 @@ function retrimPlan({ plan, t, files, metaText, meta, resolved, changes, stray, 
   }
   // The record: what the block said and what is cited now, the wide ranges apart (they keep nothing).
   const recorded = [...(t.cited ?? []), ...(t.wide ?? [])].map((r) => ({ ext: r.file, range: r.lines, by: r.by }));
-  const now = resolved.filter((c) => c.ext !== "meta.json" && !stray(c));
+  const now = resolved.filter(starts);
   block.cited = citeRecord([...recorded, ...now].filter((c) => !isWide(c.range)));
   block.wide = citeRecord([...recorded, ...now].filter((c) => isWide(c.range)));
   block.passes = [...(t.passes ?? []), { on, ruling: WIDE_RULING, keptLinesBefore: t.keptLines ?? [], bodyKeptLinesBefore: t.body ? (t.body.keptLines ?? []) : null }];

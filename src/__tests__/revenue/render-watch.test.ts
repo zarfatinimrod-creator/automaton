@@ -2392,6 +2392,9 @@ describe(".github/workflows/render-watch.yml — nothing uploaded; the commit st
     }
     // A last line with no newline is read too.
     expect(runGuard(["bar-terms.html"], "bar-terms").status).toBe(1);
+    // A blank line is passed over, not the end of the list: the slugs after it are read too.
+    expect(runGuard(["bar-terms.html"], "\nbar-terms\n").status).toBe(1);
+    expect(runGuard(["bar-terms.pdf"], "other-slug\n\nbar-terms\n").status).toBe(1);
   });
 
   it("lets the commit go on for the slug's meta and emptied .txt, for another slug's body, and for an empty list", () => {
@@ -2428,5 +2431,40 @@ describe(".github/workflows/render-watch.yml — nothing uploaded; the commit st
     expect(spawnSync("bash", ["-euo", "pipefail", "-c", guard], { cwd: root, env, encoding: "utf8" }).status).toBe(0);
     writeFileSync(join(out, "bar-terms.html"), "<html></html>\n");
     expect(spawnSync("bash", ["-euo", "pipefail", "-c", guard], { cwd: root, env, encoding: "utf8" }).status).toBe(1);
+  });
+
+  it("end to end, several copying-barred pages in one run (the weekly list has ten such lines): every slug the run stores is listed, in order, so a body of the first is stopped as surely as one of the last", async () => {
+    const root = tmpOut();
+    const out = join(root, "research", "rendered");
+    mkdirSync(out, { recursive: true });
+    const listPath = join(tmpOut(), "barred-slugs.txt");
+    vi.stubGlobal("fetch", async (url: string) => {
+      const { pathname } = new URL(String(url));
+      if (pathname === "/robots.txt") return new Response(null, { status: 404 });
+      return new Response(`<html><body><p>Terms at ${pathname}.</p></body></html>`, { status: 200, headers: { "content-type": "text/html" } });
+    });
+    const stdout = captureStdout();
+    try {
+      const list = join(root, "urls.txt");
+      writeFileSync(list, "https://www.barred.test/terms\tbar-terms\nhttps://open.test/terms\topen-terms\nhttps://barred.test/rates\tbar-rates\nhttps://barred.test/exempt\tbar-exempt\n");
+      expect(await main(["--list", list, "--out", out], { RENDER_WATCH_BARRED_LIST: listPath }, { copyingBarred: ["barred.test"], delayMs: 0 })).toBe(0);
+    } finally {
+      stdout.restore();
+      vi.unstubAllGlobals();
+    }
+    expect(readFileSync(listPath, "utf8")).toBe("bar-terms\nbar-rates\nbar-exempt\n");
+    const env = { ...process.env, RENDER_WATCH_BARRED_LIST: listPath };
+    const guardRun = () => spawnSync("bash", ["-euo", "pipefail", "-c", guard], { cwd: root, env, encoding: "utf8" });
+    expect(guardRun().status).toBe(0);
+    for (const slug of ["bar-terms", "bar-rates", "bar-exempt"]) {
+      writeFileSync(join(out, `${slug}.html`), "<html></html>\n");
+      const r = guardRun();
+      expect(r.status, slug).toBe(1);
+      expect(r.stdout, slug).toContain(`::error title=copying barred::research/rendered/${slug}.html is the body of a copying-barred page`);
+      rmSync(join(out, `${slug}.html`));
+    }
+    // The open page's body stays where it always was.
+    expect(existsSync(join(out, "open-terms.html"))).toBe(true);
+    expect(guardRun().status).toBe(0);
   });
 });

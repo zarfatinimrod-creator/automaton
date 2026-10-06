@@ -464,6 +464,9 @@ describe("trim-capture on a fixture store", () => {
     expect(intersectRanges([[1, 24]], [[8, 12], [18, 22]])).toEqual([[8, 12], [18, 22]]);
     expect(intersectRanges([[1, 5], [10, 20]], [[4, 12]])).toEqual([[4, 5], [10, 12]]);
     expect(intersectRanges([[1, 5]], [])).toEqual([]);
+    // Ranges that share one line share that line.
+    expect(intersectRanges([[1, 5]], [[5, 9]])).toEqual([[5, 5]]);
+    expect(intersectRanges([[3, 3]], [[1, 10]])).toEqual([[3, 3]]);
     expect(keepingRanges([{ range: [2, 22] }, { range: [10, 10] }, { range: [30, 49] }])).toEqual([[10, 10], [30, 49]]);
     const t = { keptLines: [[1, 24]], lineCount: 31, body: null, cited: [{ file: "txt", lines: [2, 22], by: ["n.md:1"] }, { file: "txt", lines: [10, 10], by: ["n.md:2"] }] };
     // The block's record alone: a wide range recorded keeps nothing any more, the line recorded apart stays.
@@ -478,6 +481,52 @@ describe("trim-capture on a fixture store", () => {
     const body = { keptLines: [], lineCount: null, body: { path: "research/rendered/x.html", keptLines: [[1, 30]], lineCount: 30, inTree: true }, cited: [{ file: "html", lines: [2, 28], by: ["n.md:1"] }] };
     expect(widePass({ t: body, cites: [] })).toMatchObject([{ ext: "html", before: [[1, 30]], after: [] }]);
     expect(widePass({ t: { ...body, body: { ...body.body, inTree: false } }, cites: [] })).toEqual([]);
+    // A line read on its line beside the old kept lines (emptied, so a note, not a refusal): its context keeps the one
+    // old kept line it reaches, and nothing outside them.
+    expect(widePass({ t, cites: [{ ext: "txt", range: [26, 26], by: "n.md:5", how: "on its line" }] })[0].after).toEqual([[8, 12], [24, 24]]);
+  });
+
+  it("widePass counts a range as the first pass does: one that starts in the file and runs past its end is wide by its own length, or keeps what of it the file has; one that starts past the end counts for nothing", () => {
+    // The review's probe: a wide range recorded past the end keeps nothing in the second pass, as it kept nothing in the first.
+    const pastEnd = { keptLines: [[27, 298]], lineCount: 298, body: null, cited: [{ file: "txt", lines: [29, 400], by: ["n.md:1"] }] };
+    expect(widePass({ t: pastEnd, cites: [] })).toEqual([{ ext: "txt", before: [[27, 298]], after: [], lines: 298, wide: [{ ext: "txt", range: [29, 400], by: ["n.md:1"], how: "recorded" }] }]);
+    // The same range cited now (and in no record).
+    expect(widePass({ t: { ...pastEnd, cited: [] }, cites: [{ ext: "txt", range: [29, 400], by: "n.md:2", how: "cited" }] })).toMatchObject([{ ext: "txt", after: [] }]);
+    // A range that is not wide and runs past the end keeps what of it the file has, recorded or cited now.
+    const t = { keptLines: [[1, 24], [27, 31]], lineCount: 31, body: null, cited: [{ file: "txt", lines: [2, 22], by: ["n.md:1"] }, { file: "txt", lines: [10, 10], by: ["n.md:2"] }, { file: "txt", lines: [29, 33], by: ["n.md:3"] }] };
+    expect(widePass({ t, cites: [] })[0].after).toEqual([[8, 12], [27, 31]]);
+    const cites = [{ ext: "txt", range: [29, 33], by: "n.md:3", how: "cited" }];
+    expect(widePass({ t: { ...t, cited: t.cited.slice(0, 2) }, cites })[0].after).toEqual([[8, 12], [27, 31]]);
+    // A range that starts past the end is another file's line: wide or not, it neither starts a second pass nor keeps a line.
+    const moved = { keptLines: [[8, 12], [20, 24]], lineCount: 31, body: null, cited: [{ file: "txt", lines: [10, 10], by: ["n.md:2"] }] };
+    expect(widePass({ t: moved, cites: [{ ext: "txt", range: [35, 60], by: "n.md:4", how: "cited" }] })).toEqual([]);
+    expect(widePass({ t: { ...t, cited: t.cited.slice(0, 2) }, cites: [{ ext: "txt", range: [32, 34], by: "n.md:5", how: "cited" }] })[0].after).toEqual([[8, 12]]);
+  });
+
+  it("the second pass over ranges that run past the end of the file: the wide one keeps nothing, the one that is not wide keeps what of it the file has, and the block records both, and a range cited since that starts in the file too", () => {
+    const at610 = `${NOTE}Read research/rendered/bar-live-2026-10-01.txt in full (body :2-40).\nIts last lines (research/rendered/bar-live-2026-10-01.txt:29-33).\n`;
+    const { root, dir } = makeStore("past-end", { note: at610 });
+    const copy = "bar-live-2026-10-01";
+    const fullTxt = readFileSync(join(dir, `${copy}.txt`), "utf8");
+    for (const slug of ["bar-live", copy, "bar-json"]) trimAsOn610(root, slug);
+    expect(JSON.parse(readFileSync(join(dir, `${copy}.meta.json`), "utf8")).trimmed.keptLines).toEqual([[1, 31]]);
+    // Since 6.10, a further line cites the copy's end again.
+    writeFileSync(join(root, "research", "notes", "n.md"), `${at610}The end again (research/rendered/bar-live-2026-10-01.txt:30-34).\n`);
+    const dry = run(root, { on: "2026-10-07" });
+    expect(dry.code, dry.out).toBe(0);
+    expect(dry.out).toContain(`would re-trim ${copy} (wide range txt:2-40;`);
+    const applied = run(root, { apply: true, on: "2026-10-07" });
+    expect(applied.code, applied.out).toBe(0);
+    const lines = fullTxt.split("\n");
+    const kept = (n: number) => (n >= 8 && n <= 12) || (n >= 18 && n <= 22) || (n >= 27 && n <= 31);
+    readFileSync(join(dir, `${copy}.txt`), "utf8").split("\n").forEach((line, i) => expect(line, `line ${i + 1}`).toBe(kept(i + 1) ? lines[i] : ""));
+    const block = JSON.parse(readFileSync(join(dir, `${copy}.meta.json`), "utf8")).trimmed;
+    expect(block).toMatchObject({ keptLines: [[8, 12], [18, 22], [27, 31]], fullSha256: sha(fullTxt), lineCount: 31, wide: [{ file: "txt", lines: [2, 40], by: ["research/notes/n.md:7"] }] });
+    expect(block.cited).toContainEqual({ file: "txt", lines: [29, 33], by: ["research/notes/n.md:8"] });
+    expect(block.cited).toContainEqual({ file: "txt", lines: [30, 34], by: ["research/notes/n.md:9"] });
+    expect(checkManifest(dir)).toEqual([]);
+    const third = run(root, { apply: true, on: "2026-10-08" });
+    expect(third.code, third.out).toBe(3);
   });
 
   it("the second pass: a capture trimmed on 6.10 whose kept lines a wide range reached is re-trimmed by --apply (lines emptied, keptLines recomputed, the full hashes kept, the pass recorded, FROZEN.sha256 rewritten); a third run has nothing to do", () => {

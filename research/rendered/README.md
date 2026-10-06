@@ -201,8 +201,10 @@ text, cite the lines quoted, each one apart.
 **The second pass.** The 6.10 trim kept wide ranges (the amendment's stated interim): `indiebook-terms.txt` kept 245 of
 its 298 lines for `indiebook.md:108`, and the frozen 29.9 terms copies of btl.gov.il and worksheets4kids.co.il kept
 `:293-313` and `:185-205` for `RULING-2026-10-06-robots-and-terms.md:22`. `trim-capture.mjs --apply` re-trims such a
-capture: in each kept file a wide range reaches (cited now, or in the block's `cited` record), every line kept only
-because of a wide range is emptied, and no emptied line comes back. `keptLines` (and `body.keptLines`; a body left with
+capture: in each kept file a wide range reaches (cited now, or in the block's `cited` or `wide` record), every line
+kept only because of a wide range is emptied, and no emptied line comes back. A range counts as in the first trim: one
+that starts in the file does, even when it runs past the end (it is wide by its own length, or keeps what of it the
+file has), and one that starts past the end does not. `keptLines` (and `body.keptLines`; a body left with
 none leaves the tree) are recomputed; `fullSha256`, `fullByteLength`, `lineCount` and `body.sha256` stay as they were,
 since the full hash is the verification hash and never changes; `cited` and `wide` are rewritten; and the block gains
 `passes: [{ on, ruling, keptLinesBefore, bodyKeptLinesBefore }]`, `ruling` naming amendment 1 (5)(iii). The meta's

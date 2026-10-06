@@ -275,7 +275,7 @@
   {
     "id": "T57-T5",
     "file": "scripts/trim-capture.mjs",
-    "find": "    const changes = widePass({ t, cites: resolved, stray });",
+    "find": "    const changes = widePass({ t, cites: resolved });",
     "replace": "    const changes = [];",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 57 build: the second pass skips captures already trimmed (indiebook-terms.txt keeps 245 lines)"
@@ -376,5 +376,37 @@
     "replace": "    if (false) continue;",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 57 build: the second pass re-trims a capture no wide range reaches (citations that moved since 6.10 empty lines)"
+  },
+  {
+    "id": "T57-R13",
+    "file": "scripts/trim-capture.mjs",
+    "find": "      if (lo <= hi) out.push([lo, hi]);",
+    "replace": "      if (lo < hi) out.push([lo, hi]);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 review R13 (survived the review): intersectRanges drops a one-line overlap, so the second pass empties the one old kept line a citation's context reaches"
+  },
+  {
+    "id": "T57-X1",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    const all = [...cites, ...recorded].filter((c) => c.ext === ext && c.range[0] <= lines);",
+    "replace": "    const all = [...cites, ...recorded].filter((c) => c.ext === ext && c.range[1] <= lines);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 review fixer (the review's past-the-end note): the second pass leaves out a range that runs past the end of the file, so a wide one never re-trims and one that is not wide loses the lines the first pass kept for it"
+  },
+  {
+    "id": "T57-X2",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    const all = [...cites, ...recorded].filter((c) => c.ext === ext && c.range[0] <= lines);",
+    "replace": "    const all = [...cites, ...recorded].filter((c) => c.ext === ext);",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 review fixer: a wide range that starts past the end of the file (another file's line) starts a second pass, which empties lines kept for citations gone since"
+  },
+  {
+    "id": "T57-X3",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  const now = resolved.filter(starts);",
+    "replace": "  const now = resolved.filter((c) => c.ext !== \"meta.json\" && !stray(c));",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 57 review fixer: the second pass's record leaves out a range cited since 6.10 that runs past the end of the file (the first pass records it)"
   }
 ]

@@ -853,5 +853,21 @@
     "replace": "          RENDER_WATCH_ARTIFACT_DIR: ${{ runner.temp }}/render-watch-barred\n        run: node scripts/render-watch.mjs",
     "test": "src/__tests__/revenue/render-watch.test.ts",
     "note": "tick 57 build (amendment 1): the fetch step writes no list and names an artifact directory again"
+  },
+  {
+    "id": "T57-R10",
+    "file": "scripts/render-watch.mjs",
+    "find": "    if (barredList) appendFileSync(barredList, `${entry.slug}\\n`);",
+    "replace": "    if (barredList) writeFileSync(barredList, `${entry.slug}\\n`);",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 review R10 (survived the review: every main() test stored at most one barred page): each barred slug overwrites the last, so the commit step's guard checks only the last page of a run that stores several"
+  },
+  {
+    "id": "T57-R11",
+    "file": ".github/workflows/render-watch.yml",
+    "find": "            [ -n \"$slug\" ] || continue",
+    "replace": "            [ -n \"$slug\" ] || break",
+    "test": "src/__tests__/revenue/render-watch.test.ts",
+    "note": "tick 57 review R11 (survived the review): a blank line in the barred-slugs list stops the guard reading the slugs after it"
   }
 ]
