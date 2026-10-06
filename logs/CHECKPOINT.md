@@ -1,10 +1,18 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-10-06 ~03:25 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-10-06 ~05:50 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
 > **❓ פתוח לבעלים (30.9, ~21:25 UTC):** הבעלים שלחו קישור לסרטון YouTube (`nWt3CbE96LA`) עם "תלמד מזה". אין דרך מכונה לקרוא אותו: youtube.com חסום בשער התנאים שלנו (BARRED, ביקורת 29.9; הכרעת 30.9 16(d)), והמכולה חסומה ממילא; חיפוש ברשת לפי המזהה לא מחזיר דבר. נתבקשה הדבקה של התמלול (YouTube → "הצג תמלול") או של הכותרת ומה ללמוד ממנו. כשהטקסט יגיע: אותו תהליך כמו מחקר הטיקטוק של 28.9 (`research/tiktok/08-sales-marketing-lessons.md`), על Opus, ותוצאה ב-`research/owner-videos/`.
+
+## ▶ 6.10, ~05:50 UTC — **סבב 53 (המשך, מ-04:25): שני הסקריפטים של סבב 52 רצו על אמת (WorldNav נלכד, נקרא ודורג BLOCKED); `address-kinds.mjs` ו-`remask-run.sh` (§9 52(1)) מוזגו.**
+
+- **בדיקה (04:27):** main התקדם בריצת prize-intake (`a2d34f7`; כל 8 התאים המדורגים ומשפט צעד 3 נשמרו; שורה חדשה אחת לשיגור); הענף קודם. אין PR פתוח; MPT#1 ללא שינוי; אין הודעת בעלים.
+- **ההרצה האמיתית הראשונה של `render-dispatch.sh`** (`1adff97`): README של WorldNav, 7 צעדים exit 0, 4 מסכות free-mail, 0 כתובות גולמיות. קריאה H (קורא Opus + מאמת): **BLOCKED** — ההשתתפות כפופה לתנאים ב-codabench.org (CONDITIONAL_UNMET); AI כשיטת ניווט בלבד. **היישום הראשון של `prize-apply-reading.mjs --apply`** (`50ffb8f`): 8 מציינים נבדקו, row states graded 8 / unsettled 3 / awaiting 56, 140 בדיקות prize עברו. אתר האירוע והסדנה (`f1y1113.github.io`, `roboworld2026.github.io`) נדחו בשער — אין פסק תנאים (§9 53(1), יחד עם edem-ai.github.io).
+- **הבנייה (מיזוג `bcd1fe9`; בונה, סוקר, מתקן על Opus, בלי רשת):** `address-kinds.mjs` — ספירת מחרוזות דמויות-כתובת לפי צורה, סוג דומיין ותפקיד, בלי להדפיס כתובת (exit 3 כשיש כתובת גולמית מחוץ לצורות המותרות); `render-dispatch.sh` משתמש בו (עותק אחד של המסווג). `remask-run.sh <date>` — שרשרת ה-re-mask כולה, עוצרת בכל exit לא-אפס, מסרבת לעץ מלוכלך. הסקירה: 0 חוסמים, 7 fix (trailers לפי כותרת הקומיט בלבד או מ-`REMASK_RUN_TRAILERS` — ה-thread הראשי מעביר את שלו, כדי שריצה לא תשאיל trailer של סשן אחר; נעיצת hash מתיישנת עוצרת את ה-commit ומשאירה את ההודעה בתיקיית הריצה; מסכה דבוקה לחלק מקומי לא-ASCII נספרת כ-"partly masked" וגולמית; צעדים וצורות שלא נבדקו קיבלו בדיקות) + 4 note, 3 הוסדרו ואחת נותרה (`!@`/`"@` לפני דומיין מסווג כ-handle); 31 מוטציות נהרגו ואז כל 7 הניצולים של הסוקר; verify exit 0 (79 קבצים, 2558). `address-kinds.mjs` על כל `research/rendered` (1,480 קבצים): 1,031 מסכות, 4 גולמיות — כולן בתוך שלושה גופי PDF שהמסכה משאירה בכוונה (ה-.txt שלהם ממוסך), 512 בכוונה (package@version 309, שמות נכסים 96, handles 54, אחרי `/` 43, userinfo 10); exit 3 בגלל הארבע — האם למסך PDF הוא החלטת thread ראשי (§9 53).
+- **הבא:** **סבב 54 = הטיק של 07:11:** סיכום הריצה השבועית של 05:23 + `--cited` + `address-kinds`; 9 לכידות תנאים (קוראים ומאמתים) + `robots-verdict.mjs`; ישיבת Fable — שורות 21 ו-22; `prize-dispatch.mjs --skip-captured` → `render-dispatch.sh` → קריאה → `prize-apply-reading.mjs` (Kaggle קודם אם התנאים מתירים); אם יש מקום — שלושת פסקי GitHub Pages (53(1)). **7.10:** שורות 24 ו-25; 06:47 prize-intake (צריך לשמור 9 תאים). **8.10:** שורה 26.
+- **היומן:** `logs/2026-10-06-channel-loop-tick-53.md`; יומן הבנייה: `logs/2026-10-06-channel-loop-tick-53-address-kinds-remask-run.md`.
 
 ## ▶ 6.10, ~03:25 UTC — **סבב 52 (טיק 01:11): `prize-apply-reading.mjs`, `render-dispatch.sh` ו-trap לאותות ב-`sim-tree.sh` (§9 51(1)-(2)) מוזגו; הדירקטוריון השבועי של colony — 4 ESCALATE, אותם צעדי בעלים.**
 
