@@ -202,7 +202,13 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
     expect(verdicts).toContain("research/rendered/terms-btl-2026-09-29.txt:303");
     expect(verdicts).toContain("research/rendered/terms-ypay-2026-09-29.txt:55");
     expect(verdicts).not.toMatch(/terms-(btl|ypay)\.txt:/);
-    expect(lineOf("terms-btl-2026-09-29", "txt", 303)).toBe(lineOf("terms-btl", "txt", 303));
+    // The frozen copy's :303 holds the copying clause btl.gov.il's note cites there. It was the live capture's :303 too
+    // until the weekly render of 6.10 12:05 (364bf71) rewrote terms-btl, the rewrite the frozen copy exists for, so the line
+    // is held to its words, not to the live capture (tick 55).
+    expect(lineOf("terms-btl-2026-09-29", "txt", 303)).toMatch(/^בכפוף לדיני זכויות יוצרים, אסור למשתמש להעתיק, להפיץ מחדש, לשדר מחדש או לפרסם חומר מוגן/);
+    expect(verdicts).toContain(
+      "research/rendered/terms-btl-2026-09-29.txt:303 bars copying, redistributing, retransmitting or publishing protected material",
+    );
     expect(lineOf("terms-ypay-2026-09-29", "txt", 55)).toMatch(/רובוטים/);
     // actions-spending-limit.md cites by short name (R-GA:502); its capture tables name the frozen copies.
     const asl = read("research/measurements/actions-spending-limit.md");
