@@ -429,10 +429,10 @@
   {
     "id": "T54-M1",
     "file": "scripts/render-watch.mjs",
-    "find": "{ kind: \"mapbox-secret-token\", re: /\\bsk\\.eyJ[A-Za-z0-9_.+/=-]{20,}/g },",
-    "replace": "{ kind: \"mapbox-secret-token\", re: /\\bsk\\.eyJ[A-Za-z0-9_.+/=-]{20,}(?!)/g },",
+    "find": "{ kind: \"mapbox-token\", re: /\\b(?:sk|pk|tk)\\.eyJ[A-Za-z0-9_.+/=-]{20,}/g },",
+    "replace": "{ kind: \"mapbox-token\", re: /\\bsk\\.eyJ[A-Za-z0-9_.+/=-]{20,}/g },",
     "test": "src/__tests__/revenue/render-watch.test.ts",
-    "note": "tick 54 M1: the Mapbox secret pattern matches nothing"
+    "note": "tick 54 M1: only sk. Mapbox tokens are masked (push protection refused a pk. one)"
   },
   {
     "id": "T54-M2",
