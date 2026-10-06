@@ -430,3 +430,36 @@ After each: `scripts/verify.sh` on the named test files; `node scripts/freeze-ca
    condition stands untouched.
 6. **Whether wikisource, once `CONDITIONAL_MET`, may ever stand in for a primary text** on a product page: not by the loop
    alone; the primary-text rule stands, and corroboration beside a primary text is its only product use.
+
+## Amendment 1 (6.10 ~16:45 UTC, tick 56, main thread): decision 4(3)'s artifact is not private on a public repository
+
+**Finding.** The fold-9 builder stated, and the decider accepts from GitHub's REST documentation of the artifacts endpoints
+(not fetched from this container: the egress proxy answered 403 for docs.github.com on 6.10), that anyone with read access
+to a repository can download its workflow artifacts, and on a public repository every signed-in user has read access.
+Decision 4(3)'s "private to the repository's collaborators" holds only for a private repository. An artifact holding a
+copying-barred body is therefore a republication, less discoverable than a commit and for 90 days instead of forever, which
+decision 4(1) does not permit.
+
+**Decided.**
+
+1. **Fold 9 merges as reviewed.** Its tree-side route (a meta with a `trimmed` block, an emptied text of the same line
+   count, the commit-step guard) is what the one-time trim and the next weekly run depend on, and its upload step fires only
+   when a run captures a `copying: barred` page.
+2. **The upload step is removed in the next build, before the next scheduled weekly run (Tuesday 13.10, 05:23 UTC):**
+   render-watch writes no artifact directory, and the `trimmed` block of a capture stored under the route says the body was
+   not retained (its sha256, byte and line counts stay). Until that build lands, no dispatch names a line of apify.com,
+   btl.gov.il or worksheets4kids.co.il, the three copying-barred sites whose lines are active; fold 8 (pausing those lines)
+   stays undone, moot a second time, because the window holds no scheduled run.
+3. **No secret is asked of the owner for an encrypted artifact.** The main thread never holds a secret, so an encrypted copy
+   could be read by the owner alone and would serve no reading of the loop's.
+4. **What a copying-barred site's weekly line yields after (2) is change detection by hash.** A build that keeps, at fetch
+   time, only the lines a `urls.txt` line names by pattern, the quotation class decision 4(1) permits, is **fold 12**, Opus,
+   queued in `CHANNEL_LOOP.md` §9 and not yet briefed.
+5. **The builder's departures from the fold-9 brief**, as it reported them: (i) a body cited by line stays, trimmed to its
+   cited lines ±2 at the same line count, since decision 4(1)'s "cited lines" reaches a body as it reaches a text — stands;
+   (ii) a line that names a non-active capture keeps its bare `:N`, "line N" and `html:N`/`txt:N` citations too — stands;
+   (iii) `indiebook.md:108`'s "in full (body :29-269)" kept as a citation of 245 of `indiebook-terms.txt`'s 298 lines —
+   **does not stand**: a range longer than 20 lines is a statement that the text was read, which the sha256 already proves,
+   not a quotation, and keeping it republishes most of a copying-barred page. The rule: a cited range longer than 20 lines
+   keeps nothing, and the dry run lists it as `wide` with the citing line. The build of (2) adds the rule and runs the trim's
+   second pass; the 6.10 pass keeps those 245 lines until then, a stated interim.
