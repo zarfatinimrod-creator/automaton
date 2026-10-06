@@ -33,11 +33,14 @@
  * deploy day (BOARD-LOOP PUBLISH-10: the 8-week clock starts there).
  *
  * THE GATES (evaluatePageViewGates), each the ruling's own words turned into a comparison:
- *   - Instrumented (logs/CHANNEL_LOOP.md §2): nothing is read as a verdict until two consecutive weekly writes exist.
+ *   - Instrumented (logs/CHANNEL_LOOP.md §2): in the netlify period nothing is read as a verdict until two consecutive
+ *     weekly writes exist; in the domain period the kill reads eight consecutive measured weeks, which hold two.
  *   - M-instrument (floors row 9, item 3): no two consecutive weekly writes by D0+21 → an instrument fault — fixed, the
  *     clock restarted, recorded. Never a fail. Judged on when each row was WRITTEN (`writtenAt`), not on which weeks
  *     it covers: a week read late (a key added at day 30 backfills weeks 1-4 in one tick) was not written by D0+21,
- *     so the fault stands until the clock is restarted.
+ *     so the fault stands until the clock is restarted. A netlify-period gate: it runs from D0 only. The domain
+ *     deploy is a new clock, not a new instrument (PUBLISH-10; RULING-2026-10-06-domain-clock): no deadline runs from
+ *     the domain deploy day, and an unwritten domain week is `reader_down` once overdue, never `instrument_fault`.
  *   - M-reach at D0+56 (same item): total page views over the 56 days below 5 → `pause`; at or above 100 a week
  *     averaged over weeks 5-8 → `pass`; between → `extend` to D0+112, the same read over weeks 9-16, no second
  *     extension: between again → `pause`, as under 5, re-entering measuring at the domain deploy
@@ -46,13 +49,16 @@
  *     end plus READ_LAG_MS — not at the stroke of day 56.
  *   - The domain-period kill (portfolio.ts killCriteria, PUBLISH-10): weekly page views under 100 for 8 consecutive
  *     weeks after the domain deploy → `kill`.
- *   - A reader that stops (in either period, once instrumented): a completed week still without a reading
+ *   - A reader that stops (in the netlify period once instrumented; in the domain period from the first overdue week,
+ *     instrumented or not): a completed week still without a reading
  *     READ_GRACE_MS after it became readable is `reader_down`, a blocker — so a deleted or expired key cannot hide
  *     the kill or the reach read by leaving weeks unmeasured. It is not an instrument fault and never restarts the
  *     clock (RULING-2026-09-30-documents (c) call 1): it clears when the reader reads the week (PostHog keeps the
  *     events, so a late read is the same measurement). Only a week that cannot be read at all is an instrument
  *     fault, and that is the loop's call (a new d0 with its evidence): no gate detects it, since such a week is
- *     never written and stays `reader_down`. After a final netlify-period verdict no gate waits on later weeks, and
+ *     never written and stays `reader_down`. In the domain period the blocker names no restart: a new d0 does not
+ *     move the domain anchor, and the domain deploy day is a recorded fact, never re-dated
+ *     (RULING-2026-10-06-domain-clock). After a final netlify-period verdict no gate waits on later weeks, and
  *     a gap there is a diagnostic note — not a blocker, and nothing to restart.
  * A verdict is a reading for the board, which applies it; nothing here moves a line.
  */
@@ -284,7 +290,10 @@ export function countWeek(response: HogQLQueryResponse, w: WeekWindow, pages: Si
 export const PAGE_VIEW_GATES = {
   /** logs/CHANNEL_LOOP.md §2 "Instrumented": at least 2 consecutive scheduled KPI writes. */
   instrumentedWrites: 2,
-  /** M-instrument: the two writes must have been WRITTEN by D0+21 (00:00 UTC of day 21), whichever weeks they cover. */
+  /**
+   * M-instrument, netlify period only: the two writes must have been WRITTEN by D0+21 (00:00 UTC of day 21), whichever
+   * weeks they cover. No deadline runs from the domain deploy day (RULING-2026-10-06-domain-clock).
+   */
   instrumentByDay: 21,
   /** M-reach is read over the weeks ending on D0+56 (weeks 1-8), once week 8 is read … */
   reachDay: 56,
@@ -315,9 +324,9 @@ export interface PageViewClock {
 export const PAGE_VIEW_VERDICTS = [
   "no_clock", // no D0 recorded: nothing is read and no gate runs
   "not_started", // the anchor day is in the future
-  "uninstrumented", // fewer than two consecutive weekly writes, before the instrument deadline: no gate is read
-  // M-instrument missed: fixed, clock restarted, recorded — never a fail. A week that cannot be read at all is the loop's
-  // call on a `reader_down` (a new d0 with its evidence); the gates never return it for that.
+  "uninstrumented", // netlify period only: fewer than two consecutive weekly writes, before the instrument deadline: no gate is read
+  // Netlify period only. M-instrument missed: fixed, clock restarted, recorded — never a fail. A week that cannot be read
+  // at all is the loop's call on a `reader_down` (a new d0 with its evidence); the gates never return it for that.
   "instrument_fault",
   "reader_down", // a readable week still unread a day on: a blocker until the reader reads it — never a clock restart
   "measuring", // instrumented; the next read is not due
@@ -344,7 +353,10 @@ export interface PageViewGateReading {
   day: number | null;
   /** The weekly readings under this anchor, by week, ascending. */
   weeks: WeeklyReading[];
-  /** Two consecutive weekly writes made by the M-instrument deadline (or, before it, so far). */
+  /**
+   * Netlify period: two consecutive weekly writes made by the M-instrument deadline (or, before it, so far); domain
+   * period: two consecutive weekly writes under the domain anchor, no deadline.
+   */
   instrumented: boolean;
   verdict: PageViewVerdict;
   notes: string[];
@@ -412,19 +424,44 @@ export function evaluatePageViewGates(
     .filter((w) => !byWeek.has(w));
   const deadlineMs = anchorMs(anchorDay) + g.instrumentByDay * DAY_MS;
   const writtenByDeadline = sorted.filter((w) => Date.parse(w.writtenAt) <= deadlineMs).map((w) => w.week);
-  const instrumented = hasConsecutiveWrites(writtenByDeadline, g.instrumentedWrites);
+  // M-instrument is a netlify-period gate: the domain deploy is a new clock, not a new instrument, so the domain period
+  // counts its consecutive writes with no deadline (RULING-2026-10-06-domain-clock).
+  const instrumented =
+    period === "netlify"
+      ? hasConsecutiveWrites(writtenByDeadline, g.instrumentedWrites)
+      : hasConsecutiveWrites(sorted.map((w) => w.week), g.instrumentedWrites);
   const reading = (verdict: PageViewVerdict, ...notes: string[]): PageViewGateReading => ({ ...base, day, instrumented, verdict, notes });
   // The gap as a blocker (a gate waits on the weeks) or as a note after the period's final read (no gate does). Only
-  // the blocker names the instrument-fault restart: after a final verdict the measurement is finished, and restarting
-  // the clock over weeks no gate reads would throw it away.
-  const gapNote = (late: number[], blocker = true): string =>
+  // the netlify-period blocker names the instrument-fault restart: after a final verdict the measurement is finished,
+  // and restarting the clock over weeks no gate reads would throw it away; in the domain period a new d0 would not
+  // move the anchor, and the domain deploy day is a recorded fact that is never re-dated (RULING-2026-10-06-domain-clock).
+  const gapNote = (late: number[], kind: "blocker" | "diagnostic" | "domain" = "blocker"): string =>
     `week(s) ${late.join(", ")} still have no reading ${hours(READ_GRACE_MS)}h after they became readable: the reader is down — ` +
     "never a clock restart; unmeasured, never zero. Fix the reader: it reads every missing week it can" +
-    (blocker
+    (kind === "blocker"
       ? " and this clears when they are in (PostHog keeps the events, so a late read is the same count); only a week " +
         "that cannot be read at all is an instrument fault — the loop's call, which no gate makes: restart the clock " +
         "(a new d0 with its evidence) and record it"
-      : " (PostHog keeps the events, so a late read is the same count); diagnostics only, nothing to restart");
+      : kind === "domain"
+        ? " and this clears when they are in (PostHog keeps the events, so a late read is the same count); the domain " +
+          "deploy is a new clock, not a new instrument: nothing restarts it and its day is never re-dated " +
+          "(RULING-2026-10-06-domain-clock)"
+        : " (PostHog keeps the events, so a late read is the same count); diagnostics only, nothing to restart");
+
+  // The domain period comes first, so `uninstrumented` and `instrument_fault` are returned in the netlify period only
+  // (RULING-2026-10-06-domain-clock). A measured kill outranks a gap, whatever day its weeks were written; an overdue
+  // week is the reader down; otherwise the clock continues, saying how many weeks are measured.
+  if (period === "domain") {
+    for (const end of byWeek.keys()) {
+      const span = range(end - g.killConsecutiveWeeks + 1, end);
+      if (span[0]! < 1 || !span.every((w) => byWeek.has(w))) continue;
+      if (span.every((w) => byWeek.get(w)! < g.killWeeklyBelow)) {
+        return reading("kill", `weeks ${span[0]}-${end} after the domain deploy each under ${g.killWeeklyBelow} page views (${span.map((w) => byWeek.get(w)).join(", ")})`);
+      }
+    }
+    if (overdue.length) return reading("reader_down", gapNote(overdue, "domain"));
+    return reading("continue", `no ${g.killConsecutiveWeeks} consecutive measured weeks under ${g.killWeeklyBelow} since the domain deploy; ${sorted.length} week(s) measured`);
+  }
 
   if (!instrumented) {
     if (nowMs < deadlineMs) {
@@ -435,18 +472,6 @@ export function evaluatePageViewGates(
       `fewer than ${g.instrumentedWrites} consecutive weekly writes were made by day ${g.instrumentByDay} (M-instrument; weeks written by then: ${writtenByDeadline.join(", ") || "none"}): ` +
         "fix the instrument, restart the clock (a new d0 with its evidence) and record it — a week written later does not undo it; never a fail",
     );
-  }
-
-  if (period === "domain") {
-    for (const end of byWeek.keys()) {
-      const span = range(end - g.killConsecutiveWeeks + 1, end);
-      if (span[0]! < 1 || !span.every((w) => byWeek.has(w))) continue;
-      if (span.every((w) => byWeek.get(w)! < g.killWeeklyBelow)) {
-        return reading("kill", `weeks ${span[0]}-${end} after the domain deploy each under ${g.killWeeklyBelow} page views (${span.map((w) => byWeek.get(w)).join(", ")})`);
-      }
-    }
-    if (overdue.length) return reading("reader_down", gapNote(overdue));
-    return reading("continue", `no ${g.killConsecutiveWeeks} consecutive measured weeks under ${g.killWeeklyBelow} since the domain deploy`);
   }
 
   // The netlify.app period: the reach read over weeks from..to is made once week `to` has a reading. Until then a
@@ -462,7 +487,7 @@ export function evaluatePageViewGates(
   };
   const afterFinal = (lastWeek: number): string[] => {
     const late = overdue.filter((w) => w > lastWeek);
-    return late.length ? [`after the final read no gate of this period waits on later weeks, but ${gapNote(late, false)}`] : [];
+    return late.length ? [`after the final read no gate of this period waits on later weeks, but ${gapNote(late, "diagnostic")}`] : [];
   };
 
   const firstEnd = endWeekOfDay(g.reachDay);
