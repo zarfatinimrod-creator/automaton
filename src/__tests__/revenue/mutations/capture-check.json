@@ -349,7 +349,7 @@
     "find": ": { kind: \"trimmed\", evidence: where };",
     "replace": ": { kind: \"ok\", evidence: where };",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
-    "note": "tick 56 build: a capture the artifact route stored (no kind from before) reads as ok"
+    "note": "tick 56 build: a capture render-watch's route stored (no kind from before) reads as ok"
   },
   {
     "id": "T56-CC3",
