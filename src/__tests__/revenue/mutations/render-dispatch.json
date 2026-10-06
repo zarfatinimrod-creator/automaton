@@ -40,14 +40,6 @@
     "note": "tick 52 builder: a run that failed is fetched and checked as if it succeeded"
   },
   {
-    "id": "print-raw-address",
-    "file": "scripts/render-dispatch.sh",
-    "find": "      raw.set(kind, (raw.get(kind) ?? 0) + 1);",
-    "replace": "      raw.set(kind, (raw.get(kind) ?? 0) + 1);\n      console.log(hit[0]);",
-    "test": "src/__tests__/revenue/render-dispatch.test.ts",
-    "note": "tick 52 builder: the address report prints the raw address it found"
-  },
-  {
     "id": "allow-empty-file",
     "file": "scripts/render-dispatch.sh",
     "find": "[ \"$urls_lines\" -gt 0 ] || die 1",
@@ -120,14 +112,6 @@
     "note": "tick 52 review RV-B2: a CRLF lines file is sent as LF, not byte for byte"
   },
   {
-    "id": "F52-asset-as-address",
-    "file": "scripts/render-dispatch.sh",
-    "find": "      if (FILE_NAME.test(hit[1])) continue;\n",
-    "replace": "",
-    "test": "src/__tests__/revenue/render-dispatch.test.ts",
-    "note": "tick 52 review RV-B3: an asset name (<name>@2x.png) is counted as a raw address"
-  },
-  {
     "id": "F52-find-never-times-out",
     "file": "scripts/render-dispatch.sh",
     "find": "[ \"$(date +%s)\" -lt \"$deadline\" ] || die 1 \"[3/7] no run",
@@ -182,29 +166,5 @@
     "replace": "  if true; then",
     "test": "src/__tests__/revenue/render-dispatch.test.ts",
     "note": "tick 52 fixer: every slug is said to be unchanged, the refreshed ones too"
-  },
-  {
-    "id": "F52-ascii-report",
-    "file": "scripts/render-dispatch.sh",
-    "find": "const W = \"\\\\p{L}\\\\p{M}\\\\p{N}\";",
-    "replace": "const W = \"A-Za-z0-9\";",
-    "test": "src/__tests__/revenue/render-dispatch.test.ts",
-    "note": "tick 52 review: an address with an accented local part is not counted"
-  },
-  {
-    "id": "F52-report-at-forms",
-    "file": "scripts/render-dispatch.sh",
-    "find": "|&#0*64;?|&#[xX]0*40;?|&commat;|\\uFF20|\\uFE6B)\";",
-    "replace": ")\";",
-    "test": "src/__tests__/revenue/render-dispatch.test.ts",
-    "note": "tick 52 review: &#64;, &#x40;, &commat; and the look-alike at signs are not counted"
-  },
-  {
-    "id": "F52-report-latin1",
-    "file": "scripts/render-dispatch.sh",
-    "find": "    const text = readFileSync(file, \"utf8\");",
-    "replace": "    const text = readFileSync(file, \"latin1\");",
-    "test": "src/__tests__/revenue/render-dispatch.test.ts",
-    "note": "tick 52 fixer: a capture read as latin1 hides the addresses outside ASCII from the count"
   }
 ]

@@ -6,6 +6,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 
 | Plan | Script(s) | Tests | From |
 | --- | --- | --- | --- |
+| `address-kinds.json` | `scripts/address-kinds.mjs` (render-dispatch.sh's step 7 runs it) | `address-kinds.test.ts` (+ `render-dispatch` for the five entries moved from its plan) | ticks 52, 53 |
 | `capture-check.json` | `scripts/capture-check.mjs` | `capture-check.test.ts` | ticks 33, 34, 35 |
 | `freeze-capture.json` | `scripts/freeze-capture.mjs` | `freeze-capture.test.ts` (+ `remask-captures`, `frozen-citations`) | ticks 38, 50 |
 | `loop-edit.json` | `scripts/loop-edit.mjs` | `loop-edit.test.ts` | tick 43 |
@@ -13,6 +14,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `prize-apply-reading.json` | `scripts/prize-apply-reading.mjs` | `prize-apply-reading.test.ts` | tick 52 |
 | `prize-dispatch.json` | `scripts/prize-dispatch.mjs`, `src/revenue/ai-allowed-events.ts` | `prize-dispatch.test.ts` | tick 47 |
 | `remask-captures.json` | `scripts/remask-captures.mjs` (+ `freeze-capture.mjs`'s `maskedMeta`) | `remask-captures.test.ts` | ticks 49, 50 |
+| `remask-run.json` | `scripts/remask-run.sh` | `remask-run.test.ts` | tick 53 |
 | `render-dispatch.json` | `scripts/render-dispatch.sh` | `render-dispatch.test.ts` | tick 52 |
 | `render-watch.json` | `scripts/render-watch.mjs` (the address mask) | `render-watch.test.ts` | ticks 48, 50 |
 | `sim-tree.json` | `scripts/sim-tree.sh` | `sim-tree.test.ts` | ticks 51, 52 |
@@ -61,10 +63,12 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
   | `render-watch.json` | 53 | 117 |
   | `freeze-capture.json` | 23 | 171 |
   | `loop-edit.json` | 46 | 188, 191 |
+  | `address-kinds.json` | 22 | 198 (tick 53 fixer, beside the whole revenue suite; the builder's 17 entries: 156) |
+  | `remask-run.json` | 23 | 210 (tick 53 fixer; the builder's 14 entries: 87, after a first run of 94 s left one survivor) |
   | `mutate.json` | 11 | 393 (243-249 with the first 6) |
   | `remask-captures.json` | 45 | 523 |
   | `prize-apply-reading.json` | 40 | 580 (208 with the first 21) |
-  | `render-dispatch.json` | 26 | 591 (184 with the first 14) |
+  | `render-dispatch.json` | 26 | 591 (184 with the first 14); 21 entries since tick 53, its five address-report entries moved to `address-kinds.json` |
   | `capture-check.json` | 42 | 785, 827 (its test file alone takes about 18 s) |
   | `sim-tree.json` | 36 | 927 (501 with the first 28, 349 with the first 24, 182-184 with the first 14) |
 
