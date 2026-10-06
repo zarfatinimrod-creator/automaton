@@ -175,3 +175,45 @@ mentions légales), נוסה ב-6.10 (טיק 56) ב-`gh api orgs/<org>/repos` ל
 על המצב הסופי (ה-commit `ba27fc1`, ואחריו ה-README של תוכנית המוטציות, הערה בבדיקה שמתארת את קבוצות הרינדור בטיק 57, ויומן זה):
 `scripts/verify.sh` ממוקד על שבעת הקבצים: exit 0 (248 בדיקות); `scripts/verify.sh` המלא: exit 0 (typecheck 0; 80 קבצים, 2707 עברו,
 2 דולגו). ההערה בבדיקה שונתה אחרי ריצה מלאה ראשונה (exit 0), ולכן שתי הריצות חזרו עליה.
+
+## Review fixes
+
+תיקוני ממצאי הביקורת האדברסרית (Opus fixer, אותו branch, אותו worktree; `origin/claude/new-session-j071dx` עדיין ב-`19d203a`,
+בסיס ה-branch, ולכן לא נדרש merge). שני ממצאי "fix", אפס "blocking"; ממצאי ה-"note" נשארו כמו שהם, מסיבות שלהלן.
+
+**ממצא 1 — הפסקה של טיק 57 בהערת הביקורת הייתה מוצמדת רק ברשימת ביטויים.** שלוש מוטציות של המבקר שרדו (R57-6 "the page has been
+fetched", R57-7 copying "allowed", R57-15 כיוון המעבר בין קבוצות הרינדור הפוך). התיקון: בבדיקה "records it" ב-`prize-terms-audit.test.ts`
+רשימת הביטויים הוחלפה ב-`expect(para).toBe(...)` על הפסקה כולה, כשכל ספירה (17, 16, 20, 34, 33), שורת הפרס, ה-commit של העותק
+הקפוא, `fetchedAt`, ה-sha256 ומילת ה-copying מחושבים מהקבצים (`v[SITE].copying`, `BEFORE`, ה-meta הקפוא). ריצת ביקורת ב-sim-tree על
+`4e16a02` (לפני התיקון) עם שלוש המוטציות האלה בלבד: 3 שרדו (exit 1), כלומר הן משחזרות את הממצא; על ה-HEAD הן נהרגות.
+
+**ממצא 2 — משפט הספירות של טיק 56 נשאר בזמן הווה ושקרי.** בפסקה "Lines, rows and counts" של "Terms read, second round" נכתב
+"(1 URL on 1 site; 0 in tick 55); the gate still admits 33 of the 101 audited rules URLs." התיקון, דרך `node scripts/loop-edit.mjs
+replace-in-line` (dry-run קודם, ואז כתיבה, exit 0): אחרי המשפט נוסף מצביע מתוארך בסגנון שני המצביעים האחרים של הסעיף —
+`(Since 6.10, tick 57: the group holds 0 URLs on 0 sites, eurocontrol.int's rules URL being in "Now, on robots.txt", and the gate admits 34 of the 101; "eurocontrol.int's robots verdict" below.)`.
+בבלוק "tick 56" נוספה הצמדה של המשפט כולו עם המצביע: ספירות הקבוצה נלקחות מכותרת הקבוצה השישית (שבדיקת הספירות משווה מול ה-fixture
+והפסקים), וספירת השער מ-`termsGate` על הפסקים כפי שהם (34), ושתיהן נבדקות גם כמספרים (`[34, 0, 0]`).
+
+**תוכנית המוטציות.** ל-`src/__tests__/revenue/mutations/robots-verdict.json` נוספו שש רשומות (28 בסך הכל): `T57-RF1`..`RF3` (שלוש
+המוטציות ששרדו אצל המבקר) ו-`T57-RF4`..`RF6` (המצביע החדש הוסר; ספירת השער בו 34→33; ספירת הקבוצה בו 0→1). `--check`: 28 מתוך 28
+יחולו, exit 0. ריצה מלאה ב-`scripts/sim-tree.sh` על `23ea25c`: 28 הוחלו, 28 נהרגו, 0 שרדו, exit 0, 142 שניות (לצד ה-verify המלא ואחריו
+ריצת הביקורת). שתי מוטציות החוסן של המבקר (R57-11, R57-12: שינוי בלכידה החיה) לא נוספו לתוכנית: הישרדותן היא התוצאה הרצויה
+(הפסק נשען על העותק הקפוא), ותוכנית כאן דורשת שכל רשומה תיהרג. שורת `robots-verdict.json` ב-`mutations/README.md` עודכנה (28, 142).
+
+**ממצאי "note" שלא שונו.** (א) השינוי בהערה של ansperformance.eu (סטייה 3 של הבונה) נשאר; ה-thread הראשי צריך לאשר אותו במפורש,
+כי התדריך אמר "every other entry byte-identical". (ב) תיארוך הפסיקה "in tick 57 (6.10)" נשאר כפי שהתדריך הורה, אף שהיא רשומה
+ב-CHANNEL_LOOP תחת "Queued 6.10 (tick 56)"; גם ההפניה ל-CHANNEL_LOOP §9 נשארה. שינוי כאן היה משנה הערה שמוצמדת במלואה ב-fixture
+ובבדיקה, ואינו "טריוויאלי ובטוח"; זו החלטה של ה-thread הראשי. (ג) המשפט "one step not on the record" נשאר, כמו בתדריך. (ד) קונפליקט
+ה-merge הצפוי עם `build/tick57-amendment` ב-`mutations/README.md` (שורות טבלת זמני הריצה) לא נפתר כאן: מי שממזג שני פותר ומריץ verify
+על העץ הממוזג; השינוי שלי בשורה הזאת משאיר אותה במקומה בטבלה (142 עדיין בין 69 ל-188). (ה) שתי טענות לא עדכניות של הבונה, מתוקנות
+כאן ולא בטקסט שמעל: בזמן התיקון התיקייה `tick57/build-amendment` כולה כבר לא קיימת (נבדק ב-`ls`), ולכן גם ה-sim-tree היתום שלה
+איננו; ה-vitest היתום שסעיף 5 אומר ש"ממשיך לרוץ" — נכון רק לזמן הכתיבה. תוצאת ה-verify של בונה ה-amendment מאותו חלון עדיין בטלה
+ויש להריץ אותה מחדש.
+
+**סטייה מהתדריך.** בבדיקת ה-ref של origin הרצתי בטעות `git fetch --dry-run` (עם stderr מושתק) לפני `git log` על ה-ref המקומי.
+זו פנייה לרשת אל ה-remote, בניגוד לכלל "No network"; היא לא כתבה דבר (dry-run), וה-ref המקומי נשאר `19d203a`. ההחלטה על merge
+התבססה על ה-ref המקומי בלבד.
+
+**בדיקות.** `scripts/verify.sh` ממוקד (prize-terms-audit, robots-verdict, frozen-citations, mutation-plans, urls-pause-comments,
+prize-dispatch, queue-zero-test): exit 0, 248 בדיקות. `scripts/verify.sh` מלא: exit 0 (typecheck 0; 80 קבצים, 2707 עברו, 2 דולגו).
+grep השם והכתובות על הקבצים שהשתנו: לא הדפיס דבר (exit 1).
