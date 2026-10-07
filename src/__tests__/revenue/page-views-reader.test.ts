@@ -5,7 +5,7 @@ import { join } from "node:path";
 import type BetterSqlite3 from "better-sqlite3";
 import { createInMemoryDb } from "../orchestration/test-db.js";
 import { seedDefaultPortfolio } from "../../revenue/portfolio.js";
-import { PAGE_VIEW_KPI } from "../../revenue/page-views.js";
+import { PAGE_VIEW_KPI, QUERY_API_PRICED, maskPricedBody, type QueryApiFiring } from "../../revenue/page-views.js";
 import { recordKpi } from "../../revenue/ledger.js";
 import {
   MAX_WEEKS_PER_READ,
@@ -15,7 +15,9 @@ import {
   parsePageViewUnit,
   readPageViewClock,
   readPageViews,
+  serializePageViewClock,
   sitePages,
+  withQueryApiFiring,
 } from "../../revenue/page-views-reader.js";
 import { describePageViewGate, renderReport, tick } from "../../revenue/runner.js";
 
@@ -548,5 +550,270 @@ describe("the colony tick — the KPI step reads, the gates read the rows", () =
       { week: 2, views: 5, writtenAt: "2026-10-19T12:00:00.000Z" },
     ]);
     expect(readings.find((g) => g.lineId === "il-biz-tools")?.verdict).toBe("no_clock");
+  });
+});
+
+describe("a priced query API — RULING-2026-10-07-posthog-organisation §4(1) R1, in the reader", () => {
+  let db: BetterSqlite3.Database;
+  let dir: string;
+  let siteDir: string;
+  let clockFile: string;
+  const NOW = "2026-10-19T12:00:00.000Z";
+  const CLOCKS = {
+    "il-biz-tools": { d0: D0, d0Evidence: "runner 200 + clean grep (test)" },
+    pcn874: { d0: D0, d0Evidence: "rides the il-biz-tools deploy (test)" },
+  };
+
+  beforeEach(() => {
+    db = createInMemoryDb();
+    seedDefaultPortfolio(db);
+    dir = mkdtempSync(join(tmpdir(), "page-views-priced-"));
+    siteDir = join(dir, "site");
+    makeSite(siteDir);
+    clockFile = join(dir, "page-view-clock.json");
+    writeClock(clockFile, CLOCKS);
+  });
+  afterEach(() => {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  const read = (fetchImpl: typeof fetch, nowIso = NOW) => readPageViews(db, { env: ENV, fetchImpl, nowIso, siteDir, clockFile });
+  const answer = (status: number, name: string): Response => new Response(fixtureText(name), { status, headers: { "content-type": "application/json" } });
+  const firing = (over: Partial<QueryApiFiring> = {}): QueryApiFiring => ({
+    at: NOW,
+    reason: QUERY_API_PRICED,
+    status: 402,
+    matched: "HTTP 402",
+    body: "{}",
+    clearedOn: null,
+    clearedReason: null,
+    ...over,
+  });
+  /** The clock file with its one firing cleared (or not) by hand, as a person would edit it. */
+  const clearBy = (clearedOn: unknown, clearedReason: unknown): void => {
+    const data = JSON.parse(readFileSync(clockFile, "utf8"));
+    data.queryApi.priced[0] = { ...data.queryApi.priced[0], clearedOn, clearedReason };
+    writeFileSync(clockFile, serializePageViewClock(data));
+  };
+
+  for (const [status, name, matched] of [
+    [402, "posthog-query-402.json", "HTTP 402"],
+    [403, "posthog-query-403-billing.json", 'HTTP 403 naming "plan"'],
+    [429, "posthog-query-429-billing.json", 'HTTP 429 naming "quota"'],
+    [200, "posthog-hogql-pageviews-billed.json", "HTTP 200 carrying a billed-usage field (billed_usage)"],
+  ] as const) {
+    it(`${matched}: sends nothing more, writes reader_down with reason query_api_priced, and sets the flag`, async () => {
+      const before = readPageViewClock(clockFile).clocks;
+      const { fetchImpl, calls } = fakeFetch(() => answer(status, name));
+      const r = await read(fetchImpl);
+      expect(calls).toHaveLength(1); // week 2 is never asked
+      expect(r.status).toBe("error");
+      expect(r.reason).toBe(QUERY_API_PRICED);
+      expect(r.detail.startsWith(`reader_down — query_api_priced: week 1 from ${D0} not read: PostHog's query API answered as priced (${matched}; the answer began "`)).toBe(true);
+      expect(r.detail).toContain(`the flag is set in ${clockFile} (queryApi.priced) (RULING-2026-10-07-posthog-organisation §4(1) R1)`);
+      expect(r.detail).not.toContain(KEY);
+      expect(kpiRows(db, "il-biz-tools")).toEqual([]);
+      const after = readPageViewClock(clockFile);
+      expect(after.problems).toEqual([]);
+      expect(after.clocks).toEqual(before);
+      expect(after.queryApi).toEqual([firing({ status, matched, body: maskPricedBody(fixtureText(name), KEY) })]);
+    });
+  }
+
+  it("weeks read before the priced answer stay; the next week is not asked", async () => {
+    const { fetchImpl, calls } = fakeFetch((_c, n) => (n === 1 ? ok() : answer(402, "posthog-query-402.json")));
+    const r = await read(fetchImpl);
+    expect(calls).toHaveLength(2);
+    expect(r.reason).toBe(QUERY_API_PRICED);
+    expect(r.detail).toMatch(/^reader_down — query_api_priced: week 2 from 2026-10-05 not read: .*; read before it, and kept: w1 from 2026-10-05/);
+    expect(kpiRows(db, "il-biz-tools").map((k) => k.value)).toEqual([10]);
+    expect(kpiRows(db, "pcn874").map((k) => k.value)).toEqual([5]);
+  });
+
+  it("every later tick sends nothing while the firing has no hand clearance", async () => {
+    await read(fakeFetch(() => answer(402, "posthog-query-402.json")).fetchImpl);
+    for (const nowIso of ["2026-10-19T13:00:00.000Z", "2026-10-26T12:00:00.000Z", "2027-01-04T12:00:00.000Z"]) {
+      const { fetchImpl, calls } = fakeFetch(() => ok());
+      const r = await read(fetchImpl, nowIso);
+      expect(calls, nowIso).toHaveLength(0);
+      expect(r.status).toBe("error");
+      expect(r.reason).toBe(QUERY_API_PRICED);
+      expect(r.detail).toBe(
+        `reader_down — query_api_priced since ${NOW} (HTTP 402): no query is sent while ${clockFile} queryApi.priced holds a firing no hand has ` +
+          "cleared (clearedOn, a UTC day, and clearedReason, naming the REOPEN record; RULING-2026-10-07-posthog-organisation §4(1) R1)",
+      );
+    }
+    expect(readPageViewClock(clockFile).queryApi).toHaveLength(1);
+  });
+
+  it("a rate-limit 429 is not a trigger: an ordinary failed read, no flag, and the next tick reads", async () => {
+    const text = readFileSync(clockFile, "utf8");
+    const r = await read(fakeFetch(() => answer(429, "posthog-query-429-rate-limit.json")).fetchImpl);
+    expect(r.status).toBe("error");
+    expect(r.reason).toBeUndefined();
+    expect(r.detail).toBe("week 1 from 2026-10-05 not read: PostHog query failed: HTTP 429: Request was throttled. Expected available in 3 seconds.");
+    expect(readFileSync(clockFile, "utf8")).toBe(text);
+    const next = fakeFetch(() => ok());
+    expect((await read(next.fetchImpl, "2026-10-19T13:00:00.000Z")).status).toBe("recorded");
+    expect(next.calls).toHaveLength(2);
+  });
+
+  it("a 403 that names no billing word is a refusal, not R1", async () => {
+    const refused = new Response(JSON.stringify({ type: "authentication_error", code: "permission_denied", detail: "You do not have permission to perform this action." }), { status: 403 });
+    const r = await read(fakeFetch(() => refused).fetchImpl);
+    expect(r.reason).toBeUndefined();
+    expect(r.detail).toMatch(/^week 1 from 2026-10-05 not read: PostHog query failed: HTTP 403: You do not have permission/);
+    expect(readPageViewClock(clockFile).queryApi).toEqual([]);
+  });
+
+  it("the record and the detail carry the body masked: never the key, an address's local part or a token", async () => {
+    const address = ["someone", "example.com"].join("@");
+    const token = ["phc", "T".repeat(24)].join("_");
+    const body = JSON.stringify({ detail: `Upgrade required for key ${KEY}; contact ${address}; project ${token}` });
+    await read(fakeFetch(() => new Response(body, { status: 403 })).fetchImpl);
+    const [f] = readPageViewClock(clockFile).queryApi!;
+    expect(f!.matched).toBe('HTTP 403 naming "upgrade"');
+    expect(f!.body).toBe('{"detail":"Upgrade required for key [key]; contact [redacted:email]@example.com; project [redacted:posthog-key]"}');
+    const text = readFileSync(clockFile, "utf8");
+    for (const secret of [KEY, address, token]) expect(text).not.toContain(secret);
+  });
+
+  it("a hand clears the firing with a dated reason naming the REOPEN record, and the next tick reads", async () => {
+    await read(fakeFetch(() => answer(402, "posthog-query-402.json")).fetchImpl);
+    // Cleared on the day it fired: a clearance may not come before the firing's day, and that day itself is fine.
+    clearBy("2026-10-19", "REOPEN record: research/channel-loop/RULING-2026-11-02-posthog-query-api.md, a stated free tier");
+    const clock = readPageViewClock(clockFile);
+    expect(clock.problems).toEqual([]);
+    expect(clock.queryApi![0]).toMatchObject({ clearedOn: "2026-10-19", clearedReason: "REOPEN record: research/channel-loop/RULING-2026-11-02-posthog-query-api.md, a stated free tier" });
+    const { fetchImpl, calls } = fakeFetch(() => ok());
+    const r = await read(fetchImpl, "2026-10-26T12:00:00.000Z");
+    expect(r.status).toBe("recorded");
+    expect(r.reason).toBeUndefined();
+    expect(calls).toHaveLength(3);
+  });
+
+  for (const [clearedOn, clearedReason, problem] of [
+    [null, "RULING-2026-11-02-posthog-query-api", /has a clearedReason but no clearedOn/],
+    ["2026-10-20", null, /clearedOn 2026-10-20 has no clearedReason naming the REOPEN record \(a RULING-YYYY-MM-DD-… file\)/],
+    ["2026-10-20", "checked, all fine", /clearedOn 2026-10-20 has no clearedReason naming the REOPEN record/],
+    ["2026-10-20", "RULING-2026-11-02", /has no clearedReason naming the REOPEN record/],
+    ["20.10.2026", "RULING-2026-11-02-posthog-query-api", /clearedOn is not a UTC day \(YYYY-MM-DD\): 20\.10\.2026/],
+    ["2026-10-18", "RULING-2026-11-02-posthog-query-api", /clearedOn 2026-10-18 is before the day it fired, 2026-10-19/],
+  ] as const) {
+    it(`a clearance that is not a dated reason keeps the flag: ${String(clearedOn)} / ${String(clearedReason)}`, async () => {
+      await read(fakeFetch(() => answer(402, "posthog-query-402.json")).fetchImpl);
+      clearBy(clearedOn, clearedReason);
+      const clock = readPageViewClock(clockFile);
+      expect(clock.problems.join(" ")).toMatch(problem);
+      expect(clock.problems.join(" ")).toMatch(/queryApi\.priced\[0\] .*: the flag stays set until a hand clears it with a dated reason/);
+      expect(clock.queryApi![0]!.clearedOn).toBeNull();
+      const { fetchImpl, calls } = fakeFetch(() => ok());
+      const r = await read(fetchImpl, "2026-10-26T12:00:00.000Z");
+      expect(calls).toHaveLength(0);
+      expect(r.reason).toBe(QUERY_API_PRICED);
+    });
+  }
+
+  for (const [label, block] of [
+    ["priced not a list", { priced: "none" }],
+    ["the block a list", []],
+    ["an entry without at", { priced: [{ reason: "query_api_priced" }] }],
+    ["an entry with another reason", { priced: [{ at: NOW, reason: "rate_limited" }] }],
+    ["an entry whose at is a day, not an ISO instant", { priced: [{ at: "2026-10-19", reason: "query_api_priced" }] }],
+    ["an entry whose at is no time at all", { priced: [{ at: "2026-13-45T00:00:00.000Z", reason: "query_api_priced" }] }],
+    ["an entry that is not an object", { priced: [null] }],
+  ] as const) {
+    it(`fails closed on a queryApi block it cannot read (${label}): nothing is sent`, async () => {
+      writeClock(clockFile, { ...CLOCKS, queryApi: block });
+      const clock = readPageViewClock(clockFile);
+      expect(clock.queryApi).toBeNull();
+      expect(clock.problems.join(" ")).toMatch(/queryApi.*the reader sends nothing until a hand fixes it/);
+      const { fetchImpl, calls } = fakeFetch(() => ok());
+      const r = await read(fetchImpl);
+      expect(calls).toHaveLength(0);
+      expect(r.status).toBe("error");
+      expect(r.detail).toBe(`${clockFile}'s queryApi block cannot be read (see the page-view clock problems): it holds the flag that stops a priced query API, so nothing is sent until a hand fixes it`);
+    });
+  }
+
+  it("a clock file that is not JSON sends nothing either", async () => {
+    writeFileSync(clockFile, "{not json");
+    expect(readPageViewClock(clockFile).queryApi).toBeNull();
+    const { fetchImpl, calls } = fakeFetch(() => ok());
+    expect((await read(fetchImpl)).status).toBe("error");
+    expect(calls).toHaveLength(0);
+  });
+
+  it("says so when the flag cannot be written: the next tick would query again", async () => {
+    mkdirSync(`${clockFile}.tmp-${process.pid}`); // the temp file's path is taken, so the write fails (even as root)
+    const r = await read(fakeFetch(() => answer(402, "posthog-query-402.json")).fetchImpl);
+    expect(r.reason).toBe(QUERY_API_PRICED);
+    expect(r.detail).toMatch(new RegExp(`the flag could NOT be written to ${clockFile.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} \\(.+\\): write the firing there by hand, or the next tick queries again`));
+    expect(readPageViewClock(clockFile).queryApi).toEqual([]);
+  });
+
+  it("the tick: the priced answer is a blocker by its name, and the gates read the flag — no instrument fault on day 22", async () => {
+    const runTick = (nowIso: string, fetchImpl: typeof fetch) =>
+      tick(db, {
+        nowIso,
+        force: true,
+        feedGoals: false,
+        env: ENV,
+        fetchImpl,
+        measurementsDir: join(dir, "measurements"),
+        pageViewSiteDir: siteDir,
+        pageViewClockFile: clockFile,
+        brandMailFile: join(dir, "brand-mail.json"),
+        prizeIntakeFile: join(dir, "prize-intake.json"),
+      });
+    mkdirSync(join(dir, "measurements"));
+    const first = await runTick(NOW, fakeFetch(() => answer(402, "posthog-query-402.json")).fetchImpl);
+    expect(first.blockers.join("\n")).toMatch(/page views: reader_down — query_api_priced: week 1 from 2026-10-05 not read/);
+    // Day 22: weeks 1-3 unread. Without the flag this is the M-instrument fault; with it the deadline is suspended.
+    const later = fakeFetch(() => ok());
+    const result = await runTick("2026-10-27T12:00:00.000Z", later.fetchImpl);
+    expect(later.calls).toHaveLength(0);
+    const gate = result.pageViewGates.find((g) => g.lineId === "il-biz-tools");
+    expect(gate?.verdict).toBe("reader_down");
+    expect(gate?.notes.join(" ")).toContain(`the query API answered as priced on ${NOW} (query_api_priced`);
+    const blockers = result.blockers.join("\n");
+    expect(blockers).toMatch(/page views: reader_down — query_api_priced since 2026-10-19T12:00:00\.000Z \(HTTP 402\)/);
+    expect(blockers).toMatch(/page views il-biz-tools: reader down/);
+    expect(blockers).not.toMatch(/page views (il-biz-tools|pcn874): instrument fault/);
+  });
+});
+
+describe("the clock file's layout — the reader writes it only to add a firing", () => {
+  const COMMITTED = join("state", "colony", "page-view-clock.json");
+
+  it("the committed file round-trips byte for byte, and its queryApi block is empty", () => {
+    const text = readFileSync(COMMITTED, "utf8");
+    expect(serializePageViewClock(JSON.parse(text))).toBe(text);
+    expect(JSON.parse(text).queryApi).toEqual({ priced: [] });
+    const r = readPageViewClock(COMMITTED);
+    expect(r.problems).toEqual([]);
+    expect(r.queryApi).toEqual([]);
+    // The _comment says what the block is and who clears it.
+    expect(JSON.parse(text)._comment).toMatch(/queryApi\.priced is the persistent flag of a priced query API \(RULING-2026-10-07-posthog-organisation\.md §4\(1\) R1\)/);
+    expect(JSON.parse(text)._comment).toMatch(/only a hand clears one, never by deleting it: set its clearedOn \(a UTC day, not before the day of at\) and its clearedReason/);
+  });
+
+  it("a firing changes the queryApi line and nothing else, in place; a second one is appended", () => {
+    const text = readFileSync(COMMITTED, "utf8");
+    const f1: QueryApiFiring = { at: "2026-11-02T06:11:00.000Z", reason: QUERY_API_PRICED, status: 402, matched: "HTTP 402", body: "{}", clearedOn: null, clearedReason: null };
+    const next = withQueryApiFiring(text, f1);
+    const [was, now] = [text.split("\n"), next.split("\n")];
+    expect(now).toHaveLength(was.length);
+    expect(now.filter((line, i) => line !== was[i])).toEqual([
+      '  "queryApi": { "priced": [{ "at": "2026-11-02T06:11:00.000Z", "reason": "query_api_priced", "status": 402, "matched": "HTTP 402", "body": "{}", "clearedOn": null, "clearedReason": null }] }',
+    ]);
+    expect(serializePageViewClock(JSON.parse(next))).toBe(next);
+    const f2 = { ...f1, at: "2026-12-07T06:11:00.000Z" };
+    expect(JSON.parse(withQueryApiFiring(next, f2)).queryApi.priced).toEqual([f1, f2]);
+    // A file written before the block existed gains it, after every other key.
+    expect(Object.keys(JSON.parse(withQueryApiFiring(JSON.stringify({ a: 1, pcn874: { d0: null } }), f1)))).toEqual(["a", "pcn874", "queryApi"]);
+    expect(() => withQueryApiFiring(JSON.stringify({ queryApi: { priced: 1 } }), f1)).toThrow(/queryApi is not/);
+    expect(() => withQueryApiFiring("[]", f1)).toThrow(/not a JSON object/);
   });
 });

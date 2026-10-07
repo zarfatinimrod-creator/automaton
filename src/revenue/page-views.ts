@@ -60,6 +60,18 @@
  *     move the domain anchor, and the domain deploy day is a recorded fact, never re-dated
  *     (RULING-2026-10-06-domain-clock). After a final netlify-period verdict no gate waits on later weeks, and
  *     a gap there is a diagnostic note — not a blocker, and nothing to restart.
+ *   - A priced query API (RULING-2026-10-07-posthog-organisation §4). R1, `queryApiPriced`: a `/query` answer with
+ *     HTTP 402; a 403 or 429 whose body names billing, a plan, credits, quota or an upgrade (a 429 without such a word
+ *     is a rate limit and stays an ordinary failed read); a 2xx carrying a charge or billed-usage field. The reader then
+ *     sends nothing more, records the firing and stays `reader_down` with reason `query_api_priced` until a hand clears
+ *     the firing with a dated reason. §4(2)(iv), the gates: a priced-API `reader_down` is not an instrument fault. The
+ *     M-instrument deadline is suspended from the firing (or from the anchor, for a clock started under it) until the
+ *     first successful read after it, which backfills from the anchor, and moves by the time suspended; if no read
+ *     comes within PAGE_VIEW_GATES.pricedReadWithinDays (60) of the firing, the weeks still unread then that a gate of
+ *     the netlify period waits on are "a week that cannot be read at all": `instrument_fault`, as the 30.9 ruling
+ *     defines it (fixed, the clock restarted, recorded), and a week read later does not undo it. In the domain period
+ *     there is no instrument deadline (RULING-2026-10-06-domain-clock), so a firing only adds its note to the
+ *     `reader_down`.
  * A verdict is a reading for the board, which applies it; nothing here moves a line.
  */
 
@@ -285,6 +297,100 @@ export function countWeek(response: HogQLQueryResponse, w: WeekWindow, pages: Si
   return out;
 }
 
+// ── A priced query API (RULING-2026-10-07-posthog-organisation §4) ───────────
+
+/** The reason the reader writes beside `reader_down` when PostHog's query API answers as priced (ruling 7.10 §4(1) R1). */
+export const QUERY_API_PRICED = "query_api_priced";
+
+/** How much of a priced answer's body is kept as the firing's evidence, after masking (ruling 7.10 §4(1) R1). */
+export const PRICED_BODY_KEEP = 200;
+
+/** The words that make a 403 or 429 a billing answer: billing, a plan, credits, quota or an upgrade (R1). */
+const BILLING_WORDS = /\b(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)\b/i;
+
+/** The words of a 2xx field name that make it a charge or billed-usage field (R1). */
+const BILLED_FIELD_WORDS = new Set([
+  "bill", "billed", "billing", "billable", "charge", "charged", "charges", "cost", "costs", "credit", "credits", "fee",
+  "fees", "invoice", "invoiced", "price", "priced", "pricing",
+]);
+
+/** `billedUsage`, `billed_usage`, `Billed-Usage` → ["billed", "usage"]. */
+function fieldWords(name: string): string[] {
+  return name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+}
+
+/** The first field name, at any depth of a parsed JSON value, that names a charge or billed usage; null if none. */
+function billedField(value: unknown, depth = 0): string | null {
+  if (depth > 32 || !value || typeof value !== "object") return null;
+  for (const [name, v] of Array.isArray(value) ? value.map((x) => ["", x] as const) : Object.entries(value)) {
+    if (fieldWords(name).some((w) => BILLED_FIELD_WORDS.has(w))) return name;
+    const inner = billedField(v, depth + 1);
+    if (inner !== null) return inner;
+  }
+  return null;
+}
+
+/**
+ * R1 of ruling 7.10 §4(1): does one `/query` answer say the query API is priced? HTTP 402; a 403 or 429 whose body
+ * names billing, a plan, credits, quota or an upgrade (a 429 without such a word is a rate limit: null); a 2xx whose
+ * JSON body carries a charge or billed-usage field. Returns what matched, for the firing's record, or null.
+ */
+export function queryApiPriced(status: number, body: string): string | null {
+  if (status === 402) return "HTTP 402";
+  if (status === 403 || status === 429) {
+    const word = BILLING_WORDS.exec(body);
+    return word ? `HTTP ${status} naming "${word[0].toLowerCase()}"` : null;
+  }
+  if (status >= 200 && status < 300) {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(body);
+    } catch {
+      return null;
+    }
+    const field = billedField(parsed);
+    return field === null ? null : `HTTP ${status} carrying a billed-usage field (${field.slice(0, 60)})`;
+  }
+  return null;
+}
+
+/**
+ * The evidence kept from a priced answer: the body masked — the read key, any PostHog key or token (`ph?_…`, wherever
+ * it starts: an over-mask of a word that happens to hold one is harmless), and the local part of an email address —
+ * with its whitespace folded, and then cut to its first PRICED_BODY_KEEP characters. Masked before it is cut, so a key
+ * that straddles the cut is never half kept.
+ */
+export function maskPricedBody(body: string, key: string): string {
+  return (key ? body.split(key).join("[key]") : body)
+    .replace(/ph[a-z]_[A-Za-z0-9_-]{6,}/g, "[redacted:posthog-key]")
+    .replace(/[A-Za-z0-9._%+-]+@((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})/g, "[redacted:email]@$1")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, PRICED_BODY_KEEP);
+}
+
+/**
+ * One priced answer as the reader records it in `state/colony/page-view-clock.json` (`queryApi.priced`). While any
+ * firing has no `clearedOn`, the reader sends no query. Only a hand clears one: `clearedOn` (a UTC day, not before the
+ * day it fired) and `clearedReason` (naming the REOPEN record, a `RULING-YYYY-MM-DD-…` file).
+ */
+export interface QueryApiFiring {
+  /** The tick that met the answer (ISO). */
+  at: string;
+  reason: typeof QUERY_API_PRICED;
+  /** The answer's HTTP status. */
+  status: number;
+  /** What R1 matched: `HTTP 402`, `HTTP 429 naming "quota"`, `HTTP 200 carrying a billed-usage field (…)`. */
+  matched: string;
+  /** The answer's first PRICED_BODY_KEEP characters, masked (maskPricedBody). */
+  body: string;
+  clearedOn: string | null;
+  clearedReason: string | null;
+}
+
+/** What the gates read of a firing: when, and whether (and when) a hand cleared it. */
+export type QueryApiPricedAt = Pick<QueryApiFiring, "at" | "clearedOn">;
+
 // ── The gates ────────────────────────────────────────────────────────────────
 
 export const PAGE_VIEW_GATES = {
@@ -307,6 +413,12 @@ export const PAGE_VIEW_GATES = {
   killWeeklyBelow: 100,
   /** … for 8 consecutive weeks after the domain deploy. */
   killConsecutiveWeeks: 8,
+  /**
+   * A priced query API (RULING-2026-10-07-posthog-organisation §4(2)(iv)): the M-instrument deadline is suspended from
+   * the firing until the first successful read after it; with no read within this many days of the firing, the weeks
+   * still unread then are an instrument fault (netlify period only).
+   */
+  pricedReadWithinDays: 60,
 } as const;
 
 export interface PageViewClock {
@@ -394,9 +506,69 @@ function reachRead(byWeek: Map<number, number>, from: number, to: number, g: typ
   return { verdict: null, note: `${label} — between ${g.reachMinTotal} in total and ${g.passMinWeeklyAverage} a week` };
 }
 
+/** What the priced query API's firings do to one clock (ruling 7.10 §4(2)(iv)). */
+export interface PricedSuspension {
+  /** How far the M-instrument deadline moves: the time each firing suspended it, before the deadline it met. */
+  shiftMs: number;
+  /** A firing with no read after it yet, inside its days: the suspension still runs until `endMs`. */
+  open: { at: string; endMs: number } | null;
+  /** A firing with no read after it at all, open or past its days (the reader still sends nothing). */
+  unreadSince: string | null;
+  /** Firings whose days ended with weeks unread: those weeks, readable by `endMs` and not written by then. */
+  expired: { at: string; endMs: number; weeks: number[] }[];
+}
+
+/**
+ * The suspension each firing puts on one clock. A firing counts for a clock unless a hand cleared it before the clock's
+ * anchor day. It suspends from the firing, or from the anchor for a clock started under it, until the first row written
+ * after the firing (the tick that met the priced answer is not a read after it), and for at most `pricedReadWithinDays`
+ * from there; a read that comes later does not end the suspension in time, so the weeks unread at its end stay unread.
+ */
+export function pricedSuspension(
+  anchorDay: string,
+  weeks: WeeklyReading[],
+  firings: readonly QueryApiPricedAt[],
+  nowIso: string,
+  g: typeof PAGE_VIEW_GATES = PAGE_VIEW_GATES,
+): PricedSuspension {
+  const anchor = anchorMs(anchorDay);
+  const nowMs = Date.parse(nowIso);
+  const out: PricedSuspension = { shiftMs: 0, open: null, unreadSince: null, expired: [] };
+  let deadline = anchor + g.instrumentByDay * DAY_MS;
+  const counted = firings
+    .filter((f) => f.clearedOn === null || f.clearedOn >= anchorDay)
+    .map((f) => ({ at: f.at, firedMs: Date.parse(f.at) }))
+    .filter((f) => f.firedMs <= nowMs)
+    .sort((a, b) => a.firedMs - b.firedMs);
+  for (const f of counted) {
+    const startMs = Math.max(f.firedMs, anchor);
+    const endMs = startMs + g.pricedReadWithinDays * DAY_MS;
+    const after = weeks.map((w) => Date.parse(w.writtenAt)).filter((t) => t > f.firedMs);
+    const firstRead = after.length ? Math.min(...after) : null;
+    if (startMs < deadline) {
+      const suspended = Math.max(0, Math.min(firstRead ?? nowMs, endMs) - startMs);
+      out.shiftMs += suspended;
+      deadline += suspended;
+    }
+    if (firstRead === null) out.unreadSince ??= f.at;
+    if (firstRead !== null && firstRead <= endMs) continue;
+    if (nowMs < endMs) {
+      out.open ??= { at: f.at, endMs };
+      continue;
+    }
+    const readByEnd = new Set(weeks.filter((w) => Date.parse(w.writtenAt) <= endMs).map((w) => w.week));
+    const unread = completedWeeks(anchorDay, new Date(endMs).toISOString())
+      .map((w) => w.week)
+      .filter((w) => !readByEnd.has(w));
+    if (unread.length) out.expired.push({ at: f.at, endMs, weeks: unread });
+  }
+  return out;
+}
+
 /**
  * The page-view gates for one line on its weekly readings. `weeks` are the readings under the clock's current anchor
- * (the domain deploy day once set, else D0); a week with no reading is unmeasured, never zero.
+ * (the domain deploy day once set, else D0); a week with no reading is unmeasured, never zero. `pricedAt` are the
+ * priced query API's firings (`queryApi.priced` in the clock file, ruling 7.10 §4).
  */
 export function evaluatePageViewGates(
   lineId: string,
@@ -404,6 +576,7 @@ export function evaluatePageViewGates(
   weeks: WeeklyReading[],
   nowIso: string,
   g: typeof PAGE_VIEW_GATES = PAGE_VIEW_GATES,
+  pricedAt: readonly QueryApiPricedAt[] = [],
 ): PageViewGateReading {
   const period: PageViewGateReading["period"] = clock.domainDeployDay ? "domain" : clock.d0 ? "netlify" : null;
   const anchorDay = clock.domainDeployDay ?? clock.d0;
@@ -422,7 +595,9 @@ export function evaluatePageViewGates(
   const overdue = completedWeeks(anchorDay, nowIso, READ_LAG_MS + READ_GRACE_MS)
     .map((w) => w.week)
     .filter((w) => !byWeek.has(w));
-  const deadlineMs = anchorMs(anchorDay) + g.instrumentByDay * DAY_MS;
+  // A priced query API suspends the M-instrument deadline and moves it by the time suspended (ruling 7.10 §4(2)(iv)).
+  const priced = pricedSuspension(anchorDay, sorted, pricedAt, nowIso, g);
+  const deadlineMs = anchorMs(anchorDay) + g.instrumentByDay * DAY_MS + priced.shiftMs;
   const writtenByDeadline = sorted.filter((w) => Date.parse(w.writtenAt) <= deadlineMs).map((w) => w.week);
   // M-instrument is a netlify-period gate: the domain deploy is a new clock, not a new instrument, so the domain period
   // counts its consecutive writes with no deadline (RULING-2026-10-06-domain-clock).
@@ -430,7 +605,28 @@ export function evaluatePageViewGates(
     period === "netlify"
       ? hasConsecutiveWrites(writtenByDeadline, g.instrumentedWrites)
       : hasConsecutiveWrites(sorted.map((w) => w.week), g.instrumentedWrites);
-  const reading = (verdict: PageViewVerdict, ...notes: string[]): PageViewGateReading => ({ ...base, day, instrumented, verdict, notes });
+  // While a firing has no read after it, every reading says so, and what it means in this period (ruling 7.10 §4).
+  const pricedNotes: string[] = [];
+  if (priced.unreadSince) {
+    const tail =
+      period === "domain"
+        ? "the domain period has no instrument deadline, so its unread weeks stay reader_down, never an instrument fault (RULING-2026-10-06-domain-clock)"
+        : priced.open
+          ? "a priced-API reader_down is not an instrument fault: the M-instrument deadline is suspended until the first successful read after it, " +
+            `and the weeks a gate waits on that are still unread on ${new Date(priced.open.endMs).toISOString()} are one`
+          : `past its ${g.pricedReadWithinDays} days, the weeks a gate of this period waited on and still unread then are an instrument fault; later weeks are diagnostics only`;
+    pricedNotes.push(
+      `the query API answered as priced on ${priced.unreadSince} (${QUERY_API_PRICED}, RULING-2026-10-07-posthog-organisation §4): ` +
+        `the reader sends nothing until a hand clears it with a dated reason; ${tail}`,
+    );
+  }
+  if (period === "netlify" && !priced.open && priced.shiftMs > 0 && !instrumented) {
+    pricedNotes.push(
+      `the M-instrument deadline is day ${g.instrumentByDay} moved ${hours(priced.shiftMs)}h by the priced query API's suspension, to ` +
+        `${new Date(deadlineMs).toISOString()} (RULING-2026-10-07-posthog-organisation §4(2)(iv))`,
+    );
+  }
+  const reading = (verdict: PageViewVerdict, ...notes: string[]): PageViewGateReading => ({ ...base, day, instrumented, verdict, notes: [...notes, ...pricedNotes] });
   // The gap as a blocker (a gate waits on the weeks) or as a note after the period's final read (no gate does). Only
   // the netlify-period blocker names the instrument-fault restart: after a final verdict the measurement is finished,
   // and restarting the clock over weeks no gate reads would throw it away; in the domain period a new d0 would not
@@ -447,6 +643,28 @@ export function evaluatePageViewGates(
           "deploy is a new clock, not a new instrument: nothing restarts it and its day is never re-dated " +
           "(RULING-2026-10-06-domain-clock)"
         : " (PostHog keeps the events, so a late read is the same count); diagnostics only, nothing to restart");
+
+  // A priced query API in the netlify period (ruling 7.10 §4(2)(iv)). The weeks a gate waits on that were still unread
+  // when a firing's days ended are "a week that cannot be read at all": an instrument fault, which a later read does
+  // not undo. A gate waits on weeks 1-8 until the day-56 read resolves, and on weeks 9-16 after an extension; later weeks
+  // are diagnostics, and a finished measurement is never restarted. While a suspension runs, a clock not yet
+  // instrumented with a week overdue is the reader down, not "uninstrumented": the reader will not try again. A firing
+  // after the deadline had passed suspends nothing, and the M-instrument fault stands.
+  if (period === "netlify") {
+    const firstEnd = endWeekOfDay(g.reachDay);
+    const resolvedAtFirst = range(1, firstEnd).every((w) => byWeek.has(w)) && reachRead(byWeek, 1, firstEnd, g).verdict !== null;
+    const lastWaited = resolvedAtFirst ? firstEnd : endWeekOfDay(g.extensionDay);
+    const fault = priced.expired.map((e) => ({ ...e, weeks: e.weeks.filter((w) => w <= lastWaited) })).find((e) => e.weeks.length);
+    if (fault) {
+      return reading(
+        "instrument_fault",
+        `week(s) ${fault.weeks.join(", ")} were still unread ${g.pricedReadWithinDays} days after the query API answered as priced on ` +
+          `${fault.at} (${QUERY_API_PRICED}): a week that cannot be read at all is an instrument fault (RULING-2026-10-07-posthog-organisation ` +
+          "§4(2)(iv)) — fix the instrument, restart the clock (a new d0 with its evidence) and record it; a week read later does not undo it; never a fail",
+      );
+    }
+    if (!instrumented && priced.open && overdue.length && nowMs < deadlineMs) return reading("reader_down", gapNote(overdue));
+  }
 
   // The domain period comes first, so `uninstrumented` and `instrument_fault` are returned in the netlify period only
   // (RULING-2026-10-06-domain-clock). A measured kill outranks a gap, whatever day its weeks were written; an overdue

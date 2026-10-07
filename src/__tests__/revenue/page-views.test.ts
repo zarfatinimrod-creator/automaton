@@ -7,6 +7,8 @@ import {
   PAGE_VIEW_GATES,
   PAGE_VIEW_VERDICTS,
   PREVIEW_BUCKET,
+  PRICED_BODY_KEEP,
+  QUERY_API_PRICED,
   QUERY_ROW_LIMIT,
   READ_GRACE_MS,
   READ_LAG_MS,
@@ -17,7 +19,10 @@ import {
   evaluatePageViewGates,
   hasConsecutiveWrites,
   lineForPage,
+  maskPricedBody,
   pageViewQuery,
+  pricedSuspension,
+  queryApiPriced,
   sitePaths,
   weekWindow,
   type HogQLQueryResponse,
@@ -445,5 +450,208 @@ describe("evaluatePageViewGates — the ruling's gates on the weekly readings", 
     it("the netlify.app period never reaches the 8-week kill, however low the views", () => {
       expect(evaluatePageViewGates("pcn874", netlify, weeks(1, 1, 1, 1, 1, 1, 1, 1), at(56)).verdict).toBe("extend");
     });
+  });
+});
+
+describe("queryApiPriced — R1 of RULING-2026-10-07-posthog-organisation §4(1)", () => {
+  // No PostHog text shows a priced answer (the query API is free today), so these bodies are invented, shaped like the
+  // DRF error bodies PostHog's API answers with (`type`, `code`, `detail`, `attr`); the billed 2xx is the page-view
+  // fixture with one field more. What is pinned is the rule, not PostHog's words.
+  const text = (name: string): string => readFileSync(join(__dirname, "fixtures", name), "utf8");
+
+  it("fires on the four fixture answers the ruling names, and not on a rate limit", () => {
+    expect(queryApiPriced(402, text("posthog-query-402.json"))).toBe("HTTP 402");
+    expect(queryApiPriced(403, text("posthog-query-403-billing.json"))).toBe('HTTP 403 naming "plan"');
+    expect(queryApiPriced(429, text("posthog-query-429-billing.json"))).toBe('HTTP 429 naming "quota"');
+    expect(queryApiPriced(200, text("posthog-hogql-pageviews-billed.json"))).toBe("HTTP 200 carrying a billed-usage field (billed_usage)");
+    // A 429 with a retry hint and no billing word is a rate limit: an ordinary failed read, not R1.
+    expect(queryApiPriced(429, text("posthog-query-429-rate-limit.json"))).toBeNull();
+    // Today's answers are not priced.
+    expect(queryApiPriced(200, text("posthog-hogql-pageviews.json"))).toBeNull();
+    expect(queryApiPriced(200, text("posthog-hogql-empty.json"))).toBeNull();
+  });
+
+  it("a 402 fires whatever its body says; a 403 or 429 only on billing, a plan, credits, quota or an upgrade", () => {
+    expect(queryApiPriced(402, "")).toBe("HTTP 402");
+    for (const word of ["billing", "billed", "plan", "plans", "credit", "credits", "quota", "quotas", "upgrade", "upgrades", "upgraded", "upgrading"]) {
+      for (const status of [403, 429]) expect(queryApiPriced(status, `{"detail": "a ${word} here"}`), `${status} ${word}`).toBe(`HTTP ${status} naming "${word}"`);
+    }
+    expect(queryApiPriced(403, '{"detail": "Upgrade to continue"}')).toBe('HTTP 403 naming "upgrade"');
+    // Whole words only: these name no plan.
+    for (const body of ['{"detail": "You do not have permission to perform this action."}', '{"detail": "planned maintenance"}', '{"detail": "an explanation"}']) {
+      expect(queryApiPriced(403, body), body).toBeNull();
+      expect(queryApiPriced(429, body), body).toBeNull();
+    }
+    // Other refusals are not R1, whatever they say.
+    for (const status of [400, 401, 404, 500, 503]) expect(queryApiPriced(status, '{"detail": "billing plan quota upgrade"}'), String(status)).toBeNull();
+  });
+
+  it("a 2xx fires on a charge or billed-usage field at any depth, never on a value", () => {
+    expect(queryApiPriced(200, '{"results": [], "billedUsage": 1}')).toBe("HTTP 200 carrying a billed-usage field (billedUsage)");
+    expect(queryApiPriced(200, '{"Billed-Usage": 1}')).toBe("HTTP 200 carrying a billed-usage field (Billed-Usage)");
+    expect(queryApiPriced(200, '{"query_status": {"complete": true, "cost": 0.01}}')).toBe("HTTP 200 carrying a billed-usage field (cost)");
+    expect(queryApiPriced(200, '{"results": [["/", 1], {"charge": 2}]}')).toBe("HTTP 200 carrying a billed-usage field (charge)");
+    expect(queryApiPriced(201, '{"invoice": "x"}')).toBe("HTTP 201 carrying a billed-usage field (invoice)");
+    for (const field of ["bill", "billable", "charged", "charges", "costs", "credit", "credits", "fee", "fees", "invoiced", "price", "priced", "pricing"]) {
+      expect(queryApiPriced(200, `{"x": {"${field}": 1}}`), field).toBe(`HTTP 200 carrying a billed-usage field (${field})`);
+    }
+    // A value is data, not a field: a page called /pricing, a column named cost.
+    expect(queryApiPriced(200, '{"columns": ["cost", "views"], "results": [["/pricing", 3]], "timings": [{"k": "a", "t": 1}]}')).toBeNull();
+    expect(queryApiPriced(200, "not json")).toBeNull();
+    expect(queryApiPriced(300, '{"charge": 1}')).toBeNull();
+  });
+
+  it("keeps the masked first 200 characters: never the key, a PostHog token or an address's local part", () => {
+    expect(PRICED_BODY_KEEP).toBe(200);
+    // Built at run time, so no key, token or address is written in this file.
+    const key = ["phx", "k".repeat(30)].join("_");
+    const token = ["phc", "T".repeat(24)].join("_");
+    const address = ["someone", "example.com"].join("@");
+    const masked = maskPricedBody(`{"detail": "upgrade needed\n\n for ${key}; write to ${address}; token ${token}"}`, key);
+    expect(masked).toBe('{"detail": "upgrade needed for [key]; write to [redacted:email]@example.com; token [redacted:posthog-key]"}');
+    expect(maskPricedBody("z".repeat(500), "")).toHaveLength(PRICED_BODY_KEEP);
+    // Masked before it is cut: a key that straddles the cut leaves no part of itself behind.
+    const straddle = maskPricedBody(`${"x".repeat(195)}${key}${"y".repeat(50)}`, key);
+    expect(straddle).toBe(`${"x".repeat(195)}[key]`);
+    expect(maskPricedBody(`${"x".repeat(197)}${key}`, "")).toBe(`${"x".repeat(197)}[re`);
+  });
+});
+
+describe("a priced query API and the gates — RULING-2026-10-07-posthog-organisation §4(2)(iv)", () => {
+  const D0 = "2026-10-05";
+  const D0_MS = Date.parse(`${D0}T00:00:00Z`);
+  const netlify = { d0: D0, domainDeployDay: null };
+  const HOUR = 3_600_000;
+  const at = (day: number, plusMs = 12 * HOUR): string => new Date(D0_MS + day * DAY_MS + plusMs).toISOString();
+  const onTime = (week: number): string => new Date(D0_MS + week * 7 * DAY_MS + READ_LAG_MS).toISOString();
+  const written = (when: string, ...views: number[]): WeeklyReading[] => views.map((v, i) => ({ week: i + 1, views: v, writtenAt: when }));
+  const gate = (weeks: WeeklyReading[], nowIso: string, firings: { at: string; clearedOn: string | null }[]) =>
+    evaluatePageViewGates("il-biz-tools", netlify, weeks, nowIso, PAGE_VIEW_GATES, firings);
+  // The reader met a priced answer on day 8 (week 1 was readable from day 7¼) and has read nothing since.
+  const F = at(8, 0);
+  const fired = [{ at: F, clearedOn: null }];
+
+  it("suspends the M-instrument deadline: day 21 with nothing read is the reader down, not an instrument fault", () => {
+    expect(gate([], at(21), []).verdict).toBe("instrument_fault");
+    const r = gate([], at(21), fired);
+    expect(r.verdict).toBe("reader_down");
+    expect(r.instrumented).toBe(false);
+    expect(r.notes[0]).toMatch(/^week\(s\) 1, 2 still have no reading 24h after they became readable: the reader is down/);
+    const notes = r.notes.join(" ");
+    expect(notes).toContain(`the query API answered as priced on ${F} (${QUERY_API_PRICED}, RULING-2026-10-07-posthog-organisation §4)`);
+    expect(notes).toMatch(/the M-instrument deadline is suspended until the first successful read after it, and the weeks a gate waits on that are still unread on 2026-12-12T00:00:00\.000Z are one/);
+    expect(notes).not.toMatch(/deadline is day 21 moved/);
+    // An hour after the firing week 1 is readable but not yet overdue: no gate is read yet, and the note says why.
+    const early = gate([], at(8, HOUR), fired);
+    expect(early.verdict).toBe("uninstrumented");
+    expect(early.notes.join(" ")).toContain(`answered as priced on ${F}`);
+    // A minute before the 60 days end: still the reader down.
+    expect(gate([], at(68, -60_000), fired).verdict).toBe("reader_down");
+  });
+
+  it("60 days after the firing with nothing read, the unread weeks are an instrument fault", () => {
+    const r = gate([], at(68, 0), fired);
+    expect(r.verdict).toBe("instrument_fault");
+    expect(r.notes[0]).toBe(
+      `week(s) 1, 2, 3, 4, 5, 6, 7, 8, 9 were still unread 60 days after the query API answered as priced on ${F} (query_api_priced): ` +
+        "a week that cannot be read at all is an instrument fault (RULING-2026-10-07-posthog-organisation §4(2)(iv)) — fix the instrument, " +
+        "restart the clock (a new d0 with its evidence) and record it; a week read later does not undo it; never a fail",
+    );
+    expect(PAGE_VIEW_GATES.pricedReadWithinDays).toBe(60);
+  });
+
+  it("resumes at the first successful backfill, moved by the time suspended", () => {
+    // The flag cleared by hand, the next tick reads weeks 1-5 on day 40: written 32 days late, inside the moved deadline.
+    const backfill = written(at(40, 0), 3, 3, 3, 3, 3);
+    expect(gate(backfill, at(41), []).verdict).toBe("instrument_fault");
+    const r = gate(backfill, at(41), fired);
+    expect(r.verdict).toBe("measuring");
+    expect(r.instrumented).toBe(true);
+    expect(r.notes.join(" ")).not.toMatch(/answered as priced/);
+    expect(pricedSuspension(D0, backfill, fired, at(41))).toEqual({ shiftMs: 32 * DAY_MS, open: null, unreadSince: null, expired: [] });
+  });
+
+  it("once resumed the moved deadline runs again: one lone write by it is an instrument fault", () => {
+    const lone = written(at(40, 0), 3);
+    const before = gate(lone, at(52), fired);
+    expect(before.verdict).toBe("uninstrumented");
+    expect(before.notes.join(" ")).toContain(
+      "the M-instrument deadline is day 21 moved 768h by the priced query API's suspension, to 2026-11-27T00:00:00.000Z (RULING-2026-10-07-posthog-organisation §4(2)(iv))",
+    );
+    expect(gate(lone, at(53, 0), fired).verdict).toBe("instrument_fault");
+  });
+
+  it("the tick that met the priced answer is not a read after it", () => {
+    // Day 14 07:00: the tick read week 1, then week 2 answered priced. Nothing after: still suspended on day 22.
+    const T = at(14, 7 * HOUR);
+    const r = gate(written(T, 4), at(22), [{ at: T, clearedOn: null }]);
+    expect(r.verdict).toBe("reader_down");
+    expect(r.notes[0]).toMatch(/^week\(s\) 2, 3 still have no reading/);
+  });
+
+  it("a read that comes after the 60 days does not undo the fault; one on the 60th day resumes in time", () => {
+    const late = gate(written(at(70, 0), 0, 0, 0, 0, 0, 0, 0, 0, 0), at(71), fired);
+    expect(late.verdict).toBe("instrument_fault");
+    expect(late.notes[0]).toMatch(/^week\(s\) 1, 2, 3, 4, 5, 6, 7, 8 were still unread 60 days after/);
+    expect(gate(written(at(68, 0), 0, 0, 0, 0, 0, 0, 0, 0, 0), at(69), fired).verdict).toBe("pause");
+  });
+
+  it("an instrumented clock: the reader down while suspended, the weeks a gate waits on a fault after 60 days", () => {
+    const two = [1, 2].map((week) => ({ week, views: 5, writtenAt: onTime(week) }));
+    const mid = [{ at: at(22, 0), clearedOn: null }];
+    const down = gate(two, at(30), mid);
+    expect(down.verdict).toBe("reader_down");
+    expect(down.instrumented).toBe(true);
+    expect(down.notes[0]).toMatch(/^the day-56 read over weeks 1-8 cannot be made: week\(s\) 3, 4 still have no reading/);
+    expect(down.notes.join(" ")).toMatch(/a priced-API reader_down is not an instrument fault/);
+    const fault = gate(two, at(82, 0), mid);
+    expect(fault.verdict).toBe("instrument_fault");
+    expect(fault.notes[0]).toMatch(/^week\(s\) 3, 4, 5, 6, 7, 8, 9, 10, 11 were still unread 60 days after the query API answered as priced on 2026-10-27T00:00:00\.000Z/);
+  });
+
+  it("a finished measurement is never restarted: after a final verdict the unread weeks stay diagnostics", () => {
+    const eight = [1, 2, 3, 4, 5, 6, 7, 8].map((week) => ({ week, views: 0, writtenAt: onTime(week) }));
+    const r = gate(eight, at(130), [{ at: at(64, 0), clearedOn: null }]);
+    expect(r.verdict).toBe("pause");
+    expect(r.notes.join(" ")).toMatch(/after the final read no gate of this period waits on later weeks/);
+    expect(r.notes.join(" ")).toMatch(/past its 60 days, the weeks a gate of this period waited on and still unread then are an instrument fault; later weeks are diagnostics only/);
+    expect(r.notes.join(" ")).not.toMatch(/restart the clock/);
+  });
+
+  it("the domain period has no instrument deadline: a firing stays reader_down, never an instrument fault", () => {
+    const DOMAIN = "2027-01-04";
+    const DOMAIN_MS = Date.parse(`${DOMAIN}T00:00:00Z`);
+    const firing = [{ at: new Date(DOMAIN_MS + 10 * DAY_MS).toISOString(), clearedOn: null }];
+    const r = evaluatePageViewGates("il-biz-tools", { d0: D0, domainDeployDay: DOMAIN }, [], new Date(DOMAIN_MS + 80 * DAY_MS).toISOString(), PAGE_VIEW_GATES, firing);
+    expect(r.verdict).toBe("reader_down");
+    expect(r.notes.join(" ")).toMatch(/the domain period has no instrument deadline, so its unread weeks stay reader_down, never an instrument fault/);
+  });
+
+  it("which firings count for a clock: not one cleared before its anchor day, nor one that has not happened yet", () => {
+    const old = "2026-09-01T06:00:00.000Z";
+    const cleared = gate([], at(21), [{ at: old, clearedOn: "2026-09-10" }]);
+    expect(cleared.verdict).toBe("instrument_fault");
+    expect(cleared.notes.join(" ")).not.toMatch(/answered as priced|moved/);
+    // Cleared on the anchor day itself: it still held then, and nothing has been read since.
+    expect(gate([], at(21), [{ at: old, clearedOn: D0 }]).verdict).toBe("reader_down");
+    expect(gate([], at(21), [{ at: at(30, 0), clearedOn: null }]).verdict).toBe("instrument_fault");
+  });
+
+  it("a firing after the deadline had passed suspends nothing: the M-instrument fault stands", () => {
+    // The reader failed for other reasons until day 25, when the query API answered priced.
+    const after = [{ at: at(25, 0), clearedOn: null }];
+    const r = gate([], at(30), after);
+    expect(r.verdict).toBe("instrument_fault");
+    expect(r.notes[0]).toMatch(/^fewer than 2 consecutive weekly writes were made by day 21/);
+    // Weeks 1-2 written late on day 23, then the firing: the late writes still do not count.
+    expect(gate(written(at(23, 0), 4, 4), at(30), after).verdict).toBe("instrument_fault");
+  });
+
+  it("a clock started under an open firing is suspended from its own anchor, for 60 days from there", () => {
+    const before = [{ at: "2026-09-20T00:00:00.000Z", clearedOn: null }];
+    const r = gate([], at(50), before);
+    expect(r.verdict).toBe("reader_down");
+    expect(r.notes.join(" ")).toContain("still unread on 2026-12-04T00:00:00.000Z are one");
+    expect(gate([], at(60, 0), before).verdict).toBe("instrument_fault");
   });
 });

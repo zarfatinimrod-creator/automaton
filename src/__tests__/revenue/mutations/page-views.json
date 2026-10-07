@@ -53,5 +53,792 @@
       "src/__tests__/revenue/page-views-reader.test.ts"
     ],
     "note": "tick 54 builder: the domain continue note no longer says how many weeks are measured, so a continue with no rows does not read honestly"
+  },
+  {
+    "id": "T61-R1",
+    "file": "src/revenue/page-views.ts",
+    "find": "if (status === 402) return \"HTTP 402\";",
+    "replace": "if (status === 999) return \"HTTP 402\";",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 402 is no longer read as priced"
+  },
+  {
+    "id": "T61-R2",
+    "file": "src/revenue/page-views.ts",
+    "find": "if (status === 403 || status === 429) {",
+    "replace": "if (status === 403) {",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 429 naming billing words is no longer priced"
+  },
+  {
+    "id": "T61-R3",
+    "file": "src/revenue/page-views.ts",
+    "find": "if (status === 403 || status === 429) {",
+    "replace": "if (status === 429) {",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403 naming billing words is no longer priced"
+  },
+  {
+    "id": "T61-R4",
+    "file": "src/revenue/page-views.ts",
+    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
+    "replace": "(?:plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming billing is no longer priced"
+  },
+  {
+    "id": "T61-R5",
+    "file": "src/revenue/page-views.ts",
+    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
+    "replace": "(?:billing|billed|credits?|quotas?|upgrades?|upgraded|upgrading)",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming a plan is no longer priced"
+  },
+  {
+    "id": "T61-R6",
+    "file": "src/revenue/page-views.ts",
+    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
+    "replace": "(?:billing|billed|plans?|quotas?|upgrades?|upgraded|upgrading)",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming credits is no longer priced"
+  },
+  {
+    "id": "T61-R7",
+    "file": "src/revenue/page-views.ts",
+    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
+    "replace": "(?:billing|billed|plans?|credits?|upgrades?|upgraded|upgrading)",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming quota is no longer priced"
+  },
+  {
+    "id": "T61-R8",
+    "file": "src/revenue/page-views.ts",
+    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
+    "replace": "(?:billing|billed|plans?|credits?|quotas?)",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming an upgrade is no longer priced"
+  },
+  {
+    "id": "T61-R9",
+    "file": "src/revenue/page-views.ts",
+    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)\\b/i",
+    "replace": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)/i",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): the words are no longer whole words, so 'planned maintenance' reads as a plan"
+  },
+  {
+    "id": "T61-R10",
+    "file": "src/revenue/page-views.ts",
+    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)\\b/i",
+    "replace": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)\\b/",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): the words are matched case-sensitively, so 'Upgrade to continue' is missed"
+  },
+  {
+    "id": "T61-R11",
+    "file": "src/revenue/page-views.ts",
+    "find": "if (status >= 200 && status < 300) {",
+    "replace": "if (status === 200) {",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 201 carrying a billed-usage field is not priced"
+  },
+  {
+    "id": "T61-R12",
+    "file": "src/revenue/page-views.ts",
+    "find": "if (status >= 200 && status < 300) {",
+    "replace": "if (status >= 200 && status <= 300) {",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 300 is read as a 2xx"
+  },
+  {
+    "id": "T61-R13",
+    "file": "src/revenue/page-views.ts",
+    "find": "    if (fieldWords(name).some((w) => BILLED_FIELD_WORDS.has(w))) return name;\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): no field name is ever read as billed usage"
+  },
+  {
+    "id": "T61-R14",
+    "file": "src/revenue/page-views.ts",
+    "find": "    const inner = billedField(v, depth + 1);\n    if (inner !== null) return inner;\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): only top-level fields are read, so a nested cost or one inside an array is missed"
+  },
+  {
+    "id": "T61-R15",
+    "file": "src/revenue/page-views.ts",
+    "find": "name.replace(/([a-z0-9])([A-Z])/g, \"$1 $2\").toLowerCase()",
+    "replace": "name.toLowerCase()",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a camelCase field (billedUsage) is no longer split into words"
+  },
+  {
+    "id": "T61-R16",
+    "file": "src/revenue/page-views.ts",
+    "find": "\"charges\", \"cost\", \"costs\"",
+    "replace": "\"charges\", \"costs\"",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a field named cost is no longer billed usage"
+  },
+  {
+    "id": "T61-M1",
+    "file": "src/revenue/page-views.ts",
+    "find": "(key ? body.split(key).join(\"[key]\") : body)",
+    "replace": "(body)",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 masking): the read key itself is no longer masked as [key]"
+  },
+  {
+    "id": "T61-M2",
+    "file": "src/revenue/page-views.ts",
+    "find": "    .replace(/ph[a-z]_[A-Za-z0-9_-]{6,}/g, \"[redacted:posthog-key]\")\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 masking): a PostHog token in the body is kept"
+  },
+  {
+    "id": "T61-M3",
+    "file": "src/revenue/page-views.ts",
+    "find": "    .replace(/[A-Za-z0-9._%+-]+@((?:[A-Za-z0-9-]+\\.)+[A-Za-z]{2,63})/g, \"[redacted:email]@$1\")\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 masking): an address's local part is kept"
+  },
+  {
+    "id": "T61-M4",
+    "file": "src/revenue/page-views.ts",
+    "find": "    .replace(/\\s+/g, \" \")\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 masking): the body's whitespace is no longer folded"
+  },
+  {
+    "id": "T61-M5",
+    "file": "src/revenue/page-views.ts",
+    "find": "  return (key ? body.split(key).join(\"[key]\") : body)",
+    "replace": "  return (key ? body.slice(0, PRICED_BODY_KEEP).split(key).join(\"[key]\") : body.slice(0, PRICED_BODY_KEEP))",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 masking): cut before it is masked, so a key straddling the cut leaves its first characters"
+  },
+  {
+    "id": "T61-M6",
+    "file": "src/revenue/page-views.ts",
+    "find": "export const PRICED_BODY_KEEP = 200;",
+    "replace": "export const PRICED_BODY_KEEP = 2000;",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): more than the body's first 200 characters are kept"
+  },
+  {
+    "id": "T61-S1",
+    "file": "src/revenue/page-views.ts",
+    "find": "  pricedReadWithinDays: 60,",
+    "replace": "  pricedReadWithinDays: 59,",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the fault comes a day early"
+  },
+  {
+    "id": "T61-S2",
+    "file": "src/revenue/page-views.ts",
+    "find": "  pricedReadWithinDays: 60,",
+    "replace": "  pricedReadWithinDays: 61,",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the fault comes a day late"
+  },
+  {
+    "id": "T61-S3",
+    "file": "src/revenue/page-views.ts",
+    "find": ".filter((f) => f.clearedOn === null || f.clearedOn >= anchorDay)",
+    "replace": ".filter(() => true)",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): a firing cleared before the clock's anchor still suspends it"
+  },
+  {
+    "id": "T61-S4",
+    "file": "src/revenue/page-views.ts",
+    "find": "f.clearedOn >= anchorDay",
+    "replace": "f.clearedOn > anchorDay",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): a firing cleared on the anchor day itself no longer counts"
+  },
+  {
+    "id": "T61-S5",
+    "file": "src/revenue/page-views.ts",
+    "find": "    .filter((f) => f.firedMs <= nowMs)\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): a firing that has not happened yet counts"
+  },
+  {
+    "id": "T61-S6",
+    "file": "src/revenue/page-views.ts",
+    "find": "const startMs = Math.max(f.firedMs, anchor);",
+    "replace": "const startMs = f.firedMs;",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): a clock started under an open firing has its 60 days counted from the firing, before the clock began"
+  },
+  {
+    "id": "T61-S7",
+    "file": "src/revenue/page-views.ts",
+    "find": ".filter((t) => t > f.firedMs);",
+    "replace": ".filter((t) => t >= f.firedMs);",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the tick that met the priced answer counts as a read after it, ending the suspension at once"
+  },
+  {
+    "id": "T61-S8",
+    "file": "src/revenue/page-views.ts",
+    "find": "    if (startMs < deadline) {",
+    "replace": "    if (true) {",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): a firing after the deadline passed moves it, so late writes before the firing count"
+  },
+  {
+    "id": "T61-S9",
+    "file": "src/revenue/page-views.ts",
+    "find": "if (firstRead !== null && firstRead <= endMs) continue;",
+    "replace": "if (firstRead !== null && firstRead < endMs) continue;",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): a read on the 60th day is late"
+  },
+  {
+    "id": "T61-S10",
+    "file": "src/revenue/page-views.ts",
+    "find": "    if (nowMs < endMs) {",
+    "replace": "    if (nowMs <= endMs) {",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the fault waits past the 60th day"
+  },
+  {
+    "id": "T61-S11",
+    "file": "src/revenue/page-views.ts",
+    "find": "    if (firstRead === null) out.unreadSince ??= f.at;\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): a reading no longer says that the query API answered as priced"
+  },
+  {
+    "id": "T61-S12",
+    "file": "src/revenue/page-views.ts",
+    "find": "      .filter((w) => !readByEnd.has(w));",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): weeks read before the firing count as unread at the 60th day"
+  },
+  {
+    "id": "T61-S13",
+    "file": "src/revenue/page-views.ts",
+    "find": "const readByEnd = new Set(weeks.filter((w) => Date.parse(w.writtenAt) <= endMs).map((w) => w.week));",
+    "replace": "const readByEnd = new Set(weeks.map((w) => w.week));",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): a week read after the 60 days undoes the fault"
+  },
+  {
+    "id": "T61-S14",
+    "file": "src/revenue/page-views.ts",
+    "find": "g.instrumentByDay * DAY_MS + priced.shiftMs;",
+    "replace": "g.instrumentByDay * DAY_MS;",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the deadline is not moved, so a backfill after the suspension is an instrument fault"
+  },
+  {
+    "id": "T61-S15",
+    "file": "src/revenue/page-views.ts",
+    "find": "notes: [...notes, ...pricedNotes] });",
+    "replace": "notes });",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): no reading says the query API answered as priced"
+  },
+  {
+    "id": "T61-S16",
+    "file": "src/revenue/page-views.ts",
+    "find": "    if (fault) {",
+    "replace": "    if (false) {",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): 60 days unread is never an instrument fault"
+  },
+  {
+    "id": "T61-S17",
+    "file": "src/revenue/page-views.ts",
+    "find": ".map((e) => ({ ...e, weeks: e.weeks.filter((w) => w <= lastWaited) }))",
+    "replace": ".map((e) => e)",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): weeks after a final verdict make the fault, restarting a finished measurement"
+  },
+  {
+    "id": "T61-S18",
+    "file": "src/revenue/page-views.ts",
+    "find": "const lastWaited = resolvedAtFirst ? firstEnd : endWeekOfDay(g.extensionDay);",
+    "replace": "const lastWaited = endWeekOfDay(g.extensionDay);",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): after a day-56 pause the gates still wait on weeks 9-16"
+  },
+  {
+    "id": "T61-S19",
+    "file": "src/revenue/page-views.ts",
+    "find": "const lastWaited = resolvedAtFirst ? firstEnd : endWeekOfDay(g.extensionDay);",
+    "replace": "const lastWaited = firstEnd;",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): without a day-56 verdict the fault names weeks 1-8 only"
+  },
+  {
+    "id": "T61-S20",
+    "file": "src/revenue/page-views.ts",
+    "find": "    if (!instrumented && priced.open && overdue.length && nowMs < deadlineMs) return reading(\"reader_down\", gapNote(overdue));\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): a suspended clock not yet instrumented reads uninstrumented, not the reader down"
+  },
+  {
+    "id": "T61-S21",
+    "file": "src/revenue/page-views.ts",
+    "find": "priced.open && overdue.length && nowMs < deadlineMs",
+    "replace": "priced.open && nowMs < deadlineMs",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the reader down before any week is overdue"
+  },
+  {
+    "id": "T61-S22",
+    "file": "src/revenue/page-views.ts",
+    "find": "priced.open && overdue.length && nowMs < deadlineMs",
+    "replace": "priced.open && overdue.length",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): a firing after the deadline passed turns the M-instrument fault into the reader down"
+  },
+  {
+    "id": "T61-S23",
+    "file": "src/revenue/page-views.ts",
+    "find": "  if (period === \"netlify\") {\n    const firstEnd",
+    "replace": "  if (period !== null) {\n    const firstEnd",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the 60-day fault reaches the domain period, which has no instrument deadline"
+  },
+  {
+    "id": "T61-S24",
+    "file": "src/revenue/page-views.ts",
+    "find": "  if (period === \"netlify\" && !priced.open && priced.shiftMs > 0 && !instrumented) {",
+    "replace": "  if (period === \"netlify\" && priced.shiftMs > 0 && !instrumented) {",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the moved-deadline note is printed while the suspension still runs"
+  },
+  {
+    "id": "T61-S25",
+    "file": "src/revenue/page-views.ts",
+    "find": "  if (period === \"netlify\" && !priced.open && priced.shiftMs > 0 && !instrumented) {",
+    "replace": "  if (period === \"netlify\" && !priced.open && priced.shiftMs >= 0 && !instrumented) {",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the moved-deadline note is printed with no suspension at all"
+  },
+  {
+    "id": "T61-F1",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "  if (priced) throw new QueryApiPricedError(res.status, priced, maskPricedBody(text, key));\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): no answer is classified, so a priced one is an ordinary failed read and no flag is set"
+  },
+  {
+    "id": "T61-F2",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "        return done(\"error\", detail.split(key).join(\"[key]\"), QUERY_API_PRICED);",
+    "replace": "        continue;",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): the reader goes on to the next week after a priced answer"
+  },
+  {
+    "id": "T61-F3",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "          recordQueryApiFiring(clockFile, {\n",
+    "replace": "          ({\n",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): the firing is not recorded, so the next tick queries again"
+  },
+  {
+    "id": "T61-F4",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "            at: nowIso,\n",
+    "replace": "            at: new Date(0).toISOString(),\n",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): the firing is not dated by the tick that met it"
+  },
+  {
+    "id": "T61-F5",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "  const open = queryApi.find((f) => f.clearedOn === null);",
+    "replace": "  const open = queryApi.find(() => false);",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a later tick sends queries while the flag is set"
+  },
+  {
+    "id": "T61-F6",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "  if (queryApi === null) {",
+    "replace": "  if (false) {",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a queryApi block that cannot be read is not failed closed"
+  },
+  {
+    "id": "T61-F7",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "  if (block === undefined) return [];",
+    "replace": "  if (block === undefined) return null;",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a clock file with no block fails closed"
+  },
+  {
+    "id": "T61-F8",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "  if (!Array.isArray(priced)) {",
+    "replace": "  if (priced === undefined) {",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a priced that is not a list is read as one"
+  },
+  {
+    "id": "T61-F9",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": " || e.reason !== QUERY_API_PRICED) {",
+    "replace": ") {",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): an entry with another reason is read as a firing"
+  },
+  {
+    "id": "T61-F10",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": " || !ISO_INSTANT.test(at) ||",
+    "replace": " ||",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): an at that is a day, not an instant, is read as a firing"
+  },
+  {
+    "id": "T61-F11",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": " || Number.isNaN(Date.parse(at))",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): an at shaped like an instant but no time at all is read as a firing"
+  },
+  {
+    "id": "T61-F12",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "          : on < firedOn\n",
+    "replace": "          : on <= firedOn\n",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 clearance): a clearance on the day it fired is refused"
+  },
+  {
+    "id": "T61-F13",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "          : on < firedOn\n            ? `clearedOn ${on} is before the day it fired, ${firedOn}`\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 clearance): a clearance dated before the firing clears it"
+  },
+  {
+    "id": "T61-F14",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "            : !RULING_NAME.test(why)\n              ? `clearedOn ${on} has no clearedReason naming the REOPEN record (a RULING-YYYY-MM-DD-… file)`\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 clearance): a clearance whose reason names no REOPEN record clears it"
+  },
+  {
+    "id": "T61-F15",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "const RULING_NAME = /\\bRULING-\\d{4}-\\d{2}-\\d{2}-[a-z0-9][a-z0-9-]*/;",
+    "replace": "const RULING_NAME = /\\bRULING-\\d{4}-\\d{2}-\\d{2}/;",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 clearance): a ruling date with no file slug is taken for the REOPEN record"
+  },
+  {
+    "id": "T61-F16",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "        : !isUtcDay(on)\n          ? `clearedOn is not a UTC day (YYYY-MM-DD): ${String(on)}`\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 clearance): a clearedOn that is not a UTC day is not named as such"
+  },
+  {
+    "id": "T61-F17",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "    if (onSet || why) {",
+    "replace": "    if (onSet) {",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 clearance): a reason without a date passes silently"
+  },
+  {
+    "id": "T61-F18",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "      else clearedOn = on as string;",
+    "replace": "      else clearedOn = null;",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1 clearance): a valid clearance clears nothing"
+  },
+  {
+    "id": "T61-F19",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": ".join(\", \")} }` : \"{}\";",
+    "replace": ".join(\",\")} }` : \"{}\";",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9): the clock file's layout changes, so a firing rewrites every line"
+  },
+  {
+    "id": "T61-F20",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "  if (Array.isArray(value)) return `[${value.map(inlineJson).join(\", \")}]`;\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9): a list is written as an object, so the committed file does not round-trip"
+  },
+  {
+    "id": "T61-F21",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": ".join(\",\\n\")}\\n}\\n`;",
+    "replace": ".join(\",\\n\")}\\n}`;",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9): the clock file loses its final newline"
+  },
+  {
+    "id": "T61-F22",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "priced: [...priced, firing] };",
+    "replace": "priced: [firing] };",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9): a second firing replaces the first instead of being appended"
+  },
+  {
+    "id": "T61-F23",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "  const block = record.queryApi ?? { priced: [] };",
+    "replace": "  const block = record.queryApi;",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9): a clock file with no block cannot take a firing, so the flag is not written"
+  },
+  {
+    "id": "T61-F24",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "PAGE_VIEW_GATES, queryApi ?? []);",
+    "replace": "PAGE_VIEW_GATES, []);",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the gates do not see the firings, so day 22 under the flag is an instrument fault"
+  },
+  {
+    "id": "T61-F25",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "  renameSync(tmp, file);\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9): the firing is written to the temp file and never moved into place"
+  },
+  {
+    "id": "T61-F26",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "], queryApi: null };",
+    "replace": "], queryApi: [] };",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a clock file that is not JSON is not failed closed"
+  },
+  {
+    "id": "T61-F27",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "      if (error instanceof QueryApiPricedError) {",
+    "replace": "      if (false) {",
+    "test": [
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a priced answer is handled as an ordinary failed read"
   }
 ]

@@ -1,0 +1,20 @@
+{
+  "query": "SELECT properties.$pathname AS pathname, count() AS views\nFROM events\nWHERE event = '$pageview'\n  AND properties.$host = 'il-biz-tools.netlify.app'\n  AND timestamp >= toDateTime('2026-10-05 00:00:00', 'UTC')\n  AND timestamp < toDateTime('2026-10-12 00:00:00', 'UTC')\nGROUP BY pathname\nORDER BY pathname\nLIMIT 1000",
+  "results": [
+    ["/", 3],
+    ["/404.html", 1],
+    ["/accessibility.html", 1],
+    ["/net-salary.html", 2],
+    ["/no-such-page", 1],
+    ["/pcn874", 1],
+    ["/pcn874.html", 4],
+    ["/preview/pcn874.html", 7],
+    ["/preview/vat.html", 5],
+    ["/vat.html", 6]
+  ],
+  "types": ["String", "UInt64"],
+  "columns": ["pathname", "views"],
+  "hogql": "SELECT properties.$pathname AS pathname, count() AS views FROM events WHERE and(equals(event, '$pageview'), equals(properties.$host, 'il-biz-tools.netlify.app'), greaterOrEquals(timestamp, toDateTime('2026-10-05 00:00:00', 'UTC')), less(timestamp, toDateTime('2026-10-12 00:00:00', 'UTC'))) GROUP BY pathname ORDER BY pathname ASC LIMIT 1000",
+  "clickhouse": "SELECT ... (not read by the colony)",
+  "billed_usage": { "bytes_read": 1048576, "units": 1 }
+}

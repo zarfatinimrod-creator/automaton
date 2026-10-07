@@ -1,0 +1,1 @@
+{ "type": "server_error", "code": "payment_required", "detail": "Payment is required to use this endpoint.", "attr": null }
