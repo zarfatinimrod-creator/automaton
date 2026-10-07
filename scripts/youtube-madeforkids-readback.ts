@@ -18,9 +18,16 @@
  * read first contradicted the line's declaration or found a public upload no longer public. readbackOf(<that file>,
  * <the uploads>) is ExperimentReadings.madeForKidsReadback.
  *
- * NO LIVE CALL BEFORE STAGE A. No workflow runs this script and no package script names it
- * (src/__tests__/revenue/youtube-madeforkids.test.ts asserts both); its tests use a fake fetch and fixtures. It talks to
- * www.googleapis.com only — never youtube.com, which is terms-barred (scripts/render-watch.mjs TERMS_BARRED).
+ * NO LIVE CALL BEFORE STAGE A, AND NONE BEFORE THE API'S TERMS ARE READ. Two gates, each a refusal (exit 2) with
+ * nothing asked and nothing written, checked in this order: (1) research/channel-loop/terms-verdicts.json must hold a
+ * googleapis.com entry whose verdict is in ACTIVE_VERDICTS as scripts/queue-zero-test.mjs defines it — the YouTube API
+ * Services Terms read at github grade first, never by a fetch of developers.google.com
+ * (research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md §2 decision 2); a missing or unreadable
+ * file refuses too (fail closed); (2) YOUTUBE_DATA_API_KEY must be set. No workflow runs this script and no package
+ * script names it (src/__tests__/revenue/youtube-madeforkids.test.ts asserts both); its tests use a fake fetch and
+ * fixtures. It talks to www.googleapis.com only — never youtube.com, which is terms-barred (scripts/render-watch.mjs
+ * TERMS_BARRED) — and follows no redirect (`redirect: "error"`, §2 decision 3(iii)): one to any host is refused and
+ * logged, nothing written.
  *
  * USAGE
  *   pnpm exec tsx scripts/youtube-madeforkids-readback.ts --line kids-explainers [--videos <path>] [--state <path>] [--now <iso>]
@@ -44,10 +51,43 @@ import {
   type MadeForKidsState,
   type ReadbackLine,
 } from "../src/revenue/youtube-madeforkids.js";
+// @ts-expect-error — plain ESM script, no type declarations by design
+import { ACTIVE_VERDICTS, isRobotsOkVerdict } from "./queue-zero-test.mjs";
 
 export const API_KEY_ENV = "YOUTUBE_DATA_API_KEY";
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const MEASUREMENTS = "state/colony/measurements";
+/** The committed per-site terms verdicts; the read-back runs only under an active googleapis.com entry in it. */
+export const TERMS_VERDICTS = resolve(REPO_ROOT, "research/channel-loop/terms-verdicts.json");
+/** The site whose API terms gate every call (READ_HOST is www.googleapis.com). */
+export const API_TERMS_SITE = "googleapis.com";
+
+/** research/channel-loop/terms-verdicts.json, or null when it is missing or cannot be read (as scripts/brand-check.mjs). */
+export function readTermsVerdicts(path = TERMS_VERDICTS): unknown {
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The terms gate (ruling 7.10 row 24 (b), decision 2): ok only when the verdicts hold a googleapis.com entry whose verdict
+ * is one a line may be active under — ACTIVE_VERDICTS, with NO_TERMS_ROBOTS_OK counting only as isRobotsOkVerdict says,
+ * as termsGate reads them (scripts/queue-zero-test.mjs). Anything else, unreadable verdicts included, refuses.
+ */
+export function apiTermsGate(verdicts: unknown): { ok: boolean; verdict: string | null; why: string } {
+  if (!verdicts || typeof verdicts !== "object") return { ok: false, verdict: null, why: "the terms verdicts are missing or unreadable" };
+  const sites = (verdicts as { sites?: unknown }).sites;
+  const entry = sites && typeof sites === "object" && Object.hasOwn(sites, API_TERMS_SITE)
+    ? (sites as Record<string, { verdict?: unknown } | null>)[API_TERMS_SITE]
+    : undefined;
+  const verdict = typeof entry?.verdict === "string" ? entry.verdict : null;
+  const active: boolean = verdict === "NO_TERMS_ROBOTS_OK" ? isRobotsOkVerdict(entry) : ACTIVE_VERDICTS.has(verdict);
+  if (active) return { ok: true, verdict, why: `${API_TERMS_SITE} is ${verdict}` };
+  if (!entry) return { ok: false, verdict: null, why: `there is no ${API_TERMS_SITE} entry` };
+  return { ok: false, verdict, why: `${API_TERMS_SITE} is ${verdict ?? "an entry with no verdict"}, not one a call may run under` };
+}
 
 /** Where each line's uploads and readings live, repo-relative. */
 export function defaultPaths(line: ReadbackLine): { videosPath: string; statePath: string } {
@@ -57,7 +97,10 @@ export function defaultPaths(line: ReadbackLine): { videosPath: string; statePat
   };
 }
 
-type FetchLike = (url: string, init?: { signal?: AbortSignal }) => Promise<{ status: number; text: () => Promise<string> }>;
+type FetchLike = (
+  url: string,
+  init?: { signal?: AbortSignal; redirect?: "error" },
+) => Promise<{ status: number; text: () => Promise<string> }>;
 
 export interface ReadbackRun {
   env: Record<string, string | undefined>;
@@ -65,11 +108,21 @@ export interface ReadbackRun {
   experiment: ReadbackLine;
   videosPath: string;
   statePath: string;
+  /** research/channel-loop/terms-verdicts.json in a real run (main() passes TERMS_VERDICTS and takes no other). */
+  verdictsPath: string;
   now: string;
   log: (line: string) => void;
 }
 
 export async function runReadback(run: ReadbackRun): Promise<number> {
+  const terms = apiTermsGate(readTermsVerdicts(run.verdictsPath));
+  if (!terms.ok) {
+    run.log(
+      `youtube-madeforkids: ${terms.why} in ${run.verdictsPath} — refusing to run. No call is made until the YouTube API ` +
+        `Services Terms are read at github grade and recorded there (ruling 7.10 row 24 (b)); nothing asked, nothing written.`,
+    );
+    return 2;
+  }
   const key = (run.env[API_KEY_ENV] ?? "").trim();
   if (!key) {
     run.log(`youtube-madeforkids: ${API_KEY_ENV} is not set — refusing to run. The key is made at Stage A (T1-PROTOCOL.md); nothing asked, nothing written.`);
@@ -100,7 +153,7 @@ export async function runReadback(run: ReadbackRun): Promise<number> {
     const url = videosListUrl(batch, key);
     if (new URL(url).hostname !== READ_HOST) throw new Error(`refusing a request to ${new URL(url).hostname}`);
     try {
-      const res = await run.fetchImpl(url, { signal: AbortSignal.timeout(30_000) });
+      const res = await run.fetchImpl(url, { signal: AbortSignal.timeout(30_000), redirect: "error" });
       const text = await res.text();
       let body: unknown = text;
       try {
@@ -147,6 +200,7 @@ async function main(): Promise<number> {
     experiment: line,
     videosPath: resolve(REPO_ROOT, values.videos ?? paths.videosPath),
     statePath: resolve(REPO_ROOT, values.state ?? paths.statePath),
+    verdictsPath: TERMS_VERDICTS,
     now: values.now ?? new Date().toISOString(),
     log: (s) => console.log(s),
   });
