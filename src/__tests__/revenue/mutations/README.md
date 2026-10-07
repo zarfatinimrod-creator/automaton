@@ -69,6 +69,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
   | Plan | Entries | Full run |
   | --- | --- | --- |
   | `page-views.json` | 84 | 488 (tick 61 fixer, in sim-tree.sh, with verify.sh running beside it for part of the time (on three files, then the full 210 s run), the tree's setup included; all 84 killed); 638 (tick 61 builder, 79 entries, in sim-tree.sh, beside the full verify.sh for its first 257 s, the tree's setup included; all killed); 403 (the same 79 at the commit before, alone: T61-S5 and T61-S9 survived, a firing later than now that still added its note and a read on the 60th day that wrote one week, both now pinned); 23 for the first 5 (tick 54 builder, inside sim-tree.sh, alone); the two test files take about 4-8 s a run |
+  | `owner-report.json` | 20 | 169 (tick 64 owner-report builder, inside sim-tree.sh, alone, the tree's setup included; all 20 killed; the test file takes about 6-7 s a run) |
   | `owner-steps.json` | 7 | 68 (tick 61 owner-steps builder, inside sim-tree.sh, alone, the tree's setup included; all 7 killed; the test file takes about 4-5 s a run) |
   | `ledger.json` | 17 | 67 (tick 63 review fixer, inside sim-tree.sh, alone, the tree's setup included; all 17 killed); 53 for the first 12 (tick 63 seed-sync builder, inside sim-tree.sh, beside two colony simulations (sync-portfolio and a forced tick on copies of colony.db) for part of the time, the tree's setup included; all 12 killed; the three test files take about 2-4 s a run) |
   | `prize-dispatch.json` | 28 | 69 |
