@@ -654,3 +654,32 @@ thread owns `logs/CHECKPOINT.md`, `logs/CHANNEL_LOOP.md` and `logs/FABLE_QUEUE.m
    (ruling 7.10 row 24 (b))"; §9: add items 2, 4, 5 and 6 above as open closures.
 10. **`logs/FABLE_QUEUE.md:48`** (main thread, `loop-edit.mjs set-status`): DONE 7.10, this file.
 11. **Housekeeping, optional:** `research/channel-loop/BOARD-LOOP.md:118`, `:210` (`T1-PROTOCOL.md:71-96` → `:89-133`).
+
+## Amendment 1 (7.10 ~08:30 UTC, tick 61, main thread): P1's first read is the first read, designated or not
+
+**Finding.** §1 decision 1 says a first read that is not `public` — "`private`, `unlisted`, or null because the video was not
+returned" — fails P1. §4 decision 3 defines `p1` through `entry.first`, which `src/revenue/youtube-madeforkids.ts` keeps as
+"the first read that carried a designation"; a read that returned nothing, or returned the video without a designation,
+never becomes `entry.first`, and the entry records no earlier read at all. The code builder and its reviewer measured the
+gap (fold 2, `logs/2026-10-07-channel-loop-tick-61-t1-code.md`): a not-returned or undesignated private first read followed
+by designated public reads at +1 h and +73 h gives `passed = true`. §1 says that upload failed P1. The two sections
+disagree; §1 is the protocol's reading and wins.
+
+**Decided.**
+
+1. **The entry records its first read, whatever it carried.** `UploadReadback` gains `firstRead: { readAt, returned,
+   privacyStatus } | null` — the first read the read-back takes for that id, in the same colony run as the publisher's
+   response (§1 decision 1): `returned` false and `privacyStatus` null when the video was not in the response; otherwise
+   the status read. It is written once and never changed; `first` (the first designation read) stays as it is and keeps
+   anchoring `stayedPublic()`'s clock (§4 decisions 1-2 stand).
+2. **`firstUploadWindow()`'s `p1` reads `firstRead`, not `first`:** false if `publisherAccepted === false`, or if `firstRead`
+   exists and (`returned === false` or `privacyStatus !== "public"`); true if `publisherAccepted === true` and
+   `firstRead.privacyStatus === "public"`; else null. `p2`, `p3`, `p4` and `passed` are unchanged. The fixture the builder
+   measured (a not-returned first read, then designated public reads) now gives `p1 = false` and `passed = false`.
+3. **Fold for Opus:** `youtube-madeforkids.ts` (the field, its doc, the merge in `applyReads` or its equivalent, `firstUploadWindow`),
+   `youtube-madeforkids.test.ts` (the measured fixture as a regression test; `firstRead` written once; an undesignated
+   public first read gives `p1 = true` while `p2` stays null until a designation read), the mutation plan
+   `mutations/youtube-madeforkids.json` (the `returned === false` branch and the `firstRead` write-once rule), and the one
+   sentence in `T1-PROTOCOL.md`'s Recording text that names the readings, if it names `first`. No other file.
+
+**Noted 7.10 ~09:05 (the build, merge `6db0827`):** the builder gave every reading a `returned` field, since a video missing from the response and one returned without a `privacyStatus` would otherwise both read as null — accepted; `first`'s meaning is unchanged and it still anchors `stayedPublic()`. Two sentences still name the old shape (the read-back script's WRITES paragraph and `stayedPublic`'s doc); the next build that touches the file carries them. A state saved before the amendment would take its next read as the first; none exists, the read-back has never run live.
