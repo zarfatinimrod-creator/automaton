@@ -82,21 +82,21 @@ describe("the request (ruling 4.10 §6 rule 2: videos.list, part=status)", () =>
 describe("the response, from fixtures (true, false, missing)", () => {
   it("reads true", () => {
     expect(parseVideosList(fixture("true"), ["kidsVid0001"], AT)).toEqual([
-      { id: "kidsVid0001", madeForKids: "true", privacyStatus: "public", readAt: AT },
+      { id: "kidsVid0001", returned: true, madeForKids: "true", privacyStatus: "public", readAt: AT },
     ]);
   });
 
   it("reads false", () => {
     expect(parseVideosList(fixture("false"), ["kidsVid0002"], AT)).toEqual([
-      { id: "kidsVid0002", madeForKids: "false", privacyStatus: "public", readAt: AT },
+      { id: "kidsVid0002", returned: true, madeForKids: "false", privacyStatus: "public", readAt: AT },
     ]);
   });
 
   it("reads a video not returned, and one whose status has no madeForKids, as null — never as false", () => {
     // readAt is when the read was taken, whatever it carried: a read that found nothing is still a read.
     expect(parseVideosList(fixture("missing"), ["kidsVid0003", "kidsVid0004"], AT)).toEqual([
-      { id: "kidsVid0003", madeForKids: null, privacyStatus: null, readAt: AT },
-      { id: "kidsVid0004", madeForKids: null, privacyStatus: "private", readAt: AT },
+      { id: "kidsVid0003", returned: false, madeForKids: null, privacyStatus: null, readAt: AT },
+      { id: "kidsVid0004", returned: true, madeForKids: null, privacyStatus: "private", readAt: AT },
     ]);
   });
 
@@ -123,10 +123,11 @@ describe("the response, from fixtures (true, false, missing)", () => {
 describe("the experiment state: every upload re-read on every run", () => {
   const T0 = "2027-03-01T00:00:00.000Z";
   const T1R = "2027-03-05T00:00:00.000Z";
+  /** A read with no privacyStatus stands for a video the response did not return, as parseVideosList reads one. */
   const read = (id: string, madeForKids: "true" | "false" | null, readAt: string, privacyStatus: string | null = "public"): MadeForKidsReading =>
-    ({ id, madeForKids, privacyStatus, readAt });
+    ({ id, returned: privacyStatus !== null, madeForKids, privacyStatus, readAt });
   const entry = (id: string, o: Partial<UploadReadback> = {}): UploadReadback =>
-    ({ id, first: null, latest: null, contradictedAt: null, leftPublicAt: null, ...o });
+    ({ id, firstRead: null, first: null, latest: null, contradictedAt: null, leftPublicAt: null, ...o });
 
   it("starts empty, carrying the line's declared audience", () => {
     expect(emptyState("kids-explainers")).toEqual({ experiment: "kids-explainers", declaresMadeForKids: true, updatedAt: null, videos: [] });
@@ -136,13 +137,16 @@ describe("the experiment state: every upload re-read on every run", () => {
   it("keeps the first designation read, replaces the latest, and records the times", () => {
     const uploads = [{ id: "v1" }, { id: "v2" }];
     const one = mergeReadings(emptyState("kids-explainers"), uploads, [read("v1", "true", T0), read("v2", null, T0, null)], T0);
+    // firstRead (ruling 7.10 row 24 amendment 1): the first read whatever it carried, written once.
+    const v1First = { readAt: T0, returned: true, privacyStatus: "public" };
+    const v2First = { readAt: T0, returned: false, privacyStatus: null };
     expect(one.videos).toEqual([
-      entry("v1", { first: read("v1", "true", T0), latest: read("v1", "true", T0) }),
-      entry("v2", { latest: read("v2", null, T0, null) }),
+      entry("v1", { firstRead: v1First, first: read("v1", "true", T0), latest: read("v1", "true", T0) }),
+      entry("v2", { firstRead: v2First, latest: read("v2", null, T0, null) }),
     ]);
     const two = mergeReadings(one, uploads, [read("v1", "true", T1R), read("v2", "true", T1R)], T1R);
-    expect(two.videos[0]).toEqual(entry("v1", { first: read("v1", "true", T0), latest: read("v1", "true", T1R) }));
-    expect(two.videos[1]).toEqual(entry("v2", { first: read("v2", "true", T1R), latest: read("v2", "true", T1R) }));
+    expect(two.videos[0]).toEqual(entry("v1", { firstRead: v1First, first: read("v1", "true", T0), latest: read("v1", "true", T1R) }));
+    expect(two.videos[1]).toEqual(entry("v2", { firstRead: v2First, first: read("v2", "true", T1R), latest: read("v2", "true", T1R) }));
     expect(two.updatedAt).toBe(T1R);
     expect(readbackOf(two, uploads)).toEqual(["true", "true"]);
   });
@@ -292,8 +296,9 @@ describe("the experiment state: every upload re-read on every run", () => {
 describe("firstUploadWindow: P1-P4 and t1Passed from the read-back state (ruling 7.10 row 24 §4 decision 3)", () => {
   const T0 = "2027-03-01T00:00:00.000Z";
   const at = (h: number) => new Date(Date.parse(T0) + h * 3_600_000).toISOString();
-  const read = (madeForKids: "true" | "false" | null, h: number, privacyStatus: string | null = "public"): MadeForKidsReading =>
-    ({ id: "t1Video001", madeForKids, privacyStatus, readAt: at(h) });
+  /** One read of T1's first upload; with no privacyStatus it is a video the response did not return, unless `returned` says otherwise. */
+  const read = (madeForKids: "true" | "false" | null, h: number, privacyStatus: string | null = "public", returned = privacyStatus !== null): MadeForKidsReading =>
+    ({ id: "t1Video001", returned, madeForKids, privacyStatus, readAt: at(h) });
   const uploads = [{ id: "t1Video001" }];
   /** The read-back's entry for the first upload after these reads, one colony run each. */
   const after = (...reads: MadeForKidsReading[]): UploadReadback =>
@@ -307,7 +312,7 @@ describe("firstUploadWindow: P1-P4 and t1Passed from the read-back state (ruling
   const undesignated = after(read(null, 0)); // public, but no madeForKids: no first designation read
   const notReturned = after(read(null, 0, null));
 
-  it("P1 is true when the publisher accepted the upload and the first designation read found it public", () => {
+  it("P1 is true when the publisher accepted the upload and the first read found it public", () => {
     expect(firstUploadWindow(stayed, true, true, true).p1).toBe(true);
     expect(firstUploadWindow(early, true, null, null).p1).toBe(true);
     expect(firstUploadWindow(privated, true, null, null).p1).toBe(true); // a later departure is P2's, not P1's
@@ -318,7 +323,7 @@ describe("firstUploadWindow: P1-P4 and t1Passed from the read-back state (ruling
     expect(firstUploadWindow(null, false, true, true).p1).toBe(false);
   });
 
-  it("P1 is false when the first designation read found the upload private or unlisted, whatever the publisher said", () => {
+  it("P1 is false when the first read found the upload private or unlisted, whatever the publisher said", () => {
     for (const entry of [firstPrivate, firstUnlisted]) {
       expect(firstUploadWindow(entry, true, true, true).p1).toBe(false);
       expect(firstUploadWindow(entry, null, true, true).p1).toBe(false);
@@ -328,10 +333,16 @@ describe("firstUploadWindow: P1-P4 and t1Passed from the read-back state (ruling
   it("P1 is null while either half is unread", () => {
     expect(firstUploadWindow(stayed, null, true, true).p1).toBeNull(); // no publisher response recorded
     expect(firstUploadWindow(null, true, true, true).p1).toBeNull(); // no read yet
-    const neverAsked: UploadReadback = { id: "t1Video001", first: null, latest: null, contradictedAt: null, leftPublicAt: null };
+    const neverAsked: UploadReadback = { id: "t1Video001", firstRead: null, first: null, latest: null, contradictedAt: null, leftPublicAt: null };
     expect(firstUploadWindow(neverAsked, true, true, true).p1).toBeNull(); // an entry no read has reached yet
-    expect(firstUploadWindow(undesignated, true, true, true).p1).toBeNull();
-    expect(firstUploadWindow(notReturned, true, true, true).p1).toBeNull();
+    expect(firstUploadWindow(undesignated, null, true, true).p1).toBeNull(); // the publisher's half unread
+  });
+
+  it("P1 reads the first read, designated or not (amendment 1): an undesignated public one is true, a not-returned one false", () => {
+    // Re-pinned by ruling 7.10 row 24 amendment 1. Until it, both of these read null: P1 read the first designation read
+    // (`first`), and neither entry has one. P1 now reads `firstRead`, the first read whatever it carried.
+    expect(firstUploadWindow(undesignated, true, true, true).p1).toBe(true);
+    expect(firstUploadWindow(notReturned, true, true, true).p1).toBe(false);
   });
 
   it("P2 is stayedPublic(entry, hours): true at 72 h, false on a departure, null before 72 h or with no entry", () => {
@@ -403,6 +414,93 @@ describe("firstUploadWindow: P1-P4 and t1Passed from the read-back state (ruling
   });
 });
 
+describe("firstRead: P1 reads the first read, designated or not (ruling 7.10 row 24 amendment 1)", () => {
+  const T0 = "2027-03-01T00:00:00.000Z";
+  const at = (h: number) => new Date(Date.parse(T0) + h * 3_600_000).toISOString();
+  const uploads = [{ id: "t1Video001" }];
+  /** One read of T1's first upload; with no privacyStatus it is a video the response did not return, unless `returned` says otherwise. */
+  const read = (madeForKids: "true" | "false" | null, h: number, privacyStatus: string | null = "public", returned = privacyStatus !== null): MadeForKidsReading =>
+    ({ id: "t1Video001", returned, madeForKids, privacyStatus, readAt: at(h) });
+  /** The read-back's entry for the first upload after these reads, one colony run each. */
+  const after = (...reads: MadeForKidsReading[]): UploadReadback =>
+    reads.reduce((s, r) => mergeReadings(s, uploads, [r], r.readAt), emptyState("faceless-youtube")).videos[0]!;
+
+  it("regression, the measured fixture: a not-returned first read, then designated public reads at +1 h and +73 h, fails P1 and the window (before amendment 1 it passed)", () => {
+    // fold 2's builder and reviewer measured this one: until amendment 1 it gave { p1: true, p2: true, ..., passed: true },
+    // because P1 read `first`, and the +1 h read was the first one that carried a designation.
+    const entry = after(read(null, 0, null), read("false", 1), read("false", 73));
+    expect(entry.firstRead).toEqual({ readAt: at(0), returned: false, privacyStatus: null });
+    expect(entry.first).toEqual(read("false", 1)); // `first` keeps its meaning: the first designation read
+    expect(entry.leftPublicAt).toBeNull();
+    expect(stayedPublic(entry, 72)).toBe(true); // P2's clock still starts at `first` (§4 decisions 1-2 stand)
+    expect(firstUploadWindow(entry, true, true, true)).toEqual({ p1: false, p2: true, p3: true, p4: true, passed: false });
+  });
+
+  it("regression: an undesignated private first read, then designated public reads at +1 h and +73 h, fails P1 and the window (before amendment 1 it passed)", () => {
+    const entry = after(read(null, 0, "private"), read("false", 1), read("false", 73));
+    expect(entry.firstRead).toEqual({ readAt: at(0), returned: true, privacyStatus: "private" });
+    expect(firstUploadWindow(entry, true, true, true)).toEqual({ p1: false, p2: true, p3: true, p4: true, passed: false });
+  });
+
+  it("the not-returned case records returned false and privacyStatus null, from the parser's own reading", () => {
+    const ids = ["kidsVid0003", "kidsVid0004"];
+    const state = mergeReadings(emptyState("kids-explainers"), ids.map((id) => ({ id })), parseVideosList(fixture("missing"), ids, AT), AT);
+    expect(state.videos.map((v) => v.firstRead)).toEqual([
+      { readAt: AT, returned: false, privacyStatus: null }, // not in the response
+      { readAt: AT, returned: true, privacyStatus: "private" }, // in it, with no madeForKids: the status read
+    ]);
+    for (const v of state.videos) expect(firstUploadWindow(v, true, true, true).p1, v.id).toBe(false);
+  });
+
+  it("a video the response returned with no privacyStatus is returned, its status read null, and fails P1", () => {
+    const [r] = parseVideosList({ items: [{ id: "t1Video001", status: { madeForKids: false } }] }, ["t1Video001"], at(0));
+    expect(r).toEqual({ id: "t1Video001", returned: true, madeForKids: "false", privacyStatus: null, readAt: at(0) });
+    const entry = after(r!);
+    expect(entry.firstRead).toEqual({ readAt: at(0), returned: true, privacyStatus: null });
+    expect(firstUploadWindow(entry, true, true, true).p1).toBe(false);
+  });
+
+  it("firstRead is written once: a later run never changes it, whatever that run reads", () => {
+    const fr = { readAt: at(0), returned: true, privacyStatus: "public" };
+    expect(after(read(null, 0)).firstRead).toEqual(fr);
+    for (const later of [read("false", 1, "private"), read(null, 2, null), read("true", 3, "unlisted"), read("false", 80)]) {
+      expect(after(read(null, 0), later).firstRead, later.readAt).toEqual(fr);
+    }
+    expect(after(read(null, 0), read("false", 1, "private"), read("false", 80)).firstRead).toEqual(fr);
+    const gone = { readAt: at(0), returned: false, privacyStatus: null };
+    expect(after(read(null, 0, null), read("false", 1), read("false", 2)).firstRead).toEqual(gone);
+  });
+
+  it("a listed upload a run did not read keeps its entry as it was: no read, so no firstRead", () => {
+    const both = [{ id: "a" }, { id: "b" }];
+    const r = (id: string, h: number, returned: boolean): MadeForKidsReading =>
+      ({ id, returned, madeForKids: returned ? "false" : null, privacyStatus: returned ? "public" : null, readAt: at(h) });
+    const s0 = mergeReadings(emptyState("faceless-youtube"), both, [r("a", 0, true)], at(0));
+    expect(s0.videos[1]).toEqual({ id: "b", firstRead: null, first: null, latest: null, contradictedAt: null, leftPublicAt: null });
+    const s1 = mergeReadings(s0, both, [r("b", 1, false)], at(1));
+    expect(s1.videos[0]).toEqual(s0.videos[0]); // a was not read at +1 h
+    expect(s1.videos[1]!.firstRead).toEqual({ readAt: at(1), returned: false, privacyStatus: null });
+  });
+
+  it("an undesignated public first read gives P1 true, while P2 stays null until a designation read starts its clock", () => {
+    const undesignated = after(read(null, 0));
+    expect(undesignated.first).toBeNull();
+    expect(firstUploadWindow(undesignated, true, true, true)).toEqual({ p1: true, p2: null, p3: true, p4: true, passed: null });
+    const still = after(read(null, 0), read(null, 72), read(null, 144));
+    expect(firstUploadWindow(still, true, true, true)).toEqual({ p1: true, p2: null, p3: true, p4: true, passed: null });
+    const designated = after(read(null, 0), read(null, 72), read("false", 80));
+    expect(firstUploadWindow(designated, true, true, true).p2).toBeNull(); // the clock starts at +80 h
+    const window = after(read(null, 0), read(null, 72), read("false", 80), read("false", 152));
+    expect(firstUploadWindow(window, true, true, true)).toEqual({ p1: true, p2: true, p3: true, p4: true, passed: true });
+    expect(firstUploadWindow(undesignated, null, true, true).p1).toBeNull(); // no publisher response recorded
+  });
+
+  it("a firstRead that says not returned fails P1 on that alone, whatever privacyStatus a hand-edited state gives it", () => {
+    const edited: UploadReadback = { ...after(read("false", 0), read("false", 72)), firstRead: { readAt: at(0), returned: false, privacyStatus: "public" } };
+    expect(firstUploadWindow(edited, true, true, true)).toEqual({ p1: false, p2: true, p3: true, p4: true, passed: false });
+  });
+});
+
 describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => {
   function setup(uploads: { id: string }[] | null, prior: MadeForKidsState | null = null, verdicts: string | null = JSON.stringify(verdictsWith("NOT_BARRED"))) {
     const dir = mkdtempSync(join(tmpdir(), "mfk-"));
@@ -453,6 +551,11 @@ describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => 
     expect(readbackOf(state, [{ id: "kidsVid0001" }, { id: "kidsVid0003" }, { id: "kidsVid0004" }])).toEqual(["true", null, null]);
     expect(state.videos.map((v) => v.latest?.privacyStatus)).toEqual(["public", null, "private"]);
     expect(state.videos.map((v) => v.latest?.readAt)).toEqual([AT, AT, AT]);
+    expect(state.videos.map((v) => v.firstRead)).toEqual([
+      { readAt: AT, returned: true, privacyStatus: "public" },
+      { readAt: AT, returned: false, privacyStatus: null }, // not in the response
+      { readAt: AT, returned: true, privacyStatus: "private" },
+    ]);
     expect(s.lines.join("\n")).not.toContain(KEY);
     expect(readFileSync(s.statePath, "utf8")).not.toContain(KEY);
   });
@@ -461,11 +564,12 @@ describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => 
     // T1's line, read false on 1.3; on 11.3 YouTube has set it to made for kids. A reader that asked only about unread
     // uploads would never see it (the 4.10 review): P-2 counts overrides "when YouTube sets them".
     const EARLIER = "2027-03-01T06:00:00.000Z";
-    const firstRead = { id: "kidsVid0001", madeForKids: "false" as const, privacyStatus: "public", readAt: EARLIER };
+    const earlierRead = { id: "kidsVid0001", returned: true, madeForKids: "false" as const, privacyStatus: "public", readAt: EARLIER };
+    const earlierFirstRead = { readAt: EARLIER, returned: true, privacyStatus: "public" };
     const prior: MadeForKidsState = {
       ...emptyState("faceless-youtube"),
       updatedAt: EARLIER,
-      videos: [{ id: "kidsVid0001", first: firstRead, latest: firstRead, contradictedAt: null, leftPublicAt: null }],
+      videos: [{ id: "kidsVid0001", firstRead: earlierFirstRead, first: earlierRead, latest: earlierRead, contradictedAt: null, leftPublicAt: null }],
     };
     const s = setup([{ id: "kidsVid0001" }], prior);
     s.answers.kidsVid0001 = fixture("true");
@@ -473,8 +577,9 @@ describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => 
     expect(code).toBe(0);
     expect(s.calls).toHaveLength(1);
     const state = JSON.parse(readFileSync(s.statePath, "utf8")) as MadeForKidsState;
-    expect(state.videos[0]!.first).toEqual(firstRead);
-    expect(state.videos[0]!.latest).toEqual({ id: "kidsVid0001", madeForKids: "true", privacyStatus: "public", readAt: AT });
+    expect(state.videos[0]!.first).toEqual(earlierRead);
+    expect(state.videos[0]!.firstRead).toEqual(earlierFirstRead); // written once, at the first run (amendment 1)
+    expect(state.videos[0]!.latest).toEqual({ id: "kidsVid0001", returned: true, madeForKids: "true", privacyStatus: "public", readAt: AT });
     expect(state.videos[0]!.contradictedAt).toBe(AT);
     expect(readbackOf(state, [{ id: "kidsVid0001" }])).toEqual(["true"]);
   });
