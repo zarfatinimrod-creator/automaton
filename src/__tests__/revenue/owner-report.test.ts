@@ -11,7 +11,15 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import Database from "better-sqlite3";
 import { createDatabase } from "../../state/database.js";
-import { computePortfolioSummary, insertReview, listLines, recordLedgerEntry, setLineBudget, updateLineStatus } from "../../revenue/ledger.js";
+import {
+  computePortfolioSummary,
+  insertReview,
+  listLines,
+  recordLedgerEntry,
+  setHumanSetupDone,
+  setLineBudget,
+  updateLineStatus,
+} from "../../revenue/ledger.js";
 import { markRan } from "../../revenue/runner.js";
 import { receiptDay, setFxRateOn, toAgorotAtRate } from "../../revenue/money.js";
 import { DEFAULT_PORTFOLIO, seedDefaultPortfolio } from "../../revenue/portfolio.js";
@@ -75,6 +83,7 @@ function buildLedgerDb(file: string): void {
 const LEDGER_DB = join(TMP, "ledger", "colony.db");
 const EMPTY_DB = join(TMP, "empty", "colony.db");
 const HEALTH_DB = join(TMP, "health", "colony.db");
+const STEPS_DB = join(TMP, "steps", "colony.db");
 const SYNC_AT = new Date(Date.parse(NOW) - 6 * 60 * 60 * 1000 - 40 * 60 * 1000).toISOString(); // 6 h 40 min ago: 7, rounded
 const USDC_AGOROT = toAgorotAtRate(5000, "USDC", USDC_RATE);
 
@@ -91,6 +100,12 @@ const USDC_AGOROT = toAgorotAtRate(5000, "USDC", USDC_RATE);
   setLineBudget(health.raw, "pcn874", 1234);
   insertReview(health.raw, { lineId: null, level: "board", reviewer: "board", periodStart: ago(1), periodEnd: NOW, metrics: {}, decision: "hold", rationale: `nothing to decide; ${EMAIL}` });
   health.close();
+  // Two lines that no longer wait on the owner: one killed, one whose setup is recorded done (still awaiting_setup).
+  const steps = createDatabase(STEPS_DB);
+  seedDefaultPortfolio(steps.raw);
+  updateLineStatus(steps.raw, "il-biz-tools", "killed", { reason: "test", force: true });
+  setHumanSetupDone(steps.raw, "pcn874", true);
+  steps.close();
 }
 
 function report(file: string): OwnerReport {
@@ -209,6 +224,64 @@ describe("owner steps: owner-steps.ts's order, minutes and reasons", () => {
     );
   });
 
+  it("asks a step only for a line the database still has waiting on the owner, and names the rest with their lines' state", () => {
+    const r = report(STEPS_DB);
+    const state: Record<string, string> = { "il-biz-tools": "killed", pcn874: "set up (awaiting_setup)" };
+    const waiting = new Set(DEFAULT_PORTFOLIO.map((l) => l.id).filter((id) => !(id in state)));
+    expect(new Set(r.lines.filter((l) => l.waitsOnOwner).map((l) => l.id))).toEqual(waiting);
+    const open = ownerStepsInOrder().filter(isOwnerStepOpen);
+    const expected = open.filter((s) => s.lines.some((id) => waiting.has(id)));
+    // Not vacuous: some open step has no waiting line left, and some asked step names a line that no longer waits.
+    expect(expected.length).toBeLessThan(open.length);
+    expect(r.ownerSteps.askedNow.map((s) => s.number)).toEqual(expected.map((s) => s.number));
+    expect(r.ownerSteps.totalMinutesAskedNow).toEqual(ownerStepMinutes(expected));
+    for (const [i, s] of expected.entries()) {
+      expect(r.ownerSteps.askedNow[i].lines).toEqual(s.lines.filter((id) => waiting.has(id)));
+      expect(r.ownerSteps.askedNow[i].linesNotWaiting).toEqual(s.lines.filter((id) => !waiting.has(id)).map((id) => ({ id, state: state[id] })));
+    }
+    expect(r.ownerSteps.askedNow.some((s) => s.linesNotWaiting.length > 0)).toBe(true);
+    // A step open in the code that no waiting line needs is named with its lines' state, not asked and not counted.
+    for (const s of open.filter((x) => !expected.includes(x))) {
+      expect(r.ownerSteps.notAskedNow.find((n) => n.number === s.number)).toMatchObject({
+        state: "no-line-waiting",
+        reason: `open in owner-steps.ts, but no line in the database waits on it (${s.lines.map((id) => `${id} ${state[id]}`).join(", ")})`,
+      });
+    }
+    expect([...r.ownerSteps.askedNow, ...r.ownerSteps.notAskedNow].sort((a, b) => a.order - b.order).map((s) => s.number)).toEqual(
+      ownerStepsInOrder().map((s) => s.number),
+    );
+    // A line whose setup is done is asked nothing, while a waiting line keeps its steps.
+    expect(r.lines.find((l) => l.id === "pcn874")).toMatchObject({ waitsOnOwner: false, stepsAskedNow: [] });
+    expect(openOwnerStepsForLine("pcn874").length).toBeGreaterThan(0);
+    for (const id of waiting) {
+      expect(r.lines.find((l) => l.id === id)!.stepsAskedNow).toEqual(openOwnerStepsForLine(id).map((s) => s.number));
+    }
+    const text = renderOwnerReport(r);
+    expect(text).toContain("| none: the line no longer waits on the owner |");
+    expect(text).toContain("(owner-steps.ts also names pcn874, set up (awaiting_setup)");
+  });
+
+  it("prints a row a done step owes, once its gate holds, under its own heading before 'Not asked now', and counts it", () => {
+    const base = report(EMPTY_DB);
+    expect(renderOwnerReport(base)).not.toContain("Asked now, alone");
+    const owedRows = [
+      { step: 6, row: "OWED_ROW", askedNow: true, reason: null },
+      { step: 6, row: "HELD_ROW", askedNow: false, reason: "waits until something exists" },
+    ];
+    const text = renderOwnerReport({ ...base, ownerSteps: { ...base.ownerSteps, owedRows } });
+    const heading = text.indexOf("Asked now, alone (rows done steps still owe):");
+    const asked = text.indexOf("- Step 6's `OWED_ROW` row: step 6 is done, and this row was held back then");
+    const notAsked = text.indexOf("Not asked now:");
+    const held = text.indexOf("- Owed by done step 6: the `HELD_ROW` row waits until something exists");
+    expect(heading).toBeGreaterThan(-1);
+    expect(asked).toBeGreaterThan(heading);
+    expect(notAsked).toBeGreaterThan(asked);
+    expect(held).toBeGreaterThan(notAsked);
+    // The asked row is printed once, in its own block: not again among the rows not asked.
+    expect(text.split("OWED_ROW").length - 1).toBe(1);
+    expect(text).toContain("minutes in all, and 1 row(s) of done steps asked alone\n");
+  });
+
   it("holds a gated secret row back until the site has its project, and asks it once it does", () => {
     const db = new Database(EMPTY_DB, { readonly: true });
     try {
@@ -235,6 +308,20 @@ describe("colony health: the last ledger sync as the loop-gap blocker reads it, 
     expect(text).toContain(`- Last ledger sync: ${SYNC_AT}, 7 hours ago`);
     expect(text).toContain("firing — the loop did not run for 7 hours");
     expect(text).not.toMatch(EMAIL_RE); // a review's rationale is never printed
+  });
+
+  it("says so when the recorded sync is later than the report's clock, instead of a negative number of hours ago", () => {
+    const db = new Database(HEALTH_DB, { readonly: true });
+    try {
+      const r = buildOwnerReport(db, { nowIso: new Date(Date.parse(SYNC_AT) - 3 * 60 * 60 * 1000).toISOString(), site: { projectId: "" } });
+      expect(r.health.hoursSinceLedgerSync).toBe(-3);
+      expect(r.health.loopGapBlocker).toBeNull();
+      const text = renderOwnerReport(r);
+      expect(text).toContain(`- Last ledger sync: ${SYNC_AT}, 3 hours after this report's clock (a sync time in the future);`);
+      expect(text).not.toContain("-3 hours");
+    } finally {
+      db.close();
+    }
   });
 
   it("reads no sync, no gap and no board review when none was ever recorded", () => {
@@ -279,6 +366,20 @@ describe("the script: read-only, and no row's identifiers printed", () => {
     expect(out.status).toBe(1);
     expect(existsSync(missing)).toBe(false);
   }, 60_000);
+
+  it("reports --now as one ISO instant, whatever form Date.parse read it in", () => {
+    // The same instant as NOW, written at +03:00: as text it sorts three hours later than NOW.
+    const offset = new Date(Date.parse(NOW) + 3 * 60 * 60 * 1000).toISOString().replace("Z", "+03:00");
+    expect(Date.parse(offset)).toBe(Date.parse(NOW));
+    const db = new Database(LEDGER_DB, { readonly: true });
+    try {
+      const r = buildOwnerReport(db, { nowIso: offset, site: { projectId: "" } });
+      expect(r.asOf).toBe(NOW);
+      expect(r.money).toEqual(report(LEDGER_DB).money);
+    } finally {
+      db.close();
+    }
+  });
 
   it("exits 2 on an unknown option", () => {
     expect(run(["--db", EMPTY_DB, "--write"]).status).toBe(2);

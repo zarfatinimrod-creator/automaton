@@ -8,7 +8,9 @@
  * It reuses what REPORT.md is built from and does no money arithmetic of its own: the 30-day figures are
  * computePortfolioSummary's, the all-time figures are the same per-line sums (ledger.ts sumWindow, sumUnconverted) over
  * every row the ledger holds, and amounts print through formatIls. The steps are owner-steps.ts's, in its order, with its
- * minutes and its reasons for not asking a step now.
+ * minutes and its reasons for not asking a step now — asked, as renderReport asks them, only for the lines the database
+ * still has waiting on the owner (awaiting_setup, setup not done): a step open in the code whose every line is killed or
+ * set up is named, with its lines' state, and not asked or counted.
  *
  * The repository is public, so nothing a ledger row carries beyond its amount is read out: no external (platform
  * transaction) id, no note, no source — counts and sums only. Nothing here writes: every call it makes is a SELECT, and
@@ -74,7 +76,10 @@ export interface OwnerReportStep {
   id: string;
   order: number;
   minutes: [number, number];
+  /** The step's lines that the database still has waiting on the owner (awaiting_setup, setup not done). */
   lines: string[];
+  /** The step's other lines in owner-steps.ts, with their state in the database ("killed", "set up (live)", …). */
+  linesNotWaiting: { id: string; state: string }[];
   /** The half that may be done earlier, with its minutes and the step it may follow. */
   earlyPart: { minutes: number; afterStep: number } | null;
 }
@@ -84,9 +89,12 @@ export interface OwnerReportStepNotAsked {
   id: string;
   order: number;
   minutes: [number, number];
-  /** "done", "frozen" or "held" — in that precedence, as owner-steps.ts reads them. */
-  state: "done" | "frozen" | "held";
-  /** The reason the code gives: the done date, the rule that froze it, or the precondition's short form. */
+  /**
+   * "done", "frozen" or "held" — in that precedence, as owner-steps.ts reads them; "no-line-waiting" for a step open in
+   * owner-steps.ts that no line in the database still waits on (each of its lines killed, set up or absent).
+   */
+  state: "done" | "frozen" | "held" | "no-line-waiting";
+  /** The reason the code gives — the done date, the rule that froze it, the precondition's short form — or its lines' state. */
   reason: string;
 }
 
@@ -98,7 +106,9 @@ export interface OwnerReportLine {
   /** Credit cents per month: the board's current allocation. */
   budgetMonthlyCents: number;
   setupDone: boolean;
-  /** Owner step numbers this line waits on that are asked now, in execution order. */
+  /** awaiting_setup with its setup not done: the lines renderReport lists under "What the owner has to do". */
+  waitsOnOwner: boolean;
+  /** Owner step numbers this line waits on that are asked now, in execution order; none when it no longer waits. */
   stepsAskedNow: number[];
   /** Steps that gate this line but are frozen or held, with the reason, in execution order. */
   stepsNotAskedNow: { number: number; reason: string }[];
@@ -126,12 +136,16 @@ export interface OwnerReport {
     notAskedNow: OwnerReportStepNotAsked[];
     /** Secret rows of steps asked now that a gate still holds back, with the gate's reason. */
     heldSecretRows: { step: number; row: string; reason: string }[];
-    /** Rows done steps still owe: asked alone once their gate holds, named with the reason before that. */
+    /**
+     * Rows done steps still owe: asked alone once their gate holds (askedNow, printed under its own heading before "Not
+     * asked now", as renderReport's "## Asked now: one row of a done step"), named with the reason before that.
+     */
     owedRows: { step: number; row: string; askedNow: boolean; reason: string | null }[];
   };
   health: {
     enabled: boolean;
     lastLedgerSyncAt: string | null;
+    /** Rounded as checkLiveness rounds it; negative when the recorded sync is later than the report's clock. */
     hoursSinceLedgerSync: number | null;
     loopGapAlertHours: number;
     /** The staleness blocker the tick would raise now (runner.ts checkLiveness), or null when it would not. */
@@ -174,6 +188,20 @@ export function gateSite(siteDir?: string): SecretGateSite {
   }
 }
 
+type DbLine = ReturnType<typeof listLines>[number];
+
+/** A line the owner is still asked for: renderReport's `waiting` (awaiting_setup, setup not done). */
+function waitsOnOwner(line: DbLine | undefined): boolean {
+  return Boolean(line && line.status === "awaiting_setup" && !line.humanSetupDone);
+}
+
+/** How a line that does not wait on the owner stands in the database, for the step that names it. */
+function lineState(line: DbLine | undefined): string {
+  if (!line) return "not in the database";
+  if (line.status === "killed") return "killed";
+  return line.humanSetupDone ? `set up (${line.status})` : line.status;
+}
+
 function getKv(db: Database, key: string): string | undefined {
   const row = db.prepare("SELECT value FROM kv WHERE key = ?").get(key) as { value: string } | undefined;
   return row?.value;
@@ -184,14 +212,17 @@ export function buildOwnerReport(
   opts: { nowIso?: string; site?: SecretGateSite } = {},
 ): OwnerReport {
   if (!hasRevenueTables(db)) throw new Error("not a colony database: it has no revenue_lines table");
-  const nowIso = opts.nowIso ?? new Date().toISOString();
-  const nowMs = Date.parse(nowIso);
-  if (Number.isNaN(nowMs)) throw new Error(`not a date: ${nowIso}`);
+  const nowMs = Date.parse(opts.nowIso ?? new Date().toISOString());
+  if (Number.isNaN(nowMs)) throw new Error(`not a date: ${opts.nowIso}`);
+  // One form for every window bound and for asOf: occurred_at compares as text, so "+03:00" or "Oct 7 2026" would not.
+  const nowIso = new Date(nowMs).toISOString();
   const site = opts.site ?? gateSite();
 
   // ── Money ──
   const all = listLines(db);
   const ids = all.map((l) => l.id);
+  const byId = new Map(all.map((l) => [l.id, l]));
+  const waits = (id: string) => waitsOnOwner(byId.get(id));
   const summary = computePortfolioSummary(db, nowIso);
   // computeLineMetrics' own 30-day window; the test holds these sums to computePortfolioSummary's.
   const last30d = moneyWindow(db, ids, new Date(nowMs - 30 * DAY_MS).toISOString(), nowIso);
@@ -213,7 +244,8 @@ export function buildOwnerReport(
       targetMonthlyAgorot: l.targetMonthlyAgorot,
       budgetMonthlyCents: l.budgetMonthlyCents,
       setupDone: l.humanSetupDone,
-      stepsAskedNow: openOwnerStepsForLine(l.id).map((s) => s.number),
+      waitsOnOwner: waitsOnOwner(l),
+      stepsAskedNow: waitsOnOwner(l) ? openOwnerStepsForLine(l.id).map((s) => s.number) : [],
       stepsNotAskedNow: [...frozenOwnerStepsForLine(l.id), ...heldOwnerStepsForLine(l.id)]
         .sort((a, b) => a.order - b.order)
         .map((s) => ({ number: s.number, reason: notAskedNow(s).reason })),
@@ -222,8 +254,11 @@ export function buildOwnerReport(
 
   // ── Owner steps ──
   const ordered = ownerStepsInOrder();
-  const asked = ordered.filter(isOwnerStepOpen);
+  const open = ordered.filter(isOwnerStepOpen);
+  // Asked only for a line the database still has waiting, as renderReport asks: a killed or set-up line needs no step.
+  const asked = open.filter((s) => s.lines.some(waits));
   const minutes = ownerStepMinutes(asked);
+  const notWaiting = (s: OwnerStep) => s.lines.filter((id) => !waits(id)).map((id) => ({ id, state: lineState(byId.get(id)) }));
 
   // ── Health ──
   const lastSync = getKv(db, LEDGER_SYNC_LAST_RUN_KEY) ?? null;
@@ -254,13 +289,28 @@ export function buildOwnerReport(
         id: s.id,
         order: s.order,
         minutes: s.minutes,
-        lines: s.lines,
+        lines: s.lines.filter(waits),
+        linesNotWaiting: notWaiting(s),
         earlyPart: s.earlyPart ? { minutes: s.earlyPart.minutes, afterStep: stepNumber(s.earlyPart.afterStep) } : null,
       })),
       totalMinutesAskedNow: minutes,
       notAskedNow: ordered
-        .filter((s) => !isOwnerStepOpen(s))
-        .map((s) => ({ number: s.number, id: s.id, order: s.order, minutes: s.minutes, ...notAskedNow(s) })),
+        .filter((s) => !asked.includes(s))
+        .map((s) => ({
+          number: s.number,
+          id: s.id,
+          order: s.order,
+          minutes: s.minutes,
+          ...(isOwnerStepOpen(s)
+            ? {
+                state: "no-line-waiting" as const,
+                reason:
+                  "open in owner-steps.ts, but no line in the database waits on it (" +
+                  notWaiting(s).map((l) => `${l.id} ${l.state}`).join(", ") +
+                  ")",
+              }
+            : notAskedNow(s)),
+        })),
       heldSecretRows: asked.flatMap((s) =>
         heldSecretRows(s, site).map((row) => ({ step: s.number, row: row.name, reason: SECRET_ROW_GATE_SHORT[row.askedOnlyWhen!] })),
       ),
@@ -320,39 +370,46 @@ export function renderOwnerReport(r: OwnerReport): string {
 
   out.push(`## Revenue lines (${r.lines.length} not killed; killed: ${r.killedLines.length ? r.killedLines.join(", ") : "none"})`);
   out.push("");
-  out.push("| Line | Tier | Status | Target/month | Budget | Setup done | Owner steps asked now | Gating, not asked now | Open setup items |");
+  out.push("| Line | Tier | Status | Target/month | Budget, credit cents/month | Setup done | Owner steps asked now | Gating, not asked now | Open setup items |");
   out.push("|---|---|---|---|---|---|---|---|---|");
   for (const l of r.lines) {
     out.push(
-      `| \`${l.id}\` | ${l.tier} | ${l.status} | ${formatIls(l.targetMonthlyAgorot)} | ${l.budgetMonthlyCents}c | ` +
-        `${l.setupDone ? "yes" : "no"} | ${l.stepsAskedNow.join(", ") || "none"} | ` +
+      `| \`${l.id}\` | ${l.tier} | ${l.status} | ${formatIls(l.targetMonthlyAgorot)} | ${l.budgetMonthlyCents} | ` +
+        `${l.setupDone ? "yes" : "no"} | ` +
+        `${l.stepsAskedNow.join(", ") || (l.waitsOnOwner ? "none" : "none: the line no longer waits on the owner")} | ` +
         `${l.stepsNotAskedNow.map((s) => `step ${s.number}: ${s.reason}`).join("; ") || "none"} | ${l.openSetupItems} |`,
     );
   }
   out.push("");
 
   const s = r.ownerSteps;
+  const owedAsked = s.owedRows.filter((o) => o.askedNow);
+  const owedHeld = s.owedRows.filter((o) => !o.askedNow);
   out.push(
     `## Owner steps (docs/OWNER_STEPS.he.md): ${s.askedNow.length} asked now, ` +
-      `${s.totalMinutesAskedNow.min}-${s.totalMinutesAskedNow.max} minutes in all`,
+      `${s.totalMinutesAskedNow.min}-${s.totalMinutesAskedNow.max} minutes in all` +
+      (owedAsked.length ? `, and ${owedAsked.length} row(s) of done steps asked alone` : ""),
   );
   out.push("");
   s.askedNow.forEach((st, i) => {
     const early = st.earlyPart ? `; its early part, ${st.earlyPart.minutes} min, may follow step ${st.earlyPart.afterStep}` : "";
-    out.push(`${i + 1}. Step ${st.number} (\`${st.id}\`): ${minutesText(st.minutes)}${early} — lines ${st.lines.join(", ")}`);
+    const others = st.linesNotWaiting.length
+      ? ` (owner-steps.ts also names ${st.linesNotWaiting.map((l) => `${l.id}, ${l.state}`).join("; ")})`
+      : "";
+    out.push(`${i + 1}. Step ${st.number} (\`${st.id}\`): ${minutesText(st.minutes)}${early} — lines ${st.lines.join(", ")}${others}`);
   });
   out.push("");
+  if (owedAsked.length) {
+    out.push("Asked now, alone (rows done steps still owe):");
+    out.push("");
+    for (const o of owedAsked) out.push(`- Step ${o.step}'s \`${o.row}\` row: step ${o.step} is done, and this row was held back then`);
+    out.push("");
+  }
   out.push("Not asked now:");
   out.push("");
   for (const st of s.notAskedNow) out.push(`- Step ${st.number} (\`${st.id}\`, ${minutesText(st.minutes)}): ${st.reason}`);
   for (const h of s.heldSecretRows) out.push(`- Step ${h.step}'s \`${h.row}\` row ${h.reason}`);
-  for (const o of s.owedRows) {
-    out.push(
-      o.askedNow
-        ? `- Asked now, alone: step ${o.step}'s \`${o.row}\` row, which the done step still owes`
-        : `- Owed by done step ${o.step}: the \`${o.row}\` row ${o.reason}`,
-    );
-  }
+  for (const o of owedHeld) out.push(`- Owed by done step ${o.step}: the \`${o.row}\` row ${o.reason}`);
   out.push("");
 
   const h = r.health;
@@ -361,7 +418,11 @@ export function renderOwnerReport(r: OwnerReport): string {
   out.push(`- Colony enabled: ${h.enabled ? "yes" : "no (kv revenue.enabled = 0)"}`);
   out.push(
     h.lastLedgerSyncAt
-      ? `- Last ledger sync: ${h.lastLedgerSyncAt}, ${h.hoursSinceLedgerSync} hours ago; the loop-gap blocker fires after ` +
+      ? `- Last ledger sync: ${h.lastLedgerSyncAt}, ` +
+          (h.hoursSinceLedgerSync! < 0
+            ? `${-h.hoursSinceLedgerSync!} hours after this report's clock (a sync time in the future)`
+            : `${h.hoursSinceLedgerSync} hours ago`) +
+          "; the loop-gap blocker fires after " +
           `${h.loopGapAlertHours} hours: ${h.loopGapBlocker ? `firing — ${h.loopGapBlocker}` : "not firing"}`
       : "- Last ledger sync: never recorded (the loop-gap blocker has nothing to measure from)",
   );

@@ -82,8 +82,8 @@
   {
     "id": "T64-OR11",
     "file": "src/revenue/owner-report.ts",
-    "find": "const asked = ordered.filter(isOwnerStepOpen);",
-    "replace": "const asked = ordered.filter((s) => !s.doneOn);",
+    "find": "const open = ordered.filter(isOwnerStepOpen);",
+    "replace": "const open = ordered.filter((s) => !s.doneOn);",
     "note": "tick 64: a frozen or held step is not asked now",
     "test": "src/__tests__/revenue/owner-report.test.ts"
   },
@@ -157,6 +157,134 @@
     "find": "    return 2;",
     "replace": "    return 0;",
     "note": "tick 64: an unknown option exits 2",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR21",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const asked = open.filter((s) => s.lines.some(waits));",
+    "replace": "const asked = open;",
+    "note": "tick 64 review: a step is asked only for a line the database still has waiting on the owner, as renderReport asks",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR22",
+    "file": "src/revenue/owner-report.ts",
+    "find": "return Boolean(line && line.status === \"awaiting_setup\" && !line.humanSetupDone);",
+    "replace": "return Boolean(line && line.status === \"awaiting_setup\");",
+    "note": "tick 64 review: a line whose setup is recorded done no longer waits on the owner",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR23",
+    "file": "src/revenue/owner-report.ts",
+    "find": "return Boolean(line && line.status === \"awaiting_setup\" && !line.humanSetupDone);",
+    "replace": "return Boolean(line && !line.humanSetupDone);",
+    "note": "tick 64 review: a killed line no longer waits on the owner",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR24",
+    "file": "src/revenue/owner-report.ts",
+    "find": "lines: s.lines.filter(waits),",
+    "replace": "lines: s.lines,",
+    "note": "tick 64 review: an asked step's lines are the ones still waiting, not every line owner-steps.ts names",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR25",
+    "file": "src/revenue/owner-report.ts",
+    "find": "linesNotWaiting: notWaiting(s),",
+    "replace": "linesNotWaiting: [],",
+    "note": "tick 64 review: an asked step names the code's other lines with their state",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR26",
+    "file": "src/revenue/owner-report.ts",
+    "find": "if (line.status === \"killed\") return \"killed\";",
+    "replace": "if (line.status === \"killed\") return \"gone\";",
+    "note": "tick 64 review: a killed line is named killed",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR27",
+    "file": "src/revenue/owner-report.ts",
+    "find": "return line.humanSetupDone ? `set up (${line.status})` : line.status;",
+    "replace": "return line.status;",
+    "note": "tick 64 review: a line whose setup is done is named set up",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR28",
+    "file": "src/revenue/owner-report.ts",
+    "find": ".filter((s) => !asked.includes(s))",
+    "replace": ".filter((s) => !isOwnerStepOpen(s))",
+    "note": "tick 64 review: a step open in the code that no waiting line needs is listed under not asked now",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR29",
+    "file": "src/revenue/owner-report.ts",
+    "find": "...(isOwnerStepOpen(s)",
+    "replace": "...(false",
+    "note": "tick 64 review: such a step is named with its lines' state, not as held",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR30",
+    "file": "src/revenue/owner-report.ts",
+    "find": "stepsAskedNow: waitsOnOwner(l) ? openOwnerStepsForLine(l.id).map((s) => s.number) : [],",
+    "replace": "stepsAskedNow: openOwnerStepsForLine(l.id).map((s) => s.number),",
+    "note": "tick 64 review: a line that no longer waits on the owner is asked nothing in the line table",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR31",
+    "file": "src/revenue/owner-report.ts",
+    "find": "(l.waitsOnOwner ? \"none\" : \"none: the line no longer waits on the owner\")",
+    "replace": "\"none\"",
+    "note": "tick 64 review: the line table says why such a line is asked nothing",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR32",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const owedHeld = s.owedRows.filter((o) => !o.askedNow);",
+    "replace": "const owedHeld = s.owedRows;",
+    "note": "tick 64 review: an owed row asked now is not printed again under not asked now",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR33",
+    "file": "src/revenue/owner-report.ts",
+    "find": "if (owedAsked.length) {",
+    "replace": "if (false) {",
+    "note": "tick 64 review: an owed row whose gate holds is printed under its own asked-now heading",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR34",
+    "file": "src/revenue/owner-report.ts",
+    "find": "(owedAsked.length ? `, and ${owedAsked.length} row(s) of done steps asked alone` : \"\")",
+    "replace": "\"\"",
+    "note": "tick 64 review: the steps heading counts the owed rows asked alone",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR35",
+    "file": "src/revenue/owner-report.ts",
+    "find": "h.hoursSinceLedgerSync! < 0",
+    "replace": "h.hoursSinceLedgerSync! < -100",
+    "note": "tick 64 review: a sync later than the report's clock is said so, not printed as negative hours ago",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR36",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const nowIso = new Date(nowMs).toISOString();",
+    "replace": "const nowIso = opts.nowIso ?? new Date(nowMs).toISOString();",
+    "note": "tick 64 review: --now is reported as one ISO instant, as every window bound compares it",
     "test": "src/__tests__/revenue/owner-report.test.ts"
   }
 ]
