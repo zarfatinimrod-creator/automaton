@@ -4920,6 +4920,42 @@ describe("tick 60: un.org's terms read (7.10), CONDITIONAL_UNMET, copying barred
     expect(ADDRESS.test(text)).toBe(false);
   });
 
+  it("cites in the audit section only lines CITED checks against the frozen copy, each beside the words its line holds", () => {
+    const audit = readFileSync("research/channel-loop/TERMS-AUDIT-2026-09-29.md", "utf8");
+    const text = audit.slice(audit.indexOf("\n## un.org read (7.10.2026, tick 60)\n") + 1);
+    // Every :N or :N-M in the section (a timestamp's :06:36 excluded) is a line CITED checks against the frozen copy.
+    const cited = new Set(CITED.map((c) => c.line));
+    const pointers = [...text.matchAll(/(?<!\d):(\d+)(?:-(\d+))?/g)].flatMap((x) => (x[2] ? [Number(x[1]), Number(x[2])] : [Number(x[1])]));
+    expect(pointers).toHaveLength(22);
+    for (const n of pointers) expect(cited.has(n), `:${n}`).toBe(true);
+    // The pointers the reading rests on, each beside what its line says (CITED pins the words of each line).
+    for (const words of [
+      `the UN's "Terms and conditions of use of United Nations websites" (\`${COPY}:84\`), no date stated, a browsewrap (:88).`,
+      ":144 is a discretionary right to deny any user access, and the Forum list (:108-122) does not reach a GET.",
+      `the heading is plural (\`${COPY}:84\`), the operative text singular (:88, :90, :92, :130), and "UN.ORG" (:134) is the only host-like name.`,
+      `The waiver clause (\`${COPY}:146\`) is not the only route to a wider permission`,
+      "or the footer's uncaptured Copyright page (:273), would be a separate grant.",
+      "The single permission at :90 may qualify the visit as well as the copy",
+      ":104 is an indemnity condition of use, not an access bar.",
+      `Unread: the footer's Copyright page and Privacy Notice (\`${COPY}:273\`, :276).`,
+    ]) {
+      expect(text, words).toContain(words);
+    }
+    const row = text.split("\n").filter((l) => l.startsWith("| `un.org` |"));
+    expect(row).toHaveLength(1);
+    expect(row[0].split(" | ")[3]).toBe("www.un.org yes; population.un.org and data.un.org unclear (:84, :90, :134)");
+  });
+
+  it("names the IGO licence decision, a file that exists, in the note and in the audit section", () => {
+    const IGO = "research/faceless-youtube/LICENCE-IGO-DECISION.md";
+    expect(existsSync(IGO)).toBe(true);
+    expect(readFileSync(IGO, "utf8")).toContain("population.un.org");
+    expect(verdicts()[SITE].note).toContain(`on population.un.org's own pages (${IGO}'s matter, untouched by this reading)`);
+    const audit = readFileSync("research/channel-loop/TERMS-AUDIT-2026-09-29.md", "utf8");
+    const text = audit.slice(audit.indexOf("\n## un.org read (7.10.2026, tick 60)\n") + 1);
+    expect(text).toContain(`on population.un.org's own pages, \`${IGO}\`'s matter, which this reading leaves untouched.`);
+  });
+
   it("moves un.org alone: one more copying-barred entry, one fewer kindless note", () => {
     const v = verdicts();
     const then = un60Before(v);

@@ -1051,5 +1051,69 @@
     "replace": "\"commit\": \"5f4853a\",",
     "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
     "note": "tick 60: the frozen copy's meta names a commit that did not store these bytes"
+  },
+  {
+    "id": "T60-RV1-note-igo-path",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "research/faceless-youtube/LICENCE-IGO-DECISION.md's matter, untouched by this reading",
+    "replace": "research/faceless-youtube/LICENCE-DECISION.md's matter, untouched by this reading",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R9): the note's cross-reference names a file that does not exist"
+  },
+  {
+    "id": "T60-RV2-audit-igo-path",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "`research/faceless-youtube/LICENCE-IGO-DECISION.md`'s matter, which this reading leaves untouched",
+    "replace": "`research/faceless-youtube/LICENCE-DECISION.md`'s matter, which this reading leaves untouched",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review: the audit section's copy of that cross-reference names a file that does not exist"
+  },
+  {
+    "id": "T60-RV3-scope-130",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "(:88, :90, :92, :130), and \"UN.ORG\" (:134)",
+    "replace": "(:88, :90, :92, :131), and \"UN.ORG\" (:134)",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R10): the Scope paragraph points at :131, an empty line of the frozen copy"
+  },
+  {
+    "id": "T60-RV4-deny-144",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": ":144 is a discretionary right to deny",
+    "replace": ":142 is a discretionary right to deny",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R11): the discretionary denial pointed at :142, not the clause (:144)"
+  },
+  {
+    "id": "T60-RV5-browsewrap-88",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "no date stated, a browsewrap (:88).",
+    "replace": "no date stated, a browsewrap (:86).",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R17): the browsewrap pointed at :86, not the line that says it (:88)"
+  },
+  {
+    "id": "T60-RV6-unread-276",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "Privacy Notice (`research/rendered/terms-un-2026-10-06.txt:273`, :276).",
+    "replace": "Privacy Notice (`research/rendered/terms-un-2026-10-06.txt:273`, :277).",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R12): the Unread pointer names :277 (Terms of Use), not the Privacy Notice (:276)"
+  },
+  {
+    "id": "T60-RV7-table-scope-134",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "data.un.org unclear (:84, :90, :134) | barred",
+    "replace": "data.un.org unclear (:84, :90, :135) | barred",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R13): the table's scope cell points at :135, an empty line"
+  },
+  {
+    "id": "T60-RV8-unread-swapped",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "Privacy Notice (`research/rendered/terms-un-2026-10-06.txt:273`, :276).",
+    "replace": "Privacy Notice (`research/rendered/terms-un-2026-10-06.txt:276`, :273).",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review fixer: both Unread pointers are cited lines but swapped, so only the pairing catches it"
   }
 ]

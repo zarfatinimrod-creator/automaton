@@ -282,7 +282,7 @@ The two terms pages rendered by rows 224-225, read in the main thread.
 
 **Scope.** www.un.org is covered. population.un.org and data.un.org are unclear: the heading is plural (`research/rendered/terms-un-2026-10-06.txt:84`), the operative text singular (:88, :90, :92, :130), and "UN.ORG" (:134) is the only host-like name. The retired population.un.org WPP line (`un-wpp-downloads`) stays retired, and any replacement is judged on its own host's notice. These terms do not open WPP data for commercial charts: that rests on the CC BY 3.0 IGO notice on population.un.org's own pages, `research/faceless-youtube/LICENCE-IGO-DECISION.md`'s matter, which this reading leaves untouched.
 
-**The verifier's refinements, kept.** The waiver clause (`research/rendered/terms-un-2026-10-06.txt:146`) is not the only route to a wider permission: a UN licence on specific material, or the footer's uncaptured Copyright page (:273), would be a separate grant. The single permission at :90 may qualify the visit as well as the copy; the verdict holds on either reading. :104 is an indemnity condition of use, not an access bar. The reader's grep count was 27 hit lines, not 28.
+**The verifier's refinements, kept.** The waiver clause (`research/rendered/terms-un-2026-10-06.txt:146`) is not the only route to a wider permission: a UN licence on specific material, or the footer's uncaptured Copyright page (:273), would be a separate grant. The single permission at :90 may qualify the visit as well as the copy; the verdict holds on either reading. :104 is an indemnity condition of use, not an access bar.
 
 | Site | Verdict | Decisive clause | Scope | Copying | Line paused |
 |---|---|---|---|---|---|
