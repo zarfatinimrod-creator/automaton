@@ -100,3 +100,25 @@
   `:528` ו-`:718`.
 - שורות ה-README הארוכות של התוכניות האחרות הודפסו פעמיים (בקריאה ובדיף) — כ-4K אסימונים מיותרים.
 - ניסיון `pdftotext` ו-`pypdf` שלא קיימים — שתי קריאות קצרות.
+
+## תיקוני הסקירה
+הסקירה (Opus) מצאה אפס ממצאים חוסמים וממצא "fix" אחד; השאר הערות. התיקון נעשה לפי טקסט ה-fix של הסקירה — הפסיקה (§2 עריכה 7,
+`:785-786`) אומרת רק ש"the mutation plan beside it gains the new assertions' finds" ואינה סותרת אותו.
+
+- **מיזוג הבסיס תחילה:** `git log HEAD..origin/claude/new-session-j071dx` הדפיס 10 קומיטים (קיפולי פסיקה 24 ו-`c5ee52e`). מוזג
+  ב-`merge --no-ff` בלי קונפליקטים (קבוצות הקבצים זרות; `mutations/README.md` השתנה בשני הצדדים בגושים שונים ומוזג אוטומטית).
+  הודעת המיזוג "merge base" תוקנה ב-`commit --amend` כדי שתסתיים בשתי שורות ה-trailer (כמו `848af22` שבבסיס).
+- **ממצא fix — `src/__tests__/revenue/mutation-plans.test.ts`:** `"owner-steps.json"` נוסף לרשימת התוכניות המוצמדת, בין
+  `"mutate.json"` ל-`"page-views.json"` (בקובץ ב-HEAD: `:36-37`, כפי שהסקירה אמרה; כל find הוכח ב-`grep -n -F`). עכשיו מחיקת
+  התוכנית נכשלת בבדיקה: הוזזה התוכנית זמנית לתיקיית ה-scratch, `vitest -t "has a plan for each script"` יצא 1 ("expected … to
+  include 'owner-steps.json'"), והקובץ הוחזר (`git status` הראה רק את קובץ הבדיקה כשינוי); עם התוכנית: exit 0, 37 עברו.
+- **הערות (לא בוצעו — לא "blocking" ולא "fix"):** הצמדת שאר עריכות הטקסט של צעד 6 בבדיקה (אופציונלי בסקירה); זמן הריצה ב-README
+  ("about 4-5 s", הסוקר מדד 2-2.5 ש׳ — אופציונלי); הפער ברשימת המצביעים של הפסיקה ל-`:528`/`:718` (לרשום ב-FABLE_QUEUE — של
+  ה-thread הראשי); תזוזת הבסיס (נבדקה כאן במיזוג ובאימות שאחריו).
+- **נמצא אגב, לא תוקן:** גם `youtube-madeforkids.json` (מהבסיס, פסיקה 24) חסר ברשימה המוצמדת. זו תוכנית של build אחר, מחוץ לממצא
+  ולתחום שלי — שורה אחת ל-thread הראשי.
+- **אימות:** `scripts/verify.sh owner-steps.test.ts mutation-plans.test.ts publisher-guard.test.ts`: exit 0 (typecheck 0; 3 קבצים,
+  188 עברו — 2 יותר מקודם בגלל התוכנית `youtube-madeforkids.json` שהבסיס הוסיף ל-describe.each). `scripts/verify.sh` מלא: exit 0
+  (typecheck 0; 80 קבצים, 2818 עברו, 2 skipped) — ההרצה הראשונה של בדיקות ה-build הזה מעל `c5ee52e` ומעל קיפולי פסיקה 24.
+  `pytest-product.sh chart-explainer` לא הורץ: זה build של owner-steps, לא של products.
+- חיפושי פרטיות על ה-diff של התיקון: תבנית השם 0, `phc_`/`phx_` עם 10+ תווים 0.
