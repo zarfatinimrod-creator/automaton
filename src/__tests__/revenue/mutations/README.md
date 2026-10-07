@@ -82,6 +82,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
   | `sim-tree.json` | 36 | 927 (501 with the first 28, 349 with the first 24, 182-184 with the first 14) |
   | `capture-check.json` | 64 | not run whole since tick 56 (tick 60 review fixer, time-boxed: 207 for the 5 T60R-N entries alone, in sim-tree.sh beside the targeted and the full verify.sh, the tree's setup included; tick 60 builder, time-boxed: 564 for a subset of 21, the 14 T60-N entries and the 7 existing entries on `classifyCapture` (T34-C1, C2, C3, C4, C9, T56-CC1, CC2), in sim-tree.sh beside `queue-zero-test.json`; its test file took about 24 s a run, so the whole plan would take about 25 minutes); 976 with the first 45 (tick 56 builder, in sim-tree.sh, beside `freeze-capture.json` and `remask-captures.json`); 785, 827 with the first 42 (its test file alone takes about 18 s) |
   | `youtube-madeforkids.json` | 19 | 75 (tick 61 builder, in sim-tree.sh, alone, the tree's setup included; all 19 killed; the test file takes about 3 s a run) |
+  | `terms-saved-copies.json` | 3 | 57 (tick 61 googleapis.com builder, in sim-tree.sh, beside the full verify.sh, the tree's setup included; all 3 killed; the test file takes about 4-5 s a run) |
 
 - A long plan can run in a throwaway copy of the checkout, so the worktree stays free (mutate.mjs holds the
   checkout's lock for the whole run and stops with exit 4 when the checkout changes under it):
