@@ -16,6 +16,7 @@ import {
   setHumanSetupDone,
   setLineBudget,
   setLineTier,
+  setRevenueColonyEnabled,
   setTargets,
   updateLineFromSeed,
   updateLineStatus,
@@ -245,17 +246,70 @@ describe("a seed sync keeps what the board decided in the database", () => {
     expect(getLine(db, "test-line")!.budgetMonthlyCents).toBe(700);
   });
 
-  it("still starts a new line at its seed's budget", () => {
+  // Tick 63 review: this test first pinned the seed's 2500 here. With the sync running before every scheduled tick, a
+  // line added to portfolio.ts then held its seed's 4000 cents through every hourly tick until the daily board review,
+  // and for good while the colony was switched off (measured on a copy of the committed colony.db). A seed's figure is
+  // not an allocation (rules.ts allocateBudget), so a line the sync inserts starts at 0 and the board review allocates.
+  it("starts a line it inserts at budget 0, for the board review to allocate", () => {
     const out = syncPortfolio(db, [seed({ id: "new-line", budgetMonthlyCents: 2500 })], []);
     expect(out.inserted).toEqual(["new-line"]);
-    expect(getLine(db, "new-line")!.budgetMonthlyCents).toBe(2500);
+    expect(getLine(db, "new-line")!.budgetMonthlyCents).toBe(0);
+    // The first scheduled run on an empty database: the whole real portfolio, every seed carrying a budget, enters at 0.
+    db.prepare("DELETE FROM revenue_lines").run();
+    expect(DEFAULT_PORTFOLIO.every((s) => s.budgetMonthlyCents > 0)).toBe(true);
+    expect(syncPortfolio(db).inserted.sort()).toEqual(DEFAULT_PORTFOLIO.map((s) => s.id).sort());
+    expect(listLines(db).map((l) => [l.id, l.budgetMonthlyCents]).filter(([, cents]) => cents !== 0)).toEqual([]);
   });
 
-  it("keeps the tier revenue_decide set, which the allocation weighs", () => {
+  it("keeps the tier revenue_decide set, which the allocation weighs, and lists the difference", () => {
     insertLineFromSeed(db, seed({ tier: "core" }));
     setLineTier(db, "test-line", "experimental");
-    syncPortfolio(db, [seed({ tier: "core" })], []);
+    const out = syncPortfolio(db, [seed({ tier: "core" })], []);
     expect(getLine(db, "test-line")!.tier).toBe("experimental");
+    expect(out.tierDiffers).toEqual([{ id: "test-line", stored: "experimental", seed: "core" }]);
+    expect(syncPortfolio(db, [seed({ tier: "experimental" })], []).tierDiffers).toEqual([]);
+  });
+
+  // Tick 63 review: the test below uses a live line, whose kill fields are null, so a sync that cleared them, or that
+  // brought a killed line back, survived it (the review's probe mutants R63-X1 and R63-X4). The board review kills a
+  // line by its criteria (heartbeat.ts) while portfolio.ts still lists it, and the hourly sync refreshes that line.
+  it("keeps a line the board killed killed, with its kill time and reason, while portfolio.ts still lists it", () => {
+    const listed = DEFAULT_PORTFOLIO[0];
+    insertLineFromSeed(db, listed);
+    updateLineStatus(db, listed.id, "killed", { reason: "kill criteria met: no stranger used it in 30 days", force: true });
+    const before = getLine(db, listed.id)!;
+    expect(before.killedAt).toBeTruthy();
+    const out = syncPortfolio(db, [{ ...listed, operatingLoop: "a refreshed loop" }], []);
+    expect(out.updated).toEqual([listed.id]);
+    expect(out.killed).toEqual([]);
+    const after = getLine(db, listed.id)!;
+    expect(after.operatingLoop).toBe("a refreshed loop");
+    expect({ status: after.status, killedAt: after.killedAt, killReason: after.killReason })
+      .toEqual({ status: "killed", killedAt: before.killedAt, killReason: "kill criteria met: no stranger used it in 30 days" });
+  });
+
+  // Tick 63 review: with kv revenue.enabled = 0 the tick returns before it writes anything (runner.ts tick), and before
+  // the sync was added to the scheduled run a switched-off colony's run changed no line. The sync keeps that.
+  it("changes nothing while the colony is switched off, and applies everything once it is on again", () => {
+    const dead = KILLED_LINES[0];
+    insertLineFromSeed(db, seed());
+    insertLineFromSeed(db, seed({ id: dead.id }));
+    setRevenueColonyEnabled(db, false);
+    const lines = () => db.prepare("SELECT * FROM revenue_lines ORDER BY id").all();
+    const kv = () => db.prepare("SELECT key, value FROM kv ORDER BY key").all();
+    const [linesBefore, kvBefore] = [lines(), kv()];
+    const seeds = [seed({ operatingLoop: "a changed loop" }), seed({ id: "new-line" })];
+    const off = syncPortfolio(db, seeds);
+    expect(off).toEqual({ disabled: true, inserted: [], updated: [], killed: [], unknown: [], tierDiffers: [] });
+    expect(lines()).toEqual(linesBefore);
+    expect(kv()).toEqual(kvBefore);
+    setRevenueColonyEnabled(db, true);
+    const on = syncPortfolio(db, seeds);
+    expect(on.disabled).toBe(false);
+    expect(on.inserted).toEqual(["new-line"]);
+    expect(on.updated).toEqual(["test-line"]);
+    expect(on.killed.map((k) => k.id)).toEqual([dead.id]);
+    expect(getLine(db, "test-line")!.operatingLoop).toBe("a changed loop");
   });
 
   it("keeps the line's status, setup-done flag, launch, creation and kill fields, and replaces portfolio.ts's columns", () => {
@@ -301,9 +355,11 @@ describe("a seed sync keeps what the board decided in the database", () => {
     for (const line of listLines(db)) setLineBudget(db, line.id, 0);
     expect(DEFAULT_PORTFOLIO.every((s) => s.budgetMonthlyCents > 0)).toBe(true);
     const out = syncPortfolio(db);
+    expect(out.disabled).toBe(false);
     expect(out.updated.sort()).toEqual(DEFAULT_PORTFOLIO.map((s) => s.id).sort());
     expect(out.inserted).toEqual([]);
     expect(out.killed).toEqual([]);
+    expect(out.tierDiffers).toEqual([]);
     expect(listLines(db)).toHaveLength(DEFAULT_PORTFOLIO.length + KILLED_LINES.length);
     expect(listLines(db).filter((l) => l.budgetMonthlyCents !== 0).map((l) => l.id)).toEqual([]);
   });

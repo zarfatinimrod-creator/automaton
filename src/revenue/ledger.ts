@@ -321,16 +321,18 @@ export function insertLineFromSeed(db: Database, seed: RevenueLineSeed): boolean
  * Everything portfolio.ts decides is replaced: the name, category, director,
  * operating loop, KPIs, kill and scale criteria, target, owner steps and skill.
  *
- * Two columns a seed only starts a new line at, because a decision recorded in
- * the database owns them afterwards. `budget_monthly_cents` is the board's
- * CURRENT allocation (rules.ts allocateBudget, written by the board review in
- * heartbeat.ts through setLineBudget); a seed writing its own figure over it
- * raised the four allocations of 0 to 4000, 4000, 3000 and 4000 cents until
- * the next daily review (measured on the committed colony.db, 7.10.2026).
- * `tier` is set by the board's revenue_decide (tools.ts, setLineTier) and is
- * the allocation's weight; a tier changed in portfolio.ts for a line that
- * already exists is therefore not applied here. (`setLineTarget` has no caller,
- * so the seed is the target's only writer and the target is still synced.)
+ * Two columns this never writes, because a decision recorded in the database
+ * owns them. `budget_monthly_cents` is the board's CURRENT allocation (rules.ts
+ * allocateBudget, written by the board review in heartbeat.ts through
+ * setLineBudget); a seed writing its own figure over it raised the four
+ * allocations of 0 to 4000, 4000, 3000 and 4000 cents until the next daily
+ * review (measured on the committed colony.db, 7.10.2026). A line syncPortfolio
+ * inserts starts at 0 for the same reason (portfolio.ts). `tier` is set by the
+ * board's revenue_decide (tools.ts, setLineTier) and is the allocation's weight;
+ * a tier changed in portfolio.ts for a line that already exists is therefore not
+ * applied here, and syncPortfolio lists it in `tierDiffers`. (`setLineTarget`
+ * has no caller, so the seed is the target's only writer and the target is
+ * still synced.)
  */
 export function updateLineFromSeed(db: Database, seed: RevenueLineSeed): boolean {
   const id = assertLineId(seed.id);

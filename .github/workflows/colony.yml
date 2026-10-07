@@ -59,9 +59,10 @@ jobs:
         # The tick seeds only an empty database and never re-reads a seed, so a line's operating loop, owner steps,
         # KPIs, criteria or target changed in src/revenue/portfolio.ts reached no report until someone ran this by hand
         # (tick 63, 7.10.2026). Before the tick, so this run's REPORT.md and dashboard.html print the texts as the code
-        # has them; in this job, so the commit step's `git add -f state/colony` takes the database it wrote. It never
-        # writes a line's budget (the board review's allocation) or tier, status, setup-done flag or launch date
-        # (ledger.ts updateLineFromSeed), and kills only a line KILLED_LINES names that is not killed yet.
+        # has them; in this job, so the commit step's `git add -f state/colony` takes the database it wrote. A line it
+        # inserts starts at budget 0 for the board review to allocate, and a line it refreshes keeps its budget, tier,
+        # status, setup-done flag and launch date (portfolio.ts syncPortfolio, ledger.ts updateLineFromSeed); it kills
+        # only a line KILLED_LINES names that is not killed yet, and changes nothing while kv revenue.enabled is 0.
         run: |
           set -euo pipefail
           pnpm exec tsx scripts/colony.ts sync-portfolio

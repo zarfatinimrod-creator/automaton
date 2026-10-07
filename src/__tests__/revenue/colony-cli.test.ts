@@ -98,15 +98,24 @@ describe("the scheduled run applies portfolio.ts before its tick", () => {
   });
 
   it("is so in every workflow that runs a colony tick", () => {
+    // The CLI by its path, or by package.json's `colony` script (tick 63 review: a `pnpm colony tick` escaped the path form).
+    const cli = String.raw`(?:scripts/colony\.ts|(?:pnpm|npm) (?:run )?colony(?: --)?)`;
+    const TICK = new RegExp(`${cli} tick\\b`);
+    const SYNC = new RegExp(`${cli} sync-portfolio\\b`);
+    for (const l of ["pnpm exec tsx scripts/colony.ts tick --no-feed", "pnpm colony tick", "pnpm run colony -- tick", "npm run colony tick"]) {
+      expect(TICK.test(l), l).toBe(true);
+    }
+    expect(SYNC.test("pnpm colony sync-portfolio")).toBe(true);
+    expect(TICK.test("pnpm exec tsx scripts/colony.ts sync-portfolio")).toBe(false);
     const ticking = fs.readdirSync(workflowsDir).filter((f) => /\.ya?ml$/.test(f)).filter((f) => {
       const runs = fs.readFileSync(path.join(workflowsDir, f), "utf-8").split("\n").filter((l) => !/^\s*#/.test(l));
-      return runs.some((l) => /scripts\/colony\.ts tick\b/.test(l));
+      return runs.some((l) => TICK.test(l));
     });
     expect(ticking).toEqual(["colony.yml"]);
     for (const f of ticking) {
       const lines = fs.readFileSync(path.join(workflowsDir, f), "utf-8").split("\n").filter((l) => !/^\s*#/.test(l));
-      const sync = lines.findIndex((l) => /scripts\/colony\.ts sync-portfolio/.test(l));
-      const tick = lines.findIndex((l) => /scripts\/colony\.ts tick\b/.test(l));
+      const sync = lines.findIndex((l) => SYNC.test(l));
+      const tick = lines.findIndex((l) => TICK.test(l));
       expect(sync, `${f} runs a tick without sync-portfolio before it`).toBeGreaterThan(-1);
       expect(sync).toBeLessThan(tick);
     }
