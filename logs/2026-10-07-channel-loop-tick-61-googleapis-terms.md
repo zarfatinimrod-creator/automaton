@@ -131,3 +131,56 @@
   אחד מראש.
 - הדפסת `README.md` של המוטציות במלואו (טבלת זמנים ארוכה מאוד) רק כדי לראות את הפורמט: בזבוז; `sed -n` על 10 שורות היה מספיק.
 - ריצת 9 קבצי הבדיקה שלוש פעמים (בסיס, אחרי, אחרי תיקון): נחוץ.
+
+## תיקוני הסקירה
+
+**מי ומה:** מתקן Opus (טיק 61), על הענף `build/tick61-yt-terms`, לפי ממצאי הסקירה (שני ממצאי "fix", אין "blocking"), מזכר ההכרעה
+(`yt-verdict.md`) וקובץ ה-OTA. הקומיטים: `ad0ede7` (מיזוג הבסיס), `3001799` (התיקונים), ועוד קומיט זה (זמן הריצה של התוכנית והלוג).
+לא נדחף דבר.
+
+**מיזוג הבסיס.** `origin/claude/new-session-j071dx` התקדם ל-`4795dee` (תיקון 1 של פסיקה 7.10 שורה 24: `firstRead`, ה-fold `6db0827`,
+ושורה 28 ב-FABLE_QUEUE). מוזג ב-`--no-ff` ("merge base"). התנגשות אחת, ב-`src/__tests__/revenue/mutations/README.md`, בטבלת הזמנים:
+נשמרו שתי העובדות, שורת הבסיס של `youtube-madeforkids.json` (‏28 מוטציות, 113 שניות) ושורת הענף של `terms-saved-copies.json`.
+ה-fold הזיז את השורות של `src/revenue/youtube-madeforkids.ts`, ולכן קובץ הציטוטים עודכן כך שהמצביעים שלו נכונים ב-`4795dee`:
+`:25-27`→`:27-29`, `:62-66`→`:79-83`, `:121`→`:141`, `:141`→`:164`, `:143`/`:143-144`→`:166`/`:166-167`, `:148`→`:171`,
+`:157`→`:180`, `:174`→`:197`. בתשובות (iii) ו-(vi) נוסף `firstRead` (`:163`, "Written once and never changed", `:68-69`) לרשימת מה
+שלעולם אינו מתרענן, כי הוא נכנס עם ה-fold. כך נסגר חלקית גם ממצא ה-note הרביעי של הסקירה (הוא ביקש לעדכן את (iii) ו-(vi) כשה-fold
+ינחת). `experiments.ts:289`, ‏`youtube-madeforkids-readback.ts`, ‏`colony.yml`, ‏`youtube-analytics.ts` ו-`T1-PROTOCOL.md` לא השתנו
+בין `c1df0c8` ל-`4795dee`, ולכן מצביעיהם נשארו.
+
+**ממצא fix 1, תנאי 3 של המזכר והתפיסות שה-trim לא מגיע אליהן.** הוספתי לפסקת ה-note של googleapis.com, אחרי "(OTA:661 with :799 (ii))",
+את הפסוקית: "which the ten developers.google.com/youtube captures under research/rendered/ would break from the owner's acceptance (they
+belong to google.com, whose copying is "unread", so scripts/trim-capture.mjs does not reach them, and their trim to cited lines, or a
+ruling on them, precedes Stage A)". זה לפי נוסח התיקון של הסקירה, עם "trimmed to cited lines" מהמזכר עצמו. הפסוקית מסתמכת על חריגה 3
+של הבונה, ולא על המשפט "the trim's next run handles it" של המזכר, שאינו נכון בקוד של היום. אימתתי זאת בעצמי בריצה יבשה של
+`node scripts/trim-capture.mjs` (exit 3): ‏barred 13, אפס שורות של googleapis.com, והעשר בין "571 of unread sites". בבדיקת ה-note של
+tick 61 ב-`prize-terms-audit.test.ts` נעוצים הפסוקית, השדה `copying` של google.com ("unread") ומספר ה-metas של
+developers.google.com/youtube תחת `research/rendered/` (10).
+
+**ממצא fix 2, ‏OTA:550 בלי החריג.** ב-note: "shown to no one but the authorizing user or agents that user expressly approved (OTA:550)".
+בתשובה (ii) בקובץ הציטוטים: "no display of, or access to, Authorized Data for anyone but "the authorizing user or agents expressly approved
+by that user" (OTA:550)", במילות הסעיף (בדקתי ב-`sed -n 550p` על המקור). המזכר מצוטט במילותיו, ולכן לא שיניתי את תנאי 6 שלו. במקום זה
+הוספתי הערה (e) להערות הקובץ, שמציינת שזה קיצור של המזכר ושהמסקנה (אין פלט אנליטיקה ב-repo הציבורי) לא משתנה. שני הנוסחים נעוצים:
+ב-note ב-`prize-terms-audit.test.ts`, ובתשובה ובהערה (e) ב-`terms-saved-copies.test.ts`.
+
+**ממצאי ה-note** (‏OTA:613 ו-Google Applications, ‏`:606-610` מול `:608, :610`, סימון ה-inference ב-note, 68 ה-hashes, ‏174,605 תווים
+מול בתים, "the blank lines" בשורה 14 של הכותרת, ההודעה המיושנת ב-readback, ‏"widened") לא טופלו. הם הוגדרו למשימת ה-main thread או
+כאופציונליים. רק הרביעי (`firstRead`) טופל, ורק במידה שהמיזוג חייב אותו.
+
+**כתיבת terms-verdicts.json.** דרך סקריפט ב-scratch שמייבא את `serializeVerdicts` מ-`scripts/robots-verdict.mjs`. קודם הוכח round trip
+זהה בבייטים (178,940 בתים, 178,668 תווים). אחר כך הוחלפו שני מקטעים, וכל אחד הופיע בדיוק פעם אחת. נבדק שאף רשומה אחרת, הסדר
+ו-`_about` לא זזו, ושהפלט עצמו עושה round trip. הקובץ: 179,274 בתים. ב-note עדיין 8 משפטים, המקסימום שהבדיקה מתירה.
+
+**מוטציות.** נוספו T61-YTR1 (הפסוקית נמחקת מה-note), ‏T61-YTR2 (החריג של OTA:550 נמחק מה-note) ו-T61-YTR3 (החריג נמחק מתשובה (ii))
+ל-`mutations/terms-saved-copies.json`, עם שורות README. התוצאות: `--check` ‏6 of 6, exit 0. ב-`scripts/sim-tree.sh` ‏6 killed ו-0 survived,
+exit 0, ‏43 שניות כולל בניית העץ, והעץ נמחק.
+
+**ולידציה.** `YT_TERMS_SOURCE=<ההורדה>` על `terms-saved-copies.test.ts`: ‏21/21, exit 0. ‏`scripts/verify.sh` הממוקד (חמשת הקבצים): typecheck
+exit 0, ‏237 בדיקות, exit 0. ‏`scripts/verify.sh` המלא: typecheck exit 0, ‏80 קבצים, 2,837 עברו ו-2 skipped (קיימות מהבסיס), exit 0, ‏209
+שניות. grep על ה-diff: תבנית השמות 0 שורות, תבניות הכתובת 0 שורות, דוא"ל 0 שורות. `git diff --check` נקי.
+
+**שגיאות.** הניסיון הראשון של `mutate.mjs --check` נכשל (exit 1, ‏0 of 6) כי הקבצים לא היו commit-ed עדיין. אחרי הקומיט הוא עבר.
+**אוטומציה:** סקריפט עריכת ה-note (round trip, החלפה של מקטע יחיד, "אף רשומה אחרת לא זזה") נכתב שוב ביד. זו עוד סיבה ל-`--set-note`
+ב-`robots-verdict.mjs` (ראו סעיף 7).
+**אסימונים:** קריאת `yt-read.json` בשלמותו (‏94 KB) הייתה נחוצה לתיקון OTA:550. הדפסת קובץ הציטוטים כולו כדי למצוא את המצביעים הייתה
+בזבוז חלקי: grep על `` `:[0-9]` `` היה מספיק.
