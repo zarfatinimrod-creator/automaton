@@ -256,7 +256,7 @@ All YouTube-help grounds in this section are [against-bar], compliance; the FTC'
      click, never a relabel (§6 rule 2).
    - `K-policy` (KILL-3): any warning, strike, removal, auto-privating, age-gating, "limited or no ads" on kids-quality
      grounds, or any YPP action kills the line the same day; never a workaround channel ([against-bar], compliance).
-   - `K-T1k`: the kids channel's own first-upload window, P1-P4 as T1's (`research/faceless-youtube/T1-PROTOCOL.md:75-81`, fail rule `:83-87`),
+   - `K-T1k`: the kids channel's own first-upload window, P1-P4 as T1's (`research/faceless-youtube/T1-PROTOCOL.md:77-83`, fail rule `:85-89`),
      but read through the publisher's response and the Data API (`videos.list`, `part=status`, `privacyStatus`), never a
      fetch of the watch page (youtube.com is barred). Fails → kill.
    - `K-supply`, `K0`, `K3`, `K-cash`, `K-compute` with T1's numbers, on the kids channel's own D0
@@ -320,4 +320,4 @@ All YouTube-help grounds in this section are [against-bar], compliance; the FTC'
     (`research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md` (a)-(d)): P1's second half and P2
     read `status.privacyStatus` through `videos.list part=id,status` on the Stage A key, P2 as
     `stayedPublic(entry, 72)`; P4 reads the publisher and the brand mailbox and never a runner's sign-in; the rows are
-    `T1-PROTOCOL.md:77`, `:78`, `:80` (the ruling named `:75`, `:77` on an older tree).
+    `T1-PROTOCOL.md:79`, `:80`, `:82` (the ruling named `:75`, `:77` on an older tree).

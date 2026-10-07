@@ -154,3 +154,65 @@
 4. מצביעים שזזו בגלל השינוי הזה: `page.py:142-158` → `:143-160`, `:190-191` → `:191-192`, `:14` → `:15`, `:26-31` → `:27-32`,
    `:34-38` → `:35-39`; `render.py:101` → `:131-132`; `README.md:400-405` → `:402-407`, `:792` → `:798`; `T1-PROTOCOL.md`
    מ-:32 והלאה +2.
+
+## תיקוני הסקירה
+
+הסקירה (Opus) מצאה אפס ממצאי "blocking", שלושה ממצאי "fix" וארבע הערות ("note"). כל שלושת ה-"fix" יושמו לפי נוסח
+התיקון של הסקירה; בשום מקום הנוסח לא סתר את הפסיקה, ולא פסקתי דבר.
+
+**מיזוג הבסיס.** `git log HEAD..origin/claude/new-session-j071dx` הדפיס 11 commits (הבסיס זז ל-`c35725d`: קיפולי שורה 24
+של הפסיקה, קוד ומסמכים, ו-amendment 1). `git merge --no-ff ... -m "merge base"` עבר בלי קונפליקט; תיקנתי את הודעת
+ה-merge ב-`--amend` כדי שתישא את שתי שורות ה-trailer (ה-merge המקומי, לא נדחף; ההורים `03e209c`, `c35725d` נשמרו).
+
+1. **`products/chart-explainer/counter.json` (fix).** ה-`_comment` טען שכשה-`projectKey` ריק הדף "byte-identical to
+   tests/fixtures/t1-page-no-counter.golden.html, as releases/t1/page.html is". זה שקר, ובדקתי: `cmp` מראה ש-
+   `releases/t1/page.html` (1,261,371 בתים) וה-golden (23,875 בתים) נבדלים מבית 2121; ה-golden נבנה מ-`_inputs` של
+   `tests/test_page_counter.py` (dataset סינתטי קטן) ומקבע רק את מצב "בלי מונה" של `build_page` על הנתונים האלה. הנוסח
+   החדש, בדרך של `page.py:13-14`: "(no script; that is the mode tests/fixtures/t1-page-no-counter.golden.html pins for
+   page.build_page on the tests' own data, and the mode releases/t1/page.html is in)". וידאתי ש-`releases/t1/page.html`
+   באמת במצב הזה: 0 `<script`, 0 `PostHog`. ערכי השדות לא השתנו (סקריפט שמשווה את שלושת השדות ואת סדר המפתחות לפני ואחרי;
+   find אחד בדיוק). שלושת הקטעים ש-`test_counter_json.py` מקבע ב-`_comment` (נתיב הפסיקה, "never the brand's",
+   "site.json") נשארו. **אותה טענה שגויה מופיעה בסעיף 4 פריט 7 של הלוג הזה** ("ריק = בלי מונה, זהה ל-golden"): היא שגויה
+   באותו אופן; הנכון הוא "ריק = מצב בלי מונה, המצב שה-golden מקבע עבור `build_page`".
+2. **`research/faceless-youtube/T1-PROTOCOL.md` → מצביעים שזזו (fix).** שתי השורות שקיפול 11 הוסיף (`:32-33`) הזיזו ב-+2
+   כל שורה שאחריהן, וקיפול המסמכים של שורה 24 (בבסיס החדש) כיוון מצביעים למספור שלפני ההוספה. מכיוון שכבר מיזגתי את
+   הבסיס לתוך ה-branch, תיקנתי אותם כאן ולא השארתי ל-thread הראשי (**ה-thread הראשי לא צריך להזיז אותם שוב**):
+   - `research/youtube-kids/KIDS-LINE.md:259`: `T1-PROTOCOL.md:75-81` → `:77-83`, fail rule `:83-87` → `:85-89`.
+   - `research/youtube-kids/KIDS-LINE.md:323`: `:77`, `:78`, `:80` → `:79`, `:80`, `:82` (הסוגריים "the ruling named `:75`,
+     `:77` on an older tree" נשארו, והם עדיין נכונים).
+   - `research/channel-loop/BOARD-LOOP.md:118` ו-`:210`: `T1-PROTOCOL.md:89-133` → `:91-135`.
+   BOARD-LOOP נערך ב-`scripts/loop-edit.mjs replace-in-line` (dry-run ואז כתיבה, exit 0 לכל אחת); KIDS-LINE מחוץ לתחום
+   של `loop-edit.mjs`, ולכן סקריפט Python עם find מדויק (מופע אחד בקובץ ובשורה, מספר השורות נשמר, בתים כמות שהם).
+   הוכחה: לכל זוג, `cmp` בין הטווח הישן ב-`git show c35725d:research/faceless-youtube/T1-PROTOCOL.md` לבין הטווח החדש בעץ
+   הממוזג — "same text" לכל השישה (`75-81`/`77-83`, `83-87`/`85-89`, `89-133`/`91-135`, `77`/`79`, `78`/`80`, `80`/`82`).
+   `git diff c35725d -- T1-PROTOCOL.md` מראה hunk אחד בלבד (`@@ -29,6 +29,8 @@`), כך ש-+2 הוא ההזזה היחידה.
+   **מצביעים אחרים ל-T1-PROTOCOL שלא נגעתי בהם:** חיפשתי בכל הריפו (`git grep` על `T1-PROTOCOL.md:<n>`). בקבצים שמותר לי
+   לערוך, אלה כבר לא התאימו לטקסט גם ב-`c35725d`, כלומר הסחיפה קדמה לשינוי הזה ואינה שלו: `KIDS-LINE.md:36` (`:51-53`),
+   `PREREG-DECISIONS.md:167` (`:87-88`), `:246` (`:40-42`), `:383` (`:43`), `:384` (`:38-39`), `:690` (`:26-28, :34`),
+   `youtube-kids/ASSESSMENT.md:91` ו-`:520` (`:33`). לא תיקנתי אותם (לא ממצא של הסקירה, ואיני יודע לאן כל אחד התכוון בלי
+   לפסוק). מצביעים בקבצי `RULING-*`, `SITTING-*` ו-`logs/` מוגנים ולא נגעו.
+3. **`products/chart-explainer/README.md:52` (fix).** "`render.py` does not switch it on." הוחלף במשפט אחד: "`render.py`
+   passes `counter.json`'s `{"host": apiHost, "key": projectKey}` to `build_page` when `projectKey` is set (ruling 7.10 §3,
+   `research/channel-loop/RULING-2026-10-07-posthog-organisation.md`), and builds with no counter while it is empty, as it
+   is now." ה-find הוכח קודם ב-`grep -n -F` (שורה 52, מופע אחד). הבדיקה היחידה שקוראת את ה-README
+   (`test_netlify_files.py:83`) קוראת רק את שורת `netlify_files.py`.
+
+**הערות ("note") — לא יושמו, ולמה.** (א) `posthog-free-tier.md:137`, `:164` מצטטים שורות `page.py` שזזו ב-+1: הקובץ משתנה
+רק בשורות שנפסקו, ולכן נשאר; ה-thread הראשי ירשום בקיפול הבא. (ב) נתיב ה-CI של chart-explainer לא כולל את `site.json`, ואין
+mutation plan ל-12 המוטציות: `chart-explainer-ci.yml` ו-`src/__tests__/revenue/mutations/` לא ברשימה שלי; אופציונלי.
+(ג) ה-`_comment` של `site.json` נשלח לאתר הציבורי של המותג, ושם המותג מודפס בדף T1: שתי שאלות לישיבה, לא לי ולא לסוקר.
+(ד) `load_counter` עם מפתח ריק לא בודק את `apiHost`: "None required".
+
+**בדיקות (לפי exit code בלבד).** `scripts/pytest-product.sh chart-explainer -q`: exit 0 (217 passed). `scripts/verify.sh` על
+ארבעת הקבצים (`prize-terms-audit`, `frozen-citations`, `terms-saved-copies`, `page-views`): exit 0 (162 passed). `scripts/verify.sh`
+המלא: exit 0 (80 קבצים, 2815 passed, 2 skipped; העלייה מ-2788 היא הבדיקות שהגיעו עם הבסיס הממוזג). אף בדיקה לא קיבעה את
+הטקסטים ששונו, ולא שונתה שום assertion. grep פרטיות על כל ה-diff של ה-branch ועל הודעות ה-commit: שמות 0, `phc_`/`phx_` עם
+10+ תווים 0, כתובות אימייל 0.
+
+**עבודה ידנית שכדאי להפוך לאוטומטית.** הזזת מצביעי `<file>:<n>` אחרי הוספת שורות לקובץ מצוטט: עשיתי בעין, ב-`git grep` ואז
+`cmp` של כל טווח מול הבסיס. סקריפט `repoint-lines <file> --after <n> --by <k>` שמוצא כל `<file>:<n>` בריפו, מציע את ההזזה,
+ומוכיח זהות טקסט מול ref, היה חוסך את זה ומוצא גם את הסחיפה הישנה (כמו השמונה שלמעלה). `loop-edit.mjs` לא מכסה את
+`research/youtube-kids/`.
+
+**אסימונים.** חיפושי ה-`git grep` של המצביעים (רוב התוצאות בקבצים מוגנים, שאסור לגעת בהם) — מעט; בדיקה כפולה של `--anchor`
+שמתחיל ב-"-" ב-`loop-edit.mjs` (נדחה ב-exit 2 עד שעברתי לצורה `--anchor=`) — ריצה אחת מבוזבזת.
