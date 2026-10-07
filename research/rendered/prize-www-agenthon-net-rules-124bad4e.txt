@@ -1,0 +1,384 @@
+Agenthon 2026 — Official Competition Rules
+
+Agenthon
+
+Home
+About
+Compete
+Guides
+
+Past Events
+
+2025
+2024
+
+Sign In
+Sign Up
+
+Agenthon Submissions Deadline: October 12th, 23:59 AoE
+
+(October 13th at 7:59 AM New York, October 13th at 12:59 PM London, October 13th at 7:59 PM Singapore)
+
+Announcing Competition Awards!
+
+Official Competition Rules
+
+Version 2026-08-17 · Agenthon 2026 — NeurIPS 2026 Competition Track · AH26-POL-01
+
+Policy set: Official Competition Rules ·
+Terms of Participation ·
+Privacy Notice ·
+Data & Software Licensing Policy
+
+These Rules govern eligibility, teams, submissions, permitted resources, evaluation,
+integrity, final rankings, reproducibility, prizes, and the NeurIPS final event. Track
+instructions may add technical requirements but may not silently change participant
+intellectual-property or privacy rights.
+
+Operational principle. A submission is ranked only after it passes the
+applicable admissibility gates and is successfully evaluated under the published protocol.
+
+1. Scope and acceptance
+
+Agenthon 2026 (the “Competition”) is a research competition in the NeurIPS 2026
+Competition Track focused on verifiable AI for quantitative finance. By registering, accessing
+the competition environment, or submitting, each participant agrees to these Rules, the
+Terms of Participation , the
+Privacy Notice , the
+Data & Software Licensing Policy , applicable track
+instructions, and relevant platform terms.
+
+Participants are responsible for reading official notices and ensuring that their team,
+submission, resources, and conduct remain compliant throughout the Competition.
+
+2. Organizers and official channels
+
+The Competition is organized by the Society of Quantitative Analysts (SQA) and CEWIT at
+Stony Brook University (together, the “Organizers”), subject to applicable
+institutional approvals. Track leads, evaluators, Question Partners, sponsors, and platform or
+compute providers may support operations without acquiring ownership of participant submissions
+merely because of that role.
+
+Official site: agenthon.net.
+
+Official notices: posts on the Competition Site or platform, and emails sent to the
+registration address.
+
+Rule and technical questions: the designated forum or
+[redacted:email]@agenthon.net . Written public announcements
+control over informal statements.
+
+3. Competition schedule
+
+Phase
+Dates
+Purpose
+
+Registration
+17 Aug – 12 Oct 2026
+
+Sign up and form teams at agenthon.net. Registration opens before
+Development begins; teams may register at any point in this window. Closes with
+Development at 23:59 Anywhere on Earth (AoE, UTC&minus;12) on 12 Oct.
+
+Development
+28 Aug – 12 Oct 2026
+
+Public practice repositories, iteration, and validation leaderboard. Closes at
+23:59 AoE on 12 Oct.
+
+Final + Verification
+13 – 25 Oct 2026
+
+One designated final submission per entered track is evaluated on sealed
+private-test units; top submissions may be rerun and reviewed for reproducibility,
+integrity, and prize eligibility. Closes at 23:59 AoE on 25 Oct.
+
+NeurIPS final event
+
+Within 9–13 Dec 2026 , Atlanta, Georgia
+
+exact day designated by NeurIPS
+
+In-person Agenthon presentation/workshop under applicable NeurIPS and venue
+requirements. Competition and workshop sessions usually fall on the later days
+of the conference; the exact day is confirmed by NeurIPS.
+
+Schedule amended 17 September 2026 under &sect;12: Development and registration
+extended from 28 September to 12 October, closing together at 23:59 Anywhere on Earth
+(UTC&minus;12); the private final evaluation and verification are combined into one
+Final + Verification phase, 13–25 October. All other dates are unchanged.
+
+The Competition Site and platform clock are authoritative. NeurIPS 2026 runs
+9–13 December 2026 in Atlanta, Georgia ; the Agenthon session falls
+within those dates, most likely on one of the final days, and the exact day is designated
+by NeurIPS. Site-specific schedules and later NeurIPS instructions control. Material
+schedule changes will be announced through an official channel and, where practicable,
+applied prospectively.
+
+4. Eligibility, teams, and accounts
+
+Participants must be at least 18 and have reached the age of majority in their
+jurisdiction. Participation and prize payment must be lawful and may be subject to sanctions,
+export-control, anti-bribery, tax, and other legal screening.
+
+Organizing Committee members, designated judges/evaluators, persons with material access
+to non-public test materials, and members of their immediate household are not eligible for
+prizes. Sponsor or Question Partner personnel may participate only without privileged access
+and subject to track-specific conflict rules.
+
+Participants must obtain any employer, university, sponsor, or other approval needed to
+participate or submit work created in the course of employment or study.
+
+Teams may have one to three registered participants. Each person may use one competition
+identity and belong to one team only.
+
+Each team must designate a captain for official communications and final-submission
+decisions. Credentials may not be shared outside the team.
+
+Team changes require Organizer approval and ordinarily must be completed before the
+Final + Verification phase. Changes may not transfer non-public solutions or circumvent submission
+limits.
+
+5. Tracks and competition structure
+
+Track
+Stable verb
+Primary metric
+Primary gate
+
+T1 – Coding
+Quant-Finance Coding Agents — agents that solve quant-finance coding tasks under tests and financial-invariant checks
+solve
+pass@1 / pass@3
+pytest + financial invariants
+
+T2 – Forecasting
+Reasoning-Augmented Time Series — time series plus a time-stamped text corpus, with evidence of uplift over text-blind baselines
+forecast
+CRPS composite
+as-of cutoff + calibration
+
+T3 – Simulation
+Accelerated Market Simulation — a faster market simulator that keeps matching-engine semantics intact
+simulate
+events/second
+semantic regression + realism
+
+T4 – Explainability
+Evidence-Grounded Prediction — predictions grounded in a frozen evidence corpus, with explainability, citations and confidence intervals
+analyze
+quality + coverage
+faithfulness + embargo
+
+Teams may enter one or more tracks. Track instructions form part of these Rules and may
+specify interfaces, schemas, resource limits, data cutoffs, scoring formulas, tie-breakers, and
+submission procedures.
+
+6. Submission and resource requirements
+
+Official submissions must use the approved Docker or other containerized format and
+implement the stable command-line interface for the entered track.
+
+Final submissions must run without human intervention in the designated sandbox. External
+network access should be assumed unavailable unless a track expressly permits it.
+
+Submissions must satisfy published size, runtime, memory, dependency, security, and
+interface limits. Unsafe, unreliable, or non-executable submissions may be rejected as
+inadmissible.
+
+Submissions must not contain malware, destructive code, credential harvesting,
+unauthorized scanning, hidden communication channels, or functionality designed to interfere
+with infrastructure or third parties.
+
+Do not embed personal data, private credentials, API keys, confidential employer
+information, or data that the team is not authorized to provide.
+
+Unless a track states otherwise, each team designates one final submission per entered
+track.
+
+6.1 External resources and provenance
+
+Pre-existing software, public data, pretrained models, research code, and commercial
+tools may be used only when lawful, properly licensed, and permitted by the track.
+
+Participants remain responsible for material produced with AI agents, language models,
+code assistants, or other automated tools.
+
+Prize-eligible teams must provide the resource/provenance declaration required by the
+Data & Software Licensing Policy .
+
+Private, employer-only, sponsor-only, embargoed, or other non-public data may not be used
+unless expressly authorized and supported by documented permission.
+
+A track cutoff or as-of date applies to features, labels, prompts, retrieval indexes,
+caches, fine-tuned weights, synthetic data, and other derived artifacts — not only to
+raw inputs.
+
+7. Public/private firewall, admissibility, and ranking
+
+Each track may separate public practice resources from a sealed private evaluation
+environment. Private-test units, hidden labels, oracle answers, final scoring logic, canary
+registries, audit materials, and equivalent assets are confidential Competition
+materials.
+
+Participants may not access, infer, reconstruct, scrape, exfiltrate, retain, or share
+non-public test material outside the normal scoring interface.
+
+Leaderboard probing, adaptive query patterns, reverse engineering of hidden labels,
+exploitation of scoring bugs, and other techniques intended to extract private-test
+information are prohibited.
+
+Official runs may pass through g0 integrity, g1 schema/interface, g2 cutoff/resource, and
+g3 domain-semantics checks. Only admissible runs receive the applicable metric.
+
+Development leaderboard scores are provisional. Final rankings use designated private
+data and the final scoring implementation, subject to verification and correction of
+demonstrable evaluation or infrastructure errors.
+
+Published track tie-breakers control. If no tie-breaker is published and scores are
+exactly tied at the designated precision, the teams remain tied.
+
+A team may request review of a demonstrable scoring, execution, or infrastructure error
+within the period stated in the results notice. Review does not permit a new submission or a
+post-deadline change to the metric.
+
+8. Private verification and winner public release
+
+Agenthon uses a three-stage model: ordinary submissions are private; provisional prize
+candidates undergo confidential verification; and only a confirmed winner that elects to accept
+a prize must publish a separate reproducibility package.
+
+A provisional prize candidate must provide participant-authored source code, build/run
+instructions, dependency versions, seeds/configuration, model or artifact information, a
+provenance declaration, and a concise method summary upon request.
+
+The Organizers may rerun the submission with fresh seeds or equivalent controls and
+inspect code, container contents, logs, manifests, and declarations only as reasonably
+necessary for reproducibility, integrity, eligibility, and security.
+
+A result that cannot be reproduced to reasonable tolerance may be corrected, removed, or
+deemed ineligible for a prize.
+
+After written confirmation of winning status, a team accepting the prize must publish the
+participant-authored code needed to reproduce the winning method under an OSI-approved
+license, ordinarily within 14 days.
+
+The public package may be a cleaned repository and need not be the exact private
+container. Teams need not disclose secrets or relicense third-party data, software, models,
+or weights they do not own, but must document a lawful reproduction path.
+
+Declining or failing the public-release condition may forfeit the prize without
+transferring ownership. Unless the result itself is invalid, the scientific ranking need not
+change solely because a winner declines the prize.
+
+9. Integrity, conduct, and enforcement
+
+Participants must comply with the NeurIPS Code of Conduct and applicable NeurIPS policies
+concerning professional conduct, academic integrity, anti-collusion, and responsible use of
+agents or language models to the extent those policies apply.
+
+Prohibited conduct includes plagiarism or misappropriation; collusion or private sharing of
+non-public solutions; multiple accounts or false identities; unauthorized access to test
+materials, scoring logic, other submissions, or restricted systems; attacks on the platform or
+infrastructure; falsified declarations or results; and score manipulation through bugs, prompt
+injection, or hidden side channels.
+
+The Organizers may investigate and impose proportionate measures, including warning, score
+removal, submission rejection, suspension, disqualification, prize forfeiture, or removal from
+official results. Where feasible and consistent with integrity or security needs, the affected
+team will receive the material reason and an opportunity to respond before a final
+prize-related decision.
+
+Good-faith reporting of a benchmark, privacy, or security issue will not itself be treated
+as misconduct.
+
+10. Prizes, publication, and scientific reporting
+
+Prize categories, amounts, sponsor-funded awards, and special eligibility conditions will
+be announced through an official channel before they apply to the Final Phase.
+
+Potential winners must satisfy identity, eligibility, authorship, private verification,
+tax, and payment-documentation requirements. Unless announced otherwise, a team prize is
+divided equally among registered members.
+
+The Organizers may publish team names, scores, ranks, track breakdowns, finalist/winner
+names and affiliations, approved public method summaries, prize information, and aggregate
+benchmark analyses.
+
+Non-public source code, containers, model artifacts, and private verification materials
+do not become public merely because a result or winning status is announced.
+
+Publication of a participant-authored manuscript or non-public technical report requires
+the participant’s authorization.
+
+11. NeurIPS final event
+
+The Agenthon in-person presentation/workshop is conducted as part of the NeurIPS 2026
+Competition Track. Participants must satisfy the registration, credentialing, admission, Code
+of Conduct, safety, security, accessibility, and venue requirements applicable to the assigned
+NeurIPS site.
+
+Finalist or winner status does not itself provide NeurIPS registration, a badge, venue
+access, a visa, travel authorization, or entry into the host country.
+
+Unless separately announced, participants are responsible for registration, travel,
+immigration, and venue-entry requirements.
+
+Alternative presenters or arrangements for exceptional circumstances require written
+Organizer approval and must be permitted by NeurIPS. No remote or substitute arrangement is
+guaranteed.
+
+Third-party decisions concerning registration, credentials, immigration, security, or
+physical access do not by themselves invalidate a scientific result, although failure to
+satisfy an expressly announced presentation or prize condition may affect presentation or
+prize eligibility.
+
+Official references: the
+NeurIPS 2026 Competition Track
+and the
+NeurIPS Code of
+Conduct .
+
+12. Changes, cancellation, precedence, and contact
+
+The Organizers may clarify rules, correct benchmark defects, extend deadlines, or rerun
+affected evaluations when reasonably necessary for fairness, security, legal compliance, or
+scientific validity. Material changes will be announced and, where practicable, applied
+prospectively.
+
+A material outage, security compromise, legal requirement, force majeure event, or other
+circumstance may require suspension, modification, or cancellation of an affected phase or the
+Competition.
+
+For operational matters, a specific track instruction controls over a general Rule. The
+Terms of Participation control intellectual property,
+confidentiality, disclaimers, and governing law; the
+Data & Software Licensing Policy controls resource
+licenses; the Privacy Notice controls personal-data
+processing; and mandatory law controls all documents. Written interpretations may resolve
+ambiguity but may not retroactively create a material new obligation after the relevant
+deadline.
+
+General competition and policy questions:
+[redacted:email]@agenthon.net . Additional published contacts:
+[redacted:email]@sqa-us.org and
+[redacted:email]@cewit.org .
+
+Alphathon presents Agenthon 2026
+
+Organized by
+SQA &middot;
+CEWIT ,
+Stony Brook University
+
+About
+Compete
+Past Events
+Rules
+Terms
+Privacy
+Licensing
+Contact
+
+Copyright &copy; 2026: agenthon.net. All rights reserved.
