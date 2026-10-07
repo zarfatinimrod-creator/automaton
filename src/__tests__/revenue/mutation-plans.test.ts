@@ -35,6 +35,7 @@ describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
       "ledger.json",
       "loop-edit.json",
       "mutate.json",
+      "owner-report.json",
       "owner-steps.json",
       "page-views.json",
       "prize-apply-reading.json",

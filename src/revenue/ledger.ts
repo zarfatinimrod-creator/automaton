@@ -600,7 +600,7 @@ export function listLedger(
   return rows.map(rowToLedger);
 }
 
-interface WindowSums {
+export interface WindowSums {
   revenue: number;
   refunds: number;
   cost: number;
@@ -610,9 +610,10 @@ interface WindowSums {
 /**
  * Converted money only. Every metric built from these sums feeds a target, a floor or a rule (rules.ts decideLine,
  * allocateBudget, the ₪20,000 test in computePortfolioSummary), and none of them may rest on unconverted money
- * (RULING-2026-09-28-bounty-rail.md §6.2). Unconverted money is summed apart, by sumUnconverted.
+ * (RULING-2026-09-28-bounty-rail.md §6.2). Unconverted money is summed apart, by sumUnconverted. Exported for
+ * owner-report.ts, which reads the same sums over all time (computeLineMetrics reads them over 30 and 7 days).
  */
-function sumWindow(db: Database, lineId: string, sinceIso: string, untilIso: string): WindowSums {
+export function sumWindow(db: Database, lineId: string, sinceIso: string, untilIso: string): WindowSums {
   const rows = db
     .prepare(
       `SELECT kind, COALESCE(SUM(amount_agorot), 0) AS total, COUNT(*) AS count
@@ -637,7 +638,7 @@ function sumWindow(db: Database, lineId: string, sinceIso: string, untilIso: str
 }
 
 /** Unconverted (wallet) money in the window: revenue less refunds. Shown beside the converted sums, never added in. */
-function sumUnconverted(db: Database, lineId: string, sinceIso: string, untilIso: string): number {
+export function sumUnconverted(db: Database, lineId: string, sinceIso: string, untilIso: string): number {
   const row = db
     .prepare(
       `SELECT COALESCE(SUM(amount_agorot), 0) AS total FROM revenue_ledger

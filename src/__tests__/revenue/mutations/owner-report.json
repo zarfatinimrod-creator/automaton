@@ -1,0 +1,290 @@
+[
+  {
+    "id": "T64-OR1",
+    "file": "src/revenue/owner-report.ts",
+    "find": "out.refundsAgorot += w.refunds;",
+    "replace": "out.refundsAgorot += w.cost;",
+    "note": "tick 64: refunds are the ledger's refund sum, not its cost sum",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR2",
+    "file": "src/revenue/owner-report.ts",
+    "find": "out.costAgorot += w.cost;",
+    "replace": "out.costAgorot += w.refunds;",
+    "note": "tick 64: costs are the ledger's cost sum, not its refund sum",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR3",
+    "file": "src/revenue/owner-report.ts",
+    "find": "out.unconvertedAgorot += sumUnconverted(db, id, sinceIso, untilIso);",
+    "replace": "out.unconvertedAgorot += 0;",
+    "note": "tick 64: wallet money is read, beside the converted sums",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR4",
+    "file": "src/revenue/owner-report.ts",
+    "find": "out.revenueRows += w.count;",
+    "replace": "out.revenueRows += 1;",
+    "note": "tick 64: the revenue row count is the ledger's, not one per line",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR5",
+    "file": "src/revenue/owner-report.ts",
+    "find": "allTime: moneyWindow(db, ids, \"\", END_OF_TIME),",
+    "replace": "allTime: moneyWindow(db, ids, new Date(nowMs - 30 * DAY_MS).toISOString(), nowIso),",
+    "note": "tick 64: all time is every row, not the last 30 days",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR6",
+    "file": "src/revenue/owner-report.ts",
+    "find": "moneyWindow(db, ids, new Date(nowMs - 30 * DAY_MS).toISOString(), nowIso);",
+    "replace": "moneyWindow(db, ids, \"\", nowIso);",
+    "note": "tick 64: the 30-day window is computeLineMetrics', not all time",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR7",
+    "file": "src/revenue/owner-report.ts",
+    "find": "COALESCE(SUM(unconverted = 1), 0) AS unconverted",
+    "replace": "COALESCE(SUM(unconverted = 0), 0) AS unconverted",
+    "note": "tick 64: the unconverted row count counts unconverted rows",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR8",
+    "file": "src/revenue/owner-report.ts",
+    "find": "COALESCE(SUM(line_id NOT IN (SELECT id FROM revenue_lines)), 0) AS orphans",
+    "replace": "0 AS orphans",
+    "note": "tick 64: a row on no known line is counted and named, since no per-line sum holds it",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR9",
+    "file": "src/revenue/owner-report.ts",
+    "find": ".filter((l) => l.status !== \"killed\")",
+    "replace": ".filter((l) => l.id !== \"\")",
+    "note": "tick 64: killed lines are listed by id apart, not in the line table",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR10",
+    "file": "src/revenue/owner-report.ts",
+    "find": "        .sort((a, b) => a.order - b.order)\n",
+    "replace": "",
+    "note": "tick 64: a line's steps not asked now are in execution order (as runner.ts notAskedNowNote), not frozen first",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR11",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const open = ordered.filter(isOwnerStepOpen);",
+    "replace": "const open = ordered.filter((s) => !s.doneOn);",
+    "note": "tick 64: a frozen or held step is not asked now",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR12",
+    "file": "src/revenue/owner-report.ts",
+    "find": "if (step.frozen) return { state: \"frozen\", reason: `frozen by ${step.frozen.rule}` };",
+    "replace": "if (step.frozen) return { state: \"frozen\", reason: \"frozen\" };",
+    "note": "tick 64: a frozen step names the rule that froze it",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR13",
+    "file": "src/revenue/owner-report.ts",
+    "find": "afterStep: stepNumber(s.earlyPart.afterStep)",
+    "replace": "afterStep: 0",
+    "note": "tick 64: the early part names the step it may follow",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR14",
+    "file": "src/revenue/owner-report.ts",
+    "find": "heldSecretRows(s, site).map(",
+    "replace": "heldSecretRows(s, { projectId: \"x\" }).map(",
+    "note": "tick 64: a gated secret row reads the site it is given",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR15",
+    "file": "src/revenue/owner-report.ts",
+    "find": "Math.round((nowMs - lastSyncMs) / HOUR_MS)",
+    "replace": "Math.floor((nowMs - lastSyncMs) / HOUR_MS)",
+    "note": "tick 64: the hours since the last sync are rounded as checkLiveness rounds them",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR16",
+    "file": "src/revenue/owner-report.ts",
+    "find": ".find((f) => f.kind === \"loop_gap\")",
+    "replace": ".find((f) => f.kind === \"silent_line\")",
+    "note": "tick 64: the staleness blocker is checkLiveness' loop_gap finding",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR17",
+    "file": "src/revenue/owner-report.ts",
+    "find": "listReviews(db, { level: \"board\", limit: 1 })",
+    "replace": "listReviews(db, { level: \"supervisor\", limit: 1 })",
+    "note": "tick 64: the latest board review is a board-level review",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR18",
+    "file": "src/revenue/owner-report.ts",
+    "find": "row(\"Out, converted costs\", (w) => formatIls(w.costAgorot));",
+    "replace": "row(\"Out, converted costs\", (w) => formatIls(w.refundsAgorot));",
+    "note": "tick 64: the text's cost row prints the costs",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR19",
+    "file": "scripts/owner-report.ts",
+    "find": "values.json ? JSON.stringify(report, null, 2)",
+    "replace": "!values.json ? JSON.stringify(report, null, 2)",
+    "note": "tick 64: --json prints the object, the default prints prose",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR20",
+    "file": "scripts/owner-report.ts",
+    "find": "    return 2;",
+    "replace": "    return 0;",
+    "note": "tick 64: an unknown option exits 2",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR21",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const asked = open.filter((s) => s.lines.some(waits));",
+    "replace": "const asked = open;",
+    "note": "tick 64 review: a step is asked only for a line the database still has waiting on the owner, as renderReport asks",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR22",
+    "file": "src/revenue/owner-report.ts",
+    "find": "return Boolean(line && line.status === \"awaiting_setup\" && !line.humanSetupDone);",
+    "replace": "return Boolean(line && line.status === \"awaiting_setup\");",
+    "note": "tick 64 review: a line whose setup is recorded done no longer waits on the owner",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR23",
+    "file": "src/revenue/owner-report.ts",
+    "find": "return Boolean(line && line.status === \"awaiting_setup\" && !line.humanSetupDone);",
+    "replace": "return Boolean(line && !line.humanSetupDone);",
+    "note": "tick 64 review: a killed line no longer waits on the owner",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR24",
+    "file": "src/revenue/owner-report.ts",
+    "find": "lines: s.lines.filter(waits),",
+    "replace": "lines: s.lines,",
+    "note": "tick 64 review: an asked step's lines are the ones still waiting, not every line owner-steps.ts names",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR25",
+    "file": "src/revenue/owner-report.ts",
+    "find": "linesNotWaiting: notWaiting(s),",
+    "replace": "linesNotWaiting: [],",
+    "note": "tick 64 review: an asked step names the code's other lines with their state",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR26",
+    "file": "src/revenue/owner-report.ts",
+    "find": "if (line.status === \"killed\") return \"killed\";",
+    "replace": "if (line.status === \"killed\") return \"gone\";",
+    "note": "tick 64 review: a killed line is named killed",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR27",
+    "file": "src/revenue/owner-report.ts",
+    "find": "return line.humanSetupDone ? `set up (${line.status})` : line.status;",
+    "replace": "return line.status;",
+    "note": "tick 64 review: a line whose setup is done is named set up",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR28",
+    "file": "src/revenue/owner-report.ts",
+    "find": ".filter((s) => !asked.includes(s))",
+    "replace": ".filter((s) => !isOwnerStepOpen(s))",
+    "note": "tick 64 review: a step open in the code that no waiting line needs is listed under not asked now",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR29",
+    "file": "src/revenue/owner-report.ts",
+    "find": "...(isOwnerStepOpen(s)",
+    "replace": "...(false",
+    "note": "tick 64 review: such a step is named with its lines' state, not as held",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR30",
+    "file": "src/revenue/owner-report.ts",
+    "find": "stepsAskedNow: waitsOnOwner(l) ? openOwnerStepsForLine(l.id).map((s) => s.number) : [],",
+    "replace": "stepsAskedNow: openOwnerStepsForLine(l.id).map((s) => s.number),",
+    "note": "tick 64 review: a line that no longer waits on the owner is asked nothing in the line table",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR31",
+    "file": "src/revenue/owner-report.ts",
+    "find": "(l.waitsOnOwner ? \"none\" : \"none: the line no longer waits on the owner\")",
+    "replace": "\"none\"",
+    "note": "tick 64 review: the line table says why such a line is asked nothing",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR32",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const owedHeld = s.owedRows.filter((o) => !o.askedNow);",
+    "replace": "const owedHeld = s.owedRows;",
+    "note": "tick 64 review: an owed row asked now is not printed again under not asked now",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR33",
+    "file": "src/revenue/owner-report.ts",
+    "find": "if (owedAsked.length) {",
+    "replace": "if (false) {",
+    "note": "tick 64 review: an owed row whose gate holds is printed under its own asked-now heading",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR34",
+    "file": "src/revenue/owner-report.ts",
+    "find": "(owedAsked.length ? `, and ${owedAsked.length} row(s) of done steps asked alone` : \"\")",
+    "replace": "\"\"",
+    "note": "tick 64 review: the steps heading counts the owed rows asked alone",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR35",
+    "file": "src/revenue/owner-report.ts",
+    "find": "h.hoursSinceLedgerSync! < 0",
+    "replace": "h.hoursSinceLedgerSync! < -100",
+    "note": "tick 64 review: a sync later than the report's clock is said so, not printed as negative hours ago",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T64-OR36",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const nowIso = new Date(nowMs).toISOString();",
+    "replace": "const nowIso = opts.nowIso ?? new Date(nowMs).toISOString();",
+    "note": "tick 64 review: --now is reported as one ISO instant, as every window bound compares it",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  }
+]
