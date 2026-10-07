@@ -23,7 +23,7 @@
  * files and their sha256 go into research/rendered/FROZEN.sha256 (`sha256sum -c` reads it there), which the guard test
  * checks every frozen file against. It refuses (exit 1, nothing written; exit 2 for a slug or commit that is not one):
  *   - a capture that is not a read page (capture-check's classifyCapture: an error or non-2xx status, a bot challenge,
- *     a JavaScript shell, a short page), or whose meta has textError (render-watch: the PDF changed beside a hand
+ *     a JavaScript shell, a nav-only shell, a short page), or whose meta has textError (render-watch: the PDF changed beside a hand
  *     extraction, which may describe the old bytes): a shell, an error page or a stale text frozen as evidence would
  *     be cited as if it were the page. --allow-flagged freezes it anyway (for a claim about the failure itself) and
  *     records the kind in frozen.flagged. A failed fetch that left an older capture's text on disk is frozen as the

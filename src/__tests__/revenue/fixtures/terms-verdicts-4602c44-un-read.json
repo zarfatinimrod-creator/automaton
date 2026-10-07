@@ -1,0 +1,9 @@
+{
+ "un.org": {
+  "verdict": "TERMS_PENDING",
+  "source": "https://www.un.org/en/about-us/terms-of-use",
+  "checked": "2026-09-29",
+  "note": "the terms page returned 504 on 29.9; retried by the weekly run",
+  "copying": "unread"
+ }
+}

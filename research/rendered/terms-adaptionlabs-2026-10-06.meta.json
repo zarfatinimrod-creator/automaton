@@ -1,0 +1,29 @@
+{
+  "url": "https://adaptionlabs.ai/terms-of-service",
+  "slug": "terms-adaptionlabs-2026-10-06",
+  "fetchedAt": "2026-10-06T07:15:30.798Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 51664,
+  "sha256": "3985d0be760f4430e81e84825e8b386f3e8af5672b815c7fcdc8cc418f70d56f",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-adaptionlabs-2026-10-06.html",
+  "textPath": "research/rendered/terms-adaptionlabs-2026-10-06.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://adaptionlabs.ai/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-07",
+    "from": "research/rendered/terms-adaptionlabs.meta.json",
+    "commit": "5f4853a",
+    "why": "plain GET saw a shell (ruling 6.10 row 21 (c), amendment 2)",
+    "flagged": {
+      "kind": "nav-shell",
+      "evidence": "85 characters of text, fewer than 1000; nav-only shell: 8 lines of at most 3 words; 51664 bytes of HTML with 5 anchors and 27 scripts"
+    }
+  }
+}

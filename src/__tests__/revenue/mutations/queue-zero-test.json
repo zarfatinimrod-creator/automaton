@@ -2,10 +2,10 @@
   {
     "id": "T54-Q1",
     "file": "scripts/queue-zero-test.mjs",
-    "find": "if (graded?.kind !== \"js-shell\") {",
+    "find": "if (!Object.hasOwn(SHELL_KINDS, graded?.kind ?? \"\")) {",
     "replace": "if (false) {",
     "test": "src/__tests__/revenue/queue-zero-test.test.ts",
-    "note": "tick 54 Q1: --terms-shell queues a plain capture capture-check does not grade js-shell (bot-challenge, short, ok, status)"
+    "note": "tick 54 Q1: --terms-shell queues a plain capture capture-check does not grade js-shell (bot-challenge, short, ok, status); its find follows tick 60's SHELL_KINDS (js-shell or nav-shell)"
   },
   {
     "id": "T54-Q2",
@@ -313,5 +313,45 @@
     "replace": "  const trimmed = typeof meta?.trimmed === \"object\";",
     "test": "src/__tests__/revenue/queue-zero-test.test.ts",
     "note": "tick 59 review (reviewer's Q59-5, survived before): a meta whose trimmed field is null is read as trimmed, so its missing .html is not refused"
+  },
+  {
+    "id": "T60-Q1",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "export const SHELL_KINDS = { \"js-shell\": \"a js shell\", \"nav-shell\": \"a nav-only shell\" };",
+    "replace": "export const SHELL_KINDS = { \"js-shell\": \"a js shell\" };",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 60 nav-shell: --terms-shell refuses a plain capture capture-check grades nav-shell"
+  },
+  {
+    "id": "T60-Q2",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  if (!Object.hasOwn(SHELL_KINDS, graded?.kind ?? \"\")) {",
+    "replace": "  if (!Object.hasOwn(SHELL_KINDS, graded?.kind ?? \"\") && graded?.kind !== \"short\") {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 60 nav-shell: --terms-shell admits a short capture as a shell"
+  },
+  {
+    "id": "T60-Q3",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "robots ${meta.robots}) is ${graded.kind} ` +",
+    "replace": "robots ${meta.robots}) is js-shell ` +",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 60 nav-shell: the comment names the kind js-shell whatever capture-check graded"
+  },
+  {
+    "id": "T60-Q4",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "`(${SHELL_KINDS[graded.kind]}) by scripts/capture-check.mjs;",
+    "replace": "`(${SHELL_KINDS[\"js-shell\"]}) by scripts/capture-check.mjs;",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 60 nav-shell: the comment's words for the kind are a js shell's for a nav-only shell"
+  },
+  {
+    "id": "T60-Q5",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "(${graded?.evidence}), not js-shell or nav-shell: ${reason}`);",
+    "replace": "(${graded?.evidence}), not js-shell: ${reason}`);",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 60 nav-shell: the refusal no longer names nav-shell among the kinds the route reads"
   }
 ]

@@ -218,7 +218,7 @@ jobs:
 
       # Names, in the job summary (a table) and as a warning annotation each on the run page (GitHub
       # may show only some of them), the captures this run just stored that are not read pages:
-      # status, bot-challenge, js-shell, short, unreadable, timeout (tick 33 found EUR-Lex and UNESCO
+      # status, bot-challenge, js-shell, nav-shell, short, unreadable, timeout (tick 33 found EUR-Lex and UNESCO
       # answering with bot challenges for days before anyone looked). It only reads: it writes nothing
       # under research/, needs no token and fetches nothing.
       # Before the commit, on purpose: here `git status` of research/rendered is exactly what this run

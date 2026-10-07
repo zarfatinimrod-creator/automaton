@@ -5,7 +5,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as render-watch.mjs)
-import { MIN_TERMS_TEXT, TERMS_SHELL_RULING, applyVerdicts, isRobotsOkVerdict, isShellTermsVerdict, jsCapturesOf, loadVerdicts, overrideLines, plainCaptureUrl, queueTermsShell, queueZeroTest, siteOf, termsGate, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
+import { MIN_TERMS_TEXT, SHELL_KINDS, TERMS_SHELL_RULING, applyVerdicts, isRobotsOkVerdict, isShellTermsVerdict, jsCapturesOf, loadVerdicts, overrideLines, plainCaptureUrl, queueTermsShell, queueZeroTest, siteOf, termsGate, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { classifyCapture, readCapture } from "../../../scripts/capture-check.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
@@ -273,6 +273,8 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     "trimroute.example": { verdict: "TERMS_PENDING", note: "terms unread: stored trimmed by render-watch's route" },
     "trimfailed.example": { verdict: "TERMS_PENDING", note: "terms unread: a trimmed capture whose last fetch failed" },
     "trimnull.example": { verdict: "TERMS_PENDING", note: "terms unread: a meta whose trimmed field is null" },
+    "navshell.example": { verdict: "TERMS_PENDING", note: "shell: nav-only shell: the plain capture is its menu" },
+    "trimnav.example": { verdict: "TERMS_PENDING", note: "terms unread: a trimmed nav-only shell" },
   };
   // The fixtures: a js-shell (one per kind of site), a bot-challenge, a short page, a read page, a failed fetch, a
   // missing capture, a robots-disallowed one, one from before robots.txt was read, and two already rendered in js.
@@ -338,6 +340,21 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     rmSync(join(dir, `${slug}.html`));
     writeFileSync(join(dir, `${slug}.txt`), "\n");
   }
+  // A nav-only shell (capture-check's nav-shell, tick 60: adaptionlabs.ai's shape): a large page of links and scripts
+  // whose text is its menu, one label a line; and the same page with a sentence in its text, which is short.
+  const NAV = `<!doctype html><html><head><title>Terms of Service</title>${"<script src=/c.js></script>".repeat(27)}<!--${"x".repeat(20_000)}--></head>` +
+    '<body><nav><a href="/">Home</a><a href="/research">Research</a><a href="/enterprise">Enterprise</a></nav></body></html>';
+  const MENU = "Terms of Service\nHome\nResearch\nEnterprise\nLogin\n";
+  capture("terms-navshell", "https://navshell.example/terms", { html: NAV });
+  writeFileSync(join(dir, "terms-navshell.txt"), MENU);
+  capture("terms-navshort", "https://navshell.example/terms", { html: NAV });
+  writeFileSync(join(dir, "terms-navshort.txt"), `${MENU}These terms govern your use of the site and our services.\n`);
+  {
+    const trimmed = { on: "2026-10-06", ruling: "fixture", site: "trimnav.example", copying: "barred", keptLines: [], context: 2, lineCount: 2, body: { path: "research/rendered/terms-trimnav.html", keptLines: [], inTree: false }, cited: [], wide: [], captureCheck: "nav-shell", fullBytesIn: "commit abc1234 (fixture)" };
+    capture("terms-trimnav", "https://trimnav.example/terms", { html: NAV, extra: { trimmed } });
+    rmSync(join(dir, "terms-trimnav.html"));
+    writeFileSync(join(dir, "terms-trimnav.txt"), "\n");
+  }
   // A meta whose trimmed field is null is no trimmed capture (tick 59 review): it still needs its .html.
   capture("terms-trimnull", "https://trimnull.example/terms", { extra: { trimmed: null } });
   rmSync(join(dir, "terms-trimnull.html"));
@@ -363,7 +380,7 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     expect(lines[2]).toBe(out.comment);
     expect(lines).not.toContain("https://pending.example/terms\tterms-pending");
     expect(out.comment.startsWith("# ruling 6.10 row 21 (c), once-only js render of a shell terms page (")).toBe(true);
-    expect(out.comment).toContain(`(sha256 ${SHA.slice(0, 12)}, fetched 2026-09-30, robots allowed) is js-shell by scripts/capture-check.mjs; pending.example is TERMS_PENDING.`);
+    expect(out.comment).toContain(`(sha256 ${SHA.slice(0, 12)}, fetched 2026-09-30, robots allowed) is js-shell (a js shell) by scripts/capture-check.mjs; pending.example is TERMS_PENDING.`);
     expect(out.sha256Prefix).toBe(SHA.slice(0, 12));
     expect(out.comment).toContain("research/rendered/terms-pending ");
     expect(out.comment).toMatch(/\(6\.10\.2026\)\.$/);
@@ -381,7 +398,7 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     const out = go({ url: "https://shellsite.example/legal", slug: "terms-shellsite" });
     const lines = out.urls.split("\n");
     expect(lines[4]).toBe("# retired (tick 31: a React shell; its terms stay unread) — https://shellsite.example/legal\tterms-shellsite");
-    expect(lines[5]).toMatch(/^# ruling 6\.10 row 21 \(c\).*robots none\) is js-shell by scripts\/capture-check\.mjs; shellsite\.example is NO_TERMS\./);
+    expect(lines[5]).toMatch(/^# ruling 6\.10 row 21 \(c\).*robots none\) is js-shell \(a js shell\) by scripts\/capture-check\.mjs; shellsite\.example is NO_TERMS\./);
     expect(lines[6]).toBe("https://shellsite.example/legal\tterms-shellsite\tjs");
     expect(out.frozen).toEqual([]);
     expect(termsGate("https://shellsite.example/legal", "terms-shellsite", V, { js: true, dir })).toMatchObject({ ok: true, termsShell: true });
@@ -406,8 +423,24 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     refuses({ slug: "pending-shell" }, /refuses pending-shell: the slug must start terms- \(3\(2\)\(iii\)\)/);
   });
 
-  it("refuses a capture capture-check grades anything but js-shell: bot-challenge, short, ok, status", () => {
-    refuses({ slug: "terms-challenge" }, /grades the plain capture bot-challenge \(.*Cloudflare challenge page.*\), not js-shell/);
+  it("queues a nav-only shell (capture-check nav-shell, tick 60) as it queues a js-shell, the comment naming the kind", () => {
+    expect(SHELL_KINDS).toEqual({ "js-shell": "a js shell", "nav-shell": "a nav-only shell" });
+    expect(classifyCapture(readCapture("terms-navshell", dir)).kind).toBe("nav-shell");
+    const out = go({ url: "https://navshell.example/terms", slug: "terms-navshell", urls: "# a list\n" });
+    expect(out.line).toBe("https://navshell.example/terms\tterms-navshell\tjs");
+    expect(out.comment).toContain(
+      `(sha256 ${SHA.slice(0, 12)}, fetched 2026-09-30, robots allowed) is nav-shell (a nav-only shell) by scripts/capture-check.mjs; navshell.example is TERMS_PENDING.`,
+    );
+    expect(out.evidence).toBe(classifyCapture(readCapture("terms-navshell", dir)).evidence);
+    expect(out.evidence).toMatch(/nav-only shell: 5 lines of at most 3 words; \d+ bytes of HTML with 3 anchors and 27 scripts$/);
+    // A capture trim-capture trimmed whole as a nav-shell qualifies too, by the kind its block records.
+    expect(go({ url: "https://trimnav.example/terms", slug: "terms-trimnav", urls: "# a list\n" }).comment).toContain(") is nav-shell (a nav-only shell) by ");
+    // The same page with a sentence in its text is short, and refused as short.
+    refuses({ url: "https://navshell.example/terms", slug: "terms-navshort", urls: "# a list\n" }, /grades the plain capture short \(.*\), not js-shell or nav-shell: only a shell is read/);
+  });
+
+  it("refuses a capture capture-check grades anything but js-shell or nav-shell: bot-challenge, short, ok, status", () => {
+    refuses({ slug: "terms-challenge" }, /grades the plain capture bot-challenge \(.*Cloudflare challenge page.*\), not js-shell or nav-shell: only a shell/);
     refuses({ slug: "terms-short" }, /grades the plain capture short \(/);
     refuses({ slug: "terms-long" }, /grades the plain capture ok \(/);
     refuses({ slug: "terms-forbidden" }, /grades the plain capture status \(/);
@@ -423,7 +456,7 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     expect(shell.evidence).toMatch(/^trimmed 2026-10-06 \(ruling 6\.10 row 21 \(d\)\): 0 of 2 text lines kept in the tree, the body out of it; .*; capture-check's kind before the trim$/);
     refuses(
       { url: "https://trimok.example/terms", slug: "terms-trimok", urls },
-      /refuses terms-trimok: trimmed: its pre-trim kind was ok \(trimmed 2026-10-06 .*capture-check's kind before the trim\), not js-shell; only a shell is read by the once-only js render \(3\(1\) K4/,
+      /refuses terms-trimok: trimmed: its pre-trim kind was ok \(trimmed 2026-10-06 .*capture-check's kind before the trim\), not js-shell or nav-shell; only a shell is read by the once-only js render \(3\(1\) K4/,
     );
     // No kind recorded (render-watch's route) is said so; a failed fetch is graded status, trimmed or not.
     refuses({ url: "https://trimroute.example/terms", slug: "terms-trimroute", urls }, /refuses terms-trimroute: trimmed: its pre-trim kind was not recorded \(trimmed 2026-10-06 /);

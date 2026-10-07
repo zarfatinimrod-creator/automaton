@@ -34,6 +34,10 @@
  *   js-shell       too little text and a sign the page needs JavaScript: an empty app root, a body of scripts only, a
  *                  Salesforce loading box; or, with very little text (under WEAK_SIGN_TEXT), a weaker sign: a
  *                  noscript notice, page state shipped for scripts, a React streaming placeholder, a splash screen.
+ *   nav-shell      too little text that is only a menu, in a large page of links and scripts (NAV_SHELL_BYTES and the
+ *                  rule beside it): the server sent its navigation and no content, with no JavaScript sign the
+ *                  js-shell markers know (adaptionlabs.ai's terms page, 6.10). A kind of shell, as js-shell is
+ *                  (queue-zero-test's --js --terms-shell route admits both, ruling 6.10 row 21 (c) 3(2)).
  *   short          too little text and none of the above (a real short page is flagged too: the reader decides).
  *   ok             enough text; any marker found is still named in the evidence.
  *   timeout        (the CLI's) not checked: reading and checking it took longer than --timeout. Some of the markers'
@@ -127,6 +131,37 @@ export const WEAK_JS_SIGNS = [
   ["splash screen", (h) => h.match(/\bid=["']splash-screen["']/)],
 ];
 
+/**
+ * A nav-only shell (tick 60, logs/CHANNEL_LOOP.md §9 tick 54 item (5)): with too little text and no other kind, a page
+ * is nav-shell when all four hold. adaptionlabs.ai's terms page (6.10: 51,664 bytes of HTML, 85 characters of text in 8
+ * lines of at most 3 words, 5 anchors and 27 scripts) is one; every other capture in the store kept its kind:
+ *   1. its HTML is at least NAV_SHELL_BYTES bytes (a page this large that shows a few words holds its content elsewhere);
+ *   2. its text has at least NAV_MIN_LINES non-empty lines (a menu, not a title alone: Wunder Fund's challenge page, one
+ *      line, 42 scripts and no link, stays short);
+ *   3. no line has more than NAV_LINE_WORDS words, counted between whitespace (labels, not sentences: CrunchDAO's
+ *      competition pages, a title of 7 to 11 words above a menu of five, stay short);
+ *   4. its HTML, comments and styles removed, holds at least one <a> or <script> tag per NAV_CHARS_PER_TAG characters of
+ *      text (the markup is links and scripts, not prose: StreetLib's help pages, 56-64 tags for 870-992 characters,
+ *      stay short).
+ */
+export const NAV_SHELL_BYTES = 20_000;
+export const NAV_MIN_LINES = 3;
+export const NAV_LINE_WORDS = 6;
+export const NAV_CHARS_PER_TAG = 10;
+
+/** The four tests of a nav-only shell: null when one fails, else the evidence (lines, words, bytes, anchors, scripts). */
+function navShell(html, bare, text) {
+  const bytes = Buffer.byteLength(html, "utf8");
+  if (bytes < NAV_SHELL_BYTES) return null;
+  const lines = String(text ?? "").split("\n").map((l) => l.trim()).filter(Boolean);
+  const words = Math.max(0, ...lines.map((l) => l.split(/\s+/).length));
+  if (lines.length < NAV_MIN_LINES || words > NAV_LINE_WORDS) return null;
+  const anchors = (bare.match(/<a\b/gi) ?? []).length;
+  const scripts = (bare.match(/<script\b/gi) ?? []).length;
+  if ((anchors + scripts) * NAV_CHARS_PER_TAG < String(text).trim().length) return null;
+  return `nav-only shell: ${lines.length} lines of at most ${words} words; ${bytes} bytes of HTML with ${anchors} anchors and ${scripts} scripts`;
+}
+
 const quote = (m) => JSON.stringify(m[0].replace(/\s+/g, " ").slice(0, 60));
 const found = (list, html) =>
   list.flatMap(([name, test]) => {
@@ -194,6 +229,7 @@ export function classifyCapture({ meta, text, html, textFrom = "fetcher" }) {
   const captchas = html ? found(CAPTCHAS, html) : [];
   const strong = html ? found(JS_SIGNS, bare) : [];
   const weak = html ? found(WEAK_JS_SIGNS, bare) : [];
+  const nav = html && length < MIN_TERMS_TEXT ? navShell(html, bare, text) : null;
   const also = (list) => list.map((f) => `also ${f}`);
   const with_ = (lead, rest) => [lead, ...rest].join("; ");
 
@@ -213,6 +249,7 @@ export function classifyCapture({ meta, text, html, textFrom = "fetcher" }) {
     return { kind: "bot-challenge", evidence: with_(tooLittle, [...captchas, ...also(sensors)]) };
   }
   const weakNote = weak.map((f) => `also ${f} (framework markup; with ${WEAK_SIGN_TEXT}+ characters of text not taken as a shell)`);
+  if (nav) return { kind: "nav-shell", evidence: with_(tooLittle, [nav, ...also([...sensors, ...captchas]), ...weakNote]) };
   return { kind: "short", evidence: with_(tooLittle, [...also([...sensors, ...captchas]), ...weakNote]) };
 }
 
