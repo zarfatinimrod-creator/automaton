@@ -1,0 +1,9 @@
+{
+ "adaptionlabs.ai": {
+  "verdict": "TERMS_PENDING",
+  "source": "https://adaptionlabs.ai/terms-of-service (URL from adaptionlabs/adaption-api-docs src/content/docs/resources/faq.mdx:66 at 7ba014b11c5b94394028de55953fbc9ea0d0448e, under 'Where are terms and privacy?' at :64; Adaption Labs' own docs repo, CC BY 4.0, github grade); no GitHub-hosted text. Tick 45 prize-terms audit (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md)",
+  "checked": "2026-10-06",
+  "note": "shell: nav-only shell: the 6.10 plain capture is 200, 51 KB of HTML and 85 characters of text (the navigation), which capture-check graded short until 7.10 (tick 60), when it gained the nav-shell kind for exactly this shape (ruling 6.10 row 21, amendment 2) and the once-only js route of decision 3(2) queued the page (research/rendered/terms-adaptionlabs.meta.json records 51664 bytes, fetched 2026-10-06T07:15:30.798Z, robots allowed; ruling 6.10 row 21, RULING-2026-10-06-robots-and-terms.md). The terms stay unread, so nothing else of the site is fetched (ruling 30.9 16(d) D2(iv)); whether they govern plain website use as well as the API and app product stays unknown until read. Rules line: research/measurements/ai-allowed-events.urls.txt@548be52:63, unqueued until the terms are read.",
+  "copying": "unread"
+ }
+}

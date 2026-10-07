@@ -23,6 +23,7 @@ import {
   isExhaustiveNegative,
   isRobotsOkVerdict,
   isRobotsProbe,
+  queueTermsShell,
   siteOf,
   termsGate,
   // @ts-expect-error — plain ESM script, no type declarations by design
@@ -392,13 +393,16 @@ const RULINGS_SECTION = [
  * declined) does not hold. The fourth group keeps agenthon.net. Tick 57 applied the script to that capture (R1's
  * repository grep waived): eurocontrol.int is NO_TERMS_ROBOTS_OK, in the second group, and the sixth is empty, its heading
  * kept. Later in tick 57 agenthon.net's last two terms documents were read (no site terms) and its robots verdict set
- * again: it is in the second group, and the fourth is empty, its heading kept. The counts test reads the groups eight
- * times, with the verdicts as they are, as tick57e() gives them (after eurocontrol.int's robots verdict, before
+ * again: it is in the second group, and the fourth is empty, its heading kept. Tick 60 rendered adaptionlabs.ai's terms
+ * page once in js mode and the render came back empty (spentShell): its rules URL left the third group, empty since, its
+ * heading kept, for the seventh, whose heading names tick 60 too. The counts test reads the groups nine times, with the
+ * verdicts as they are, as renderBefore() gives them (before that render; every earlier state is read on it), as
+ * tick57e() gives them (after eurocontrol.int's robots verdict, before
  * agenthon.net's third terms read), as tick56() gives them (after the
  * second terms read, before eurocontrol.int's robots verdict; its probe "unjudged"), as tick55() gives them (after the
  * terms links were found, before the second terms read), as tick54() gives them (after the js render, before the terms
  * links were found), as jsReadBefore() gives them (after the terms read, before the js render), as termsReadBefore()
- * gives them (after the robots verdicts, before the terms read) and as tick45() gives them, and the note states all eight.
+ * gives them (after the robots verdicts, before the terms read) and as tick45() gives them, and the note states all nine.
  */
 type Probe = "captured" | "queued" | "unjudged" | null;
 /**
@@ -411,10 +415,16 @@ const UNJUDGED_PROBES: string[] = [];
 const UNJUDGED_TICK56 = ["robots-eurocontrol"];
 /** A TERMS_PENDING entry reopened by tick 55: its source keeps the earlier verdict's source after BEFORE or ROBOTS_OK_BEFORE. */
 const reopened = (e: Entry) => e.source.includes(BEFORE) || e.source.includes(ROBOTS_OK_BEFORE);
+/**
+ * Tick 60 (7.10): a TERMS_PENDING site whose terms page's once-only js render came back empty (ruling 6.10 row 21 (c)
+ * decision 3(2)(vi)): its note opens "shell: rendered once", its terms line is retired, and no other page of the site is
+ * fetched, so its rules URLs are shut, not waiting on a shell (adaptionlabs.ai's; RENDER60 below).
+ */
+const spentShell = (e: Entry) => e.verdict === "TERMS_PENDING" && /^shell: rendered once\b/.test(e.note ?? "");
 const RENDER_GROUPS: { opens: string; holds: (site: string, e: Entry, probe: Probe) => boolean }[] = [
   { opens: "- **Now: ", holds: (_, e) => ["CONDITIONAL_MET", "NOT_BARRED"].includes(e.verdict) },
   { opens: "- **Now, on robots.txt ", holds: (_, e) => isRobotsOkVerdict(e) },
-  { opens: "- **Terms page a shell after the 6.10 fetch ", holds: (_, e) => e.verdict === "TERMS_PENDING" && !reopened(e) },
+  { opens: "- **Terms page a shell after the 6.10 fetch ", holds: (_, e) => e.verdict === "TERMS_PENDING" && !reopened(e) && !spentShell(e) },
   { opens: "- **Terms link found after the verdict, terms pages queued ", holds: (_, e) => e.verdict === "TERMS_PENDING" && reopened(e) },
   { opens: "- **Probed 6.10, NO_TERMS_ROBOTS_OK not set ", holds: (_, e, probe) => isExhaustiveNegative(e) && probe === "captured" },
   {
@@ -424,8 +434,9 @@ const RENDER_GROUPS: { opens: string; holds: (site: string, e: Entry, probe: Pro
   {
     opens: "- **Shut by the 6.10 terms fetch and the once-only js render ",
     holds: (_, e) =>
-      e.checked === TERMS_CHECKED &&
-      (e.verdict === "BARRED" || e.verdict === "CONDITIONAL_UNMET" || (e.verdict === "NO_TERMS" && /^refusal-type\b/.test(e.note ?? ""))),
+      spentShell(e) ||
+      (e.checked === TERMS_CHECKED &&
+        (e.verdict === "BARRED" || e.verdict === "CONDITIONAL_UNMET" || (e.verdict === "NO_TERMS" && /^refusal-type\b/.test(e.note ?? "")))),
   },
   {
     opens: "- **Graded with no capture, on their terms: ",
@@ -563,6 +574,8 @@ const TICK45_TERMS_SOURCES_SHA256 = "b70ca8c699288f7151bd537d1500698f305a8edb9b6
  * the verdict came from reading the terms, in a form urls-pause-comments.mjs keeps; opensky's took the Knesset line's form).
  * kaggle.com's is the once-only js line (js: the line ends "\tjs"), retired after its render in the form the main thread
  * gave (no script writes a "# retired" line), with the js flag kept so the route's once-only check still sees it.
+ * adaptionlabs.ai's is the second (tick 60, 7.10): queued once in js mode under amendment 2 and retired after its render
+ * timed out with nothing read (an empty render, decision 3(2)(vi)), in the form the main thread gave, js flag kept.
  */
 const TERMS_LINES: Record<string, { slug: string; state: string; js?: boolean }> = {
   "kaggle.com": {
@@ -580,7 +593,11 @@ const TERMS_LINES: Record<string, { slug: string; state: string; js?: boolean }>
     slug: "terms-stanford",
     state: "# paused (terms read, left paused, 6.10.2026): stanford.edu is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json",
   },
-  "adaptionlabs.ai": { slug: "terms-adaptionlabs", state: "active" },
+  "adaptionlabs.ai": {
+    slug: "terms-adaptionlabs",
+    state: "# retired (7.10.2026: rendered once in js mode under ruling 6.10 row 21 (c) 3(2)(vi) and amendment 2; the render timed out at the runner's 30 s budget — status 200, no body, no text, nothing read; no second attempt in any mode, no other page of the site fetched)",
+    js: true,
+  },
   "virtualembryo.ai": { slug: "terms-virtualembryo", state: "active" },
   "eurocontrol.int": {
     slug: "terms-eurocontrol",
@@ -713,6 +730,26 @@ const AGENTHON57_BASE = "23e17e7";
 const tick57e = (v: Record<string, Entry>): Record<string, Entry> => ({
   ...v,
   ...(JSON.parse(readFileSync(AGENTHON57_FIXTURE, "utf8")) as Record<string, Entry>),
+});
+/**
+ * Tick 60: adaptionlabs.ai's once-only js render (ruling 6.10 row 21 (c) 3(2), amendment 2) came back empty: the render of
+ * RENDER60.commit rewrote its meta (status 200, byteLength 0, a timeout), and the fold retired the line and rewrote the note
+ * and checked date. RENDER60_FIXTURE holds the entry as terms-verdicts.json held it at RENDER60.commit, before the fold.
+ */
+const RENDER60 = {
+  site: "adaptionlabs.ai",
+  url: "https://adaptionlabs.ai/terms-of-service",
+  slug: "terms-adaptionlabs",
+  checked: "2026-10-07",
+  commit: "9e02a08",
+  run: "37575076647",
+};
+const RENDER60_FIXTURE = "src/__tests__/revenue/fixtures/terms-verdicts-9e02a08-adaption-render.json";
+const RENDER60_FIXTURE_SHA256 = "858f7479153ef1c2e38852e5aa8f12e2a7f1143ec35460d6eef00a08b022d9f5";
+/** The verdicts as they stood before that render: adaptionlabs.ai's entry put back from the fixture, every other as it is. */
+const renderBefore = (v: Record<string, Entry>): Record<string, Entry> => ({
+  ...v,
+  ...(JSON.parse(readFileSync(RENDER60_FIXTURE, "utf8")) as Record<string, Entry>),
 });
 /** The verdicts as tick 56 left them: eurocontrol.int's entry put back from that fixture on tick57e()'s state. */
 const tick56 = (v: Record<string, Entry>): Record<string, Entry> => ({
@@ -1030,7 +1067,8 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
         // whole for adaptionlabs.ai's shell ("tick 54: the terms read on 6.10" and "the shell terms pages" below hold the rest).
         expect(verdict, site).toBe("TERMS_PENDING");
         expect(v[site].verdict, site).toBe(TERMS_READ[site]);
-        expect(v[site].checked, site).toBe(TERMS_CHECKED);
+        // adaptionlabs.ai's since tick 60, when its note recorded the once-only js render.
+        expect(v[site].checked, site).toBe(site === RENDER60.site ? RENDER60.checked : TERMS_CHECKED);
         if (v[site].verdict === "TERMS_PENDING") expect(v[site].source, site).toBe(then[site].source);
         else expect(v[site].source.endsWith(`${TERMS_BEFORE}${then[site].source}`), site).toBe(true);
       } else {
@@ -1165,8 +1203,8 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       const mine = lines.filter((e) => siteOfUrl(e.url) === site);
       // Since 6.10 (ruling row 21 (c) 3(2)) a TERMS_PENDING site whose note opens "shell:" may hold its terms line as the
       // once-only js line queue-zero-test --js --terms-shell writes, active until the render; after it the line is
-      // retired with the flag kept (TERMS_LINES' js: kaggle.com, queued and rendered in tick 54). No audited site holds an
-      // active js line now, but the rule stays. Any other site holds the plain line. The one line of the site that names
+      // retired with the flag kept (TERMS_LINES' js: kaggle.com, queued and rendered in tick 54; adaptionlabs.ai, queued
+      // and rendered in tick 60). No audited site holds an active js line now, but the rule stays. Any other site holds the plain line. The one line of the site that names
       // that URL, active or commented out.
       const shell = v[site].note.startsWith("shell:") && text.some((l) => l === `${url}\t${slug}\tjs`);
       const flag = shell || js ? "\tjs" : "";
@@ -1186,17 +1224,25 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
         // The paused line failed the gate in tick 56 (in tick 55 eurocontrol.int's privacy-notice line passed it, a
         // TERMS_PENDING site's terms- line, and stayed paused because the page was read); since tick 57 eurocontrol.int's
         // passes it again (NO_TERMS_ROBOTS_OK) and stays paused as read.
-        expect(termsGate(url, slug, tick56(v)).ok, site).toBe(false);
-        expect(termsGate(url, slug, v).ok, site).toBe(site === EURO_PROBE.site);
+        // adaptionlabs.ai's retired js line still passes the gate (a TERMS_PENDING site's terms page): decision 3(2)(vi)
+        // retired it after its once-only render came back empty (tick 60), not the gate, and the route refuses it again.
+        const spent = site === RENDER60.site;
+        expect(termsGate(url, slug, tick56(v)).ok, site).toBe(spent);
+        expect(termsGate(url, slug, v).ok, site).toBe(site === EURO_PROBE.site || spent);
+        if (spent) {
+          expect(() => queueTermsShell({ urls: text.join("\n"), url, slug, date: "7.10.2026", verdicts: v }), site).toThrow(
+            `urls.txt line ${text.indexOf(named[0]) + 1} is already a js line for ${slug} (active or commented out): the js render is once only (3(2)(vi))`,
+          );
+        }
         if (site === EURO_PROBE.site) expect(termsGate(url, slug, tick55(v)).ok, site).toBe(true);
         expect(named[0], site).toBe(`${state} — ${url}\t${slug}${flag}`);
       }
     }
-    // The js-form acceptance above is for a shell-kind TERMS_PENDING site. Since tick 60 (7.10) adaptionlabs.ai's is the one
-    // active js line among the audited sites: the once-only render of decision 3(2) (ruling 6.10 amendment 2, the plain
-    // shell frozen first), retired once its capture is read; kaggle.com's was rendered and retired.
+    // The js-form acceptance above is for a shell-kind TERMS_PENDING site. No audited site holds an active js line: in tick
+    // 60 (7.10) adaptionlabs.ai's once-only render of decision 3(2) (ruling 6.10 amendment 2, the plain shell frozen first)
+    // came back empty (a timeout, nothing read) and its line was retired, as kaggle.com's was after its render in tick 54.
     const activeJs = (parseUrlList(text.join("\n")) as { url: string; slug: string; js?: boolean }[]).filter((e) => e.js && Object.hasOwn(AUDITED, siteOfUrl(e.url)));
-    expect(activeJs.map((e) => [e.url, e.slug])).toEqual([["https://adaptionlabs.ai/terms-of-service", "terms-adaptionlabs"]]);
+    expect(activeJs.map((e) => [e.url, e.slug])).toEqual([]);
   });
 
   it("queued grand-challenge.org's derived terms URL under ruling R2's exception, which urls.txt's header records after its one rule", () => {
@@ -1470,15 +1516,19 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       return { counts, urls, sums: counts.map((m) => [[...m.values()].reduce((a, b) => a + b, 0), m.size]) };
     };
     const now = group(verdicts());
+    // Tick 60: adaptionlabs.ai's once-only js render came back empty; past is the state before it (from agenthon.net's
+    // third terms read in tick 57), and every earlier state is read on it.
+    const past = renderBefore(verdicts());
+    const renderedBefore = group(past);
     // Tick 57, later: agenthon.net's third terms read and robots verdict; euroAfter is the state between the two folds of
     // tick 57 (eurocontrol.int's robots verdict set, agenthon.net still TERMS_PENDING).
-    const euroAfter = group(tick57e(verdicts()));
-    const robotsBefore = group(tick56(verdicts()), probes56);
-    const readBefore = group(tick55(verdicts()), probesBefore);
-    const linksBefore = group(tick54(verdicts()), probesBefore);
-    const jsBefore = group(jsReadBefore(verdicts()), probesBefore);
-    const robots = group(termsReadBefore(verdicts()), probesBefore);
-    const then = group(tick45(verdicts()), probesBefore);
+    const euroAfter = group(tick57e(past));
+    const robotsBefore = group(tick56(past), probes56);
+    const readBefore = group(tick55(past), probesBefore);
+    const linksBefore = group(tick54(past), probesBefore);
+    const jsBefore = group(jsReadBefore(past), probesBefore);
+    const robots = group(termsReadBefore(past), probesBefore);
+    const then = group(tick45(past), probesBefore);
     const counts = now.counts;
     const computed = now.sums;
     const audit = readFileSync(AUDIT, "utf8");
@@ -1513,7 +1563,10 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(euroAfter.sums.map((c) => c.join("/"))).toEqual(["14/13", "20/17", "1/1", "1/1", "9/4", "0/0", "37/6", "19/3", "0/0"]);
     // Later in tick 57: agenthon.net, its policy set read and its robots verdict set, moves from the fourth group, empty
     // since, to "Now, on robots.txt".
-    expect(computed.map((c) => c.join("/"))).toEqual(["14/13", "21/18", "1/1", "0/0", "9/4", "0/0", "37/6", "19/3", "0/0"]);
+    expect(renderedBefore.sums.map((c) => c.join("/"))).toEqual(["14/13", "21/18", "1/1", "0/0", "9/4", "0/0", "37/6", "19/3", "0/0"]);
+    // Tick 60: adaptionlabs.ai's once-only js render came back empty, so its rules URL leaves the third group, empty since,
+    // for the shut one.
+    expect(computed.map((c) => c.join("/"))).toEqual(["14/13", "21/18", "0/0", "0/0", "9/4", "0/0", "38/7", "19/3", "0/0"]);
     // Each bullet's per-site list: `site` n, for every site of the group and no other.
     bullets.forEach((b, i) => {
       const listed = Object.fromEntries([...b.matchAll(/`([a-z0-9.-]+\.[a-z]+)` (\d+)/g)].map((m) => [m[1], Number(m[2])]));
@@ -1571,6 +1624,11 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(beforeThird).not.toBeNull();
     expect([terms(beforeThird![1]), terms(beforeThird![3])]).toEqual([euroAfter.sums.map((c) => c[0]), euroAfter.sums.map((c) => c[1])]);
     expect([Number(beforeThird![2]), Number(beforeThird![4])]).toEqual([101, 45]);
+    // ...and (tick 60) the 6.10 line after agenthon.net's third terms read and before adaptionlabs.ai's js render.
+    const beforeRender = section.match(/^6\.10 \(tick 57\), after agenthon\.net's third terms read and before adaptionlabs\.ai's js render: ([\d + ]+) = (\d+) URLs, over ([\d + ]+) = (\d+) sites\.$/m);
+    expect(beforeRender).not.toBeNull();
+    expect([terms(beforeRender![1]), terms(beforeRender![3])]).toEqual([renderedBefore.sums.map((c) => c[0]), renderedBefore.sums.map((c) => c[1])]);
+    expect([Number(beforeRender![2]), Number(beforeRender![4])]).toEqual([101, 45]);
     // The history lines run in time order, the newest last, before the paragraph that closes the section.
     const order = [
       "5.10 (tick 45), before",
@@ -1580,10 +1638,11 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       "6.10 (tick 55), after",
       "6.10 (tick 56), after",
       "6.10 (tick 57), after",
+      "6.10 (tick 57), after agenthon",
     ];
     const where = order.map((o) => section.indexOf(`\n${o}`));
     expect(where.every((x, i) => x > 0 && (i === 0 || x > where[i - 1])), where.join(",")).toBe(true);
-    for (const sums of [computed, euroAfter.sums, robotsBefore.sums, readBefore.sums, linksBefore.sums, jsBefore.sums, robots.sums, then.sums]) {
+    for (const sums of [computed, renderedBefore.sums, euroAfter.sums, robotsBefore.sums, readBefore.sums, linksBefore.sums, jsBefore.sums, robots.sums, then.sums]) {
       expect(sums.reduce((a, c) => a + c[0], 0)).toBe(101);
       expect(sums.reduce((a, c) => a + c[1], 0)).toBe(45);
     }
@@ -2325,7 +2384,8 @@ describe("tick 54: the terms read on 6.10", () => {
     expect(Object.keys(TERMS_READ).sort()).toEqual(Object.keys(AUDITED).filter((s) => AUDITED[s] === "TERMS_PENDING").sort());
     for (const [site, verdict] of Object.entries(TERMS_READ)) {
       expect(v[site].verdict, site).toBe(verdict);
-      expect(v[site].checked, site).toBe(TERMS_CHECKED);
+      // adaptionlabs.ai's checked date is tick 60's, when its note recorded the once-only js render.
+      expect(v[site].checked, site).toBe(site === RENDER60.site ? RENDER60.checked : TERMS_CHECKED);
     }
     // The tick-45 sources, byte for byte: after TERMS_BEFORE in the seven changed sources, whole in the two shells'.
     const text = Object.keys(TERMS_READ).map((site) => `${site}\t${then[site].source}`).join("\n");
@@ -2411,12 +2471,13 @@ describe("tick 54: the terms read on 6.10", () => {
     expect([os.status, os.error, os.fetchedAt.slice(0, 10)]).toEqual([403, "HTTP 403 Forbidden", FROZEN_ON]);
     expect(active().some((l) => l.slug === "terms-opensky")).toBe(false);
     // The shells: kaggle.com's (kind K4) was rendered once in js mode later on 6.10 and read ("the shell terms pages"
-    // below); adaptionlabs' nav-only page stays, in the words of the main thread's verdict.
+    // below); adaptionlabs' nav-only page was rendered once in js mode in tick 60 and came back empty, in the words of the
+    // main thread's verdict.
     expect(v["kaggle.com"].note).toMatch(/^BARRED on access and copying: /);
     expect(v["kaggle.com"].note).toContain("The plain capture of 6.10 was a JavaScript shell with 21 characters of text (kind K4");
     expect(v["kaggle.com"].note).toContain("--js --terms-shell");
     expect(v["adaptionlabs.ai"].note).toMatch(
-      /^shell: nav-only shell: the 6\.10 plain capture is 200, 51 KB of HTML and 85 characters of text \(the navigation\), which capture-check graded short until 7\.10 \(tick 60\), when it gained the nav-shell kind for exactly this shape \(ruling 6\.10 row 21, amendment 2\) and the once-only js route of decision 3\(2\) queued the page /,
+      /^shell: rendered once 7\.10\.2026 \(tick 60, render-watch run 37575076647, commit 9e02a08\) in js mode after the plain shell was frozen as terms-adaptionlabs-2026-10-06: the render timed out at the runner's 30 s budget /,
     );
     // No note names a person's address.
     for (const site of Object.keys(TERMS_READ)) {
@@ -2861,7 +2922,8 @@ describe("tick 54: the shell terms pages rendered once (6.10)", () => {
     expect(text).toContain("`<slug>-<day>-<commit>`");
     const v = verdicts();
     const rows = text.split("\n").filter((l) => /^\| `[a-z0-9.-]+` \|/.test(l));
-    expect(rows.map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual(["kaggle.com", "israelpost.co.il"]);
+    // adaptionlabs.ai's row since tick 60, when its once-only render came back empty.
+    expect(rows.map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual(["kaggle.com", "israelpost.co.il", "adaptionlabs.ai"]);
     for (const row of rows) {
       const cells = row.split(" | ");
       expect(cells, row.slice(0, 40)).toHaveLength(6);
@@ -3668,7 +3730,10 @@ describe("tick 56: the second terms read (agenthon.net's Terms of Participation,
     // incorporate by name, the Official Competition Rules (/rules/), is the event's rules page: refused by the gate like
     // the rules line, never a terms- line (tick-56 review). agenthon.net held the rule in tick 56 with its two documents'
     // lines active (QUEUED2); since tick 57 both are read too, all three of its terms lines are paused as read, and the
-    // site is NO_TERMS_ROBOTS_OK, so adaptionlabs.ai is the one TERMS_PENDING site the rule reads now.
+    // site is NO_TERMS_ROBOTS_OK, so adaptionlabs.ai is the one TERMS_PENDING site the rule reads now. Since tick 60 its one
+    // unread document, the terms page, holds no active line either: its once-only js render came back empty, and decision
+    // 3(2)(vi) of ruling 6.10 row 21 retired the line with no second attempt in any mode (spentShell), so nothing of the
+    // site is active.
     const v = verdicts();
     const unread: Record<string, string[]> = {
       "adaptionlabs.ai": ["https://adaptionlabs.ai/terms-of-service"],
@@ -3676,10 +3741,11 @@ describe("tick 56: the second terms read (agenthon.net's Terms of Participation,
     expect(tick57e(v)["agenthon.net"].verdict).toBe("TERMS_PENDING");
     const sites = [...new Set([...Object.keys(AUDITED), ...Object.keys(READ2)])].filter((s) => v[s]?.verdict === "TERMS_PENDING");
     expect(sites.sort()).toEqual(Object.keys(unread).sort());
+    expect(sites.filter((s) => spentShell(v[s]))).toEqual([RENDER60.site]);
     for (const site of sites) {
       const mine = active().filter((e) => siteOfUrl(e.url) === site);
       expect(mine.every((e) => e.slug.startsWith("terms-")), site).toBe(true);
-      expect(mine.map((e) => e.url).sort(), site).toEqual([...unread[site]].sort());
+      expect(mine.map((e) => e.url).sort(), site).toEqual(spentShell(v[site]) ? [] : [...unread[site]].sort());
       for (const e of mine) expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(true);
       // Its terms- lines that are paused were read: "# paused (terms read: ...".
       const pausedTerms = pausedLines().filter((p) => siteOfUrl(p.url) === site && p.slug.startsWith("terms-"));
@@ -4692,5 +4758,116 @@ describe("tick 58: the blocks above read the verdicts as they stood before any -
     // A hand edit of an entry is not a re-check: it is not put back, so the blocks above still see it.
     const edited = { ...raw, "drivendata.org": { ...refresh.entry, copying: "allowed" } };
     expect(beforeRecheck(edited)["drivendata.org"]).toEqual(edited["drivendata.org"]);
+  });
+});
+
+/**
+ * Tick 60 (7.10.2026): adaptionlabs.ai's once-only js render came back empty. Amendment 2 of ruling 6.10 row 21 gave
+ * capture-check the nav-shell kind and let decision 3(2)'s route queue the page once in js mode (f661069, the plain shell
+ * frozen as terms-adaptionlabs-2026-10-06 first); the render of RENDER60.commit answered 200 and timed out at render-watch's
+ * 30 s budget, so nothing came back to read. Under 3(2)(vi) that empty render is the answer: the note records it, the line
+ * is retired with its js flag kept, there is no second attempt in any mode and no fetch of any other page of the site, and
+ * the verdict stays TERMS_PENDING with copying unread. RENDER60_FIXTURE keeps the entry as it was before the fold.
+ */
+describe("tick 60: adaptionlabs.ai's once-only js render came back empty (a timeout), and the line is retired", () => {
+  const fixture = () => JSON.parse(readFileSync(RENDER60_FIXTURE, "utf8")) as Record<string, Entry>;
+  const audit = () => readFileSync(AUDIT, "utf8");
+
+  it("keeps the site's entry before the fold as a fixture, as terms-verdicts.json held it at the render's commit", () => {
+    expect(createHash("sha256").update(readFileSync(RENDER60_FIXTURE)).digest("hex")).toBe(RENDER60_FIXTURE_SHA256);
+    expect(Object.keys(fixture())).toEqual([RENDER60.site]);
+    const e = fixture()[RENDER60.site];
+    expect([e.verdict, e.checked, e.copying]).toEqual(["TERMS_PENDING", TERMS_CHECKED, "unread"]);
+    expect(e.note!.startsWith("shell: nav-only shell: ")).toBe(true);
+    expect(spentShell(e)).toBe(false);
+    // Where the render's commit is reachable, the fixture is byte for byte its entry; a shallow checkout has the sha256 only.
+    let base: string | null = null;
+    try {
+      base = execFileSync("git", ["show", `${RENDER60.commit}:${VERDICTS}`], { stdio: ["ignore", "pipe", "ignore"], encoding: "utf8" });
+    } catch {
+      base = null;
+    }
+    if (base === null) return;
+    expect(e).toEqual((JSON.parse(base).sites as Record<string, Entry>)[RENDER60.site]);
+  });
+
+  it("records the render as the meta holds it: 200, no body, no text, a timeout, chromium, robots allowed", () => {
+    const meta = JSON.parse(readFileSync(`research/rendered/${RENDER60.slug}.meta.json`, "utf8"));
+    expect([meta.url, meta.slug, meta.status, meta.byteLength, meta.sha256, meta.bodyPath, meta.textPath]).toEqual([
+      RENDER60.url,
+      RENDER60.slug,
+      200,
+      0,
+      null,
+      null,
+      null,
+    ]);
+    expect([meta.error, meta.renderedWith, meta.robots, meta.fetchedAt.slice(0, 10)]).toEqual([
+      "timeout after 30000ms (the rendered page could not be read within the time left)",
+      "chromium",
+      "allowed",
+      RENDER60.checked,
+    ]);
+    // The plain shell it replaced is the frozen copy's, as 5f4853a stored it.
+    const frozen = JSON.parse(readFileSync(`research/rendered/${RENDER60.slug}-${FROZEN_ON}.meta.json`, "utf8"));
+    expect(meta.previousSha256).toBe(frozen.sha256);
+    expect([frozen.status, frozen.byteLength, frozen.frozen.flagged.kind]).toEqual([200, 51664, "nav-shell"]);
+    // Nothing came back, so nothing was frozen from the render.
+    expect(existsSync(`research/rendered/${RENDER60.slug}-${RENDER60.checked}.meta.json`)).toBe(false);
+  });
+
+  it("gives the site the note the main thread ruled: the render, its empty answer, the retired line, TERMS_PENDING and unread kept", () => {
+    const v = verdicts();
+    const e = v[RENDER60.site];
+    expect([e.verdict, e.checked, e.copying]).toEqual(["TERMS_PENDING", RENDER60.checked, "unread"]);
+    expect(e.source).toBe(fixture()[RENDER60.site].source);
+    expect(spentShell(e)).toBe(true);
+    expect(e.note).toContain(`render-watch run ${RENDER60.run}, commit ${RENDER60.commit}`);
+    expect(e.note).toContain('error "timeout after 30000ms (the rendered page could not be read within the time left)"');
+    expect(e.note).toContain("an empty render under ruling 6.10 row 21 (c) decision 3(2)(vi) and amendment 2");
+    expect(e.note).toContain("there is no second attempt in any mode and no other page of the site is fetched");
+    expect(e.note).toContain("Rules line: research/measurements/ai-allowed-events.urls.txt@548be52:63, unqueued.");
+    expect(e.note).not.toContain("\n");
+    expect(ADDRESS.test(e.note ?? "")).toBe(false);
+    // The fold wrote the file through serializeVerdicts, so it keeps that exact format.
+    const raw = JSON.parse(readFileSync(VERDICTS, "utf8"));
+    expect(serializeVerdicts(raw)).toBe(readFileSync(VERDICTS, "utf8"));
+  });
+
+  it("retires the js line in the main thread's form, and every gate and route refuses a second render", () => {
+    const text = readFileSync(URLS, "utf8").split("\n");
+    const tail = `${RENDER60.url}\t${RENDER60.slug}\tjs`;
+    const named = text.filter((l) => l.endsWith(tail));
+    expect(named).toEqual([`${TERMS_LINES[RENDER60.site].state} — ${tail}`]);
+    // The queueing comment above it stays as the route wrote it.
+    expect(text[text.indexOf(named[0]) - 1]).toMatch(/^# ruling 6\.10 row 21 \(c\), once-only js render of a shell terms page .*terms-adaptionlabs/);
+    // Nothing of the site is active, in either list.
+    expect(active().filter((l) => siteOfUrl(l.url) === RENDER60.site)).toEqual([]);
+    // The route refuses the slug and the URL under any other slug: once only (3(2)(vi)).
+    for (const slug of [RENDER60.slug, "terms-adaptionlabs-again"]) {
+      expect(() => queueTermsShell({ urls: text.join("\n"), url: RENDER60.url, slug, date: "7.10.2026" }), slug).toThrow(/the js render is once only \(3\(2\)\(vi\)\)/);
+    }
+  });
+
+  it("records it in the audit note: the shell table's third row, the 7.10 paragraph, and the moved render group", () => {
+    const text = audit();
+    const start = text.indexOf("## Shell terms pages rendered once (6.10.2026, tick 54)");
+    const section = text.slice(start, text.indexOf("\n## ", start + 1) + 1);
+    const row = section.split("\n").find((l) => l.startsWith(`| \`${RENDER60.site}\` |`))!;
+    expect(row.split(" | ")).toHaveLength(6);
+    expect(row).toContain(`\`research/rendered/${RENDER60.slug}-${FROZEN_ON}.txt\``);
+    expect(row).toContain('error "timeout after 30000ms (the rendered page could not be read within the time left)"');
+    expect(row).toContain("no frozen copy, since nothing came back");
+    expect(row).toContain("| TERMS_PENDING (shell; unchanged), the line retired under decision 3(2)(vi) |");
+    const para = section.split("\n").find((l) => l.startsWith("**The 7.10 render (tick 60).** "))!;
+    expect(para).toContain("an empty render under decision 3(2)(vi)");
+    expect(para).toContain("the once-only route is spent for this site");
+    expect(para).toContain("(run dry in tick 60: \"already a js line for terms-adaptionlabs\")");
+    expect(section.indexOf(para)).toBeGreaterThan(section.indexOf("**Copying and kinds.** "));
+    expect(ADDRESS.test(section)).toBe(false);
+    // The render groups: the shell group is empty since tick 60, its heading kept; the shut group names the site.
+    const groups = text.split("\n").filter((l) => l.startsWith("- **"));
+    expect(groups.find((l) => l.startsWith("- **Terms page a shell after the 6.10 fetch "))).toMatch(/: 0 URLs on 0 sites\*\* \(5\.10: 40 URLs on 9 sites, /);
+    expect(groups.find((l) => l.startsWith("- **Shut by the 6.10 terms fetch and the once-only js render "))).toContain("(ticks 54 and 60): 38 URLs on 7 sites** ");
   });
 });

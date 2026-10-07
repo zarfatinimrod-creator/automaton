@@ -139,10 +139,10 @@
   {
     "id": "T57-A3-total",
     "file": "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md",
-    "find": "Total: 14 + 21 + 1 + 0 + 9 + 0 + 37",
+    "find": "Total: 14 + 21 + 0 + 0 + 9 + 0 + 38",
     "replace": "Total: 14 + 19 + 1 + 1 + 9 + 1 + 37",
     "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
-    "note": "tick 57: the Total line keeps the tick-56 groups (find updated in tick 57's third round)"
+    "note": "tick 57: the Total line keeps the tick-56 groups (find updated in tick 57's third round, and in tick 60 when adaptionlabs.ai's URL moved to the shut group)"
   },
   {
     "id": "T57-A4-robots-section-count",
@@ -396,10 +396,10 @@
   {
     "id": "T57B-RV2-xref-adaptionlabs",
     "file": "research/channel-loop/terms-verdicts.json",
-    "find": "Rules line: research/measurements/ai-allowed-events.urls.txt@548be52:63, unqueued until the terms are read.\"",
-    "replace": "Rules line: research/measurements/ai-allowed-events.urls.txt@548be52:63, unqueued until the terms are read, as agenthon.net's is.\"",
+    "find": "Rules line: research/measurements/ai-allowed-events.urls.txt@548be52:63, unqueued.\"",
+    "replace": "Rules line: research/measurements/ai-allowed-events.urls.txt@548be52:63, unqueued, as agenthon.net's is.\"",
     "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
-    "note": "tick 57 review fix (the review's RV57B-X2, which survived): a false cross-reference to agenthon.net's unqueued line in adaptionlabs.ai's note"
+    "note": "tick 57 review fix (the review's RV57B-X2, which survived): a false cross-reference to agenthon.net's unqueued line in adaptionlabs.ai's note (find updated in tick 60, when the note was rewritten for the once-only js render)"
   },
   {
     "id": "T57B-RV3-xref-about",

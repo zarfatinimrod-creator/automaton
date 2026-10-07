@@ -412,9 +412,17 @@ describe("classifyCapture on the real committed captures", () => {
   const real = (slug: string) => classifyCapture(readCapture(slug, RENDERED));
 
   it("terms-adaptionlabs (6.10: 200, 51,664 bytes of HTML, 85 characters of navigation) is a nav-shell, not short", () => {
-    expect(real("terms-adaptionlabs")).toEqual({
+    // That capture is the frozen copy terms-adaptionlabs-2026-10-06 since 7.10 (frozen before the once-only js render of
+    // ruling 6.10 row 21 (c) 3(2), amendment 2). The render of the live slug (9e02a08, tick 60) timed out with nothing read,
+    // so the live meta is a status now: 200 with an error, and the 6.10 shell's text still on disk beside it.
+    expect(real("terms-adaptionlabs-2026-10-06")).toEqual({
       kind: "nav-shell",
       evidence: `85 characters of text, fewer than ${MIN_TERMS_TEXT}; nav-only shell: 8 lines of at most 3 words; 51664 bytes of HTML with 5 anchors and 27 scripts`,
+    });
+    expect(real("terms-adaptionlabs")).toEqual({
+      kind: "status",
+      evidence:
+        'status 200: the server answered, but the fetch recorded an error; error "timeout after 30000ms (the rendered page could not be read within the time left)"; an older capture\'s text is still on disk (85 characters, from an earlier fetch: git history has its date)',
     });
   });
 
