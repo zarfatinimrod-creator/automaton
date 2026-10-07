@@ -59,7 +59,13 @@ Commands:
   tick                 Run one cycle: ledger sync, supervisor review, board review, audit.
                        Each step runs only when its own interval says it is due.
   status               Print the portfolio status block.
-  report               Re-render the report from current state without ticking.
+  report               Re-render the report and the dashboard from the database as it stands. No step
+                       runs and nothing is written to the database: a step that is due is listed for
+                       the scheduled tick. The blockers are a tick's at the same moment, "the loop did
+                       not run" included, but for what only running a due step can know: a due ledger
+                       sync's and audit's own blockers are their last runs', each led by its time, no
+                       page-view query is sent, and a review not run changes nothing the later checks
+                       read (a line's last signal, its status). The report says so in one line.
   seed                 Seed the default portfolio (no-op for lines that exist).
   sync-portfolio       Apply a board decision from src/revenue/portfolio.ts to this
                        database: insert new lines (at budget 0; the board review
@@ -88,7 +94,9 @@ Commands:
                        the workflow writes reports and cannot reach this database.
                        --wave-args <group,group> prints the Workflow args for the
                        next wave, with already-swept criteria pre-excluded.
-  dashboard            Regenerate the manager's screen (HTML) from the ledger.
+  dashboard            Regenerate the manager's screen (HTML) from the ledger, with report's blockers
+                       (a tick's, as report says). Writes nothing to the database, like report, status,
+                       growth and criteria without --mark, --supervised or --reconcile.
   growth               Model the path to the final goal (₪1M/year) and print the scenarios.
 
 Common options:
@@ -140,6 +148,18 @@ function openDb(dbPath: string) {
   const resolved = path.resolve(dbPath);
   fs.mkdirSync(path.dirname(resolved), { recursive: true });
   return createDatabase(resolved);
+}
+
+/**
+ * A command that only renders. Its database handle refuses every write (SQLite query_only), so it can never record what
+ * the scheduled tick records — a last-run time, a ledger sync, a KPI, review, budget or kv row — and so never silences
+ * "the loop did not run for N hours", the one blocker that shows the hourly schedule stopped (tick 64, 7.10.2026: a
+ * report run by hand ran the due ledger sync and stamped its time). `criteria` renders unless it marks, supervises or
+ * reconciles.
+ */
+function rendersOnly(command: string, flags: { mark?: string; supervised?: string; reconcile?: boolean }): boolean {
+  if (["report", "dashboard", "status", "growth"].includes(command)) return true;
+  return command === "criteria" && !flags.mark && !flags.supervised && !flags.reconcile;
 }
 
 function writeReport(reportPath: string, body: string): void {
@@ -202,6 +222,7 @@ async function main(): Promise<void> {
   }
 
   const db = openDb(values.db!);
+  if (rendersOnly(command, values)) db.raw.pragma("query_only = ON");
   try {
     switch (command) {
       case "tick": {
@@ -232,8 +253,10 @@ async function main(): Promise<void> {
       }
 
       case "report": {
-        const result = await tick(db.raw, { nowIso: values.now, force: false, feedGoals: false, seed: false });
-        // A report-only run must not consume the intervals it just checked.
+        // A render, not a tick: no step runs (readOnly) and the handle refuses every write (query_only, above), so the
+        // report records nothing and keeps "the loop did not run". Its blockers are a tick's at the same moment but for
+        // what only running a due step can know (TickOptions.readOnly in src/revenue/runner.ts lists them).
+        const result = await tick(db.raw, { nowIso: values.now, readOnly: true, feedGoals: false, seed: false });
         writeReport(values.report!, renderReport(db.raw, result));
         writeReport(values.html!, renderDashboard(db.raw, { nowIso: values.now, blockers: result.blockers }));
         console.log(`Report written to ${values.report}`);
@@ -374,7 +397,10 @@ async function main(): Promise<void> {
       }
 
       case "dashboard": {
-        const html = renderDashboard(db.raw, { nowIso: values.now });
+        // Report's blockers, computed by a render that runs no step (TickOptions.readOnly says how they differ from a
+        // tick's): without them the page said there was no open blocker while the schedule had stopped.
+        const { blockers } = await tick(db.raw, { nowIso: values.now, readOnly: true, feedGoals: false, seed: false });
+        const html = renderDashboard(db.raw, { nowIso: values.now, blockers });
         writeReport(values.html!, html);
         console.log(`Manager dashboard written to ${values.html}`);
         break;

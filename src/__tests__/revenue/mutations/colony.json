@@ -1,0 +1,275 @@
+[
+  {
+    "id": "T64-R1",
+    "file": "src/revenue/runner.ts",
+    "find": "  const readOnly = options.readOnly === true;\n",
+    "replace": "  const readOnly = false;\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: a render ignores readOnly and runs every due step, so `report` stamps the ledger-sync time and the next render loses \"the loop did not run\" (under the CLI's query_only handle the report then fails)"
+  },
+  {
+    "id": "T64-R2",
+    "file": "src/revenue/runner.ts",
+    "find": "    if (due && !readOnly) return true;\n",
+    "replace": "    if (due) return true;\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: the step gate runs a due step in a render too: the measured defect, a report run by hand ran the overdue ledger sync"
+  },
+  {
+    "id": "T64-R3",
+    "file": "src/revenue/runner.ts",
+    "find": "    (due ? result.dueNotRun! : result.skipped).push(task);\n",
+    "replace": "    result.skipped.push(task);\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: a render lists an overdue step as \"Skipped as not yet due\" and prints no \"Due now\" line"
+  },
+  {
+    "id": "T64-R4",
+    "file": "src/revenue/runner.ts",
+    "find": "    ...(readOnly ? { dueNotRun: [] } : {}),\n",
+    "replace": "    dueNotRun: [],\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: a scheduled tick's result carries dueNotRun, so its report says a report-only render ran nothing while the tick ran the sync"
+  },
+  {
+    "id": "T64-R5",
+    "file": "src/revenue/runner.ts",
+    "find": "  if (result.dueNotRun) {\n",
+    "replace": "  if (false) {\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: a render's report says \"Ran: nothing (everything within its interval)\" while the ledger sync is overdue"
+  },
+  {
+    "id": "T64-R6",
+    "file": "src/revenue/runner.ts",
+    "find": "      out.push(`Due now, left for the scheduled tick: ${result.dueNotRun.join(\", \")}`);\n",
+    "replace": "",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: a render's report drops the \"Due now, left for the scheduled tick\" line; the review's fixer: its find follows the line into the block that also prints what a render cannot show"
+  },
+  {
+    "id": "T64-C1",
+    "file": "scripts/colony.ts",
+    "find": "        const result = await tick(db.raw, { nowIso: values.now, readOnly: true, feedGoals: false, seed: false });\n",
+    "replace": "        const result = await tick(db.raw, { nowIso: values.now, readOnly: false, feedGoals: false, seed: false });\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: `colony.ts report` runs the due steps again (on the CLI's query_only handle the first write throws and the report fails)"
+  },
+  {
+    "id": "T64-C2",
+    "file": "scripts/colony.ts",
+    "find": "        const { blockers } = await tick(db.raw, { nowIso: values.now, readOnly: true, feedGoals: false, seed: false });\n",
+    "replace": "        const { blockers } = await tick(db.raw, { nowIso: values.now, readOnly: false, feedGoals: false, seed: false });\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: `colony.ts dashboard` runs the due steps to get its blockers"
+  },
+  {
+    "id": "T64-C3",
+    "file": "scripts/colony.ts",
+    "find": "        const html = renderDashboard(db.raw, { nowIso: values.now, blockers });\n",
+    "replace": "        const html = renderDashboard(db.raw, { nowIso: values.now });\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: `colony.ts dashboard` writes a page with no blocker, so it says there is no open blocker while the loop has not run for hours"
+  },
+  {
+    "id": "T64-C4",
+    "file": "scripts/colony.ts",
+    "find": "  if (rendersOnly(command, values)) db.raw.pragma(\"query_only = ON\");\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: the render-only commands' handle accepts writes again. No render path writes today, so only the source pin sees it: the guard is what makes a future write on a render path throw instead of landing"
+  },
+  {
+    "id": "T64-C5",
+    "file": "scripts/colony.ts",
+    "find": "  return command === \"criteria\" && !flags.mark && !flags.supervised && !flags.reconcile;\n",
+    "replace": "  return command === \"criteria\";\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: criteria --mark, --supervised and --reconcile are classed render-only, so their writes are refused"
+  },
+  {
+    "id": "T64-C6",
+    "file": "scripts/colony.ts",
+    "find": "  if ([\"report\", \"dashboard\", \"status\", \"growth\"].includes(command)) return true;\n",
+    "replace": "  if ([\"dashboard\", \"status\", \"growth\"].includes(command)) return true;\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: `report` loses its query_only handle. readOnly alone keeps it from writing today, so only the source pin sees it"
+  },
+  {
+    "id": "T64-W1",
+    "file": ".github/workflows/colony.yml",
+    "find": "# It runs from the default branch (main), the only branch GitHub fires `schedule`\n# on: hourly at minute 17, and by hand from Actions (workflow_dispatch). GitHub may\n# delay or drop a scheduled run when it is under load: between 6.10.2026 18:00 and\n# 7.10.2026 13:00 UTC the colony ran 3 times against this hourly cron (its commits).\n# The report's \"the loop did not run for N hours\" blocker is what shows it. It reads\n# the last ledger sync, which only a tick (or the automaton's heartbeat task of the\n# same name) records: `report` and `dashboard` render without writing to the\n# database (tick 64). By hand, the same two steps:\n",
+    "replace": "# ⚠️ THIS DOES NOT RUN UNTIL IT IS ON THE DEFAULT BRANCH.\n# GitHub fires `schedule` only on the repository's default branch (main). While\n# this file lives on a feature branch it is not even registered — the Actions\n# API returns 404 for it — so the hourly loop is not running, however correct\n# the code is. Verified 2026-09-03: only ci, products-ci and release exist.\n# Until it is merged, colony state is produced by running both steps by hand:\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: colony.yml's header says again that the file lives on a feature branch and does not run, which is false since it reached main"
+  },
+  {
+    "id": "T64R-G1",
+    "file": "src/revenue/runner.ts",
+    "find": "  result.blockers.push(...result.brandMail.blockers);\n",
+    "replace": "  if (!readOnly) result.blockers.push(...result.brandMail.blockers);\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review RV-G1 (survived the build's tests): a render drops the brand-mail probe's blockers"
+  },
+  {
+    "id": "T64R-G2",
+    "file": "src/revenue/runner.ts",
+    "find": "  for (const stall of result.stalledLines) result.blockers.push(describeStall(stall));\n",
+    "replace": "  if (!readOnly) for (const stall of result.stalledLines) result.blockers.push(describeStall(stall));\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review RV-G2: a render drops the stalled-line blockers"
+  },
+  {
+    "id": "T64R-G3",
+    "file": "src/revenue/runner.ts",
+    "find": "    if (line.status === \"awaiting_setup\" && !line.humanSetupDone) {\n",
+    "replace": "    if (!readOnly && line.status === \"awaiting_setup\" && !line.humanSetupDone) {\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review RV-G3: a render drops the owner-setup blockers"
+  },
+  {
+    "id": "T64R-G4",
+    "file": "src/revenue/runner.ts",
+    "find": "  for (const problem of pageViewGates.problems) result.blockers.push(`page-view clock: ${problem}`);\n",
+    "replace": "  if (!readOnly) for (const problem of pageViewGates.problems) result.blockers.push(`page-view clock: ${problem}`);\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review RV-G4: a render drops the page-view clock's problems"
+  },
+  {
+    "id": "T64R-S1",
+    "file": "src/revenue/runner.ts",
+    "find": "  } else if (result.dueNotRun?.includes(\"revenue_ledger_sync\")) {\n",
+    "replace": "  } else if (false) {\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/page-views-reader.test.ts"],
+    "note": "tick 64 review finding 1: a render with the sync due computes none of the sync's blockers (the build's defect: no measurement, page-view or last-sync blocker, no \"Page views:\" line)"
+  },
+  {
+    "id": "T64R-S2",
+    "file": "src/revenue/runner.ts",
+    "find": "    for (const m of invalidMeasurementFiles(options.measurementsDir ?? DEFAULT_MEASUREMENTS_DIR)) {\n      result.blockers.push(`measurement ${m.file}: ${m.detail}`);\n    }\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: a render with the sync due drops \"measurement <file>: not JSON\""
+  },
+  {
+    "id": "T64R-S3",
+    "file": "src/revenue/measurements.ts",
+    "find": "  return MEASUREMENT_FILES.flatMap((name) => {\n",
+    "replace": "  return MEASUREMENT_FILES.slice(0, 1).flatMap((name) => {\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: a render checks apify-runs.json only, so an algora-supply.json with no usable measuredAt is no blocker"
+  },
+  {
+    "id": "T64R-S4",
+    "file": "src/revenue/runner.ts",
+    "find": "      offline: true,\n",
+    "replace": "      offline: false,\n",
+    "test": "src/__tests__/revenue/page-views-reader.test.ts",
+    "note": "tick 64 review finding 1: a render's page-view read sends its queries and records the weeks"
+  },
+  {
+    "id": "T64R-S5",
+    "file": "src/revenue/page-views-reader.ts",
+    "find": "  if (options.offline) {\n",
+    "replace": "  if (false) {\n",
+    "test": "src/__tests__/revenue/page-views-reader.test.ts",
+    "note": "tick 64 review finding 1: the reader ignores offline and queries PostHog from a render"
+  },
+  {
+    "id": "T64R-S6",
+    "file": "src/revenue/runner.ts",
+    "find": "    if (result.pageViews.status === \"error\") result.blockers.push(`page views: ${result.pageViews.detail}`);\n",
+    "nth": 2,
+    "replace": "",
+    "test": "src/__tests__/revenue/page-views-reader.test.ts",
+    "note": "tick 64 review finding 1: a render drops \"page views: <error>\" made before the first query (an apiHost that is not PostHog cloud)"
+  },
+  {
+    "id": "T64R-S7",
+    "file": "src/revenue/runner.ts",
+    "find": "    if (last) result.blockers.push(...ledgerSyncBlockers(last, getKv(db, lastRunKey(\"revenue_ledger_sync\")) ?? last.at));\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: a render with the sync due drops the stored last sync's unmapped products and errors"
+  },
+  {
+    "id": "T64R-S8",
+    "file": "src/revenue/runner.ts",
+    "find": "getKv(db, lastRunKey(\"revenue_ledger_sync\")) ?? last.at",
+    "replace": "last.at",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: the last sync's blockers are led by the record's wall-clock time, not by the sync's run (the time the loop gap prints)"
+  },
+  {
+    "id": "T64R-S9",
+    "file": "src/revenue/runner.ts",
+    "find": "  const lead = lastAt ? `last ledger sync, ${lastAt}: ` : \"\";\n",
+    "replace": "  const lead = \"\";\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: the stored sync's unmapped products read as found now"
+  },
+  {
+    "id": "T64R-S10",
+    "file": "src/revenue/runner.ts",
+    "find": "  for (const error of sync.errors) out.push(`${lead || \"ledger sync: \"}${error}`);\n",
+    "replace": "  for (const error of sync.errors) out.push(`ledger sync: ${error}`);\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: the stored sync's errors read as found now"
+  },
+  {
+    "id": "T64R-A1",
+    "file": "src/revenue/runner.ts",
+    "find": "    if (last) result.blockers.push(...auditBlockers(last, last.at));\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: a render with the audit due drops the last audit's flag rate and chief findings"
+  },
+  {
+    "id": "T64R-A2",
+    "file": "src/revenue/runner.ts",
+    "find": "  const lead = lastAt ? `last audit, ${lastAt}: ` : \"\";\n",
+    "replace": "  const lead = \"\";\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: the last audit's findings read as found now"
+  },
+  {
+    "id": "T64R-A3",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "  const flagRate = v.sampled > 0 ? v.flagged / v.sampled : 0;\n",
+    "replace": "  const flagRate = 0;\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: the stored audit's flag rate is never over 0.3, so \"auditor flagged a/b\" is dropped"
+  },
+  {
+    "id": "T64R-A4",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "chiefFindings: isStringList(v.chiefFindings) ? v.chiefFindings : [] }",
+    "replace": "chiefFindings: [] }",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: the stored audit's chief findings are not read back"
+  },
+  {
+    "id": "T64R-A5",
+    "file": "src/revenue/heartbeat.ts",
+    "find": ", chiefAuditRan: out.chiefAuditRan, chiefFindings: out.chiefFindings }),",
+    "replace": ", chiefAuditRan: out.chiefAuditRan }),",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: runAudit stores no chief findings, so a render has none to print"
+  },
+  {
+    "id": "T64R-L1",
+    "file": "src/revenue/runner.ts",
+    "find": "        \"What a render cannot show: what the due steps would find now. A due ledger sync's and audit's own blockers are \" +\n",
+    "replace": "        \"A due ledger sync's and audit's own blockers are \" +\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 64 review finding 1: the report no longer names, in one line, what a render cannot show"
+  },
+  {
+    "id": "T64R-W2",
+    "file": ".github/workflows/colony.yml",
+    "find": "# the last ledger sync, which only a tick (or the automaton's heartbeat task of the\n# same name) records:",
+    "replace": "# the last ledger sync, which only a tick records:",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64 review note 3: the header names one writer of the last ledger sync; the heartbeat's revenue_ledger_sync task writes the same kv key"
+  }
+]

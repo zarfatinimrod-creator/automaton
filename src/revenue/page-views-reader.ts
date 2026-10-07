@@ -330,7 +330,8 @@ export function pageViewSeries(db: Database, lineId: string, host: string, ancho
 
 // ── The read ─────────────────────────────────────────────────────────────────
 
-export type PageViewReadStatus = "not_configured" | "counter_off" | "no_clock" | "up_to_date" | "recorded" | "error";
+/** `due`: an offline read (a render) found completed weeks with no row; it sends no query, the scheduled tick reads them. */
+export type PageViewReadStatus = "not_configured" | "counter_off" | "no_clock" | "up_to_date" | "due" | "recorded" | "error";
 
 /** One week's answer as read: what was counted for each line recorded, per page, and what was not counted and why. */
 export interface PageViewWeekRead {
@@ -370,6 +371,12 @@ export interface PageViewReaderOptions {
   nowIso?: string;
   siteDir?: string;
   clockFile?: string;
+  /**
+   * A render's read (runner.ts readOnly, `colony.ts report`; tick 64): every check a read makes before its first query,
+   * and then no query and no write. With weeks to read the status is `due`; every earlier status is the one a read
+   * returns, so a render's "page views" blockers are a tick's.
+   */
+  offline?: boolean;
 }
 
 /** A `/query` answer R1 reads as priced (ruling 7.10 §4(1)): its status, what matched, and its masked first characters. */
@@ -498,6 +505,10 @@ export async function readPageViews(db: Database, options: PageViewReaderOptions
     pages = await sitePages(siteDir);
   } catch (error) {
     return done("error", `cannot list the site's pages: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  if (options.offline) {
+    const weeks = pending.map((p) => `week ${p.week} from ${p.anchor} (${p.lines.join(", ")})`).join("; ");
+    return done("due", `${pending.length} completed week(s) to read: ${weeks}; a render sends no query, the scheduled tick reads them`);
   }
 
   const fetchImpl = options.fetchImpl ?? fetch;

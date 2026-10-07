@@ -31,10 +31,12 @@ describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
     for (const name of [
       "address-kinds.json",
       "capture-check.json",
+      "colony.json",
       "freeze-capture.json",
       "ledger.json",
       "loop-edit.json",
       "mutate.json",
+      "owner-report.json",
       "owner-steps.json",
       "page-views.json",
       "prize-apply-reading.json",

@@ -26,7 +26,13 @@ import {
   SECRET_ROW_GATE_SHORT,
   type SecretGateSite,
 } from "./owner-steps.js";
-import { DEFAULT_MEASUREMENTS_DIR, ingestAlgoraSupplyMeasurement, ingestApifyMeasurement, type IngestResult } from "./measurements.js";
+import {
+  DEFAULT_MEASUREMENTS_DIR,
+  ingestAlgoraSupplyMeasurement,
+  ingestApifyMeasurement,
+  invalidMeasurementFiles,
+  type IngestResult,
+} from "./measurements.js";
 import { BRAND_MAIL_PROBE_FILE, readBrandMailProbe, type BrandMailReading } from "./brand-mail.js";
 import { PRIZE_INTAKE_FILE, readPrizeIntake, type PrizeIntakeReading } from "./prize-intake.js";
 import {
@@ -50,7 +56,9 @@ import {
 import { formatIls } from "./money.js";
 import {
   REVENUE_TASK_INTERVALS_MS,
+  lastAudit,
   lastGumroadRefundRateRead,
+  lastLedgerSync,
   runAudit,
   runBoardReview,
   runLedgerSync,
@@ -245,6 +253,23 @@ export interface TickOptions {
   pageViewClockFile?: string;
   /** The site whose Gumroad Pro product the refund rate is read for (default products/il-biz-tools, relative to the cwd). */
   proSiteDir?: string;
+  /**
+   * A render, not a tick (`colony.ts report`, `colony.ts dashboard`): each step's due check is made and no step runs, so
+   * nothing a scheduled tick records is written — no last-run time, no ledger sync, no KPI, review, budget or kv row —
+   * and "the loop did not run" reads the stored last ledger sync and stays until a scheduled tick runs the sync (tick 64,
+   * 7.10.2026: a report run by hand ran the due sync, stamped its time, and the next report and dashboard said there was
+   * no open blocker while the schedule had not run for hours).
+   *
+   * The blockers are the ones a tick at the same moment shows, but for what only running a due step can know:
+   * - a due ledger sync's measurement files are checked as its ingest checks them, and its page-view read makes every
+   *   check before its first query and sends none (status `due` when weeks wait to be read), so those blockers are a
+   *   tick's; its unmapped products and errors are the stored last sync's, each led by "last ledger sync, <its time>: ";
+   * - a due audit's flag rate and chief findings are the stored last audit's, each led by "last audit, <its time>: ";
+   * - what a due step would change for the checks after it is not simulated: a supervisor review not run refreshes no
+   *   line's last signal (the stall check), and a board review not run changes no line's status (the owner's steps).
+   * A step that is not due adds no blocker of its own in a tick either, so a render with nothing due has a tick's.
+   */
+  readOnly?: boolean;
 }
 
 export interface TickResult {
@@ -252,6 +277,8 @@ export interface TickResult {
   enabled: boolean;
   ran: TaskName[];
   skipped: TaskName[];
+  /** A render's steps that were due and did not run (TickOptions.readOnly); absent on a tick. */
+  dueNotRun?: TaskName[];
   ledgerSync: LedgerSyncResult | null;
   /** Measurement files read into KPI snapshots this tick (with the ledger sync, hourly). */
   measurements: IngestResult[];
@@ -282,12 +309,14 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
   const nowMs = Date.parse(nowIso);
   const policy = options.policy ?? DEFAULT_DECISION_POLICY;
   const force = options.force === true;
+  const readOnly = options.readOnly === true;
 
   const result: TickResult = {
     at: nowIso,
     enabled: hasRevenueTables(db) && isRevenueColonyEnabled(db),
     ran: [],
     skipped: [],
+    ...(readOnly ? { dueNotRun: [] } : {}),
     ledgerSync: null,
     measurements: [],
     supervisor: null,
@@ -317,9 +346,12 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
   result.liveness = checkLiveness(db, nowMs);
   for (const finding of result.liveness) result.blockers.push(finding.detail);
 
+  // A render runs no step: a due one is listed as due, so the report never says "everything within its interval" while
+  // the sync is overdue, and nothing marks it ran.
   const shouldRun = (task: TaskName): boolean => {
-    if (force || isDue(db, task, nowMs)) return true;
-    result.skipped.push(task);
+    const due = force || isDue(db, task, nowMs);
+    if (due && !readOnly) return true;
+    (due ? result.dueNotRun! : result.skipped).push(task);
     return false;
   };
 
@@ -330,12 +362,7 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     });
     markRan(db, "revenue_ledger_sync", nowMs);
     result.ran.push("revenue_ledger_sync");
-    if (result.ledgerSync.unmapped.length) {
-      result.blockers.push(
-        `${result.ledgerSync.unmapped.length} platform product(s) have no revenue line: ${result.ledgerSync.unmapped.join(", ")}. Map them so their sales are counted.`,
-      );
-    }
-    for (const error of result.ledgerSync.errors) result.blockers.push(`ledger sync: ${error}`);
+    result.blockers.push(...ledgerSyncBlockers(result.ledgerSync));
 
     // Measurement jobs never open colony.db (the tick commits it too); their numbers enter the KPIs here.
     const measurementsDir = options.measurementsDir ?? DEFAULT_MEASUREMENTS_DIR;
@@ -353,6 +380,22 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
       nowIso,
       siteDir: options.pageViewSiteDir ?? DEFAULT_PAGE_VIEW_SITE_DIR,
       clockFile: options.pageViewClockFile ?? DEFAULT_PAGE_VIEW_CLOCK_FILE,
+    });
+    if (result.pageViews.status === "error") result.blockers.push(`page views: ${result.pageViews.detail}`);
+  } else if (result.dueNotRun?.includes("revenue_ledger_sync")) {
+    // A render with the sync due: the last sync's own findings, then every check of the sync that sends nothing and
+    // writes nothing, in the tick's order, so these blockers are the ones the tick would show (TickOptions.readOnly).
+    const last = lastLedgerSync(db);
+    if (last) result.blockers.push(...ledgerSyncBlockers(last, getKv(db, lastRunKey("revenue_ledger_sync")) ?? last.at));
+    for (const m of invalidMeasurementFiles(options.measurementsDir ?? DEFAULT_MEASUREMENTS_DIR)) {
+      result.blockers.push(`measurement ${m.file}: ${m.detail}`);
+    }
+    result.pageViews = await readPageViews(db, {
+      env: options.env ?? process.env,
+      nowIso,
+      siteDir: options.pageViewSiteDir ?? DEFAULT_PAGE_VIEW_SITE_DIR,
+      clockFile: options.pageViewClockFile ?? DEFAULT_PAGE_VIEW_CLOCK_FILE,
+      offline: true,
     });
     if (result.pageViews.status === "error") result.blockers.push(`page views: ${result.pageViews.detail}`);
   }
@@ -399,10 +442,10 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     result.audit = runAudit(db, nowIso, policy);
     markRan(db, "revenue_audit", nowMs);
     result.ran.push("revenue_audit");
-    if (result.audit.flagRate > 0.3) {
-      result.blockers.push(`auditor flagged ${result.audit.flagged}/${result.audit.sampled} supervisor reviews`);
-    }
-    for (const finding of result.audit.chiefFindings) result.blockers.push(`chief audit: ${finding}`);
+    result.blockers.push(...auditBlockers(result.audit));
+  } else if (result.dueNotRun?.includes("revenue_audit")) {
+    const last = lastAudit(db); // a render with the audit due: the last audit's own findings, with its time
+    if (last) result.blockers.push(...auditBlockers(last, last.at));
   }
 
   // Alive is not working. A line that should be producing and is not gets named
@@ -436,6 +479,31 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
 
   result.summary = computePortfolioSummary(db, nowIso);
   return result;
+}
+
+/**
+ * The ledger sync's own blockers. With `lastAt` they are a render's, from the stored last sync (TickOptions.readOnly):
+ * each is led by "last ledger sync, <lastAt>: ", which says it is that sync's finding and not one made now.
+ */
+function ledgerSyncBlockers(sync: Pick<LedgerSyncResult, "unmapped" | "errors">, lastAt?: string): string[] {
+  const lead = lastAt ? `last ledger sync, ${lastAt}: ` : "";
+  const out: string[] = [];
+  if (sync.unmapped.length) {
+    out.push(
+      `${lead}${sync.unmapped.length} platform product(s) have no revenue line: ${sync.unmapped.join(", ")}. Map them so their sales are counted.`,
+    );
+  }
+  for (const error of sync.errors) out.push(`${lead || "ledger sync: "}${error}`);
+  return out;
+}
+
+/** The audit's own blockers; with `lastAt`, a render's from the stored last audit, each led by "last audit, <lastAt>: ". */
+function auditBlockers(audit: Pick<AuditResult, "flagRate" | "flagged" | "sampled" | "chiefFindings">, lastAt?: string): string[] {
+  const lead = lastAt ? `last audit, ${lastAt}: ` : "";
+  const out: string[] = [];
+  if (audit.flagRate > 0.3) out.push(`${lead}auditor flagged ${audit.flagged}/${audit.sampled} supervisor reviews`);
+  for (const finding of audit.chiefFindings) out.push(`${lead}chief audit: ${finding}`);
+  return out;
 }
 
 /**
@@ -547,7 +615,19 @@ export function renderReport(db: Database, result: TickResult, site: SecretGateS
   const decisions = (result.board?.decisions ?? []).filter((d) => d.decision !== "hold");
   out.push("## This tick");
   out.push("");
-  out.push(`Ran: ${result.ran.length ? result.ran.join(", ") : "nothing (everything within its interval)"}`);
+  if (result.dueNotRun) {
+    out.push("Ran: nothing — a report-only render runs no step and records nothing; the scheduled tick runs the steps");
+    if (result.dueNotRun.length) {
+      out.push(`Due now, left for the scheduled tick: ${result.dueNotRun.join(", ")}`);
+      out.push(
+        "What a render cannot show: what the due steps would find now. A due ledger sync's and audit's own blockers are " +
+          "their last runs', each led by its time; no page-view query is sent; and a supervisor or board review not run " +
+          "changes nothing the later checks read (a line's last signal, its status).",
+      );
+    }
+  } else {
+    out.push(`Ran: ${result.ran.length ? result.ran.join(", ") : "nothing (everything within its interval)"}`);
+  }
   if (result.skipped.length) out.push(`Skipped as not yet due: ${result.skipped.join(", ")}`);
   out.push("");
 
@@ -636,6 +716,7 @@ const PAGE_VIEW_STATUS_WORDS: Record<PageViewReadResult["status"], string> = {
   counter_off: "counter off",
   no_clock: "no D0",
   up_to_date: "up to date",
+  due: "weeks to read",
   recorded: "recorded",
   error: "error",
 };

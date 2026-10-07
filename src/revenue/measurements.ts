@@ -33,6 +33,38 @@ export interface IngestResult {
 
 const isCount = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 
+/** The file half of every ingest, reading the file only: absent, invalid with why, or its data and its `measuredAt`. */
+function readMeasurementFile<T extends { measuredAt?: unknown }>(
+  file: string,
+): { status: "absent" } | { status: "invalid"; detail: string } | { status: "read"; data: T; measuredAt: string } {
+  if (!existsSync(file)) return { status: "absent" };
+  let data: T;
+  try {
+    data = JSON.parse(readFileSync(file, "utf8"));
+  } catch (error) {
+    return { status: "invalid", detail: `not JSON: ${error instanceof Error ? error.message : String(error)}` };
+  }
+  const measuredAt = typeof data?.measuredAt === "string" && !Number.isNaN(Date.parse(data.measuredAt)) ? data.measuredAt : null;
+  if (!measuredAt) return { status: "invalid", detail: "no usable measuredAt" };
+  return { status: "read", data, measuredAt };
+}
+
+/** The files the tick ingests, in its order: `apify-runs.json` (ingestApifyMeasurement), `algora-supply.json` (ingestAlgoraSupplyMeasurement). */
+export const MEASUREMENT_FILES = ["apify-runs.json", "algora-supply.json"] as const;
+
+/**
+ * A render's measurement check (runner.ts readOnly, `colony.ts report`; tick 64): each file the tick ingests, read as the
+ * ingest reads it and recorded nowhere. Only the invalid ones are returned, with the ingest's own detail: an invalid
+ * file is the one reading that is a tick's blocker ("measurement <file>: <detail>").
+ */
+export function invalidMeasurementFiles(dir: string = DEFAULT_MEASUREMENTS_DIR): IngestResult[] {
+  return MEASUREMENT_FILES.flatMap((name) => {
+    const file = join(dir, name);
+    const read = readMeasurementFile(file);
+    return read.status === "invalid" ? [{ file, status: "invalid" as const, recorded: [], detail: read.detail }] : [];
+  });
+}
+
 /**
  * The shared half of every ingest: read the file, check `measuredAt`, wait for the line to be seeded, record once.
  * `record` returns the KPI names it wrote; it is called only for a measurement newer than the last one recorded.
@@ -45,16 +77,9 @@ function ingestFile<T extends { measuredAt?: unknown }>(
   record: (data: T) => string[],
 ): IngestResult {
   const out: IngestResult = { file, status: "absent", recorded: [] };
-  if (!existsSync(file)) return out;
-
-  let data: T;
-  try {
-    data = JSON.parse(readFileSync(file, "utf8"));
-  } catch (error) {
-    return { ...out, status: "invalid", detail: `not JSON: ${error instanceof Error ? error.message : String(error)}` };
-  }
-  const measuredAt = typeof data?.measuredAt === "string" && !Number.isNaN(Date.parse(data.measuredAt)) ? data.measuredAt : null;
-  if (!measuredAt) return { ...out, status: "invalid", detail: "no usable measuredAt" };
+  const read = readMeasurementFile<T>(file);
+  if (read.status !== "read") return { ...out, ...read };
+  const { data, measuredAt } = read;
   // Before the portfolio is seeded (a fresh database's first tick) the line does not exist yet. Nothing is marked as
   // ingested, so the next tick records it; this is not a broken file and not a blocker.
   if (!getLine(db, lineId)) return { ...out, status: "absent", detail: `revenue line ${lineId} not seeded yet; retried next tick` };
@@ -70,7 +95,7 @@ function ingestFile<T extends { measuredAt?: unknown }>(
 /** The Apify count-runs measurement (scripts/apify-runs.mjs) → the `apify-actors` line's KPIs. */
 export function ingestApifyMeasurement(db: Database, dir: string = DEFAULT_MEASUREMENTS_DIR, lineId = "apify-actors"): IngestResult {
   type Apify = { measuredAt?: unknown; users?: { strangerUsers30d?: unknown }; strangerRunsLast30Days?: unknown };
-  return ingestFile<Apify>(db, join(dir, "apify-runs.json"), lineId, "revenue.measurement.apify.measured_at", (data) => {
+  return ingestFile<Apify>(db, join(dir, MEASUREMENT_FILES[0]), lineId, "revenue.measurement.apify.measured_at", (data) => {
     const recorded: string[] = [];
     const users = data.users?.strangerUsers30d;
     if (isCount(users)) {
@@ -98,7 +123,7 @@ export function ingestApifyMeasurement(db: Database, dir: string = DEFAULT_MEASU
 export function ingestAlgoraSupplyMeasurement(db: Database, dir: string = DEFAULT_MEASUREMENTS_DIR, lineId = "oss-bounties"): IngestResult {
   type Supply = { measuredAt?: unknown; claimableBounties?: unknown; struck?: unknown };
   let struck = false;
-  const file = join(dir, "algora-supply.json");
+  const file = join(dir, MEASUREMENT_FILES[1]);
   const result = ingestFile<Supply>(db, file, lineId, SUPPLY_MEASURED_AT_KEY, (data) => {
     // A file whose own reading was struck as an instrument fault (RULING-2026-09-28-bounty-rail.md §3.4) carries a count
     // that is not a reading: it is recorded in the file's instrumentFaults and never becomes a KPI.
