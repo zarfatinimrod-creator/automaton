@@ -261,7 +261,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       // now, before any deploy. Second here, as in the ₪0 order of docs/OWNER_STEPS.he.md (after step 8, before Gumroad);
       // linked to step 6 like the line's other step-6 item, so it goes when step 6 is recorded done.
       {
-        text: "Create two PostHog organisations, Mehudak and chartsplained, in the PostHog login the connector already reaches, leaving the existing organisation and its project untouched (owner step 6 part ד) — about 3 minutes, free, no card and no identity; if PostHog asks for a card, a payment, an ID or a phone number, or offers the new organisation only a trial or a paid plan, close the tab and create nothing. Without them no page-view counter runs and no D0 is recorded: the colony configures each one's included project the minute after, and no page goes up with a live counter before that (ruling 7.10 row 25, research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2)",
+        text: "Create two PostHog organisations, Mehudak and chartsplained, in the PostHog login the connector already reaches, leaving the existing organisation and its project untouched (owner step 6 part ד) — about 3 minutes, free, no card and no identity; if PostHog asks for a card, a payment, an ID or a phone number, or offers the new organisation only a trial or a paid plan, close the tab, create nothing and tell us. Without them no page-view counter runs and no D0 is recorded: the colony configures each one's included project the minute after, and no page goes up with a live counter before that (ruling 7.10 row 25, research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2)",
         steps: [6],
       },
       {
@@ -328,7 +328,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     budgetMonthlyCents: 3000,
     ...humanSetupOf([
       {
-        text: "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in \"bot\" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN — made with step 7, pasted in step 6 (the same sitting also sets the organisation's $0 Actions budget with \"Stop usage when budget limit is reached\" ticked, opts in to the included-usage alerts and creates the read-only ORG_BUDGETS_READ_TOKEN: ruling 4.10 row 18 and its amendment, RULING-2026-10-04-mozilla-precondition.md); the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4)",
+        text: "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in \"bot\" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN — made with step 7, pasted in step 6 (the same sitting also sets the organisation's $0 Actions budget with \"Stop usage when budget limit is reached\" ticked, opts in to the included-usage alerts and creates the owner's own read-only ORG_BUDGETS_READ_TOKEN, never the machine account's: ruling 4.10 row 18 and its amendment, RULING-2026-10-04-mozilla-precondition.md); the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4)",
         steps: [7, 6],
       },
       // Owner step 4a (a separate two-minute Algora sign-in in step 7's sitting) was dropped by the breadth board of

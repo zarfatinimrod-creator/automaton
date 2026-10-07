@@ -919,7 +919,10 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
     expect(ph.text).toMatch(/^Create two PostHog organisations, Mehudak and chartsplained, in the PostHog login the connector already reaches/);
     expect(ph.text).toContain("(owner step 6 part ד)");
     expect(ph.text).toContain("about 3 minutes, free, no card and no identity");
-    expect(ph.text).toContain("close the tab and create nothing");
+    // The stop rule tells us, as ruling 7.10 row 25 §1(6) has it ("closes the tab and tells us, creating nothing"): a
+    // silent stop would never reopen the ruling's section 1, and the report would go on asking for the organisations.
+    expect(ph.text).toContain("close the tab, create nothing and tell us");
+    expect(ph.text).not.toContain("close the tab and create nothing");
     expect(ph.text).toContain("Without them no page-view counter runs and no D0 is recorded");
     expect(ph.text).toContain("ruling 7.10 row 25");
     expect(ph.contextSteps).toBeUndefined();
@@ -1049,7 +1052,12 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     expect(machine.text).toContain("the same sitting also sets the organisation's $0 Actions budget");
     expect(machine.text).toContain('"Stop usage when budget limit is reached" ticked');
     expect(machine.text).toContain("opts in to the included-usage alerts");
-    expect(machine.text).toContain("creates the read-only ORG_BUDGETS_READ_TOKEN");
+    // Whose token it is, as the amendment of 4.10 makes it: the owner's own, never the machine account's, whose own
+    // token the same item asks for in the sentence before.
+    expect(machine.text).toContain("creates the owner's own read-only ORG_BUDGETS_READ_TOKEN, never the machine account's");
+    expect(machine.text).not.toContain("creates the read-only ORG_BUDGETS_READ_TOKEN");
+    expect(step7.unlocks).toContain("a fine-grained personal access token of the owner's own account");
+    expect(ownerStepById("ci-tokens")!.unlocks).toContain("it is the owner's own fine-grained token, never the machine account's");
     expect(machine.text).toContain("ruling 4.10 row 18 and its amendment");
     for (const words of ['"Stop usage when budget limit is reached" ticked', "included-usage alerts", "ORG_BUDGETS_READ_TOKEN"]) {
       expect(step7.unlocks, `step 7's own words: ${words}`).toContain(words);
