@@ -70,7 +70,7 @@ logs/CHANNEL_LOOP.md is rewritten every tick from probes (never appended forever
 
 ## Stop conditions
 
-- A channel's next step is a NEW owner account or step beyond the seven: that channel pauses at 'tested' and joins the owner batch as a proposed step; the loop continues on other channels. The agent never opens the account or answers an identity check (MISSION.md:345-347).
+- A channel's next step is a NEW owner account or step beyond the eight: that channel pauses at 'tested' and joins the owner batch as a proposed step; the loop continues on other channels. The agent never opens the account or answers an identity check (MISSION.md:345-347).
 - Any spend beyond the remaining ₪200 one-off float, or any recurring charge (a subscription, a paid tier, private-repo Actions minutes beyond the free allowance if they cost money): stop that item and ask; the float never becomes rent (MISSION.md:264-266).
 - Money could arrive before the tax file: if the owner completes step 3 (Gumroad) before confirming step 2, paid activation (Pro product creation, any price on pcn874 or a theme) is held and the owner is told why (docs/OWNER_STEPS.he.md:95).
 - The first surface under the brand name: the owner is told in one line that the name goes public with the next deploy and may veto (brand-name-decision.md:3-6); netlify.app surfaces proceed after one tick, irreversible commitments (domain, org, store) are their own clicks.
