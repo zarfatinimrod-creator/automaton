@@ -27,7 +27,7 @@ import { renderDashboard } from "../../revenue/dashboard.js";
 import { getLine, listLines, recordKpi, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
 import { REVENUE_TASK_INTERVALS_MS } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
-import { DEFAULT_PORTFOLIO, portfolioTargetAgorot, summarizeTargetBasis } from "../../revenue/portfolio.js";
+import { DEFAULT_PORTFOLIO, portfolioTargetAgorot, seedDefaultPortfolio, summarizeTargetBasis, syncPortfolio } from "../../revenue/portfolio.js";
 import { readSite } from "../../revenue/page-views-reader.js";
 
 const HOUR = 3_600_000;
@@ -644,6 +644,46 @@ describe("revenue/runner owner checklist follows the steps each item belongs to"
     expect(at).toBeLessThan(firstLine);
     // Once the project exists, step 6 is asked with the row and the note goes.
     expect(renderReport(db, result, { projectId: "12345" })).not.toContain("`POSTHOG_READ_KEY`");
+  });
+
+  // Tick 63 (7.10.2026): the report reads the setup texts from the database, and the scheduled tick never re-reads a
+  // seed, so tick 62's two texts were in portfolio.ts only. The committed colony.db still held oss-bounties' text from
+  // before tick 62, which matches no linked item (humanSetupItemFor matches the exact text), so it would have been
+  // asked after steps 7 and 6 were done; and il-biz-tools had no PostHog item. syncPortfolio, which the scheduled run
+  // now applies before its tick, is what brings the texts in.
+  it("prints a setup text changed in portfolio.ts once the sync has run, and drops it when its steps are done", async () => {
+    const OLD_MACHINE =
+      'Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in "bot" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN — made with step 7, pasted in step 6, and the only other thing step 7\'s sitting does; the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4)';
+    const posthog = itemsOf("il-biz-tools")[1];
+    const machine = itemsOf("oss-bounties")[0];
+    expect(posthog.text).toMatch(/^Create two PostHog organisations/);
+    // The two lines as the committed database stored them: the old step-7 text, and no PostHog item.
+    const stale = DEFAULT_PORTFOLIO.map((l) => {
+      if (l.id === "oss-bounties") return { ...l, humanSetup: [OLD_MACHINE, ...l.humanSetup.slice(1)] };
+      if (l.id === "il-biz-tools") return { ...l, humanSetup: l.humanSetup.filter((t) => t !== posthog.text) };
+      return l;
+    });
+    expect(seedDefaultPortfolio(db, stale)).toBe(DEFAULT_PORTFOLIO.length);
+
+    await withDone(STEP_6_REACHED, async () => {
+      const before = renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" });
+      expect(checklist(before), "the old text links to no item, so done steps do not drop it").toContain(`- [ ] ${OLD_MACHINE}`);
+    });
+    const unsynced = renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" });
+    expect(unsynced).not.toContain(posthog.text);
+    expect(unsynced).not.toContain(machine.text);
+
+    expect(syncPortfolio(db).updated).toHaveLength(DEFAULT_PORTFOLIO.length);
+    const synced = renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" });
+    expect(checklist(synced)).toContain(`- [ ] ${machine.text}`);
+    expect(checklist(synced)).toContain(`- [ ] ${posthog.text}`);
+    expect(synced).not.toContain("the only other thing step 7's sitting does");
+    await withDone(STEP_6_REACHED, async () => {
+      const done = renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" });
+      expect(done).not.toContain(machine.text);
+      expect(done).not.toContain(posthog.text);
+      expect(done).not.toContain(OLD_MACHINE);
+    });
   });
 });
 

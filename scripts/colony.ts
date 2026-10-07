@@ -62,11 +62,16 @@ Commands:
   report               Re-render the report from current state without ticking.
   seed                 Seed the default portfolio (no-op for lines that exist).
   sync-portfolio       Apply a board decision from src/revenue/portfolio.ts to this
-                       database: insert new lines, refresh existing ones from their
-                       seed (targets, operating loop, owner steps), and kill the
-                       lines in KILLED_LINES with the board's stated reason. Run it
-                       after a board ruling, then \`report\`, or the report keeps
-                       printing the portfolio the board just replaced.
+                       database: insert new lines (at budget 0; the board review
+                       allocates), refresh existing ones from their seed (targets,
+                       operating loop, owner steps; never a line's budget, tier,
+                       status or setup-done flag, and a tier that differs is
+                       listed), and kill the lines in KILLED_LINES with the board's
+                       stated reason. Changes nothing while the colony is disabled
+                       (kv revenue.enabled = 0). The scheduled workflow runs it
+                       before every tick; by hand, run it after a board ruling, then
+                       \`report\`, or the report keeps printing the portfolio the
+                       board just replaced.
   record               Record one ledger entry by hand. Currency ILS, USD, EUR or GBP (converted)
                        or USDC (wallet money); any other code is refused. A USDC entry needs its
                        on-chain transaction id as --external-id and --occurred-at; it is flagged
@@ -250,10 +255,19 @@ async function main(): Promise<void> {
           console.log(JSON.stringify(result, null, 2));
           break;
         }
+        if (result.disabled) {
+          // The tick refuses a switched-off colony the same way (runner.ts tick); exit 0, so the scheduled run's tick
+          // still writes the report that says so.
+          console.log("Revenue colony is disabled (kv revenue.enabled = 0): portfolio.ts was not applied, no line changed.");
+          break;
+        }
         console.log(`Inserted ${result.inserted.length}, refreshed ${result.updated.length}, killed ${result.killed.length}.`);
         for (const id of result.inserted) console.log(`  + ${id}`);
         for (const id of result.updated) console.log(`  ~ ${id}`);
         for (const k of result.killed) console.log(`  x ${k.id}: ${k.reason}`);
+        for (const t of result.tierDiffers) {
+          console.log(`  ! ${t.id}: tier ${t.stored} in the database, ${t.seed} in portfolio.ts; not applied (revenue_decide sets an existing line's tier)`);
+        }
         if (result.unknown.length) {
           console.log(`\n${result.unknown.length} line(s) in this database are not in portfolio.ts and were left alone:`);
           for (const id of result.unknown) console.log(`  ? ${id}`);

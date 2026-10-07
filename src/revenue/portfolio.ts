@@ -47,10 +47,24 @@
 
 import type { Database } from "better-sqlite3";
 import { removeQueuedGoals } from "./goal-queue.js";
-import { getLine, insertLineFromSeed, latestKpis, listLines, updateLineFromSeed, updateLineStatus } from "./ledger.js";
+import {
+  getLine,
+  insertLineFromSeed,
+  isRevenueColonyEnabled,
+  latestKpis,
+  listLines,
+  updateLineFromSeed,
+  updateLineStatus,
+} from "./ledger.js";
 import { agorotFromIls } from "./money.js";
 import { PAGE_VIEW_KPI } from "./page-views.js";
-import { DEFAULT_DECISION_POLICY, type DecisionPolicy, type HumanSetupItem, type RevenueLineSeed } from "./types.js";
+import {
+  DEFAULT_DECISION_POLICY,
+  type DecisionPolicy,
+  type HumanSetupItem,
+  type RevenueLineSeed,
+  type RevenueLineTier,
+} from "./types.js";
 
 /**
  * The label Apify's stranger count carries wherever it is printed (breadth board, research/breadth/BOARD.md Q5,
@@ -762,11 +776,18 @@ export function summarizeTargetBasis(
 }
 
 export interface PortfolioSyncResult {
+  /** The colony is switched off (kv revenue.enabled = 0): nothing was applied, and every list below is empty. */
+  disabled: boolean;
   inserted: string[];
   updated: string[];
   killed: { id: string; reason: string }[];
   /** Lines in the database that this file knows nothing about. Never touched. */
   unknown: string[];
+  /**
+   * Existing lines whose stored tier differs from their seed's. The sync does not apply a seed's tier to a line that
+   * exists (ledger.ts updateLineFromSeed), so a tier ruling recorded only here is listed rather than dropped silently.
+   */
+  tierDiffers: { id: string; stored: RevenueLineTier; seed: RevenueLineTier }[];
 }
 
 /**
@@ -779,22 +800,40 @@ export interface PortfolioSyncResult {
  * ₪1,500 of committed targets above a table of nine lines totalling ₪16,500,
  * with the owner still being asked to open an Etsy shop.
  *
- * So the decision is applied rather than described: new lines are inserted,
- * surviving lines are refreshed from their seed, and killed lines are moved to
- * `killed` with the board's reason attached. Nothing else is touched — a line in
- * the database that this file does not know about is reported, not deleted,
- * because deleting a line the board never ruled on would lose its ledger history
- * silently.
+ * So the decision is applied rather than described: new lines are inserted at
+ * budget 0, surviving lines are refreshed from their seed (never their budget or
+ * tier, which the board review and revenue_decide own: ledger.ts
+ * updateLineFromSeed), and killed lines are moved to `killed` with the board's
+ * reason attached. Nothing else is touched — a line in the database that this
+ * file does not know about is reported, not deleted, because deleting a line the
+ * board never ruled on would lose its ledger history silently.
+ *
+ * The scheduled colony run (.github/workflows/colony.yml) applies this before
+ * every tick: until tick 63 (7.10.2026) only `colony.ts sync-portfolio` did, by
+ * hand, so a text changed here reached no report the owner reads. Two things
+ * follow from it running unattended every hour:
+ * - A seed's `budgetMonthlyCents` is not an allocation (rules.ts allocateBudget:
+ *   the column is the board's CURRENT allocation), so a line inserted here starts
+ *   at 0 and the next board review allocates it. Inserted at its seed's figure, a
+ *   line added to this file held 4000 cents through every hourly tick until the
+ *   daily review, and for good while the colony was switched off (measured by the
+ *   tick-63 review on a copy of the committed colony.db, 7.10.2026).
+ * - The colony's off switch (kv revenue.enabled = 0) stops the tick before it
+ *   writes anything (runner.ts tick), and it stops this too: a switched-off
+ *   colony's scheduled run changes no line, as it did before the sync was added.
  */
 export function syncPortfolio(
   db: Database,
   seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO,
   killed: KilledLine[] = KILLED_LINES,
 ): PortfolioSyncResult {
-  const out: PortfolioSyncResult = { inserted: [], updated: [], killed: [], unknown: [] };
+  const out: PortfolioSyncResult = { disabled: false, inserted: [], updated: [], killed: [], unknown: [], tierDiffers: [] };
+  if (!isRevenueColonyEnabled(db)) return { ...out, disabled: true };
 
   for (const seed of seeds) {
-    if (insertLineFromSeed(db, seed)) out.inserted.push(seed.id);
+    const stored = getLine(db, seed.id);
+    if (stored && stored.tier !== seed.tier) out.tierDiffers.push({ id: seed.id, stored: stored.tier, seed: seed.tier });
+    if (insertLineFromSeed(db, { ...seed, budgetMonthlyCents: 0 })) out.inserted.push(seed.id);
     else if (updateLineFromSeed(db, seed)) out.updated.push(seed.id);
   }
 
