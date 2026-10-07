@@ -40,7 +40,8 @@
  *
  *   node scripts/queue-zero-test.mjs --js --terms-shell --url <terms URL> --slug terms-<site> [--date 6.10.2026] [--dry-run]
  *
- * re-queues, once, a terms page the plain GET saw as a JavaScript shell, for a js render that reads it
+ * re-queues, once, a terms page the plain GET saw as a JavaScript shell or a nav-only shell (capture-check's js-shell
+ * or nav-shell), for a js render that reads it
  * (research/channel-loop/RULING-2026-10-06-robots-and-terms.md 3(2), ruling 6.10 row 21 (c): kind K4). The one
  * recursive case --js --terms refuses (a terms page cannot rest on itself), allowed only when all of these hold
  * (queueTermsShell): the slug starts terms-; no earlier js render of that slug or of that URL under any slug exists —

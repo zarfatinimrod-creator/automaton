@@ -334,6 +334,9 @@ describe("classifyCapture: nav-only shells (nav-shell)", () => {
   });
 
   it("the HTML must be at least NAV_SHELL_BYTES bytes, counted in UTF-8: one byte fewer is short", () => {
+    // The value is pinned (review, tick 60): the fixtures below are built from the constant, so they alone would let it move.
+    expect(NAV_SHELL_BYTES).toBe(20_000);
+    expect(nav(MENU, sized(navHtml(), 19_999)).kind).toBe("short");
     expect(nav(MENU, sized(navHtml(), NAV_SHELL_BYTES)).kind).toBe("nav-shell");
     expect(nav(MENU, sized(navHtml(), NAV_SHELL_BYTES - 1)).kind).toBe("short");
     // Bytes, not characters: 3-byte characters make a page of NAV_SHELL_BYTES bytes in far fewer characters.
@@ -365,6 +368,10 @@ describe("classifyCapture: nav-only shells (nav-shell)", () => {
     const text = Array.from({ length: 9 }, (_, i) => `Section${i + 1}`).join("\n");
     expect(text.length).toBe(80);
     const need = text.length / NAV_CHARS_PER_TAG;
+    // The value is pinned (review, tick 60): 8 tags for 80 characters pass and 7 do not, whatever the constant says.
+    expect(NAV_CHARS_PER_TAG).toBe(10);
+    expect(nav(text, sized(navHtml({ anchors: 8, scripts: 0 }))).kind).toBe("nav-shell");
+    expect(nav(text, sized(navHtml({ anchors: 7, scripts: 0 }))).kind).toBe("short");
     expect(nav(text, sized(navHtml({ anchors: need, scripts: 0 }))).kind).toBe("nav-shell");
     expect(nav(text, sized(navHtml({ anchors: 0, scripts: need }))).kind).toBe("nav-shell");
     expect(nav(text, sized(navHtml({ anchors: need - 1, scripts: 0 }))).kind).toBe("short");
@@ -372,6 +379,22 @@ describe("classifyCapture: nav-only shells (nav-shell)", () => {
     // A tag inside a comment is not markup.
     const commented = sized(navHtml({ anchors: need - 1, scripts: 0, extra: "<!-- <a href=/x>x</a> -->" }));
     expect(nav(text, commented).kind).toBe("short");
+    // Nor is a script inside a comment (review, tick 60).
+    const commentedScript = sized(navHtml({ anchors: 0, scripts: need - 1, extra: '<!-- <script src="/x.js"></script> -->' }));
+    expect(nav(text, commentedScript).kind).toBe("short");
+  });
+
+  it("a nav-only shell of 250 to 999 characters is nav-shell too, and its evidence keeps the sensor, captcha and framework notes", () => {
+    // 40 one-word lines: 389 characters, above WEAK_SIGN_TEXT, so framework markup is a note, not a js-shell sign.
+    const text = Array.from({ length: 40 }, (_, i) => `Section${i}`).join("\n");
+    expect(text.length).toBeGreaterThanOrEqual(WEAK_SIGN_TEXT);
+    expect(text.length).toBeLessThan(MIN_TERMS_TEXT);
+    const signs = '<script src="https://js.datadome.co/tags.js"></script><div class="g-recaptcha"></div><script>window.__NEXT_DATA__={}</script>';
+    const r = nav(text, sized(navHtml({ anchors: 40, scripts: 0, extra: signs })));
+    expect(r.kind).toBe("nav-shell");
+    expect(r.evidence).toMatch(/; nav-only shell: 40 lines of at most 1 words; /);
+    expect(r.evidence).toMatch(/ scripts; also DataDome tag "js\.datadome\.co"; also reCAPTCHA "/);
+    expect(r.evidence).toMatch(/; also page state shipped for scripts to render "__NEXT_DATA__" \(framework markup; with 250\+ characters of text not taken as a shell\)$/);
   });
 
   it("the kinds before it decide first: a nav-only page that is also a js-shell, a challenge page or a failed fetch is that", () => {
