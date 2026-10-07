@@ -190,8 +190,9 @@ export function readbackOf(state: MadeForKidsState, uploads: readonly { id: stri
  * never the watch page): true once its first designation read and its latest read, at least `hours` apart, both found it
  * public and no read since a public one found it otherwise; false once one did (or the latest read found it not public
  * after a public one); null while that is not yet known. Reads are periodic, so the answer is as good as their spacing.
- * The clock starts at the first designation read, which the read-back takes in the same colony run as the publisher's
- * response, so the window is never judged early and at worst one run late; a read with no designation does not start it
+ * The clock starts at the first designation read (the entry's `first`, never its `firstRead`), which the read-back
+ * takes in the same colony run as the publisher's response, so the window is never judged early and at worst one run
+ * late; a read with no designation does not start it
  * (research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md §4 decisions 1-2).
  */
 export function stayedPublic(v: UploadReadback, hours: number): boolean | null {

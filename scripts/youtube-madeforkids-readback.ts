@@ -14,9 +14,10 @@
  *                          uploaded = nothing to read (exit 0).
  * WRITES state/colony/measurements/<line>-madeforkids.json: one entry per upload. EVERY listed upload is asked about on
  * every run (an override YouTube sets after the first read must be seen; corrected 4.10): the entry keeps the first read
- * that carried a designation, the latest read (madeForKids "true"/"false"/null, privacyStatus, readAt), and the times a
- * read first contradicted the line's declaration or found a public upload no longer public. readbackOf(<that file>,
- * <the uploads>) is ExperimentReadings.madeForKidsReadback.
+ * for that id, designated or not (firstRead: readAt, returned, privacyStatus; written once, ruling 7.10 row 24
+ * amendment 1), the first read that carried a designation, the latest read (madeForKids "true"/"false"/null,
+ * privacyStatus, readAt), and the times a read first contradicted the line's declaration or found a public upload no
+ * longer public. readbackOf(<that file>, <the uploads>) is ExperimentReadings.madeForKidsReadback.
  *
  * NO LIVE CALL BEFORE STAGE A, AND NONE BEFORE THE API'S TERMS ARE READ. Two gates, each a refusal (exit 2) with
  * nothing asked and nothing written, checked in this order: (1) research/channel-loop/terms-verdicts.json must hold a
@@ -61,6 +62,11 @@ const MEASUREMENTS = "state/colony/measurements";
 export const TERMS_VERDICTS = resolve(REPO_ROOT, "research/channel-loop/terms-verdicts.json");
 /** The site whose API terms gate every call (READ_HOST is www.googleapis.com). */
 export const API_TERMS_SITE = "googleapis.com";
+/**
+ * The pinned excerpt of the YouTube API Services Terms, read at github grade on 7.10 (tick 61): its verdict section lists
+ * the conditions that keep googleapis.com CONDITIONAL_UNMET, so the refusal points there.
+ */
+export const API_TERMS_EXCERPT = "research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md";
 
 /** research/channel-loop/terms-verdicts.json, or null when it is missing or cannot be read (as scripts/brand-check.mjs). */
 export function readTermsVerdicts(path = TERMS_VERDICTS): unknown {
@@ -118,8 +124,9 @@ export async function runReadback(run: ReadbackRun): Promise<number> {
   const terms = apiTermsGate(readTermsVerdicts(run.verdictsPath));
   if (!terms.ok) {
     run.log(
-      `youtube-madeforkids: ${terms.why} in ${run.verdictsPath} — refusing to run. No call is made until the YouTube API ` +
-        `Services Terms are read at github grade and recorded there (ruling 7.10 row 24 (b)); nothing asked, nothing written.`,
+      `youtube-madeforkids: ${terms.why} in ${run.verdictsPath} — refusing to run. No call is made until ${API_TERMS_SITE}'s ` +
+        `verdict there is active-eligible (ruling 7.10 row 24 (b)); the conditions the 7.10 read found unmet are listed in ` +
+        `${API_TERMS_EXCERPT}; nothing asked, nothing written.`,
     );
     return 2;
   }

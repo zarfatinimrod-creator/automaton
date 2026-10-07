@@ -549,9 +549,11 @@ describe("revenue/runner owner checklist follows the steps each item belongs to"
           expect(blocker.includes(item.text), `${where} in the blocker`).toBe(open);
         }
       }
-      // Of the nine items only il-biz-tools' mailbox (step 8) and oss-bounties' step 4 are still asked. pcn874's token
-      // item names the frozen step 5 only as context, so step 5 never keeps it asked.
-      expect(gone).toBe(7);
+      // Of the ten items only il-biz-tools' mailbox (step 8) and oss-bounties' step 4 are still asked. pcn874's token
+      // item names the frozen step 5 only as context, so step 5 never keeps it asked. (Nine until tick 62, 7.10.2026:
+      // il-biz-tools' PostHog item, step 6 part ד of ruling 7.10 row 25, is the tenth, and goes with step 6.)
+      expect(gone).toBe(8);
+      expect(asked.some((l) => l.includes(itemsOf("il-biz-tools")[1].text))).toBe(false);
       expect(asked.some((l) => l.includes(itemsOf("pcn874")[2].text))).toBe(false);
     });
   });
@@ -560,10 +562,11 @@ describe("revenue/runner owner checklist follows the steps each item belongs to"
     await withDone(["gumroad"], async () => {
       const asked = checklist(renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" }));
       // Step 3's own items go: the account is open and the token minted…
-      expect(asked.some((l) => l.startsWith(`- [ ] ${itemsOf("il-biz-tools")[1].text}`))).toBe(false);
+      expect(asked.some((l) => l.startsWith(`- [ ] ${itemsOf("il-biz-tools")[2].text}`))).toBe(false);
       expect(asked.some((l) => l.startsWith(`- [ ] ${itemsOf("pcn874")[0].text}`))).toBe(false);
-      // …and pasting it, which is step 6, is still asked on both lines.
-      expect(asked).toContain(`- [ ] ${itemsOf("il-biz-tools")[2].text}`);
+      // …and pasting it, which is step 6, is still asked on both lines, as is il-biz-tools' PostHog item (step 6 part ד).
+      expect(asked).toContain(`- [ ] ${itemsOf("il-biz-tools")[3].text}`);
+      expect(asked).toContain(`- [ ] ${itemsOf("il-biz-tools")[1].text}`);
       expect(asked).toContain(`- [ ] ${itemsOf("pcn874")[2].text}`);
     });
   });
