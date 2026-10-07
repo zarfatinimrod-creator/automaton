@@ -13,10 +13,12 @@
  * Every upload is re-read on every run, not once (corrected 4.10 after review): P-2 counts a YouTube override on T1's line
  * "when YouTube sets them, whatever the one appeal later decides" (experiments.ts), and YouTube can set one after the
  * read that followed the upload; K-T1k and T1's P2 ask whether an upload is "still public 72 hours later". So the state
- * keeps, per upload, the first read that carried a designation (§6 rule 2's read-back), the latest read with its time,
- * the first read that carried the designation the line does NOT declare (never cleared), and the first read that found a
- * public upload no longer public (never cleared). `readbackOf()` turns that into ExperimentReadings.madeForKidsReadback,
- * from which experiments.ts derives P-2's count: there is no typed-in override count beside it.
+ * keeps, per upload, the first read whatever it carried (P1's read, written once: ruling 7.10 row 24 amendment 1), the
+ * first read that carried a designation (§6 rule 2's read-back, and the start of P2's clock), the latest read with its
+ * time, the first read that carried the designation the line does NOT declare (never cleared), and the first read that
+ * found a public upload no longer public (never cleared). `readbackOf()` turns that into
+ * ExperimentReadings.madeForKidsReadback, from which experiments.ts derives P-2's count: there is no typed-in override
+ * count beside it.
  *
  * Grades. Rendered, read for our own compliance only (D1(1)(i); `[against-bar]`): "The madeForKids property enables any
  * user to retrieve the "made for kids" status of a channel or video" (research/rendered/youtube-api-revision-history.txt
@@ -44,9 +46,14 @@ const DECLARES: Readonly<Record<ReadbackLine, boolean>> = { "faceless-youtube": 
 /** One read of one video, as `videos.list` answered it. */
 export interface MadeForKidsReading {
   id: string;
+  /**
+   * Whether the response carried the video at this read: false when it did not, and then madeForKids and privacyStatus
+   * are null. The entry's firstRead keeps it (ruling 7.10 row 24 amendment 1).
+   */
+  returned: boolean;
   /** `status.madeForKids` at this read, or null when the video was not returned or its status carried no boolean. */
   madeForKids: Designation;
-  /** `status.privacyStatus` at this read ("public", "private", "unlisted"), or null when the video was not returned. */
+  /** `status.privacyStatus` at this read ("public", "private", "unlisted"), or null when the video was not returned or its status carried no string. */
   privacyStatus: string | null;
   /** When this read was taken, whatever it carried. */
   readAt: string;
@@ -55,7 +62,17 @@ export interface MadeForKidsReading {
 /** What the state keeps for one upload across runs. */
 export interface UploadReadback {
   id: string;
-  /** The first read that carried a designation: §6 rule 2's read-back after the upload. null while no read has. */
+  /**
+   * The first read the read-back took for this upload, designated or not: P1's read (T1-PROTOCOL.md P1; ruling 7.10 row 24
+   * §1 decision 1 and amendment 1), taken in the same colony run as the publisher's response. `returned` false and
+   * `privacyStatus` null when the video was not in the response; otherwise the status read. Written once and never
+   * changed. null while no read has reached the upload.
+   */
+  firstRead: { readAt: string; returned: boolean; privacyStatus: string | null } | null;
+  /**
+   * The first read that carried a designation: §6 rule 2's read-back after the upload, and where stayedPublic()'s clock
+   * starts. null while no read has.
+   */
   first: MadeForKidsReading | null;
   /** The latest read, whatever it carried. null while the upload has never been asked about. */
   latest: MadeForKidsReading | null;
@@ -97,8 +114,9 @@ export function videosListUrl(ids: readonly string[], apiKey: string): string {
 }
 
 /**
- * One reading per id asked, in the order asked. A video the response does not carry, or whose status has no boolean
- * `madeForKids`, reads as null — never as false: an unread designation is an instrument fault (§10 rule 2), not a pass.
+ * One reading per id asked, in the order asked. A video the response does not carry reads `returned` false. It, or one
+ * whose status has no boolean `madeForKids`, reads as null — never as false: an unread designation is an instrument fault
+ * (§10 rule 2), not a pass.
  */
 export function parseVideosList(body: unknown, ids: readonly string[], readAt: string): MadeForKidsReading[] {
   const b = body as { error?: { code?: number; message?: string }; items?: unknown } | null;
@@ -108,19 +126,23 @@ export function parseVideosList(body: unknown, ids: readonly string[], readAt: s
   if (!b || typeof b !== "object" || !Array.isArray(b.items)) throw new TypeError("not a videos.list response (no items list)");
   const items = b.items as { id?: unknown; status?: { madeForKids?: unknown; privacyStatus?: unknown } }[];
   return ids.map((id) => {
-    const status = items.find((it) => it && it.id === id)?.status;
+    const item = items.find((it) => it && it.id === id);
+    const status = item?.status;
     const mfk = typeof status?.madeForKids === "boolean" ? (String(status.madeForKids) as "true" | "false") : null;
     const privacyStatus = typeof status?.privacyStatus === "string" ? status.privacyStatus : null;
-    return { id, madeForKids: mfk, privacyStatus, readAt };
+    return { id, returned: item !== undefined, madeForKids: mfk, privacyStatus, readAt };
   });
 }
 
-const unreadEntry = (id: string): UploadReadback => ({ id, first: null, latest: null, contradictedAt: null, leftPublicAt: null });
+const unreadEntry = (id: string): UploadReadback =>
+  ({ id, firstRead: null, first: null, latest: null, contradictedAt: null, leftPublicAt: null });
 
 /**
  * The new state: every listed upload in upload order, then any earlier entry whose upload left the list (kept as it was).
- * A listed upload this run read: its first designation read is kept (or this read becomes it), this read becomes the
- * latest, and a contradiction or a departure from public is recorded the first time it is seen and never cleared.
+ * A listed upload this run read: its first read is kept, or this read becomes it whatever it carried, the video not
+ * returned included (amendment 1: written once, never changed); its first designation read is kept (or this read becomes
+ * it); this read becomes the latest; and a contradiction or a departure from public is recorded the first time it is seen
+ * and never cleared. A listed upload this run has no reading for keeps its entry as it was.
  */
 export function mergeReadings(
   state: MadeForKidsState,
@@ -138,6 +160,7 @@ export function mergeReadings(
     const designated = r.madeForKids !== null;
     return {
       id,
+      firstRead: p.firstRead ?? { readAt: r.readAt, returned: r.returned, privacyStatus: r.privacyStatus },
       first: p.first ?? (designated ? r : null),
       latest: r,
       contradictedAt: p.contradictedAt ?? (designated && r.madeForKids !== declared ? r.readAt : null),
@@ -167,9 +190,63 @@ export function readbackOf(state: MadeForKidsState, uploads: readonly { id: stri
  * never the watch page): true once its first designation read and its latest read, at least `hours` apart, both found it
  * public and no read since a public one found it otherwise; false once one did (or the latest read found it not public
  * after a public one); null while that is not yet known. Reads are periodic, so the answer is as good as their spacing.
+ * The clock starts at the first designation read, which the read-back takes in the same colony run as the publisher's
+ * response, so the window is never judged early and at worst one run late; a read with no designation does not start it
+ * (research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md §4 decisions 1-2).
  */
 export function stayedPublic(v: UploadReadback, hours: number): boolean | null {
   if (v.leftPublicAt !== null) return false;
   if (v.first?.privacyStatus !== "public" || v.latest?.privacyStatus !== "public") return null;
   return Date.parse(v.latest.readAt) - Date.parse(v.first.readAt) >= hours * 3_600_000 ? true : null;
+}
+
+/**
+ * The first-upload window's four readings and its verdict (T1-PROTOCOL.md P1-P4; K-T1k on the kids line). Each is true,
+ * false, or null while unread.
+ */
+export interface FirstUploadWindow {
+  /**
+   * The upload returns public: the publisher's response (success and the id) and the first read, designated or not
+   * (`firstRead`), `public`. A first read that did not return the video, or found it anything but public, fails it.
+   */
+  p1: boolean | null;
+  /** Still public `hours` later: `stayedPublic(entry, hours)`. */
+  p2: boolean | null;
+  /** The brand mailbox's reading, as the caller supplies it. */
+  p3: boolean | null;
+  /** The publisher's channel-state reading, as the caller supplies it. */
+  p4: boolean | null;
+  /** false if any of the four is false; true if all four are true; else null. ExperimentReadings.t1Passed. */
+  passed: boolean | null;
+}
+
+/**
+ * ExperimentReadings.t1Passed as one pure function of the readings, never a typed-in boolean
+ * (research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md §4 decision 3). `entry` is the read-back's
+ * entry for the line's first upload, or null; `publisherAccepted` is P1's publisher half (true: the response said success
+ * for YouTube and returned the id; false: it did not; null: no response recorded); `p3` and `p4` are the protocol's own
+ * readings. P1 reads the entry's `firstRead`, the first read designated or not, never `first` (amendment 1 of the same
+ * ruling): false when the publisher did not accept the upload, or when that read did not return the video or found it
+ * anything but public; true when the publisher accepted it and that read found it public; else null. P2 is
+ * `stayedPublic(entry, hours)`, whose clock still starts at the first designation read (§4 decisions 1-2 stand). It
+ * fetches nothing: an auditor re-derives the verdict from the same state.
+ */
+export function firstUploadWindow(
+  entry: UploadReadback | null,
+  publisherAccepted: boolean | null,
+  p3: boolean | null,
+  p4: boolean | null,
+  hours = 72,
+): FirstUploadWindow {
+  const firstRead = entry?.firstRead ?? null;
+  let p1: boolean | null = null;
+  if (publisherAccepted === false) p1 = false;
+  else if (firstRead !== null && (firstRead.returned === false || firstRead.privacyStatus !== "public")) p1 = false;
+  else if (publisherAccepted === true && firstRead?.privacyStatus === "public") p1 = true;
+  const p2 = entry === null ? null : stayedPublic(entry, hours);
+  const readings = [p1, p2, p3, p4];
+  let passed: boolean | null = null;
+  if (readings.includes(false)) passed = false;
+  else if (readings.every((r) => r === true)) passed = true;
+  return { p1, p2, p3, p4, passed };
 }
