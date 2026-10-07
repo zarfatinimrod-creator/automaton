@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -268,6 +268,11 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     "oncepending.example": { verdict: "TERMS_PENDING", note: "terms unread; shell: rendered once 7.10.2026, a challenge page" },
     "ok.example": { verdict: "NOT_BARRED" },
     "gumroad.com": { verdict: "NO_TERMS", note: "shell: a fixture that says so" },
+    "trimshell.example": { verdict: "TERMS_PENDING", note: "terms unread: a trimmed shell" },
+    "trimok.example": { verdict: "TERMS_PENDING", note: "terms unread: a trimmed read page" },
+    "trimroute.example": { verdict: "TERMS_PENDING", note: "terms unread: stored trimmed by render-watch's route" },
+    "trimfailed.example": { verdict: "TERMS_PENDING", note: "terms unread: a trimmed capture whose last fetch failed" },
+    "trimnull.example": { verdict: "TERMS_PENDING", note: "terms unread: a meta whose trimmed field is null" },
   };
   // The fixtures: a js-shell (one per kind of site), a bot-challenge, a short page, a read page, a failed fetch, a
   // missing capture, a robots-disallowed one, one from before robots.txt was read, and two already rendered in js.
@@ -319,6 +324,23 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
   });
   // Another slug that merely starts the same way is not a copy of terms-pending.
   capture("terms-pending-rates", "https://pending.example/rates", { extra: { renderedWith: "chromium" } });
+  // Plain captures scripts/trim-capture.mjs trimmed (tick 59): the body left the tree, the .txt kept its line count with
+  // every line emptied, and the block records the kind capture-check gave each whole (a shell, a read page); one stored
+  // trimmed by render-watch's route (no kind recorded), and one whose last fetch failed (status 503, the block kept).
+  for (const [slug, url, kind, html, status] of [
+    ["terms-trimshell", "https://trimshell.example/terms", "js-shell", SHELL, 200],
+    ["terms-trimok", "https://trimok.example/terms", "ok", LONG, 200],
+    ["terms-trimroute", "https://trimroute.example/terms", null, SHELL, 200],
+    ["terms-trimfailed", "https://trimfailed.example/terms", "js-shell", SHELL, 503],
+  ] as const) {
+    const trimmed = { on: "2026-10-06", ruling: "fixture", site: new URL(url).hostname, copying: "barred", keptLines: [], context: 2, lineCount: 2, body: { path: `research/rendered/${slug}.html`, keptLines: [], inTree: false }, cited: [], wide: [], ...(kind ? { captureCheck: kind } : {}), fullBytesIn: "commit abc1234 (fixture)" };
+    capture(slug, url, { html, status, error: status === 200 ? null : "HTTP 503", extra: { trimmed } });
+    rmSync(join(dir, `${slug}.html`));
+    writeFileSync(join(dir, `${slug}.txt`), "\n");
+  }
+  // A meta whose trimmed field is null is no trimmed capture (tick 59 review): it still needs its .html.
+  capture("terms-trimnull", "https://trimnull.example/terms", { extra: { trimmed: null } });
+  rmSync(join(dir, "terms-trimnull.html"));
 
   const URLS_TXT = [
     "# research/rendered/urls.txt — a fixture",
@@ -389,6 +411,29 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     refuses({ slug: "terms-short" }, /grades the plain capture short \(/);
     refuses({ slug: "terms-long" }, /grades the plain capture ok \(/);
     refuses({ slug: "terms-forbidden" }, /grades the plain capture status \(/);
+  });
+
+  it("grades a capture trim-capture trimmed by the kind its block records, not its emptied text: a trimmed shell qualifies without its .html, a trimmed read page is refused as trimmed", () => {
+    // Tick 59 (the reviewers' note of fold 9: a trimmed terms capture was read as missing its HTML, the wrong reason).
+    const urls = "# a list\n";
+    expect(existsSync(join(dir, "terms-trimshell.html"))).toBe(false);
+    const shell = go({ url: "https://trimshell.example/terms", slug: "terms-trimshell", urls });
+    expect(shell.line).toBe("https://trimshell.example/terms\tterms-trimshell\tjs");
+    expect(shell.evidence).toBe(classifyCapture(readCapture("terms-trimshell", dir)).evidence);
+    expect(shell.evidence).toMatch(/^trimmed 2026-10-06 \(ruling 6\.10 row 21 \(d\)\): 0 of 2 text lines kept in the tree, the body out of it; .*; capture-check's kind before the trim$/);
+    refuses(
+      { url: "https://trimok.example/terms", slug: "terms-trimok", urls },
+      /refuses terms-trimok: trimmed: its pre-trim kind was ok \(trimmed 2026-10-06 .*capture-check's kind before the trim\), not js-shell; only a shell is read by the once-only js render \(3\(1\) K4/,
+    );
+    // No kind recorded (render-watch's route) is said so; a failed fetch is graded status, trimmed or not.
+    refuses({ url: "https://trimroute.example/terms", slug: "terms-trimroute", urls }, /refuses terms-trimroute: trimmed: its pre-trim kind was not recorded \(trimmed 2026-10-06 /);
+    refuses({ url: "https://trimfailed.example/terms", slug: "terms-trimfailed", urls }, /refuses terms-trimfailed: scripts\/capture-check\.mjs grades the plain capture status \(/);
+    // An untrimmed capture without its .html is still no plain capture, and so is one whose trimmed field is null.
+    refuses({ slug: "terms-nohtml" }, /no plain capture at research\/rendered\/terms-nohtml\.meta\.json with its terms-nohtml\.html/);
+    refuses(
+      { url: "https://trimnull.example/terms", slug: "terms-trimnull", urls },
+      /refuses terms-trimnull: no plain capture at research\/rendered\/terms-trimnull\.meta\.json with its terms-trimnull\.html/,
+    );
   });
 
   it("refuses a missing plain capture, a meta without its HTML, and a capture of another URL", () => {

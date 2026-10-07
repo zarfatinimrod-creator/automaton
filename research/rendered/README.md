@@ -237,7 +237,8 @@ one that is, is not stored at all: list it by its own URL.
   prints a capture's text. `--apply` writes. Exit 0 would trim or re-trim / did, 3 nothing to do (a run over a store
   already trimmed under the wide rule), 1 a refusal with nothing written (a barred site's entry with no `copying` field,
   a named capture of an unread site or of one with no entry, a binary body cited by line, a capture with uncommitted
-  changes), 4 a capture refused alone with the rest of the run done: a trimmed capture cited later at a line its trim
+  changes under `--apply`: a dry run prints it as `uncommitted: <slug> ...` and plans it on the files on disk), 4 a
+  capture refused alone with the rest of the run done: a trimmed capture cited later at a line its trim
   emptied (a wide range is not such a citation), with the remedy for where its full bytes are (a commit: freeze from it
   and trim the copy; the route: the bytes were never retained, so cite the URL, `fetchedAt` and `sha256` without a
   line). The citations are freeze-capture's scanner's, every form, plus every bare `:N`, "line N" and `html:N` on a
@@ -247,7 +248,9 @@ one that is, is not stored at all: list it by its own URL.
   then trim the copy; a capture the route stored has no such commit); `checkManifest` (the frozen-citations guard) holds a trimmed frozen copy to its block; `--cited`
   takes a trimmed copy for the version whose full hashes its block records (a re-trimmed copy too: its full hashes do not
   change). `capture-check.mjs` reads a trimmed capture (its body is not a missing file) and reports the kind it had whole,
-  or `trimmed` for one render-watch's route stored.
+  or `trimmed` for one render-watch's route stored. `queue-zero-test.mjs --js --terms-shell` takes that kind for a
+  trimmed plain capture and needs no `.html` of it: a trimmed shell still qualifies for the once-only js render, and any
+  other is refused `trimmed: its pre-trim kind was <kind>`.
   `remask-captures.mjs` does not look for a body the block says left.
 - Simulate before running it on the repository: `scripts/sim-tree.sh -- sh -c 'node scripts/trim-capture.mjs --apply &&
   scripts/verify.sh'` (the full revenue suite on the trimmed copy is the acceptance test).
@@ -363,16 +366,24 @@ verdict), then queue the line. A line for a site with no verdict fails CI, and s
   on, which no render rewrites, so `node scripts/robots-verdict.mjs --recheck` compares every cited copy with the live
   capture the weekly run keeps current. The 07:11 Tuesday tick runs it after it has read the weekly run's commit
   (render-watch.yml, Tuesday 05:23 UTC) and before any dispatch: dry first, then `--apply` when a site changed.
-  `unchanged` (the live bytes are the copy's, or a 404 is still a 404): nothing to do. `unreachable` (no live capture, a
-  401/403/429, an HTML page, a 5xx): reported and left as it is; render-watch still reads that answer before it fetches
-  a page. `refresh` (changed, every queued path still allowed): the live capture is frozen as a new dated copy
-  (`FROZEN.sha256` following), the source cites it and the note gains a dated sentence. `revert` (a queued path is now
-  disallowed): the site is NO_TERMS again, so its lines stop passing `termsGate` at once, its probe stays on the weekly
-  watch, and no line of this list is edited. `error` (exit 1): a source that cites no frozen copy, a copy that does not
-  hold what it says, or a change with no queued page to judge; resolved before any dispatch. Exit 0 when something
-  changed, 3 when nothing did. After `--apply`: commit the new copies and the file, run
-  `node scripts/urls-pause-comments.mjs --fix` after a revert (a paused line naming the site's verdict names a stale
-  one), then `scripts/verify.sh`. The tests of ticks 45 to 57 read the verdicts as they stood before any re-check
+  `unchanged` (the live bytes are the copy's, or a 404 is still a 404, and every path queued now is allowed by it):
+  nothing to do. `disallowed-path` (the robots.txt is unchanged, but it disallows a path queued since the verdict, such as
+  a new prize line): reported with each such path, its rule and the list line that queues it (`<list>:<line>`), and
+  nothing is written, `--apply` included; the verdict stays, and the tick retires that line in this list (a `# retired …`
+  comment, which the re-check never reads as queued) or removes it, from this list or the prize list
+  (`research/measurements/ai-allowed-events.urls.txt`). Pausing it is no remedy: a `# paused …` line is still a queued
+  path, so every later re-check reports it again. Render-watch's own robots check already refuses that page before any
+  fetch. A page queued on a host the source does not cite, with no robots.txt read there, is left out and named on the
+  site's line (`not judged, on a host with no robots.txt read: …`); the site's other paths are still judged.
+  `unreachable` (no live capture, a 401/403/429, an HTML page, a 5xx): reported and left as it is; render-watch still
+  reads that answer before it fetches a page. `refresh` (changed, every queued path still
+  allowed): the live capture is frozen as a new dated copy (`FROZEN.sha256` following), the source cites it and the note
+  gains a dated sentence. `revert` (a queued path is now disallowed): the site is NO_TERMS again, so its lines stop
+  passing `termsGate` at once, its probe stays on the weekly watch, and no line of this list is edited. `error` (exit 1):
+  a source that cites no frozen copy, a copy that does not hold what it says, or a change with no queued page to judge;
+  resolved before any dispatch. Exit 0 when something changed or a `disallowed-path` needs the edit above, 3 when nothing
+  did. After `--apply`: commit the new copies and the file, run `node scripts/urls-pause-comments.mjs --fix` after a
+  revert (a paused line naming the site's verdict names a stale one), then `scripts/verify.sh`. The tests of ticks 45 to 57 read the verdicts as they stood before any re-check
   (`beforeRechecks`, fixture `src/__tests__/revenue/fixtures/terms-verdicts-5c980e3-robots-ok.json`), so they stay green
   for 16 of the 18 sites; a refresh or a revert of eurocontrol.int or agenthon.net, whose tick-57 records the tests and the
   mutation plan hold by their exact text, still needs hand edits (the measured list is in the script's header).

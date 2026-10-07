@@ -89,8 +89,10 @@
  *
  * Refused (exit 1, nothing written, for the whole run): a capture of a barred site whose verdict entry has no copying
  * field; a named capture as above; a trim that would blank a cited line (checked line by line after trimming); a binary
- * body cited by line; a capture whose files have uncommitted changes (the block names the commit that holds the full
- * bytes); a trimmed capture whose files no longer match its block; a meta that is not JSON or names no url.
+ * body cited by line; with --apply, a capture whose files have uncommitted changes (the block names the commit that holds
+ * the full bytes; a dry run prints it as "uncommitted: <slug> has uncommitted changes ..." and plans it on the files on
+ * disk, refusing nothing for it, so a dry run over a store with a render just fetched still answers); a trimmed capture
+ * whose files no longer match its block; a meta that is not JSON or names no url.
  * Refused for that capture alone (exit 4, the rest of the run goes on and, with --apply, is written): a capture already
  * trimmed that the scanner cites at a line its trim emptied (a wide range is not such a citation). This script writes a
  * trimmed capture again only for the second pass, which never brings a line back, so holding the other captures back
@@ -279,7 +281,8 @@ export function citationsOf({ root = REPO_ROOT, slugs, urlsText }) {
 
 /**
  * The last commit that wrote the capture's files under root, or null when root is not the top of a git work tree (a
- * fixture store). Throws on uncommitted changes: the block names the commit that holds the full bytes.
+ * fixture store). Throws on uncommitted changes, an error marked `uncommitted`: the block names the commit that holds the
+ * full bytes (trimStore's --apply refuses the capture; its dry run reports it).
  */
 export function historyOf(root, slug) {
   const rels = CAPTURE_EXTS.map((ext) => `${RENDERED_REL}/${slug}.${ext}`);
@@ -289,7 +292,8 @@ export function historyOf(root, slug) {
   const status = git(["status", "--porcelain", "--", ...rels]);
   if (status.status !== 0) throw new Error(`git cannot read ${slug}: ${String(status.stderr).trim()}`);
   if (status.stdout.trim()) {
-    throw new Error(`${slug} has uncommitted changes (${status.stdout.trim().split("\n").join("; ")}): commit it first, so the trimmed block names the commit that holds the full bytes`);
+    const err = new Error(`${slug} has uncommitted changes (${status.stdout.trim().split("\n").join("; ")}): commit it first, so the trimmed block names the commit that holds the full bytes`);
+    throw Object.assign(err, { uncommitted: true });
   }
   return git(["log", "-1", "--format=%H", "--", ...rels]).stdout.trim() || null;
 }
@@ -627,7 +631,15 @@ export function trimStore({ root = REPO_ROOT, slugs: named = [], apply = false, 
           captureCheck = "unreadable";
         }
       }
-      const commit = metaJson.trimmed ? null : historyOf(root, slug);
+      let commit = null;
+      try {
+        commit = metaJson.trimmed ? null : historyOf(root, slug);
+      } catch (err) {
+        // A capture with uncommitted changes (a render just fetched, a capture mid-edit): --apply refuses it, since the
+        // block must name the commit that holds the full bytes; a dry run reports it and plans it on the files on disk.
+        if (apply || !err.uncommitted) throw err;
+        log(`uncommitted: ${err.message}; the dry run plans it on the files on disk, and --apply refuses it until it is committed`);
+      }
       plans.push(planCapture({ slug, dir, files, cites: cites.get(slug), site, on, commit, captureCheck }));
     } catch (err) {
       refusals.push(`${slug}: ${err.message}`);
