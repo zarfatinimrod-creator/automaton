@@ -777,6 +777,9 @@ const un60Fixture = () => JSON.parse(readFileSync(UN60_FIXTURE, "utf8")) as Reco
  */
 const YT61_SITE = "googleapis.com";
 const YT61_BASE = "c1df0c8";
+/** The sentence ruling 7.10 row 25 fold 8 appended to posthog.com's note in the same tick (merged after YT61_BASE). */
+const PH61_SENTENCE =
+  " A second and a third free organisation, one per public face (brand, T1 sub-brand), each using its one included project, is use of PostHog's documented unit (organizations.mdx:24-28), not a circumvention under 2.1(d) (ruling 7.10 §1 option 8).";
 /** The verdicts as they stood before googleapis.com's entry (tick 61): that entry taken out. */
 const yt61Before = (v: Record<string, Entry>): Record<string, Entry> => Object.fromEntries(Object.entries(v).filter(([site]) => site !== YT61_SITE));
 /** The verdicts as they stood before un.org's terms read (tick 60): its entry put back from that fixture, and tick 61's taken out. */
@@ -5198,7 +5201,11 @@ describe("tick 61: googleapis.com's entry (7.10), CONDITIONAL_UNMET, copying bar
     const then = JSON.parse(base).sites as Record<string, Entry>;
     expect(then[YT61_SITE]).toBeUndefined();
     expect(Object.keys(yt61Before(raw))).toEqual(Object.keys(then));
-    expect(yt61Before(raw)).toEqual(then);
+    // One other entry moved in the same tick, by another fold: ruling 7.10 row 25 fold 8 appended one sentence to
+    // posthog.com's note (option 8, 2.1(d)). Everything else is byte for byte what the base held.
+    expect(raw["posthog.com"].note).toBe(then["posthog.com"].note + PH61_SENTENCE);
+    const before = yt61Before(raw);
+    expect({ ...before, "posthog.com": { ...before["posthog.com"], note: then["posthog.com"].note } }).toEqual(then);
   });
 
   it("gives it the main thread's verdict: CONDITIONAL_UNMET, copying barred, checked 7.10, sourced to the excerpt file at the pinned commit", () => {
