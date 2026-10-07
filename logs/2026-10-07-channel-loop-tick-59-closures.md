@@ -155,3 +155,66 @@
 - הדפסה של כל ה-task list החיצוני (רשימת טיקים של ה-thread הראשי) שחזרה בתזכורות המערכת — לא בשליטתי, אבל ארוכה.
 - עיצוב `trimmedKind` שנזרק (סעיף 5): כתיבה, diff והחזרה.
 - הרצת `--recheck` על המאגר האמיתי פעמיים (פעם אחרי שינוי הקוד, פעם אחרי ה-commit לצורך הדוח); הפלט זהה.
+
+## Review fixes
+
+הסוקר (Opus) מצא שלושה ממצאי "fix" ושתי הערות, בלי חוסם. תיקנתי את שלושת ממצאי ה-fix, והרגתי גם את שלוש המוטציות ששרדו אצלו
+(R59-3, Q59-5, T59R-4), כל אחת ברשומה בתוכנית של הסקריפט שלה. הענף לא זז: `origin/claude/new-session-j071dx` עדיין על `f2fc8bc`, ולכן
+לא היה מה למזג.
+
+**1. התרופה ל-`disallowed-path` לא ניקתה אותו.** הכותרת, שורת הקונסולה ו-`research/rendered/README.md` אמרו "pause the line". אבל
+`queuedPaths` קורא שורת `# paused … URL<TAB>slug` כנתיב בתור, כי `judgeSite` שופט שורות מושהות בכוונה. לכן שורה מושהית הייתה
+מדווחת שוב בכל הרצה, ובדיקת המאגר האמיתי הייתה נשארת אדומה. בשלושת המקומות הניסוח הוא עכשיו: לפרוש את השורה (`# retired …`, ש-
+`queuedPaths` לעולם לא קורא כנתיב בתור) או למחוק אותה. השהיה אינה תרופה. שורת הקונסולה היא עכשיו `report only, nothing written: retire the
+line or remove it (a paused line is still queued; research/rendered/README.md)`. בדיקה חדשה מראה ששורה מושהית עדיין מדווחת (exit 0,
+`(paused; "Disallow: /search")`), ושורה שפרשה או נמחקה מחזירה `unchanged` עם exit 3.
+
+**2. עמוד על host שהמקור לא מצטט הסתיר נתיב אסור.** `judgeRobots` נעצר ב-host הראשון שאין לו קריאת robots.txt (`no-capture`,
+`refused`, `unreachable`) לפני שהוא שופט נתיב כלשהו. הענף של robots.txt שלא השתנה הפך כל kind שאינו `disallowed` ל-`unchanged`.
+את זה שחזרתי כבדיקה אדומה לפני התיקון (P2 של הסוקר: exit 3 במקום 0). עכשיו, כשהשיפוט הראשון נכשל באחד משלושת ה-kinds האלה,
+השורות של כל עמוד על host בלי קריאת robots.txt מוצאות מהשיפוט, ושאר הנתיבים נשפטים שוב. כך עמוד כזה לא מסתיר נתיב אסור על host
+אחר, ושורת האתר אומרת מה לא נשפט: `; not judged, on a host with no robots.txt read: <slug> (<url>) — <why>`. שורת probe של אותו
+host (בתור ועוד לא הובאה) אינה עמוד, ואינה נמנית. אתר שאין לו דבר אחר לדווח נשאר `unchanged`, עם exit 3 והסיבה על השורה. בחרתי
+בשתי האפשרויות שהסוקר הציע יחד, גם שיפוט מחדש בלי ה-host הזה וגם הסיבה על השורה, כי כל אחת לבדה משאירה חור: בלי שיפוט מחדש
+הנתיב האסור מוסתר, ובלי הסיבה השורה לא מראה שעמוד לא נשפט. ה-host המצוטט תמיד קריא, כי `frozenProblem` כבר בדק שה-kind של העותק
+הקפוא תואם לציטוט. הכותרת ו-README מתארים את ההתנהגות הזאת במקום ה-"known limit" הקודם.
+
+**3. אין בדיקה ל-host לא מצוטט שנשפט על הלכידה החיה שלו.** הוספתי את P3 של הסוקר כבדיקה. `https://law.example/robots.txt` עם
+`Disallow: /nowww`, ועמוד `https://law.example/nowww` בתור, נותנים `disallowed-path` ו-exit 0. כשאותו host מתיר את העמוד, מתקבל
+exit 3 בלי "not judged". R59-3 נכנסה לתוכנית כ-T59R-DP6.
+
+**הערות (טריוויאליות ובטוחות, ולכן טופלו):**
+- Q59-5: מטא ש-`trimmed` שלו `null` אינה לכידה גזומה, וצריכה את ה-`.html` שלה. נוספו fixture (`terms-trimnull`), בדיקה ורשומה
+  T59R-Q6. כמו שהסוקר מדד, אין היום מטא כזו במאגר.
+- T59R-4: `git status` שנכשל ב-`historyOf` (כאן אינדקס פגום, `.git/index` = "not an index") נשאר סירוב גם ב-dry run, ואינו
+  מסומן `uncommitted`. נוספו בדיקה ורשומה T59R-T4. לפני כן וידאתי ש-`rev-parse --show-toplevel` ממשיך לעבוד עם אינדקס פגום ש-
+  `git status` נכשל עליו (exit 0 מול 128).
+- לא טופלו, ונשארים פתוחים כמו בדוח הבנאי: נתיב `--js --terms <slug>` (`checkTermsCapture`), ולכידה גזומה שעוברת עריכה ונכשלת על
+  "files no longer match its block".
+
+**קבצים:** `scripts/robots-verdict.mjs` (הענף של robots.txt שלא השתנה, הכותרת, שורת הקונסולה), `research/rendered/README.md`,
+`src/__tests__/revenue/robots-verdict.test.ts` (שלוש בדיקות חדשות, והצמדת שורת הקונסולה לניסוח החדש),
+`src/__tests__/revenue/queue-zero-test.test.ts`, `src/__tests__/revenue/trim-capture.test.ts`, שלוש תוכניות המוטציה, ו-
+`src/__tests__/revenue/mutations/README.md` (תיאורים, ספירות וזמנים). שום קובץ אסור לא נגע.
+
+**מוטציות** (כל אחת ב-`scripts/sim-tree.sh`, עם TMPDIR בתיקיית ה-scratch שלי, וכל sim-tree יצא 0 והסיר את העץ שלו):
+- `robots-verdict.json`: 115 מתוך 115 נהרגו, ב-857 שניות, ליד שתי התוכניות האחרות. נוספו T59R-DP6 עד DP14, וה-find של T59-DP1
+  עבר לשורה החדשה (המוטציה עצמה לא השתנתה).
+- `queue-zero-test.json`: 38 מתוך 38, ב-223 שניות.
+- `trim-capture.json`: 55 מתוך 55, ב-429 שניות.
+
+**בדיקות:**
+- `scripts/verify.sh` ממוקד (robots-verdict, queue-zero-test, trim-capture, prize-terms-audit, frozen-citations, mutation-plans):
+  exit 0, 272 בדיקות, לפני ה-commit `210d705` ועל העץ הסופי.
+- `scripts/verify.sh` מלא: exit 0, ב-80 קבצים: 2763 עברו ו-2 דולגו (2759 של הבנאי ועוד 4 הבדיקות החדשות), 83 שניות, על העץ הסופי.
+- `node scripts/robots-verdict.mjs --recheck` על המאגר האמיתי: exit 3, `18 site(s): 18 unchanged, 0 unreachable, 0 refresh, 0
+  revert, 0 error, 0 disallowed-path`, ואף שורה אינה "not judged".
+- `node scripts/trim-capture.mjs` (dry run): exit 3. נבדקו 46 לכידות של 10 אתרים: 44 כבר גזומות, ול-2 אין דבר בעץ. אין שורות REFUSED
+  או `uncommitted:`, ו-`git status` נשאר נקי.
+- grep השם וה-grep לכתובות על כל קובץ ששונה: exit 1, כלומר לא נמצא דבר.
+
+**שגיאות:** `mutate.mjs --check` על `robots-verdict.json` סירב בהתחלה, כי הקובץ לא היה ב-commit. עם `--allow-dirty` הוא מצא ש-T59-DP1
+לא חל, כי ה-find שלו השתנה עם השורה. כיוונתי את ה-find מחדש, ואחריו 115 מתוך 115 חלו.
+
+**אסימונים:** בהמתנה לשלוש התוכניות במקביל (כ-14 דקות) הפעלתי Monitor ושלוש לולאות `until`, וזו כפילות. Monitor לבדו היה מספיק
+אילו אפשר היה לחכות לו בלי לסיים את התור.
