@@ -1,0 +1,26 @@
+[
+  {
+    "id": "T61-YT1-source-file",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"source\": \"research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md (YouTube",
+    "replace": "\"source\": \"research/channel-loop/terms/youtube-api-services-terms-2026-10-08.md (YouTube",
+    "test": "src/__tests__/revenue/terms-saved-copies.test.ts",
+    "note": "tick 61: googleapis.com's source names an excerpt file that does not exist; the file-exists assertion on the source's path must fail"
+  },
+  {
+    "id": "T61-YT2-range-over-12",
+    "file": "research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md",
+    "find": "the default quota allocation (original lines 1159-1159)\n\n<!-- excerpt: original lines 1159-1159, sha256",
+    "replace": "the default quota allocation (original lines 1147-1159)\n\n<!-- excerpt: original lines 1147-1159, sha256",
+    "test": "src/__tests__/revenue/terms-saved-copies.test.ts",
+    "note": "tick 61: an excerpt's heading and marker widened together to 13 original lines (1147-1159); the at-most-12-lines rule must fail (parse's block length and the pinned ranges fail with it)"
+  },
+  {
+    "id": "T61-YT3-line-16",
+    "file": "research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md",
+    "find": "heading (original lines 13-13)\n\n<!-- excerpt: original lines 13-13,",
+    "replace": "heading (original lines 16-16)\n\n<!-- excerpt: original lines 16-16,",
+    "test": "src/__tests__/revenue/terms-saved-copies.test.ts",
+    "note": "tick 61: an excerpt's heading and marker moved together onto original line 16, the line with the postal address, its block and hash unchanged so parse() still passes; the never-line-16 check must fail (the pinned ranges and the title list fail with it)"
+  }
+]

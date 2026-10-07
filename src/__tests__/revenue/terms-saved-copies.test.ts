@@ -119,6 +119,8 @@ describe("saved terms texts (research/channel-loop/terms/) hold what their heade
       "openreview-terms-of-use-2026-10-05.md": "verbatim",
       "posthog-privacy-2026-10-04.md": "reference",
       "posthog-terms-2026-10-04.md": "reference",
+      // Tick 61: the YouTube API Services Terms, quoting only the cited clauses (the last block below).
+      "youtube-api-services-terms-2026-10-07.md": "reference",
     });
   });
 
@@ -389,5 +391,134 @@ describe("the tick-45 prize-event texts", () => {
       expect(e.note, site).toContain(text);
       expect(linesOf(file, a, b), `${file}:${a}-${b}`).toContain(text);
     }
+  });
+});
+
+/**
+ * Tick 61 (7.10.2026; ruling 7.10 row 24 §2 decision 2): the YouTube API Services Terms of Service (Americas version) and
+ * Developer Policies, read at github grade from Open Terms Archive's copy (OpenTermsArchive/vlopses-us-versions
+ * `YouTube/Developer Terms.md` at commit 80db0630, pinned by sha256) by one Opus reader and one adversarial Opus verifier,
+ * with googleapis.com's verdict (CONDITIONAL_UNMET, copying barred) the main thread's. The Terms bar redistributing any
+ * portion of the Services, documentation included (OTA:661 with :799 (ii)), so this reference is held tighter than
+ * PostHog's: each excerpt one clause of at most 12 original lines, under 150 lines in all, every range cited in the file's
+ * own answers and verdict, and never original line 16, which carries the company's postal address. The original is not
+ * in the repository: run with YT_TERMS_SOURCE=<the pinned download> to compare every quoted line with it; without it, the
+ * marker hashes are what a re-fetch at the commit checks (parse() above recomputes them).
+ */
+describe("the YouTube API Services Terms (tick 61): a pinned reference that quotes only the cited clauses", () => {
+  const F = "youtube-api-services-terms-2026-10-07.md";
+  const PATH = join(DIR, F);
+  const COMMIT = "80db0630dc36c1f2aa8006a11ea58033a8f67227";
+  const SHA = "c7a393695817433568d36d7383702e546549b273a7d292e44d5d712eb32c01b1";
+  const MAX_RANGE_LINES = 12;
+  const MAX_QUOTED_LINES = 150;
+  /** The original ranges quoted, in order: one is added or widened only by changing this list. */
+  const RANGES: [number, number][] = [[1, 1], [13, 13], [46, 46], [48, 48], [57, 57], [59, 59], [76, 76], [81, 81], [86, 86], [134, 134], [156, 156], [163, 163], [165, 165], [241, 241], [245, 245], [286, 286], [295, 295], [302, 302], [303, 303], [324, 324], [340, 340], [342, 342], [346, 346], [348, 348], [358, 358], [360, 360], [433, 433], [437, 437], [448, 448], [450, 450], [457, 457], [490, 490], [498, 498], [510, 510], [516, 516], [538, 538], [550, 550], [576, 576], [578, 578], [582, 582], [584, 584], [596, 596], [598, 598], [602, 602], [606, 606], [608, 608], [610, 610], [613, 613], [659, 659], [661, 661], [692, 692], [694, 694], [757, 757], [774, 774], [781, 781], [783, 783], [787, 787], [789, 789], [793, 793], [795, 795], [797, 797], [799, 799], [801, 801], [1123, 1123], [1125, 1125], [1131, 1131], [1159, 1159], [1176, 1176]];
+  /** The three title lines, quoted without a citation. */
+  const TITLES = [1, 13, 286];
+  /** A street number and name with its suffix, or a US state code and ZIP: the shapes of original line 16's address. */
+  const STREET = /\b\d{2,5} [A-Z][a-z]+ (?:Ave|Avenue|St|Street|Rd|Road|Blvd|Boulevard|Dr|Drive|Way|Pkwy|Parkway)\b/;
+  const ZIP = /\b[A-Z]{2} \d{5}\b/;
+  const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/;
+  const text = () => readFileSync(PATH, "utf8");
+  /** The [A, B] original ranges the excerpt markers state, read from the markers alone. */
+  const markers = (t: string) => [...t.matchAll(new RegExp(EXCERPT.source, "gm"))].map((m) => [Number(m[1]), Number(m[2])] as [number, number]);
+  /** The file after its excerpts: the six answers, the verdict and the later-read list. */
+  const prose = (t: string) => t.slice(t.indexOf("\n## The six answers"));
+
+  it("exists, and is a pinned reference to Open Terms Archive's copy at the commit, its header stating the original's sha256", () => {
+    expect(existsSync(PATH)).toBe(true);
+    const p = parse(F);
+    expect(p.kind).toBe("reference");
+    expect([p.lines, p.bytes, p.sha]).toEqual([1270, 166101, SHA]);
+    const t = text();
+    expect(t).toContain(`> - Commit SHA: \`${COMMIT}\``);
+    expect(t).toContain(`> - Raw file at that commit: https://raw.githubusercontent.com/OpenTermsArchive/vlopses-us-versions/${COMMIT}/YouTube/Developer%20Terms.md`);
+    expect(t).toContain("> - Source repo: https://github.com/OpenTermsArchive/vlopses-us-versions (published by Open Terms Archive)");
+    expect(t).toContain("> - Path: `YouTube/Developer Terms.md`, one Markdown file holding five documents");
+    expect(t).toContain("the last (original line 1270) has no final newline, so `wc -l` counts 1,269");
+    expect(t).toContain("Open Terms Archive's own repository licence was not read");
+  });
+
+  it("quotes each clause as at most 12 original lines and under 150 in all, as many as the header says", () => {
+    const t = text();
+    const r = markers(t);
+    expect(r.filter(([a, b]) => b - a + 1 > MAX_RANGE_LINES)).toEqual([]);
+    const total = r.reduce((n, [a, b]) => n + b - a + 1, 0);
+    expect(total).toBeLessThan(MAX_QUOTED_LINES);
+    const stated = t.match(/^> - \*\*The body is not copied here\.\*\* .*?: (\d+) of the ([\d,]+) original lines are quoted below, in (\d+) ranges, each range one clause/m);
+    expect(stated).not.toBeNull();
+    expect([Number(stated![1]), Number(stated![2].replace(/,/g, "")), Number(stated![3])]).toEqual([total, 1270, r.length]);
+    expect(r).toEqual(RANGES);
+    expect(total).toBe(68);
+  });
+
+  it("never quotes original line 16, and holds no postal or email address", () => {
+    const t = text();
+    expect(markers(t).filter(([a, b]) => a <= 16 && 16 <= b)).toEqual([]);
+    expect(t).toContain("Original line 16 is never quoted: it carries the company's postal address");
+    expect(t.split("\n").filter((l) => STREET.test(l) || ZIP.test(l) || EMAIL.test(l))).toEqual([]);
+  });
+
+  it("cites every quoted range in its own answers and verdict, the three titles aside", () => {
+    const t = text();
+    const cited = new Set([...prose(t).matchAll(/(?:\bOTA:|(?<![\w./`-]):)(\d+)/g)].map((m) => Number(m[1])));
+    const uncited = markers(t).filter(([a, b]) => !TITLES.includes(a) && !Array.from({ length: b - a + 1 }, (_, i) => a + i).some((n) => cited.has(n)));
+    expect(uncited).toEqual([]);
+    expect(markers(t).filter(([a]) => TITLES.includes(a)).map(([a]) => a)).toEqual(TITLES);
+  });
+
+  it("answers the six questions as the verifier corrected them, quotes the verdict memo's eight conditions, and lists what a later read must settle", () => {
+    const p = prose(text());
+    for (const q of ["(i)", "(ii)", "(iii)", "(iv)", "(v)", "(vi)"]) expect(p, q).toContain(`\n**${q} `);
+    expect(p.match(/\*\*Bearing:\*\*/g)).toHaveLength(6);
+    // The verifier's corrections, each marked where the text does not say it in its own words.
+    expect(p).toContain('An API key is an API Credential [inference: the document never uses the words "API key";');
+    expect(p).toContain("[inference: git history is storage]");
+    expect(p).toContain("that videos.list with part=id,status returns madeForKids and privacyStatus to a bare key is not in this document [inference until the first live read;");
+    expect(p).toContain("and GitHub's secret store and the runner are such agents [inference: GitHub's terms on secrets were not read]");
+    expect(p).toContain("On the literal words only, yes, and further than the brand account; the scope is unknown.");
+    expect(p).toContain("**Bearing:** met by the main thread's ruling of tick 61 (not by any declaration before it)");
+    expect(p).toContain("(i) is decided by (ii)");
+    // The memo's eight conditions, in its words.
+    const verdict = p.slice(p.indexOf("\n## Verdict\n"), p.indexOf("\n## What a later read must settle\n"));
+    for (let n = 1; n <= 8; n++) expect(verdict, `condition ${n}`).toMatch(new RegExp(`\\n> ${n}\\. `));
+    expect(verdict).toContain("> googleapis.com → verdict CONDITIONAL_UNMET; copying: barred (OTA:661");
+    expect(verdict).toContain("> 6. exactly one API Project per API Client (OTA:448): ruled here — the colony is ONE API Client");
+    const later = p.slice(p.indexOf("\n## What a later read must settle\n"));
+    expect(later).toContain("the EMEA version (OTA:1125)");
+    expect(later).toContain("(OTA:596 (ii)), the count fitting the example at OTA:598");
+    expect(later).toContain("**The first live read.**");
+  });
+
+  it("is the source of googleapis.com's verdict, a file that exists", () => {
+    const e = (JSON.parse(readFileSync(VERDICTS, "utf8")).sites as Record<string, { verdict: string; source: string; copying: string }>)["googleapis.com"];
+    expect([e.verdict, e.copying]).toEqual(["CONDITIONAL_UNMET", "barred"]);
+    const named = e.source.match(/^(research\/channel-loop\/terms\/[a-z0-9-]+\.md) \(/);
+    expect(named?.[1]).toBe(PATH);
+    expect(existsSync(named![1])).toBe(true);
+  });
+
+  it("matches the original line for line where the pinned download is at hand (YT_TERMS_SOURCE)", () => {
+    // The original is not committed (copying is barred); a run with the download checks every quoted line against it.
+    const src = process.env.YT_TERMS_SOURCE;
+    if (!src) return;
+    const raw = readFileSync(src);
+    expect(sha256(raw)).toBe(SHA);
+    const original = raw.toString("utf8").split("\n");
+    expect(original).toHaveLength(1270);
+    // The shapes the address check looks for are the ones original line 16 holds.
+    expect(STREET.test(original[15]) && ZIP.test(original[15])).toBe(true);
+    const lines = text().split("\n");
+    let compared = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const e = lines[i].match(EXCERPT);
+      if (!e) continue;
+      const [a, b] = [Number(e[1]), Number(e[2])];
+      const block = lines.slice(i + 2, i + 2 + (b - a + 1));
+      expect(block, `${a}-${b}`).toEqual(original.slice(a - 1, b));
+      compared += block.length;
+    }
+    expect(compared).toBe(68);
   });
 });
