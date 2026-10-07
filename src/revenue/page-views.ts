@@ -305,8 +305,14 @@ export const QUERY_API_PRICED = "query_api_priced";
 /** How much of a priced answer's body is kept as the firing's evidence, after masking (ruling 7.10 §4(1) R1). */
 export const PRICED_BODY_KEEP = 200;
 
-/** The words that make a 403 or 429 a billing answer: billing, a plan, credits, quota or an upgrade (R1). */
-const BILLING_WORDS = /\b(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)\b/i;
+/**
+ * The words that make a 403 or 429 a billing answer: billing, a plan, credits, quota or an upgrade (R1). Each is matched as
+ * a whole token of the body (`fieldWords`), so a code token names it as a sentence does: `quota_limited`, `quotaLimited`,
+ * `billing_limit_exceeded`, `plan_required`, `upgradeRequired`; "planned" and "explanation" stay whole and name none.
+ */
+const BILLING_WORDS = new Set([
+  "billing", "billed", "plan", "plans", "credit", "credits", "quota", "quotas", "upgrade", "upgrades", "upgraded", "upgrading",
+]);
 
 /** The words of a 2xx field name that make it a charge or billed-usage field (R1). */
 const BILLED_FIELD_WORDS = new Set([
@@ -314,7 +320,7 @@ const BILLED_FIELD_WORDS = new Set([
   "fees", "invoice", "invoiced", "price", "priced", "pricing",
 ]);
 
-/** `billedUsage`, `billed_usage`, `Billed-Usage` → ["billed", "usage"]. */
+/** `billedUsage`, `billed_usage`, `Billed-Usage` → ["billed", "usage"]: camelCase broken, lowercased, split on anything else. */
 function fieldWords(name: string): string[] {
   return name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
 }
@@ -332,14 +338,14 @@ function billedField(value: unknown, depth = 0): string | null {
 
 /**
  * R1 of ruling 7.10 §4(1): does one `/query` answer say the query API is priced? HTTP 402; a 403 or 429 whose body
- * names billing, a plan, credits, quota or an upgrade (a 429 without such a word is a rate limit: null); a 2xx whose
- * JSON body carries a charge or billed-usage field. Returns what matched, for the firing's record, or null.
+ * names billing, a plan, credits, quota or an upgrade, as a token (a 429 without such a word is a rate limit: null); a
+ * 2xx whose JSON body carries a charge or billed-usage field. Returns what matched, for the firing's record, or null.
  */
 export function queryApiPriced(status: number, body: string): string | null {
   if (status === 402) return "HTTP 402";
   if (status === 403 || status === 429) {
-    const word = BILLING_WORDS.exec(body);
-    return word ? `HTTP ${status} naming "${word[0].toLowerCase()}"` : null;
+    const word = fieldWords(body).find((w) => BILLING_WORDS.has(w));
+    return word ? `HTTP ${status} naming "${word}"` : null;
   }
   if (status >= 200 && status < 300) {
     let parsed: unknown;
@@ -508,7 +514,10 @@ function reachRead(byWeek: Map<number, number>, from: number, to: number, g: typ
 
 /** What the priced query API's firings do to one clock (ruling 7.10 §4(2)(iv)). */
 export interface PricedSuspension {
-  /** How far the M-instrument deadline moves: the time each firing suspended it, before the deadline it met. */
+  /**
+   * How far the M-instrument deadline moves: the time suspended, before the deadline it met. Firings whose suspensions
+   * overlap (one cleared by hand and the API priced again before a read) count the overlap once.
+   */
   shiftMs: number;
   /** A firing with no read after it yet, inside its days: the suspension still runs until `endMs`. */
   open: { at: string; endMs: number } | null;
@@ -523,6 +532,8 @@ export interface PricedSuspension {
  * anchor day. It suspends from the firing, or from the anchor for a clock started under it, until the first row written
  * after the firing (the tick that met the priced answer is not a read after it), and for at most `pricedReadWithinDays`
  * from there; a read that comes later does not end the suspension in time, so the weeks unread at its end stay unread.
+ * The deadline moves by the union of the suspensions: a firing adds only the time after the last suspension counted
+ * ended, while each keeps its own 60 days for the instrument-fault check.
  */
 export function pricedSuspension(
   anchorDay: string,
@@ -535,6 +546,7 @@ export function pricedSuspension(
   const nowMs = Date.parse(nowIso);
   const out: PricedSuspension = { shiftMs: 0, open: null, unreadSince: null, expired: [] };
   let deadline = anchor + g.instrumentByDay * DAY_MS;
+  let suspendedUntil = -Infinity;
   const counted = firings
     .filter((f) => f.clearedOn === null || f.clearedOn >= anchorDay)
     .map((f) => ({ at: f.at, firedMs: Date.parse(f.at) }))
@@ -545,10 +557,13 @@ export function pricedSuspension(
     const endMs = startMs + g.pricedReadWithinDays * DAY_MS;
     const after = weeks.map((w) => Date.parse(w.writtenAt)).filter((t) => t > f.firedMs);
     const firstRead = after.length ? Math.min(...after) : null;
-    if (startMs < deadline) {
-      const suspended = Math.max(0, Math.min(firstRead ?? nowMs, endMs) - startMs);
+    const from = Math.max(startMs, suspendedUntil);
+    if (from < deadline) {
+      const until = Math.min(firstRead ?? nowMs, endMs);
+      const suspended = Math.max(0, until - from);
       out.shiftMs += suspended;
       deadline += suspended;
+      suspendedUntil = Math.max(suspendedUntil, until);
     }
     if (firstRead === null) out.unreadSince ??= f.at;
     if (firstRead !== null && firstRead <= endMs) continue;

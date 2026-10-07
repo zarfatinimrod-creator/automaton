@@ -90,79 +90,79 @@
   {
     "id": "T61-R4",
     "file": "src/revenue/page-views.ts",
-    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
-    "replace": "(?:plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
+    "find": "  \"billing\", \"billed\", \"plan\", \"plans\",",
+    "replace": "  \"plan\", \"plans\",",
     "test": [
       "src/__tests__/revenue/page-views.test.ts",
       "src/__tests__/revenue/page-views-reader.test.ts"
     ],
-    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming billing is no longer priced"
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming billing is no longer priced (the review's token set)"
   },
   {
     "id": "T61-R5",
     "file": "src/revenue/page-views.ts",
-    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
-    "replace": "(?:billing|billed|credits?|quotas?|upgrades?|upgraded|upgrading)",
+    "find": "\"plan\", \"plans\", ",
+    "replace": "",
     "test": [
       "src/__tests__/revenue/page-views.test.ts",
       "src/__tests__/revenue/page-views-reader.test.ts"
     ],
-    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming a plan is no longer priced"
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming a plan is no longer priced (the review's token set)"
   },
   {
     "id": "T61-R6",
     "file": "src/revenue/page-views.ts",
-    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
-    "replace": "(?:billing|billed|plans?|quotas?|upgrades?|upgraded|upgrading)",
+    "find": "\"credit\", \"credits\", \"quota\"",
+    "replace": "\"quota\"",
     "test": [
       "src/__tests__/revenue/page-views.test.ts",
       "src/__tests__/revenue/page-views-reader.test.ts"
     ],
-    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming credits is no longer priced"
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming credits is no longer priced (the review's token set)"
   },
   {
     "id": "T61-R7",
     "file": "src/revenue/page-views.ts",
-    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
-    "replace": "(?:billing|billed|plans?|credits?|upgrades?|upgraded|upgrading)",
+    "find": "\"quota\", \"quotas\", ",
+    "replace": "",
     "test": [
       "src/__tests__/revenue/page-views.test.ts",
       "src/__tests__/revenue/page-views-reader.test.ts"
     ],
-    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming quota is no longer priced"
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming quota is no longer priced (the review's token set)"
   },
   {
     "id": "T61-R8",
     "file": "src/revenue/page-views.ts",
-    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)",
-    "replace": "(?:billing|billed|plans?|credits?|quotas?)",
+    "find": "\"upgrade\", \"upgrades\", \"upgraded\", \"upgrading\",",
+    "replace": "",
     "test": [
       "src/__tests__/revenue/page-views.test.ts",
       "src/__tests__/revenue/page-views-reader.test.ts"
     ],
-    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming an upgrade is no longer priced"
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a 403/429 body naming an upgrade is no longer priced (the review's token set)"
   },
   {
     "id": "T61-R9",
     "file": "src/revenue/page-views.ts",
-    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)\\b/i",
-    "replace": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)/i",
+    "find": "fieldWords(body).find((w) => BILLING_WORDS.has(w))",
+    "replace": "[...BILLING_WORDS].find((w) => body.toLowerCase().includes(w))",
     "test": [
       "src/__tests__/revenue/page-views.test.ts",
       "src/__tests__/revenue/page-views-reader.test.ts"
     ],
-    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): the words are no longer whole words, so 'planned maintenance' reads as a plan"
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): the words are matched as substrings, not tokens, so 'planned maintenance' reads as a plan"
   },
   {
     "id": "T61-R10",
     "file": "src/revenue/page-views.ts",
-    "find": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)\\b/i",
-    "replace": "(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)\\b/",
+    "find": "fieldWords(body)",
+    "replace": "body.replace(/([a-z0-9])([A-Z])/g, \"$1 $2\").split(/[^A-Za-z0-9]+/)",
     "test": [
       "src/__tests__/revenue/page-views.test.ts",
       "src/__tests__/revenue/page-views-reader.test.ts"
     ],
-    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): the words are matched case-sensitively, so 'Upgrade to continue' is missed"
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): the body's tokens are not lowercased, so 'Upgrade to continue' and CREDITS_EXHAUSTED are missed"
   },
   {
     "id": "T61-R11",
@@ -229,6 +229,28 @@
       "src/__tests__/revenue/page-views-reader.test.ts"
     ],
     "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1): a field named cost is no longer billed usage"
+  },
+  {
+    "id": "T61-R17",
+    "file": "src/revenue/page-views.ts",
+    "find": "const word = fieldWords(body).find((w) => BILLING_WORDS.has(w));\n    return word ? `HTTP ${status} naming \"${word}\"` : null;",
+    "replace": "const word = /\\b(?:billing|billed|plans?|credits?|quotas?|upgrades?|upgraded|upgrading)\\b/i.exec(body)?.[0].toLowerCase();\n    return word ? `HTTP ${status} naming \"${word}\"` : null;",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1, review finding 1): the first build's whole-word match restored, so quota_limited, quotaLimited and billing_limit_exceeded read as ordinary failed reads"
+  },
+  {
+    "id": "T61-R18",
+    "file": "src/revenue/page-views.ts",
+    "find": "fieldWords(body)",
+    "replace": "body.toLowerCase().split(/[^a-z0-9]+/)",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, R1, review finding 1): the body's camelCase is not broken, so quotaLimited and upgradeRequired are missed"
   },
   {
     "id": "T61-M1",
@@ -376,7 +398,7 @@
   {
     "id": "T61-S8",
     "file": "src/revenue/page-views.ts",
-    "find": "    if (startMs < deadline) {",
+    "find": "    if (from < deadline) {",
     "replace": "    if (true) {",
     "test": [
       "src/__tests__/revenue/page-views.test.ts",
@@ -570,6 +592,39 @@
       "src/__tests__/revenue/page-views-reader.test.ts"
     ],
     "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv)): the moved-deadline note is printed with no suspension at all"
+  },
+  {
+    "id": "T61-S26",
+    "file": "src/revenue/page-views.ts",
+    "find": "    const from = Math.max(startMs, suspendedUntil);",
+    "replace": "    const from = startMs;",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv), review finding 2): overlapping suspensions are summed, so a firing cleared by hand and fired again moves the deadline 63 days for 32 suspended"
+  },
+  {
+    "id": "T61-S27",
+    "file": "src/revenue/page-views.ts",
+    "find": "      suspendedUntil = Math.max(suspendedUntil, until);\n",
+    "replace": "",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv), review finding 2): the union's cursor never advances, so overlapping suspensions are summed"
+  },
+  {
+    "id": "T61-S28",
+    "file": "src/revenue/page-views.ts",
+    "find": "      suspendedUntil = Math.max(suspendedUntil, until);",
+    "replace": "      suspendedUntil = endMs;",
+    "test": [
+      "src/__tests__/revenue/page-views.test.ts",
+      "src/__tests__/revenue/page-views-reader.test.ts"
+    ],
+    "note": "tick 61 (RULING-2026-10-07-posthog-organisation fold 9, §4(2)(iv), review finding 2): the cursor jumps to the firing's 60-day end, so a later firing after a read suspends nothing"
   },
   {
     "id": "T61-F1",

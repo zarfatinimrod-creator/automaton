@@ -601,6 +601,10 @@ describe("a priced query API — RULING-2026-10-07-posthog-organisation §4(1) R
     [402, "posthog-query-402.json", "HTTP 402"],
     [403, "posthog-query-403-billing.json", 'HTTP 403 naming "plan"'],
     [429, "posthog-query-429-billing.json", 'HTTP 429 naming "quota"'],
+    // The word as a code token (the build's review): each was an ordinary failed read under a whole-word match.
+    [429, "posthog-query-429-quota-code.json", 'HTTP 429 naming "quota"'],
+    [429, "posthog-query-429-quota-camel.json", 'HTTP 429 naming "quota"'],
+    [403, "posthog-query-403-billing-code.json", 'HTTP 403 naming "billing"'],
     [200, "posthog-hogql-pageviews-billed.json", "HTTP 200 carrying a billed-usage field (billed_usage)"],
   ] as const) {
     it(`${matched}: sends nothing more, writes reader_down with reason query_api_priced, and sets the flag`, async () => {

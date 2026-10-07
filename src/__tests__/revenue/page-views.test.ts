@@ -477,13 +477,30 @@ describe("queryApiPriced — R1 of RULING-2026-10-07-posthog-organisation §4(1)
       for (const status of [403, 429]) expect(queryApiPriced(status, `{"detail": "a ${word} here"}`), `${status} ${word}`).toBe(`HTTP ${status} naming "${word}"`);
     }
     expect(queryApiPriced(403, '{"detail": "Upgrade to continue"}')).toBe('HTTP 403 naming "upgrade"');
-    // Whole words only: these name no plan.
+    // Whole tokens only: these name no plan.
     for (const body of ['{"detail": "You do not have permission to perform this action."}', '{"detail": "planned maintenance"}', '{"detail": "an explanation"}']) {
       expect(queryApiPriced(403, body), body).toBeNull();
       expect(queryApiPriced(429, body), body).toBeNull();
     }
     // Other refusals are not R1, whatever they say.
     for (const status of [400, 401, 404, 500, 503]) expect(queryApiPriced(status, '{"detail": "billing plan quota upgrade"}'), String(status)).toBeNull();
+  });
+
+  it("a word written as a code token names it: quota_limited, quotaLimited, billing_limit_exceeded fire", () => {
+    // Measured by the build's review: under a whole-word match each of these was null, so a priced API read as an ordinary
+    // failed read and was queried again every tick. The ruling's test is that the body names the word; a code does.
+    expect(queryApiPriced(429, text("posthog-query-429-quota-code.json"))).toBe('HTTP 429 naming "quota"');
+    expect(queryApiPriced(429, text("posthog-query-429-quota-camel.json"))).toBe('HTTP 429 naming "quota"');
+    expect(queryApiPriced(403, text("posthog-query-403-billing-code.json"))).toBe('HTTP 403 naming "billing"');
+    expect(queryApiPriced(403, '{"code": "plan_required"}')).toBe('HTTP 403 naming "plan"');
+    expect(queryApiPriced(429, '{"code": "upgradeRequired"}')).toBe('HTTP 429 naming "upgrade"');
+    expect(queryApiPriced(429, '{"code": "CREDITS_EXHAUSTED"}')).toBe('HTTP 429 naming "credits"');
+    expect(queryApiPriced(403, '{"code": "billed-usage-cap"}')).toBe('HTTP 403 naming "billed"');
+    // A token that only holds such a word stays whole and names none.
+    for (const body of ['{"code": "planned_maintenance"}', '{"code": "quotation_error"}', '{"detail": "explanationMissing"}']) {
+      expect(queryApiPriced(403, body), body).toBeNull();
+      expect(queryApiPriced(429, body), body).toBeNull();
+    }
   });
 
   it("a 2xx fires on a charge or billed-usage field at any depth, never on a value", () => {
@@ -579,6 +596,35 @@ describe("a priced query API and the gates — RULING-2026-10-07-posthog-organis
       "the M-instrument deadline is day 21 moved 768h by the priced query API's suspension, to 2026-11-27T00:00:00.000Z (RULING-2026-10-07-posthog-organisation §4(2)(iv))",
     );
     expect(gate(lone, at(53, 0), fired).verdict).toBe("instrument_fault");
+  });
+
+  it("overlapping suspensions count once: the deadline moves by their union, not their sum", () => {
+    // f1 on day 8 is cleared by hand that day; the next tick, on day 9, meets a priced answer again (f2); f2 is cleared on
+    // day 40 and that tick reads one week. One suspension, day 8 to day 40: 32 days, not 32 + 31.
+    const twice = [
+      { at: at(8, 0), clearedOn: "2026-10-13" },
+      { at: at(9, 0), clearedOn: "2026-11-14" },
+    ];
+    const lone = written(at(40, 0), 3);
+    expect(pricedSuspension(D0, lone, twice, at(41))).toEqual({ shiftMs: 32 * DAY_MS, open: null, unreadSince: null, expired: [] });
+    expect(gate(lone, at(52), twice).verdict).toBe("uninstrumented");
+    expect(gate(lone, at(53, 0), twice).verdict).toBe("instrument_fault");
+    // Partly overlapping (both run their full 60 days before a read on day 75): day 8 to day 69 is 61 days, not 120.
+    const capped = [
+      { at: at(8, 0), clearedOn: "2026-10-13" },
+      { at: at(9, 0), clearedOn: null },
+    ];
+    expect(pricedSuspension(D0, written(at(75, 0), 3), capped, at(76)).shiftMs).toBe(61 * DAY_MS);
+    // Apart, each counts: day 8 to the read on day 10, then day 15 to the read on day 30, is 2 + 15 days.
+    const apart = [
+      { at: at(8, 0), clearedOn: "2026-10-15" },
+      { at: at(15, 0), clearedOn: "2026-11-04" },
+    ];
+    const reads = [
+      { week: 1, views: 3, writtenAt: at(10, 0) },
+      { week: 2, views: 3, writtenAt: at(30, 0) },
+    ];
+    expect(pricedSuspension(D0, reads, apart, at(31))).toEqual({ shiftMs: 17 * DAY_MS, open: null, unreadSince: null, expired: [] });
   });
 
   it("the tick that met the priced answer is not a read after it", () => {
