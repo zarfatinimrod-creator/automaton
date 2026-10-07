@@ -185,8 +185,11 @@ All YouTube-help grounds in this section are [against-bar], compliance; the FTC'
    **Recorded 7.10.2026** (`research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md` (e)): the kids
    sub-brand is **`worldincharts`**, the first name free on all three probes in the 4.10 09:28Z run
    (`research/measurements/kids-subbrand-check.md`, `218ffca`); the owner may veto; next in line `askthechart`; the
-   handle `@worldincharts` is tried at Stage A. One web search for the name before Stage A, recorded here: pending — the
-   main thread runs the one search and fills this line.
+   handle `@worldincharts` is tried at Stage A. One web search for the name before Stage A, recorded here: 7.10.2026 ~07:40 UTC, one WebSearch for the exact token "worldincharts" (snippet grade): no business,
+   channel, handle or trademark of that name in the results; the nearest names are "Our World in Charts" (a chart
+   collection of The Outlier, a South African data-journalism site), the "Our World in Data" chart API and a Goodreads
+   blog post titled "the world in charts" — none a YouTube channel, none the token itself; no YouTube search was made
+   (youtube.com is barred); the handle itself is tested only at Stage A.
 5. **REOPEN** (ruling §7 rule 5): rule 1 reopens if the Open Terms Archive copy of YouTube's Community Guidelines on GitHub
    states that termination of one channel bars the Google account's other channels; then the kids channel moves to its
    own Google account before its first upload (and only then does a second Stage A exist, asked in the batch). Also if
