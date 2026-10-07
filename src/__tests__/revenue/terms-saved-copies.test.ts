@@ -480,6 +480,9 @@ describe("the YouTube API Services Terms (tick 61): a pinned reference that quot
     expect(p).toContain("On the literal words only, yes, and further than the brand account; the scope is unknown.");
     expect(p).toContain("**Bearing:** met by the main thread's ruling of tick 61 (not by any declaration before it)");
     expect(p).toContain("(i) is decided by (ii)");
+    // The review's fix: OTA:550 with its exception, in answer (ii); the memo's shorthand of it noted, the memo kept in its words.
+    expect(p).toContain('for anyone but "the authorizing user or agents expressly approved by that user" (OTA:550)');
+    expect(p).toContain("(e) Condition 6's \"no display to anyone but the authorizing user\" is the memo's shorthand: OTA:550 bars display or access for");
     // The memo's eight conditions, in its words.
     const verdict = p.slice(p.indexOf("\n## Verdict\n"), p.indexOf("\n## What a later read must settle\n"));
     for (let n = 1; n <= 8; n++) expect(verdict, `condition ${n}`).toMatch(new RegExp(`\\n> ${n}\\. `));

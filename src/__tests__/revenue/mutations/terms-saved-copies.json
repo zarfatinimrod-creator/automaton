@@ -22,5 +22,29 @@
     "replace": "heading (original lines 16-16)\n\n<!-- excerpt: original lines 16-16,",
     "test": "src/__tests__/revenue/terms-saved-copies.test.ts",
     "note": "tick 61: an excerpt's heading and marker moved together onto original line 16, the line with the postal address, its block and hash unchanged so parse() still passes; the never-line-16 check must fail (the pinned ranges and the title list fail with it)"
+  },
+  {
+    "id": "T61-YTR1-capture-clause",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "(OTA:661 with :799 (ii)), which the ten developers.google.com/youtube captures under research/rendered/ would break from the owner's acceptance (they belong to google.com, whose copying is \\\"unread\\\", so scripts/trim-capture.mjs does not reach them, and their trim to cited lines, or a ruling on them, precedes Stage A); a reader",
+    "replace": "(OTA:661 with :799 (ii)); a reader",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 61 review fix 1: googleapis.com's note loses memo condition 3's clause on the ten developers.google.com/youtube captures the trim does not reach; the tick-61 note test's pin must fail"
+  },
+  {
+    "id": "T61-YTR2-550-exception-note",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "shown to no one but the authorizing user or agents that user expressly approved (OTA:550)",
+    "replace": "shown to no one but the authorizing user (OTA:550)",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 61 review fix 2: the note states OTA:550 without its exception for agents the user expressly approved (the memo's shorthand); the tick-61 note test's pin must fail"
+  },
+  {
+    "id": "T61-YTR3-550-exception-answer",
+    "file": "research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md",
+    "find": "for anyone but \"the authorizing user or agents expressly approved by that user\" (OTA:550),",
+    "replace": "for anyone but the authorizing user (OTA:550),",
+    "test": "src/__tests__/revenue/terms-saved-copies.test.ts",
+    "note": "tick 61 review fix 2: answer (ii) states OTA:550 without its exception; the six-answers test's pin must fail"
   }
 ]

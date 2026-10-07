@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -5224,6 +5224,19 @@ describe("tick 61: googleapis.com's entry (7.10), CONDITIONAL_UNMET, copying bar
     expect(note).toContain("[inference: git history is storage]");
     expect(note).toContain("The main thread ruled the colony one API Client");
     expect(note).toContain("(OTA:550)");
+    // The review's fixes: OTA:550 with its exception for agents the user approved, as the clause words it; and the memo's
+    // condition 3 for the ten committed developers.google.com/youtube captures, which the trim does not reach.
+    expect(note).toContain("may then be shown to no one but the authorizing user or agents that user expressly approved (OTA:550)");
+    expect(note).toContain(
+      '(OTA:661 with :799 (ii)), which the ten developers.google.com/youtube captures under research/rendered/ would break from the owner\'s acceptance (they belong to google.com, whose copying is "unread", so scripts/trim-capture.mjs does not reach them, and their trim to cited lines, or a ruling on them, precedes Stage A); ',
+    );
+    // The facts that clause rests on: google.com's copying is "unread" (so the trim leaves its captures), and exactly ten
+    // committed captures' metas name a developers.google.com/youtube URL.
+    expect(verdicts()["google.com"].copying).toBe("unread");
+    const devYoutube = readdirSync("research/rendered")
+      .filter((f) => f.endsWith(".meta.json"))
+      .filter((f) => String(JSON.parse(readFileSync(join("research/rendered", f), "utf8")).url ?? "").startsWith("https://developers.google.com/youtube/"));
+    expect(devYoutube).toHaveLength(10);
     expect(note).toContain("on the literal words of OTA:245 with :163, its scope unknown given §24.1 (OTA:241)");
     expect(note).toContain("(OTA:516)");
     expect(note).toContain("not decided here: a Fable sitting rules before Stage A");
