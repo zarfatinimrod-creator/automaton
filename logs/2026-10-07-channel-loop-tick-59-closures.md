@@ -112,6 +112,7 @@
 |---|---|
 | `scripts/verify.sh` ממוקד (robots-verdict, queue-zero-test, trim-capture, prize-terms-audit, frozen-citations, mutation-plans), לפני ה-commit | exit 0 (typecheck 0; 6 קבצים, 268 בדיקות) |
 | `scripts/verify.sh` מלא על `503e6dd` | exit 0 (typecheck 0; 80 קבצים, 2759 עברו, 2 דולגו; 115 s, לצד שתי תוכניות מוטציות) |
+| `scripts/verify.sh` ממוקד (אותם שישה) ומלא על `da3f062`, המצב הסופי | exit 0 ו-exit 0 (268 בדיקות; 80 קבצים, 2759 עברו, 2 דולגו, 81 s, לבד) |
 | `node scripts/robots-verdict.mjs --recheck` (dry) על המאגר האמיתי, מתוך ה-worktree | exit 3 (ראו למטה) |
 | `node scripts/trim-capture.mjs` (dry) על המאגר האמיתי | exit 3, `git status` נקי (שום דבר לא נכתב) |
 | `node scripts/mutate.mjs --check --allow-dirty` על שלוש התוכניות | 106/106, 37/37, 54/54 would apply |
