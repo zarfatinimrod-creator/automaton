@@ -563,6 +563,7 @@ an account, spends money or publishes anything.
     REOPEN (`RULING:255-257`) and §7 rule 5 cover it.
 11. **T1's P2/P4 reads of the watch page** (`T1-PROTOCOL.md:75`, `:77`) after the youtube.com bar: T1's own protocol, row
     16's domain; flagged in fold 7 for the main thread, not ruled here.
+    Ruled 7.10 (`RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md`): P1 and P2, not P2 and P4; the rows are `T1-PROTOCOL.md:77`, `:78`, `:80`; `render-watch.mjs:426` is `:535`.
 
 ## Pointers moved (beyond Part C's housekeeping)
 

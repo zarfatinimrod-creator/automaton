@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -272,6 +272,17 @@ describe("the kids sub-brand list (ruling 4.10 §7 rule 4, fold 8)", () => {
   it("has no kids, children, character, toy, song, story or pre-reader word in any name", () => {
     const banned = /kid|child|teen|baby|toddler|preschool|nursery|abc|toy|doll|puppet|mascot|cartoon|character|song|rhyme|story|stories|poem|tale|colou?r|number|count|teacher|friend|buddy|pal|fun|play|learn|school|class/;
     for (const n of names) expect(n, n).not.toMatch(banned);
+  });
+
+  // Ruling 7.10 row 24 (e), fold 8: the pick rests on this measured record (the 4.10 09:28Z run, 218ffca), and the
+  // design file names the ruling that made it. The list stays five until a round 2 exists, then `% 5` as the T1 list's.
+  it("keeps the measured first all-free name the 7.10 ruling picked, and KIDS-LINE.md names that ruling", () => {
+    const measured = JSON.parse(readFileSync("research/measurements/kids-subbrand-candidates.json", "utf8"));
+    expect(measured.firstAllFree).toBe("worldincharts");
+    expect(measured.allFree).toEqual(["worldincharts", "askthechart"]);
+    const ruling = "research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md";
+    expect(existsSync(ruling)).toBe(true);
+    expect(readFileSync("research/youtube-kids/KIDS-LINE.md", "utf8")).toContain(ruling);
   });
 });
 
