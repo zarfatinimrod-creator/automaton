@@ -196,5 +196,6 @@ for 7 hours ..." נעלמה מהדוח, והלוח אמר שאין חסימות 
 - **בדיקות**: `scripts/verify.sh` על `runner.test.ts`, `page-views-reader.test.ts`, `colony-cli.test.ts`, `measurements.test.ts`, `apify-runs.test.ts`, `brand-mail.test.ts` ו-`mutation-plans.test.ts` — exit 0 (typecheck 0; 7 קבצים, 242 בדיקות). `scripts/verify.sh` המלא — exit 0 (typecheck 0; 80 קבצים, 2922 עברו ו-2 skipped שהיו קודם; 6 בדיקות חדשות), 112 שניות. אף assertion לא הוחלש, דולג או נמחק.
 - **מוטציות**: `node scripts/mutate.mjs --check` על `colony.json` — 34 of 34; `scripts/sim-tree.sh -- node scripts/mutate.mjs --plan src/__tests__/revenue/mutations/colony.json` — 34 applied, 34 killed, 0 survived, 218 שניות, exit 0 (נרשם ב-README).
 - grep לשם הבעלים ולכתובות דוא"ל ב-diff: 0 שורות; אין אסימון דילוג על CI בהודעות.
+- **הבסיס זז שוב בזמן העבודה** (`06ea5d4`, בניית `owner-report` של השרשור הראשי): מוזג ב-`85595d5` בלי קונפליקט; `owner-report.ts` לא קורא ל-`tick`, ל-`revenue.last_audit` או לסטטוסים של קריאת הצפיות. אחרי המיזוג `--check` על כל התוכניות עובר, ו-`scripts/verify.sh` המלא — exit 0 (81 קבצים, 2943 עברו ו-2 skipped).
 - אסימונים: רוב הזמן הלך על קריאת `readPageViews`, `runAudit` ו-`ingestFile` כדי למצוא איפה בדיוק נגמרות הבדיקות שאינן רשת
   ואינן כתיבה; ותזכורות רשימת המשימות של השרשור הראשי שחזרו בתוצאות הכלים.
