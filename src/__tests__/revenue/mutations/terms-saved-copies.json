@@ -1,0 +1,50 @@
+[
+  {
+    "id": "T61-YT1-source-file",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"source\": \"research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md (YouTube",
+    "replace": "\"source\": \"research/channel-loop/terms/youtube-api-services-terms-2026-10-08.md (YouTube",
+    "test": "src/__tests__/revenue/terms-saved-copies.test.ts",
+    "note": "tick 61: googleapis.com's source names an excerpt file that does not exist; the file-exists assertion on the source's path must fail"
+  },
+  {
+    "id": "T61-YT2-range-over-12",
+    "file": "research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md",
+    "find": "the default quota allocation (original lines 1159-1159)\n\n<!-- excerpt: original lines 1159-1159, sha256",
+    "replace": "the default quota allocation (original lines 1147-1159)\n\n<!-- excerpt: original lines 1147-1159, sha256",
+    "test": "src/__tests__/revenue/terms-saved-copies.test.ts",
+    "note": "tick 61: an excerpt's heading and marker widened together to 13 original lines (1147-1159); the at-most-12-lines rule must fail (parse's block length and the pinned ranges fail with it)"
+  },
+  {
+    "id": "T61-YT3-line-16",
+    "file": "research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md",
+    "find": "heading (original lines 13-13)\n\n<!-- excerpt: original lines 13-13,",
+    "replace": "heading (original lines 16-16)\n\n<!-- excerpt: original lines 16-16,",
+    "test": "src/__tests__/revenue/terms-saved-copies.test.ts",
+    "note": "tick 61: an excerpt's heading and marker moved together onto original line 16, the line with the postal address, its block and hash unchanged so parse() still passes; the never-line-16 check must fail (the pinned ranges and the title list fail with it)"
+  },
+  {
+    "id": "T61-YTR1-capture-clause",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "(OTA:661 with :799 (ii)), which the ten developers.google.com/youtube captures under research/rendered/ would break from the owner's acceptance (they belong to google.com, whose copying is \\\"unread\\\", so scripts/trim-capture.mjs does not reach them, and their trim to cited lines, or a ruling on them, precedes Stage A); a reader",
+    "replace": "(OTA:661 with :799 (ii)); a reader",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 61 review fix 1: googleapis.com's note loses memo condition 3's clause on the ten developers.google.com/youtube captures the trim does not reach; the tick-61 note test's pin must fail"
+  },
+  {
+    "id": "T61-YTR2-550-exception-note",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "shown to no one but the authorizing user or agents that user expressly approved (OTA:550)",
+    "replace": "shown to no one but the authorizing user (OTA:550)",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 61 review fix 2: the note states OTA:550 without its exception for agents the user expressly approved (the memo's shorthand); the tick-61 note test's pin must fail"
+  },
+  {
+    "id": "T61-YTR3-550-exception-answer",
+    "file": "research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md",
+    "find": "for anyone but \"the authorizing user or agents expressly approved by that user\" (OTA:550),",
+    "replace": "for anyone but the authorizing user (OTA:550),",
+    "test": "src/__tests__/revenue/terms-saved-copies.test.ts",
+    "note": "tick 61 review fix 2: answer (ii) states OTA:550 without its exception; the six-answers test's pin must fail"
+  }
+]
