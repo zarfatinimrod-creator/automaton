@@ -147,7 +147,7 @@ shared WebSearch budget. See `docs/CRITERIA_SWEEP.md`.
   success and kept, with a removal hint, on failure). A long mutation plan runs inside it so the checkout's lock stays
   free. Never build such a tree by hand under the scratch folder.
 - **New render captures: `node scripts/capture-check.mjs <slug...>` before reading them** (exit 3 = flagged: `status`,
-  `bot-challenge`, `js-shell` or `short`). It only flags; the reader judges.
+  `bot-challenge`, `js-shell`, `nav-shell` or `short`). It only flags; the reader judges.
 - **Loop-file edits: `node scripts/loop-edit.mjs set-status|set-cell|insert-after|replace-in-line|repoint-capture …`** (usage in its
   header), never one-off Python with assertions. Each command finds exactly one row or line or exits 2 having written nothing;
   `--dry-run` shows the diff; it writes through a temp file, keeps CRLF, the final newline and Hebrew/₪ byte for byte, keeps a

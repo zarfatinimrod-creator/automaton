@@ -463,3 +463,29 @@ decision 4(1) does not permit.
    not a quotation, and keeping it republishes most of a copying-barred page. The rule: a cited range longer than 20 lines
    keeps nothing, and the dry run lists it as `wide` with the citing line. The build of (2) adds the rule and runs the trim's
    second pass; the 6.10 pass keeps those 245 lines until then, a stated interim.
+
+
+## Amendment 2 (7.10 ~05:10 UTC, tick 60, main thread): decision 3's once-only js render admits a nav-only shell
+
+**Finding.** Decision 3(1) names kind K4 as a page `capture-check` classifies `js-shell`, and 3(2)(i) requires the plain
+capture to be `js-shell`. adaptionlabs.ai's terms page (captured 6.10 by the weekly render: status 200, 51,664 bytes of
+HTML, 85 characters of text, all navigation) is the same thing seen from the other side — a shell whose content a script
+would load — but the classifier graded it `short`, so the route refused it (`logs/CHANNEL_LOOP.md` §9 "Queued 6.10 (tick
+54)" item (5)).
+
+**Decided.**
+
+1. **A new kind, `nav-shell`,** for a 200 capture whose HTML is at least 20,000 bytes, whose text is below the short
+   threshold and holds at least three non-empty lines of at most six words each, and whose HTML carries at least one
+   anchor or script tag per ten characters of text (`scripts/capture-check.mjs`, tick 60; the rule classifies
+   adaptionlabs.ai's terms page alone — frozen 7.10 as `terms-adaptionlabs-2026-10-06` before its js render — in the
+   store of 657 captures, every other capture keeping its kind). It is checked after
+   status, bot-challenge and js-shell and before short.
+2. **Decision 3(2)(i) reads "is `js-shell` or `nav-shell` by `capture-check`";** the once-only js render, the freeze of
+   the plain shell before it, and "whatever comes back is the answer" apply alike. The written comment names the kind.
+3. **Thin margins are a stated limit, not a defect:** CrunchDAO's four competition pages are, to the eye, the same shape
+   (a title over a five-label menu, 100+ scripts) and stay `short` only because their title line runs to seven words or
+   more (datacrunch's is exactly seven, counting its "|"); Wunder Fund's quick-start page (one line of four words, 42
+   scripts) stays `short` by the three-line condition; StreetLib's help pages by the tag ratio. A future capture of theirs
+   that flips is read by the once-only route like any other, and a synthetic soft-404 with a menu would be graded
+   `nav-shell` and refused later by the status that the js render returns.

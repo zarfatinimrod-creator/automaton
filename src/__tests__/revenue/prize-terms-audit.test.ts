@@ -1192,10 +1192,11 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
         expect(named[0], site).toBe(`${state} — ${url}\t${slug}${flag}`);
       }
     }
-    // The js-form acceptance above is for a shell-kind TERMS_PENDING site; none of the audited sites is one with an active
-    // js line any more (kaggle.com's was rendered and retired).
-    const activeJs = (parseUrlList(text.join("\n")) as { url: string; js?: boolean }[]).filter((e) => e.js && Object.hasOwn(AUDITED, siteOfUrl(e.url)));
-    expect(activeJs).toEqual([]);
+    // The js-form acceptance above is for a shell-kind TERMS_PENDING site. Since tick 60 (7.10) adaptionlabs.ai's is the one
+    // active js line among the audited sites: the once-only render of decision 3(2) (ruling 6.10 amendment 2, the plain
+    // shell frozen first), retired once its capture is read; kaggle.com's was rendered and retired.
+    const activeJs = (parseUrlList(text.join("\n")) as { url: string; slug: string; js?: boolean }[]).filter((e) => e.js && Object.hasOwn(AUDITED, siteOfUrl(e.url)));
+    expect(activeJs.map((e) => [e.url, e.slug])).toEqual([["https://adaptionlabs.ai/terms-of-service", "terms-adaptionlabs"]]);
   });
 
   it("queued grand-challenge.org's derived terms URL under ruling R2's exception, which urls.txt's header records after its one rule", () => {
@@ -2415,7 +2416,7 @@ describe("tick 54: the terms read on 6.10", () => {
     expect(v["kaggle.com"].note).toContain("The plain capture of 6.10 was a JavaScript shell with 21 characters of text (kind K4");
     expect(v["kaggle.com"].note).toContain("--js --terms-shell");
     expect(v["adaptionlabs.ai"].note).toMatch(
-      /^shell: nav-only shell: the 6\.10 plain capture is 200, 51 KB of HTML and 85 characters of text \(the navigation\), which capture-check grades short, not js-shell; the js route of decision 3 waits on the classifier naming this kind /,
+      /^shell: nav-only shell: the 6\.10 plain capture is 200, 51 KB of HTML and 85 characters of text \(the navigation\), which capture-check graded short until 7\.10 \(tick 60\), when it gained the nav-shell kind for exactly this shape \(ruling 6\.10 row 21, amendment 2\) and the once-only js route of decision 3\(2\) queued the page /,
     );
     // No note names a person's address.
     for (const site of Object.keys(TERMS_READ)) {
