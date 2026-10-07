@@ -11,6 +11,7 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 | `freeze-capture.json` | `scripts/freeze-capture.mjs` (trimmed copies, tick 56) | `freeze-capture.test.ts` (+ `remask-captures`, `frozen-citations`; `trim-capture.test.ts` for the T56-F entries) | ticks 38, 50, 56 |
 | `loop-edit.json` | `scripts/loop-edit.mjs` | `loop-edit.test.ts` | tick 43 |
 | `mutate.json` | `scripts/mutate.mjs` (`--check`) | `mutate.test.ts` | tick 51 |
+| `owner-steps.json` | `src/revenue/owner-steps.ts` and `docs/OWNER_STEPS.he.md` (ruling 7.10 row 25, `RULING-2026-10-07-posthog-organisation.md` §2 edits 4-6, 9 and 14: step 6's part ד, the two PostHog organisations — the early part's text and its 8 minutes, step 6's 18-23 minutes and its `unlocks`, the Hebrew part ד's heading and its "עצור אם", the ₪0 box's item 2 that the ₪0-box test's needle follows) | `owner-steps.test.ts` | tick 61 |
 | `page-views.json` | `src/revenue/page-views.ts` (`evaluatePageViewGates`, the domain period: `RULING-2026-10-06-domain-clock` fold 5) | `page-views.test.ts`, `page-views-reader.test.ts` | tick 54 |
 | `prize-apply-reading.json` | `scripts/prize-apply-reading.mjs` | `prize-apply-reading.test.ts` | tick 52 |
 | `prize-dispatch.json` | `scripts/prize-dispatch.mjs`, `src/revenue/ai-allowed-events.ts` | `prize-dispatch.test.ts` | tick 47 |
