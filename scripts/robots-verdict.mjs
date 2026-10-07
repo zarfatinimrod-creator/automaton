@@ -50,7 +50,17 @@
  * source opens with the citation step 5 writes (parseRobotsSource), naming a frozen copy that holds what the citation
  * says (its url, fetchedAt, sha256 prefix or 404 status), it reads the live capture of the same robots.txt URL
  * (readRobotsCapture) and says one of:
- *   unchanged    the live capture's body is the frozen copy's bytes; or both answered 404/410 (no rules either way)
+ *   unchanged    the live capture's body is the frozen copy's bytes; or both answered 404/410 (no rules either way); and
+ *                judgeRobots, run on that robots.txt for every path queued now, allows each one
+ *   disallowed-path  the robots.txt is unchanged, but a path queued now is disallowed by it (a page queued on the site
+ *                after the verdict, such as a new prize line, or in a list the verdict was not judged on: judgeSite judged
+ *                only the paths queued then, and an unchanged robots.txt is otherwise not read again). Reported with each
+ *                such path, its rule and the list line(s) that queue it (<list>:<line>); the verdict stays
+ *                NO_TERMS_ROBOTS_OK and nothing is written, --apply included. The main thread then pauses that line in
+ *                urls.txt or takes it off the prize list (research/measurements/ai-allowed-events.urls.txt); meanwhile
+ *                render-watch's own robots check, run before every fetch, already refuses the page. A path on a host the
+ *                source does not cite is judged on that host's live capture; when there is none, or it is not a robots.txt
+ *                read, the site stays unchanged (render-watch's run-time check still reads that host's answer)
  *   unreachable  there is no live capture, or it is no robots.txt read (a 401/403/429, an HTML page, a 5xx, no answer:
  *                readableCapture): reported, nothing changes. Render-watch's run-time check still reads that answer
  *                before it fetches a page
@@ -93,10 +103,12 @@
  * 57 blocks. The tick retargets each entry at the text it holds now (or drops it, with a line in its log) and reads those
  * seven pins back to the comment as it stood before the revert, as the tick-55 to 57 fixtures did for earlier changes.
  * Dry run by default: one line per site with its outcome (and, for refresh and revert, each queued path's answer, the
- * copy it would freeze and the sentence it would add), then a totals line. --apply freezes and writes
+ * copy it would freeze and the sentence it would add; for disallowed-path, each disallowed path and the list line that
+ * queues it), then a totals line (the five outcomes, then disallowed-path). --apply freezes and writes
  * terms-verdicts.json through serializeVerdicts. It never fetches anything. Exit codes: 0 — something was (or, dry,
- * would be) changed; 3 — nothing to change (every site unchanged or unreachable); 1 — an error (a usage or read error,
- * or an error line; with --apply the other sites are still written).
+ * would be) changed, or a disallowed-path needs the main thread's attention; 3 — nothing to change (every site
+ * unchanged or unreachable); 1 — an error (a usage or read error, or an error line; with --apply the other sites are
+ * still written).
  */
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -549,9 +561,10 @@ const withSentence = (note, sentence) => (!note ? sentence : /[.!?]$/.test(note)
 /**
  * Re-check one site. Pure apart from reading renderedDir (and, through versionOf, git); it writes nothing. Returns
  * { site, outcome, why, checked, changes, freezes, entry, sentence }: outcome "unchanged", "unreachable", "refresh",
- * "revert", "error", or "skipped" for a site that is not NO_TERMS_ROBOTS_OK (never touched); for refresh and revert,
- * entry is the rewritten entry, freezes the copies to write first (freezeCapture options), checked each queued page's
- * answer and sentence the note's new sentence.
+ * "revert", "error", "disallowed-path" (unchanged, but a queued path is disallowed: checked each queued page's answer,
+ * refused the disallowed ones; nothing to write), or "skipped" for a site that is not NO_TERMS_ROBOTS_OK (never
+ * touched); for refresh and revert, entry is the rewritten entry, freezes the copies to write first (freezeCapture
+ * options), checked each queued page's answer and sentence the note's new sentence.
  */
 export function recheckSite({ site, entry, urls, urlsText = urls, renderedDir = RENDERED, today, versionOf = (slug) => liveVersion(renderedDir, slug) }) {
   const out = (outcome, why, more = {}) => ({ site, outcome, why, checked: [], changes: [], freezes: [], entry: null, sentence: null, ...more });
@@ -597,7 +610,16 @@ export function recheckSite({ site, entry, urls, urlsText = urls, renderedDir = 
   const unreachable = hosts.filter((h) => h.state === "unreachable");
   if (unreachable.length) return out("unreachable", unreachable.map((h) => h.why).join("; "));
   const changed = hosts.filter((h) => h.state === "changed");
-  if (changed.length === 0) return out("unchanged", hosts.map((h) => h.why).join("; "));
+  if (changed.length === 0) {
+    // The robots.txt is the one the verdict was set on, but the queue may have grown since: a page queued on the site
+    // later (a new prize line) was never judged. Every queued path is judged on it (judgeRobots on the frozen copies, the
+    // same bytes; a host the source does not cite on its live capture); a disallowed one is reported, never acted on.
+    const same = hosts.map((h) => h.why).join("; ");
+    const frozen = new Map(hosts.map((h) => [h.cite.robotsUrl, h.frozen]));
+    const judged = judgeRobots({ site, urls, readCapture: (url) => (frozen.has(url) ? frozen.get(url) : readRobotsCapture(url, renderedDir)) });
+    if (judged.kind !== "disallowed") return out("unchanged", same);
+    return out("disallowed-path", `${same}; but ${judged.why}`, { checked: judged.checked, refused: judged.refused });
+  }
 
   // The robots.txt changed: every queued path is judged again (judgeRobots), on the copy that would be frozen of each
   // changed capture and on the frozen copy of each unchanged one, so the citations name files no render rewrites.
@@ -746,7 +768,16 @@ export function beforeRechecks(sites, base) {
   return out;
 }
 
-const OUTCOMES = ["unchanged", "unreachable", "refresh", "revert", "error"];
+const OUTCOMES = ["unchanged", "unreachable", "refresh", "revert", "error", "disallowed-path"];
+
+/** "<list>:<line>" of every line of `lists` ({ name, text }) that queues `page` (queuedPaths, read one line at a time). */
+function queuedAt(lists, site, page) {
+  return lists.flatMap(({ name, text }) =>
+    String(text)
+      .split(/\r?\n/)
+      .flatMap((line, i) => (queuedPaths(line, site).some((p) => p.url === page.url && p.slug === page.slug) ? [`${name}:${i + 1}`] : [])),
+  );
+}
 
 function recheckMain(values) {
   const today = new Date().toISOString().slice(0, 10);
@@ -759,7 +790,8 @@ function recheckMain(values) {
     throw new Error(`${values.verdicts} is not in the format serializeVerdicts writes: nothing written`);
   }
   const lists = values.urls?.length ? values.urls : [URLS, PRIZE_URLS];
-  const urls = lists.map((file) => readFileSync(file, "utf8")).join("\n");
+  const texts = lists.map((file) => ({ name: relative(process.cwd(), file) || file, text: readFileSync(file, "utf8") }));
+  const urls = texts.map((l) => l.text).join("\n");
   let names = Object.keys(sites).filter((s) => sites[s]?.verdict === "NO_TERMS_ROBOTS_OK");
   if (values.site !== undefined) {
     const site = values.site.toLowerCase();
@@ -794,6 +826,13 @@ function recheckMain(values) {
     }
     results.push(r);
     console.log(`  ${r.outcome.padEnd(11)} ${site}  ${r.why}`);
+    if (r.outcome === "disallowed-path") {
+      for (const c of r.refused) {
+        console.log(`      DISALLOWED  ${c.slug}  ${c.url}  (${c.state}; ${quoteRule(c.rule)})  queued at ${queuedAt(texts, site, c).join(", ")}`);
+      }
+      console.log("      report only, nothing written: pause the line or take it off its list (research/rendered/README.md)");
+      continue;
+    }
     if (r.outcome !== "refresh" && r.outcome !== "revert") continue;
     for (const c of r.checked) {
       console.log(`      ${c.allowed ? "allowed    " : "DISALLOWED "} ${c.slug}  ${c.url}  (${c.state}; ${quoteRule(c.rule)})`);
@@ -812,7 +851,7 @@ function recheckMain(values) {
     console.log(values.apply ? "nothing written" : "dry run: nothing written");
   }
   if (count("error") > 0) return 1;
-  return count("refresh") + count("revert") > 0 ? 0 : 3;
+  return count("refresh") + count("revert") + count("disallowed-path") > 0 ? 0 : 3;
 }
 
 function main(argv) {

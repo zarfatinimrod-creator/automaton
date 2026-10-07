@@ -48,7 +48,10 @@
  * "shell: rendered once" record in the site's note (once only, 3(2)(vi));
  * the plain capture of the same URL exists (research/rendered/<slug>.meta.json and .html, the meta naming that URL);
  * its meta says robots "allowed" or "none"; scripts/capture-check.mjs's own classifier grades it js-shell (not
- * bot-challenge, not short, not status, not ok); the site is TERMS_PENDING or NO_TERMS and its note names no other
+ * bot-challenge, not short, not status, not ok) — a capture scripts/trim-capture.mjs trimmed (a `trimmed` block in its
+ * meta) needs no .html, and the classifier grades it by the kind its block records from before the trim (captureCheck),
+ * never by its emptied text, so a trimmed shell still qualifies and any other is refused "trimmed: its pre-trim kind was
+ * <kind>" (tick 59); the site is TERMS_PENDING or NO_TERMS and its note names no other
  * kind (refusal-type, exhaustive-negative, unanswered, deferred); and termsGate passes the js line — for a NO_TERMS
  * site, only when its note opens with the kind word "shell" (isShellTermsVerdict). Anything else is refused with the
  * reason. The line, under a comment naming the ruling and the plain capture's sha256 prefix, takes the place of the
@@ -641,17 +644,20 @@ export function queueTermsShell({
   if (rendered.length) {
     throw why(`an earlier js capture of ${slug} or of ${url} exists (${rendered.join(", ")}: renderedWith set): the js render is once only, and whatever came back was the answer (3(2)(vi))`);
   }
-  // The plain capture of the same URL (3(2)(i)).
+  // The plain capture of the same URL (3(2)(i)). One that scripts/trim-capture.mjs trimmed (a `trimmed` block in its
+  // meta, ruling 6.10 row 21 (d)) may keep no body: its .html is not required, and it is graded below by the kind its
+  // block records from before the trim, not by its emptied text.
   const metaPath = join(dir, `${slug}.meta.json`);
-  if (!existsSync(metaPath) || !existsSync(join(dir, `${slug}.html`))) {
-    throw why(`no plain capture at research/rendered/${slug}.meta.json with its ${slug}.html: the plain GET must have seen the shell first (3(2)(i))`);
-  }
+  const noCapture = () => why(`no plain capture at research/rendered/${slug}.meta.json with its ${slug}.html: the plain GET must have seen the shell first (3(2)(i))`);
+  if (!existsSync(metaPath)) throw noCapture();
   let meta;
   try {
     meta = JSON.parse(readFileSync(metaPath, "utf8"));
   } catch {
     throw why(`research/rendered/${slug}.meta.json is not JSON`);
   }
+  const trimmed = meta?.trimmed !== null && typeof meta?.trimmed === "object";
+  if (!trimmed && !existsSync(join(dir, `${slug}.html`))) throw noCapture();
   if (meta?.url !== url) {
     throw why(`the plain capture research/rendered/${slug} is of ${JSON.stringify(meta?.url ?? null)}, not ${url}: the js render re-reads the same URL`);
   }
@@ -667,7 +673,13 @@ export function queueTermsShell({
     throw why(`scripts/capture-check.mjs cannot read the plain capture: ${err.message}`);
   }
   if (graded?.kind !== "js-shell") {
-    throw why(`scripts/capture-check.mjs grades the plain capture ${graded?.kind} (${graded?.evidence}), not js-shell: only a shell is read by the once-only js render (3(1) K4; a bot-challenge is K1, no js attempt ever)`);
+    const reason = "only a shell is read by the once-only js render (3(1) K4; a bot-challenge is K1, no js attempt ever)";
+    // capture-check grades a trimmed capture by its block's captureCheck (its kind whole), "trimmed" when the block
+    // records none (render-watch's route), and a failed fetch status, trimmed or not.
+    if (trimmed && graded?.kind !== "status") {
+      throw why(`trimmed: its pre-trim kind was ${graded?.kind === "trimmed" ? "not recorded" : graded?.kind} (${graded?.evidence}), not js-shell; ${reason}`);
+    }
+    throw why(`scripts/capture-check.mjs grades the plain capture ${graded?.kind} (${graded?.evidence}), not js-shell: ${reason}`);
   }
   // The site's verdict: terms unread, of kind K4 (3(1)).
   let parsed;

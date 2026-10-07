@@ -408,5 +408,29 @@
     "replace": "  const now = resolved.filter((c) => c.ext !== \"meta.json\" && !stray(c));",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 57 review fixer: the second pass's record leaves out a range cited since 6.10 that runs past the end of the file (the first pass records it)"
+  },
+  {
+    "id": "T59-T1-apply-takes-uncommitted",
+    "file": "scripts/trim-capture.mjs",
+    "find": "        if (apply || !err.uncommitted) throw err;",
+    "replace": "        if (!err.uncommitted) throw err;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 59 closure 3: --apply no longer refuses a capture with uncommitted changes (its block would name no commit)"
+  },
+  {
+    "id": "T59-T2-dry-run-refuses",
+    "file": "scripts/trim-capture.mjs",
+    "find": "        if (apply || !err.uncommitted) throw err;",
+    "replace": "        throw err;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 59 closure 3: the dry run refuses a capture with uncommitted changes again (the real-store test goes red on a render just fetched)"
+  },
+  {
+    "id": "T59-T3-not-marked",
+    "file": "scripts/trim-capture.mjs",
+    "find": "    throw Object.assign(err, { uncommitted: true });",
+    "replace": "    throw err;",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 59 closure 3: historyOf's uncommitted error is not marked, so the dry run cannot tell it from another and refuses"
   }
 ]

@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 import {
@@ -705,6 +705,41 @@ describe("robots-verdict --recheck", () => {
     // The same bytes under another fetchedAt are the same robots.txt: only the bytes are compared.
     const later = recheckFixture({ law: { body: FROZEN_LAW, fetchedAt: T1 } });
     expect(later.run().status).toBe(3);
+  });
+
+  it("disallowed-path: an unchanged robots.txt that disallows a path queued after the verdict is reported with the list line that queues it; exit 0, nothing written even with --apply", () => {
+    // Tick 59 (logs/CHANNEL_LOOP.md §9, "Queued 6.10 (tick 58)" item 2): law.example's verdict was set on its two law pages;
+    // a prize list queues a third page on it later, under /search, which the robots.txt it was set on (unchanged) disallows.
+    const f = recheckFixture();
+    const prize = join(f.dir, "prize.urls.txt");
+    writeFileSync(prize, "# a prize list\nhttps://www.law.example/search/prize\tprize-law-search\n");
+    const before = [f.raw(), f.files()];
+    for (const args of [[], ["--apply"]]) {
+      const got = f.run("--urls", prize, ...args);
+      expect(got.status, got.stdout + got.stderr).toBe(0);
+      expect(outcomes(got.stdout)).toEqual([
+        ["disallowed-path", "law.example"],
+        ["unchanged", "gone.example"],
+      ]);
+      expect(got.stdout).toContain(
+        `  disallowed-path law.example  ${LAW_ROBOTS}: the live capture research/rendered/robots-law.txt is the bytes of the frozen copy ` +
+          `research/rendered/robots-law-2026-10-06.txt (sha256 ${hash(FROZEN_LAW).slice(0, 12)}); but robots.txt disallows 1 queued path(s) for ` +
+          'MehudakRenderWatch: prize-law-search (https://www.law.example/search/prize, "Disallow: /search")\n',
+      );
+      expect(got.stdout).toContain(
+        `      DISALLOWED  prize-law-search  https://www.law.example/search/prize  (active; "Disallow: /search")  queued at ${relative(process.cwd(), prize)}:2\n`,
+      );
+      expect(got.stdout).toContain("      report only, nothing written: pause the line or take it off its list (research/rendered/README.md)");
+      expect(got.stdout).toContain("totals: 2 site(s): 1 unchanged, 0 unreachable, 0 refresh, 0 revert, 0 error, 1 disallowed-path\n");
+      expect(got.stdout).toContain(args.length ? "\nnothing written\n" : "\ndry run: nothing written\n");
+      expect([f.raw(), f.files()]).toEqual(before);
+    }
+    // recheckSite reports the path and rewrites nothing: the verdict stays NO_TERMS_ROBOTS_OK.
+    const urls = `${RE_URLS}${readFileSync(prize, "utf8")}`;
+    const r = recheckSite({ site: "law.example", entry: f.sites()["law.example"], urls, renderedDir: f.rendered, today: "2026-10-13" });
+    expect([r.outcome, r.entry, r.freezes, r.refused.map((c: { slug: string }) => c.slug), r.checked.length]).toEqual(["disallowed-path", null, [], ["prize-law-search"], 3]);
+    // Without that line the site is unchanged again, exit 3.
+    expect(f.run().status).toBe(3);
   });
 
   it("unreachable: no live capture, a 403, a 503 or an HTML page; reported, exit 3, nothing written", () => {

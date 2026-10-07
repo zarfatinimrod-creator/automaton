@@ -265,5 +265,45 @@
       "src/__tests__/revenue/render-dispatch.test.ts"
     ],
     "note": "tick 54 review R-I: termsGate passes a js line of a shell site whatever its slug (a pre-verdict capture of another page names its own URL)"
+  },
+  {
+    "id": "T59-Q1-block-ignored",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  const trimmed = meta?.trimmed !== null && typeof meta?.trimmed === \"object\";",
+    "replace": "  const trimmed = false;",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 59 closure 2: the trimmed block ignored: a trimmed shell is refused for its missing .html, a trimmed read page with the wrong reason"
+  },
+  {
+    "id": "T59-Q2-kind-wrong-field",
+    "file": "scripts/capture-check.mjs",
+    "find": "return t.captureCheck ? { kind: t.captureCheck, evidence:",
+    "replace": "return t.kind ? { kind: t.kind, evidence:",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 59 closure 2: the pre-trim kind read from the wrong field of the block (capture-check's classifier, which --terms-shell grades a trimmed capture with): a trimmed shell no longer qualifies"
+  },
+  {
+    "id": "T59-Q3-trimmed-reason-lost",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "    if (trimmed && graded?.kind !== \"status\") {",
+    "replace": "    if (false) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 59 closure 2: a trimmed capture of another kind is refused with the untrimmed reason, not \"trimmed: its pre-trim kind was <kind>\""
+  },
+  {
+    "id": "T59-Q4-status-as-pre-trim",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "    if (trimmed && graded?.kind !== \"status\") {",
+    "replace": "    if (trimmed) {",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 59 closure 2: a trimmed capture whose last fetch failed is called pre-trim kind status"
+  },
+  {
+    "id": "T59-Q5-unrecorded-kind",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "${graded?.kind === \"trimmed\" ? \"not recorded\" : graded?.kind}",
+    "replace": "${graded?.kind}",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 59 closure 2: a capture render-watch's route stored trimmed (no kind recorded) is said to have had the kind \"trimmed\""
   }
 ]

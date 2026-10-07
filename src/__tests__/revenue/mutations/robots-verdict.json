@@ -564,7 +564,7 @@
   {
     "id": "T58-RC18-exit-0-lost",
     "file": "scripts/robots-verdict.mjs",
-    "find": "  return count(\"refresh\") + count(\"revert\") > 0 ? 0 : 3;",
+    "find": "  return count(\"refresh\") + count(\"revert\") + count(\"disallowed-path\") > 0 ? 0 : 3;",
     "replace": "  return 3;",
     "test": "src/__tests__/revenue/robots-verdict.test.ts",
     "note": "tick 58: --recheck exits 3 when it changed (or would change) something"
@@ -827,5 +827,45 @@
     "replace": "const verdictsOf = (file: { sites: Record<string, Entry> }): Record<string, Entry> => file.sites;",
     "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
     "note": "tick 58 review fix: prize-terms-audit's history blocks read the file as a re-check left it, so a refresh or a revert turns them red"
+  },
+  {
+    "id": "T59-DP1-outcome-suppressed",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "    return out(\"disallowed-path\", `${same}; but ${judged.why}`, { checked: judged.checked, refused: judged.refused });",
+    "replace": "    return out(\"unchanged\", same);",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 closure 1: an unchanged robots.txt that disallows a path queued since the verdict is reported unchanged, the path never named"
+  },
+  {
+    "id": "T59-DP2-exit-3",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "  return count(\"refresh\") + count(\"revert\") + count(\"disallowed-path\") > 0 ? 0 : 3;",
+    "replace": "  return count(\"refresh\") + count(\"revert\") > 0 ? 0 : 3;",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 closure 1: a disallowed-path exits 3 (nothing to do) instead of 0 (needs attention)"
+  },
+  {
+    "id": "T59-DP3-apply-writes",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "    if (values.apply && (r.outcome === \"refresh\" || r.outcome === \"revert\")) {",
+    "replace": "    if (values.apply && (r.outcome === \"refresh\" || r.outcome === \"revert\" || r.outcome === \"disallowed-path\")) {",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 closure 1: --apply writes on a disallowed-path (the entry it has none of), which is report only"
+  },
+  {
+    "id": "T59-DP4-totals-count",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "const OUTCOMES = [\"unchanged\", \"unreachable\", \"refresh\", \"revert\", \"error\", \"disallowed-path\"];",
+    "replace": "const OUTCOMES = [\"unchanged\", \"unreachable\", \"refresh\", \"revert\", \"error\"];",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 closure 1: the totals line loses its disallowed-path count"
+  },
+  {
+    "id": "T59-DP5-list-line",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "? [`${name}:${i + 1}`] : []",
+    "replace": "? [`${name}:${i}`] : []",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 closure 1: the list line that queues a disallowed path is named one line off"
   }
 ]

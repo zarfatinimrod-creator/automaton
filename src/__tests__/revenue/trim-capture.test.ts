@@ -681,7 +681,7 @@ describe("trim-capture on a fixture store", () => {
     expect(() => planCapture({ ...args, trimText: (text: string) => text.split("\n").slice(1).join("\n") })).toThrow(`${slug}.txt: the trimmed text would not keep its 31 lines`);
   });
 
-  it("in a git repository, names the commit that holds the full bytes, and refuses a capture with uncommitted changes", () => {
+  it("in a git repository, names the commit that holds the full bytes; a capture with uncommitted changes is reported by the dry run and refused by --apply", () => {
     const { root, dir } = makeStore("git");
     const git = (...args: string[]) => spawnSync("git", ["-c", "user.name=t", "-c", `user.email=${["t", "example.invalid"].join("@")}`, "-c", "commit.gpgsign=false", ...args], { cwd: root, encoding: "utf8" });
     expect(git("init", "-q").status).toBe(0);
@@ -690,10 +690,31 @@ describe("trim-capture on a fixture store", () => {
     const head = git("log", "-1", "--format=%H").stdout.trim();
     expect(head).toMatch(/^[0-9a-f]{40}$/);
     writeFileSync(join(dir, "bar-json.json"), "changed\n");
+    // A render just fetched (tick 59): a new capture of the barred site, not yet committed.
+    const fresh = htmlOf(6);
+    writeFileSync(join(dir, "bar-new.meta.json"), metaText(baseMeta("bar-new", "https://www.barred.test/new", "html", fresh)));
+    writeFileSync(join(dir, "bar-new.html"), fresh);
+    writeFileSync(join(dir, "bar-new.txt"), textOf(8, "new"));
+    const before = snapshot(dir);
+    // The dry run reports both and plans them on the files on disk; it refuses nothing and writes nothing (tick 59: the
+    // real-store test runs this dry run, and must not go red on a capture a render just fetched).
+    const dry = run(root);
+    expect(dry.code, dry.out).toBe(0);
+    expect(dry.out).not.toMatch(/REFUSED/);
+    expect(dry.out).toMatch(/^uncommitted: bar-json has uncommitted changes \(M research\/rendered\/bar-json\.json\): commit it first, so the trimmed block names the commit that holds the full bytes; the dry run plans it on the files on disk, and --apply refuses it until it is committed$/m);
+    expect(dry.out).toMatch(/^uncommitted: bar-new has uncommitted changes \(\?\? research\/rendered\/bar-new\.html; \?\? research\/rendered\/bar-new\.meta\.json; \?\? research\/rendered\/bar-new\.txt\)/m);
+    expect(dry.out).toMatch(/^would trim bar-json /m);
+    expect(dry.out).toMatch(/^would trim bar-new /m);
+    expect(snapshot(dir)).toEqual(before);
+    // --apply refuses the whole run on them, and writes nothing.
     const dirty = run(root, { apply: true });
     expect(dirty.code).toBe(1);
     expect(dirty.out).toMatch(/REFUSED bar-json: bar-json has uncommitted changes/);
+    expect(dirty.out).toMatch(/REFUSED bar-new: bar-new has uncommitted changes/);
+    expect(dirty.out).not.toMatch(/^uncommitted:/m);
+    expect(snapshot(dir)).toEqual(before);
     expect(git("checkout", "--", "research/rendered/bar-json.json").status).toBe(0);
+    for (const ext of ["meta.json", "html", "txt"]) rmSync(join(dir, `bar-new.${ext}`));
     expect(run(root, { apply: true }).code).toBe(0);
     const meta = JSON.parse(readFileSync(join(dir, "bar-live.meta.json"), "utf8"));
     expect(meta.trimmed.fullBytesIn).toBe(`commit ${head} (git show ${head}:research/rendered/bar-live.<ext>)`);
@@ -774,6 +795,8 @@ describe("the readers of a trimmed capture understand it", () => {
 
 describe("the real store (read only)", () => {
   it("the dry run refuses nothing and reaches every capture of a copying-barred site", () => {
+    // A capture with uncommitted changes (a render just fetched, a capture mid-edit) is an "uncommitted:" line of the dry
+    // run, not a refusal (tick 59); only --apply refuses it.
     const lines: string[] = [];
     const code = trimStore({ log: (l: string) => lines.push(l) });
     expect([0, 3], lines.filter((l) => l.startsWith("REFUSED")).join("\n")).toContain(code);
