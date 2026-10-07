@@ -1,4 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type BetterSqlite3 from "better-sqlite3";
 import { createInMemoryDb } from "../orchestration/test-db.js";
 import {
@@ -25,7 +28,7 @@ import {
 } from "../../revenue/owner-steps.js";
 import { renderDashboard } from "../../revenue/dashboard.js";
 import { getLine, listLines, recordKpi, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
-import { REVENUE_TASK_INTERVALS_MS } from "../../revenue/heartbeat.js";
+import { LAST_AUDIT_KEY, LAST_LEDGER_SYNC_KEY, REVENUE_TASK_INTERVALS_MS, lastAudit } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
 import { DEFAULT_PORTFOLIO, portfolioTargetAgorot, seedDefaultPortfolio, summarizeTargetBasis, syncPortfolio } from "../../revenue/portfolio.js";
 import { readSite } from "../../revenue/page-views-reader.js";
@@ -766,5 +769,221 @@ describe("revenue/runner liveness watchdog", () => {
     const result = await tick(db, { nowIso: new Date(t0).toISOString(), feedGoals: false, seed: false });
     expect(result.liveness.some((f) => f.kind === "silent_line")).toBe(true);
     expect(result.blockers.some((b) => b.includes("never taken money"))).toBe(true);
+  });
+});
+
+// Tick 64 (7.10.2026): `colony.ts report` ran the tick with every due step, so a report run by hand ran the overdue
+// ledger sync, stamped its time, and the next report and dashboard said there was no open blocker while the hourly
+// schedule had not run for hours. A render (readOnly) runs no step and writes nothing; the blockers are still a tick's.
+describe("revenue/runner a report-only render records nothing a tick records", () => {
+  let db: BetterSqlite3.Database;
+  const t0 = Date.parse("2026-09-03T00:00:00.000Z");
+  const at = (ms: number) => new Date(ms).toISOString();
+  const LOOP_GAP = "the loop did not run for 7 hours (last ledger sync 2026-09-03T00:00:00.000Z)";
+
+  /** Every row of every table, and the schema: what a write of any kind would change. */
+  const snapshot = (): string => {
+    const tables = (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name").all() as { name: string }[]).map((t) => t.name);
+    const rows = tables.map((t) => `${t}\t${JSON.stringify(db.prepare(`SELECT * FROM "${t}" ORDER BY rowid`).all())}`);
+    return [...rows, JSON.stringify(db.prepare("SELECT type, name, sql FROM sqlite_master ORDER BY name").all())].join("\n");
+  };
+
+  beforeEach(async () => {
+    db = createInMemoryDb();
+    await tick(db, { nowIso: at(t0), feedGoals: false, env: {} }); // every step runs once: the last ledger sync is t0
+  });
+  afterEach(() => { db.close(); });
+
+  it("on a database whose last ledger sync is 7 hours old: no row and no kv value changes, and the blocker stays", async () => {
+    const before = snapshot();
+    const render = await tick(db, { nowIso: at(t0 + 7 * HOUR), readOnly: true, feedGoals: false, seed: false, env: {} });
+    expect(snapshot()).toBe(before);
+    expect(render.ran).toEqual([]);
+    expect(render.ledgerSync).toBeNull();
+    expect(render.supervisor).toBeNull();
+    expect(render.dueNotRun).toEqual(["revenue_ledger_sync", "revenue_supervisor_review"]);
+    expect(render.skipped).toEqual(["revenue_board_review", "revenue_audit"]);
+    expect(render.blockers.some((b) => b.startsWith(LOOP_GAP))).toBe(true);
+    expect(isDue(db, "revenue_ledger_sync", t0 + 7 * HOUR)).toBe(true);
+
+    const report = renderReport(db, render).split("\n");
+    expect(report).toContain("Ran: nothing — a report-only render runs no step and records nothing; the scheduled tick runs the steps");
+    expect(report).toContain("Due now, left for the scheduled tick: revenue_ledger_sync, revenue_supervisor_review");
+    expect(report).toContain("Skipped as not yet due: revenue_board_review, revenue_audit");
+    expect(report.some((l) => l.startsWith(`- ${LOOP_GAP}`))).toBe(true);
+    expect(renderDashboard(db, { nowIso: at(t0 + 7 * HOUR), blockers: render.blockers })).toContain(LOOP_GAP);
+
+    // A second render reads the same stored sync: the blocker is still there, an hour older.
+    const again = await tick(db, { nowIso: at(t0 + 8 * HOUR), readOnly: true, feedGoals: false, seed: false, env: {} });
+    expect(snapshot()).toBe(before);
+    expect(again.blockers.some((b) => b.startsWith("the loop did not run for 8 hours (last ledger sync 2026-09-03T00:00:00.000Z)"))).toBe(true);
+  });
+
+  it("issues no write at all, even with every step due (board review and budgets included): a query_only handle does not throw", async () => {
+    const before = snapshot();
+    db.pragma("query_only = ON");
+    const render = await tick(db, { nowIso: at(t0 + 8 * 24 * HOUR), readOnly: true, feedGoals: false, seed: false, env: {} });
+    db.pragma("query_only = OFF");
+    expect(snapshot()).toBe(before);
+    expect(render.ran).toEqual([]);
+    expect(render.dueNotRun).toEqual(TASK_ORDER);
+    expect(render.skipped).toEqual([]);
+    expect(render.board).toBeNull();
+    expect(render.audit).toBeNull();
+    // The guard is real: the same handle refuses a write while query_only is on.
+    db.pragma("query_only = ON");
+    expect(() => markRan(db, "revenue_ledger_sync", t0)).toThrow(/readonly/);
+    db.pragma("query_only = OFF");
+  });
+
+  it("a scheduled tick on the same database still records the sync, and the next render's blocker is gone", async () => {
+    const before = snapshot();
+    const scheduled = await tick(db, { nowIso: at(t0 + 7 * HOUR), feedGoals: false, env: {} });
+    expect(snapshot()).not.toBe(before);
+    expect(scheduled.ran).toEqual(["revenue_ledger_sync", "revenue_supervisor_review"]);
+    expect(scheduled.ledgerSync).not.toBeNull();
+    expect("dueNotRun" in scheduled).toBe(false);
+    // The tick's own report keeps the gap it found (checkLiveness runs before markRan), and says what ran.
+    expect(scheduled.blockers.some((b) => b.startsWith(LOOP_GAP))).toBe(true);
+    const report = renderReport(db, scheduled).split("\n");
+    expect(report).toContain("Ran: revenue_ledger_sync, revenue_supervisor_review");
+    expect(report.some((l) => l.startsWith("Due now"))).toBe(false);
+    expect(isDue(db, "revenue_ledger_sync", t0 + 7 * HOUR)).toBe(false);
+
+    const render = await tick(db, { nowIso: at(t0 + 7 * HOUR + 5 * 60_000), readOnly: true, feedGoals: false, seed: false, env: {} });
+    expect(render.blockers.some((b) => b.includes("the loop did not run"))).toBe(false);
+    expect(render.dueNotRun).toEqual([]);
+    expect(renderReport(db, render).split("\n")).toContain(
+      "Ran: nothing — a report-only render runs no step and records nothing; the scheduled tick runs the steps",
+    );
+  });
+});
+
+// The tick-64 review: a render that ran no step dropped every blocker only a step computed — a measurement file that is
+// not JSON, "page views: not configured while a clock runs", the sync's errors and unmapped products, the audit's
+// findings — while a tick at the same moment, and the old report, showed them. The render's blockers are now a tick's,
+// but for a due step's own findings, which are the last run's and say so.
+describe("revenue/runner a render's blockers are a tick's at the same moment", () => {
+  let db: BetterSqlite3.Database;
+  let dir: string;
+  let files: { measurementsDir: string; brandMailFile: string; prizeIntakeFile: string; pageViewClockFile: string };
+  const T0 = Date.parse("2026-10-05T00:00:00.000Z");
+  const T1 = T0 + 8 * 24 * HOUR;
+  const at = (ms: number) => new Date(ms).toISOString();
+  const snapshot = (): string => {
+    const tables = (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name").all() as { name: string }[]).map((t) => t.name);
+    return tables.map((t) => `${t}\t${JSON.stringify(db.prepare(`SELECT * FROM "${t}" ORDER BY rowid`).all())}`).join("\n");
+  };
+  const render = (ms: number) => tick(db, { nowIso: at(ms), readOnly: true, feedGoals: false, seed: false, env: {}, ...files });
+  const scheduled = (ms: number) => tick(db, { nowIso: at(ms), feedGoals: false, env: {}, ...files });
+  const setKv = (key: string, value: unknown) =>
+    db.prepare("INSERT OR REPLACE INTO kv (key, value, updated_at) VALUES (?, ?, datetime('now'))").run(key, JSON.stringify(value));
+
+  beforeEach(async () => {
+    db = createInMemoryDb();
+    dir = mkdtempSync(join(tmpdir(), "runner-render-"));
+    files = {
+      measurementsDir: join(dir, "measurements"),
+      brandMailFile: join(dir, "brand-mail.json"),
+      prizeIntakeFile: join(dir, "prize-intake.json"),
+      pageViewClockFile: join(dir, "page-view-clock.json"),
+    };
+    mkdirSync(files.measurementsDir);
+    await scheduled(T0); // seeds the portfolio and runs every step: the last ledger sync and every review are at T0
+    // Every class of blocker a tick computes outside its steps, and the two its ledger sync computes without the network:
+    writeFileSync(join(files.measurementsDir, "apify-runs.json"), "{not json"); // measurement: not JSON
+    writeFileSync(join(files.measurementsDir, "algora-supply.json"), JSON.stringify({ claimableBounties: 3 })); // no measuredAt
+    writeFileSync(files.brandMailFile, "{not json"); // the brand-mail probe
+    writeFileSync(
+      files.pageViewClockFile,
+      JSON.stringify({ "il-biz-tools": { d0: "2026-10-05", d0Evidence: "test" }, pcn874: { d0: "5.10.2026" }, queryApi: { priced: [] } }),
+    ); // a clock runs with no read key, and one clock is a problem
+    updateLineStatus(db, "apify-actors", "building", { force: true }); // stalled: no signal since T0's reviews
+    // At T1 only the ledger sync is due.
+    for (const task of ["revenue_supervisor_review", "revenue_board_review", "revenue_audit"] as const) markRan(db, task, T1 - HOUR);
+  });
+  afterEach(() => {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("with the ledger sync due: the same blockers in the same words and order, and the same page-view line", async () => {
+    const before = snapshot();
+    const r = await render(T1);
+    expect(snapshot()).toBe(before);
+    expect(r.dueNotRun).toEqual(["revenue_ledger_sync"]);
+    const renderReportLines = renderReport(db, r).split("\n");
+
+    const t = await scheduled(T1);
+    expect(t.ran).toEqual(["revenue_ledger_sync"]);
+    // The fixture is what it says: each class is a blocker of the tick.
+    for (const needle of [
+      "the loop did not run for 192 hours (last ledger sync 2026-10-05T00:00:00.000Z)",
+      `measurement ${join(files.measurementsDir, "apify-runs.json")}: not JSON`,
+      `measurement ${join(files.measurementsDir, "algora-supply.json")}: no usable measuredAt`,
+      "page-view clock: pcn874.d0 is not a UTC day (YYYY-MM-DD): 5.10.2026",
+      "page views: not configured while a clock runs (il-biz-tools from 2026-10-05)",
+      "apify-actors has been building for 8 days",
+      `brand-mail probe ${files.brandMailFile}: not JSON`,
+      "il-biz-tools is waiting on the owner",
+    ]) {
+      expect(t.blockers.some((b) => b.startsWith(needle)), needle).toBe(true);
+    }
+    expect(r.blockers).toEqual(t.blockers);
+    expect(r.pageViews).toEqual(t.pageViews);
+    const pageViewLines = (lines: string[]) => lines.filter((l) => l.startsWith("- Page views"));
+    expect(pageViewLines(renderReportLines)).toEqual(pageViewLines(renderReport(db, t).split("\n")));
+    expect(pageViewLines(renderReportLines)[0]).toMatch(/^- Page views: not configured — POSTHOG_READ_KEY is not set/);
+    expect(renderReportLines).toContain(
+      "What a render cannot show: what the due steps would find now. A due ledger sync's and audit's own blockers are " +
+        "their last runs', each led by its time; no page-view query is sent; and a supervisor or board review not run " +
+        "changes nothing the later checks read (a line's last signal, its status).",
+    );
+
+    // Nothing due five minutes later: a render and a tick have the same blockers, and the report has no such line.
+    const later = await render(T1 + 5 * 60_000);
+    expect(later.dueNotRun).toEqual([]);
+    expect(renderReport(db, later)).not.toContain("What a render cannot show");
+    expect(later.blockers).toEqual((await scheduled(T1 + 5 * 60_000)).blockers);
+  });
+
+  it("with the sync and the audit due: their own blockers are the last runs', each led by its time; the rest are the tick's", async () => {
+    // The stored last sync's time is its run's (the loop gap reads the same one), not the record's wall-clock `at`.
+    setKv(LAST_LEDGER_SYNC_KEY, { recorded: 0, duplicates: 0, unmapped: ["gumroad:abc"], sources: [], errors: ["gumroad: HTTP 401"], gumroadRefundRate: null, at: "2026-10-05T00:00:07.000Z" });
+    // A record from before tick 64: no findings stored. The rate is flagged / sampled.
+    setKv(LAST_AUDIT_KEY, { at: at(T0), sampled: 4, flagged: 2, chiefAuditRan: false });
+    markRan(db, "revenue_audit", T1 - 8 * 24 * HOUR);
+    const before = snapshot();
+    const r = await render(T1);
+    expect(snapshot()).toBe(before);
+    expect(r.dueNotRun).toEqual(["revenue_ledger_sync", "revenue_audit"]);
+    const led = [
+      `last ledger sync, ${at(T0)}: 1 platform product(s) have no revenue line: gumroad:abc. Map them so their sales are counted.`,
+      `last ledger sync, ${at(T0)}: gumroad: HTTP 401`,
+      `last audit, ${at(T0)}: auditor flagged 2/4 supervisor reviews`,
+    ];
+    for (const b of led) expect(r.blockers).toContain(b);
+    // Where the tick would put the sync's and the audit's: after the loop gap, and after the page-view gates.
+    expect(r.blockers.indexOf(led[0])).toBe(1);
+    expect(r.blockers.indexOf(led[2])).toBeGreaterThan(r.blockers.findIndex((b) => b.startsWith("page views: not configured")));
+
+    const t = await scheduled(T1);
+    expect(t.ran).toEqual(["revenue_ledger_sync", "revenue_audit"]);
+    expect(r.blockers.filter((b) => !led.includes(b))).toEqual(t.blockers);
+  });
+
+  it("a scheduled audit stores its rate and findings, and a render with the audit due prints them with the audit's time", async () => {
+    // A cost booked on a killed line after its kill date: a structural finding the auditor always checks.
+    updateLineStatus(db, "pcn874", "killed", { force: true });
+    db.prepare("UPDATE revenue_lines SET killed_at = ? WHERE id = 'pcn874'").run(at(T0));
+    recordLedgerEntry(db, { lineId: "pcn874", kind: "cost", amountMinor: 100, currency: "ILS", source: "manual", occurredAt: at(T0 + 24 * HOUR) });
+    markRan(db, "revenue_audit", T1 - 8 * 24 * HOUR);
+    const t = await scheduled(T1);
+    expect(t.audit?.chiefFindings).toEqual(["1 cost entries on killed lines after their kill date"]);
+    expect(lastAudit(db)).toEqual({ at: at(T1), sampled: t.audit!.sampled, flagged: t.audit!.flagged, flagRate: t.audit!.flagRate, chiefFindings: t.audit!.chiefFindings });
+
+    const r = await render(T1 + 7 * 24 * HOUR);
+    expect(r.dueNotRun).toContain("revenue_audit");
+    expect(r.blockers).toContain(`last audit, ${at(T1)}: chief audit: 1 cost entries on killed lines after their kill date`);
   });
 });

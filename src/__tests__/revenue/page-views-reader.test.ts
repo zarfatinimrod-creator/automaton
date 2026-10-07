@@ -459,6 +459,60 @@ describe("the colony tick — the KPI step reads, the gates read the rows", () =
     expect(report).toContain("- `pcn874` weeklyPageViews: 5 page views · il-biz-tools.netlify.app · week 2 from 2026-10-05 — cookieless page views");
   });
 
+  // The tick-64 review: a render (readOnly, `colony.ts report`) makes every check of the read before its first query and
+  // sends none, so its page-view blockers and its "Page views:" line are the tick's, and it writes nothing.
+  const renderAt = (nowIso: string, env: Record<string, string>, fetchImpl: typeof fetch) =>
+    tick(db, {
+      nowIso,
+      readOnly: true,
+      feedGoals: false,
+      seed: false,
+      env,
+      fetchImpl,
+      measurementsDir,
+      pageViewSiteDir: siteDir,
+      pageViewClockFile: clockFile,
+      brandMailFile: join(dir, "brand-mail.json"),
+      prizeIntakeFile: join(dir, "prize-intake.json"),
+    });
+  const tables = () =>
+    JSON.stringify([db.prepare("SELECT * FROM revenue_kpi_snapshots ORDER BY rowid").all(), db.prepare("SELECT * FROM kv ORDER BY key").all()]);
+
+  it("a render with weeks to read sends no query and writes nothing: its status is due, and the tick then reads them", async () => {
+    writeClock(clockFile, {
+      "il-biz-tools": { d0: D0, d0Evidence: "test" },
+      pcn874: { d0: D0, d0Evidence: "test" },
+    });
+    const before = tables();
+    const quiet = fakeFetch(() => ok());
+    const r = await renderAt("2026-10-19T12:00:00.000Z", ENV, quiet.fetchImpl);
+    expect(quiet.calls).toHaveLength(0);
+    expect(tables()).toBe(before);
+    const detail =
+      "2 completed week(s) to read: week 1 from 2026-10-05 (il-biz-tools, pcn874); week 2 from 2026-10-05 (il-biz-tools, pcn874); " +
+      "a render sends no query, the scheduled tick reads them";
+    expect(r.pageViews).toEqual({ status: "due", detail, recorded: [], weeks: [] });
+    expect(renderReport(db, r)).toContain(`- Page views: weeks to read — ${detail}`);
+    expect(r.blockers.join("\n")).not.toMatch(/page views/i);
+
+    const { fetchImpl, calls } = fakeFetch(() => ok());
+    const t = await runTick("2026-10-19T12:00:00.000Z", ENV, fetchImpl);
+    expect(calls).toHaveLength(2);
+    expect(t.pageViews?.status).toBe("recorded");
+  });
+
+  it("a render's page-view error before the first query is the tick's blocker, word for word", async () => {
+    makeSite(siteDir, { apiHost: "https://posthog.example.com" });
+    writeClock(clockFile, { "il-biz-tools": { d0: D0, d0Evidence: "test" } });
+    const quiet = fakeFetch(() => ok());
+    const r = await renderAt("2026-10-19T12:00:00.000Z", ENV, quiet.fetchImpl);
+    const t = await runTick("2026-10-19T12:00:00.000Z", ENV, fakeFetch(() => ok()).fetchImpl);
+    const pv = (blockers: string[]) => blockers.filter((b) => b.startsWith("page views: "));
+    expect(pv(t.blockers)).toEqual(["page views: posthog.apiHost https://posthog.example.com is not a PostHog cloud ingestion host; the read key is sent nowhere else"]);
+    expect(pv(r.blockers)).toEqual(pv(t.blockers));
+    expect(quiet.calls).toHaveLength(0);
+  });
+
   it("the scheduled tick passes the read key and the project id to the reader", () => {
     const yml = readFileSync(join(".github", "workflows", "colony.yml"), "utf8");
     expect(yml).toContain("POSTHOG_READ_KEY: ${{ secrets.POSTHOG_READ_KEY }}");

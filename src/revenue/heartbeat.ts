@@ -172,6 +172,46 @@ export function lastGumroadRefundRateRead(db: Database): GumroadRefundRateLastRe
   return v as GumroadRefundRateLastRead;
 }
 
+/** Every sync's result, with the wall-clock time it ran: what a render (runner.ts readOnly) reports for a due sync. */
+export const LAST_LEDGER_SYNC_KEY = "revenue.last_ledger_sync";
+
+/** Every audit's result, with the audit's clock: what a render (runner.ts readOnly) reports for a due audit. */
+export const LAST_AUDIT_KEY = "revenue.last_audit";
+
+const isStringList = (v: unknown): v is string[] => Array.isArray(v) && v.every((s) => typeof s === "string");
+
+/** The last sync's unmapped products and errors, or null when none is stored or what is stored cannot be read as one. */
+export function lastLedgerSync(db: Database): { at: string; unmapped: string[]; errors: string[] } | null {
+  const raw = getKv(db, LAST_LEDGER_SYNC_KEY);
+  if (!raw) return null;
+  let v: { at?: unknown; unmapped?: unknown; errors?: unknown };
+  try {
+    v = JSON.parse(raw) as typeof v;
+  } catch {
+    return null;
+  }
+  if (!v || typeof v !== "object" || typeof v.at !== "string" || !isStringList(v.unmapped) || !isStringList(v.errors)) return null;
+  return { at: v.at, unmapped: v.unmapped, errors: v.errors };
+}
+
+/**
+ * The last audit's flag rate (flagged / sampled, as runAudit computes it) and chief findings, or null when none is stored
+ * or what is stored cannot be read as one. A record written before tick 64 (7.10.2026) stored no findings: none.
+ */
+export function lastAudit(db: Database): Pick<AuditResult, "sampled" | "flagged" | "flagRate" | "chiefFindings"> & { at: string } | null {
+  const raw = getKv(db, LAST_AUDIT_KEY);
+  if (!raw) return null;
+  let v: { at?: unknown; sampled?: unknown; flagged?: unknown; chiefFindings?: unknown };
+  try {
+    v = JSON.parse(raw) as typeof v;
+  } catch {
+    return null;
+  }
+  if (!v || typeof v !== "object" || typeof v.at !== "string" || typeof v.sampled !== "number" || typeof v.flagged !== "number") return null;
+  const flagRate = v.sampled > 0 ? v.flagged / v.sampled : 0;
+  return { at: v.at, sampled: v.sampled, flagged: v.flagged, flagRate, chiefFindings: isStringList(v.chiefFindings) ? v.chiefFindings : [] };
+}
+
 export interface LedgerSyncResult {
   recorded: number;
   duplicates: number;
@@ -314,7 +354,7 @@ export async function runLedgerSync(
   } else {
     deleteKv(db, "revenue.unmapped_products");
   }
-  setKv(db, "revenue.last_ledger_sync", JSON.stringify({ ...result, at: new Date().toISOString() }));
+  setKv(db, LAST_LEDGER_SYNC_KEY, JSON.stringify({ ...result, at: new Date().toISOString() }));
   return result;
 }
 
@@ -665,7 +705,12 @@ export function runAudit(
     if (out.chiefFindings.length) requestBoardReview(db, `chief audit: ${out.chiefFindings.join("; ")}`);
   }
 
-  setKv(db, "revenue.last_audit", JSON.stringify({ at: nowIso, sampled: out.sampled, flagged: out.flagged, chiefAuditRan: out.chiefAuditRan }));
+  // The findings too (tick 64): a render with the audit due prints the last audit's blockers from this record.
+  setKv(
+    db,
+    LAST_AUDIT_KEY,
+    JSON.stringify({ at: nowIso, sampled: out.sampled, flagged: out.flagged, chiefAuditRan: out.chiefAuditRan, chiefFindings: out.chiefFindings }),
+  );
   return out;
 }
 
