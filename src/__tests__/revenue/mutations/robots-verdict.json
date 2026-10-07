@@ -1115,5 +1115,29 @@
     "replace": "Privacy Notice (`research/rendered/terms-un-2026-10-06.txt:276`, :273).",
     "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
     "note": "tick 60 review fixer: both Unread pointers are cited lines but swapped, so only the pairing catches it"
+  },
+  {
+    "id": "T60-AD1-row-240-commit",
+    "file": "research/channel-loop/ZERO-TESTS.md",
+    "find": "the render (9e02a08) timed out at the runner's 30 s budget",
+    "replace": "the render (f661069) timed out at the runner's 30 s budget",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 adaptionlabs.ai review fix: ZERO-TESTS row 240's mark names the queueing commit, not the render's"
+  },
+  {
+    "id": "T60-AD2-row-240-not-retired",
+    "file": "research/channel-loop/ZERO-TESTS.md",
+    "find": "the js line is retired (3(2)(vi)), with no second attempt in any mode; adaptionlabs.ai stays TERMS_PENDING",
+    "replace": "the js line stays queued for a second render; adaptionlabs.ai stays TERMS_PENDING",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 adaptionlabs.ai review fix: ZERO-TESTS row 240's mark says the js line stays queued"
+  },
+  {
+    "id": "T60-AD3-row-240-mark-removed",
+    "file": "research/channel-loop/ZERO-TESTS.md",
+    "find": " **RENDERED 7.10 (tick 60): amendment 2 named this kind nav-shell, and the page was queued once in js mode after the plain 6.10 shell was frozen as terms-adaptionlabs-2026-10-06; the render (9e02a08) timed out at the runner's 30 s budget, status 200 and nothing read; the js line is retired (3(2)(vi)), with no second attempt in any mode; adaptionlabs.ai stays TERMS_PENDING, copying unread.** |",
+    "replace": " |",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 adaptionlabs.ai review fix (the review's ZERO-TESTS row 240 finding): the row's tick-60 mark missing, the tick-54 text left saying the js route waits on the classifier"
   }
 ]

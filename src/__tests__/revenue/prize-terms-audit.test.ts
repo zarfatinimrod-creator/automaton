@@ -5120,6 +5120,14 @@ describe("tick 60: adaptionlabs.ai's once-only js render came back empty (a time
     for (const slug of [RENDER60.slug, "terms-adaptionlabs-again"]) {
       expect(() => queueTermsShell({ urls: text.join("\n"), url: RENDER60.url, slug, date: "7.10.2026" }), slug).toThrow(/the js render is once only \(3\(2\)\(vi\)\)/);
     }
+    // ZERO-TESTS row 240 says so after its tick-54 mark, as rows 233 (Israel Post) and 235 (kaggle.com) did after theirs.
+    const row = zeroRows().get(240);
+    expect(row?.url).toBe(RENDER60.url);
+    expect(row?.row).toContain("**READ 6.10 (tick 54): a nav-only shell, 85 characters of text (capture-check short, not js-shell); adaptionlabs.ai stays TERMS_PENDING, kind shell; the js route of decision 3 waits on the classifier naming this kind.** **RENDERED 7.10 (tick 60): ");
+    expect(row?.row).toMatch(
+      /\*\*RENDERED 7\.10 \(tick 60\): amendment 2 named this kind nav-shell, and the page was queued once in js mode after the plain 6\.10 shell was frozen as terms-adaptionlabs-2026-10-06; the render \(9e02a08\) timed out at the runner's 30 s budget, status 200 and nothing read; the js line is retired \(3\(2\)\(vi\)\), with no second attempt in any mode; adaptionlabs\.ai stays TERMS_PENDING, copying unread\.\*\* \|$/,
+    );
+    expect(row?.row).toContain(`(${RENDER60.commit})`);
   });
 
   it("records it in the audit note: the shell table's third row, the 7.10 paragraph, and the moved render group", () => {
