@@ -153,6 +153,16 @@ const PRIZE_URLS = "research/measurements/ai-allowed-events.urls.txt";
 const PIN = "548be52";
 const FIXTURE = `src/__tests__/revenue/fixtures/ai-allowed-events-${PIN}.urls.txt`;
 const FIXTURE_SHA256 = "3b37fb001dc04e50c313f704ded1cddde8a405b27b72819a19a04eeb2c03986c";
+/**
+ * The live list as the 6.10 03:24 intake left it (a2d34f7), the list every robots verdict and --recheck of ticks 54-62 was
+ * judged against. scripts/prize-intake.ts writes the live list with the rules URLs of rows NOT YET GRADED only, so the
+ * 7.10 13:59 intake dropped the rows graded since (agenthon.net's and drivendata.org's among them) and the reconstructions
+ * below, which need the site's rules URL queued, failed on the live file. They read this copy; the checks that hold on
+ * any list (nothing judged changes, the gate's answer for every queued line) still read the live file.
+ */
+const PRIZE_URLS_PIN = "a2d34f7";
+const PRIZE_URLS_AT = `src/__tests__/revenue/fixtures/ai-allowed-events-${PRIZE_URLS_PIN}.urls.txt`;
+const PRIZE_URLS_AT_SHA256 = "9a12eb9ea834916a00862ba63d7c4b48cb2614980298ed945e356243f2da4e29";
 type Entry = { verdict: string; source: string; checked: string; note?: string; copying?: string };
 type Line = { url: string; slug: string; n: number };
 /**
@@ -1067,6 +1077,21 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       blob = null; // a shallow CI checkout has no 548be52; the pinned sha256 above still holds the fixture
     }
     if (blob !== null) expect(blob.equals(bytes)).toBe(true);
+  });
+
+  it("keeps the live list as the 6.10 03:24 intake left it (a2d34f7) byte for byte, for the reconstructions that need a graded row queued", () => {
+    const bytes = readFileSync(PRIZE_URLS_AT);
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(PRIZE_URLS_AT_SHA256);
+    let blob: Buffer | null = null;
+    try {
+      blob = execFileSync("git", ["show", `${PRIZE_URLS_PIN}:${PRIZE_URLS}`], { stdio: ["ignore", "pipe", "ignore"] });
+    } catch {
+      blob = null; // a shallow CI checkout may not hold a2d34f7; the pinned sha256 above still holds the fixture
+    }
+    if (blob !== null) expect(blob.equals(bytes)).toBe(true);
+    // It still queues the two rows the 7.10 13:59 intake dropped once graded, which the live list need not.
+    expect(bytes.toString("utf8")).toContain("https://www.agenthon.net/?ref=mlcontests");
+    expect(bytes.toString("utf8")).toContain("https://www.drivendata.org/competitions/311/dat-parkinsons-challenge/?ref=mlcontests");
   });
 
   it("judges every site of the 101 audited rules URLs: the 43 audited here, github.com and google.com before", () => {
@@ -3811,7 +3836,7 @@ describe("tick 56: the second terms read (agenthon.net's Terms of Participation,
     expect(page.map((e) => e.url)).toEqual(["https://www.eurocontrol.int/air-navigation-services-performance-review"]);
     const decision = robotsDecision(robotsRulesFor(parseRobotsTxt(robots.body)), page[0].url) as { allowed: boolean; rule: unknown };
     expect([decision.allowed, decision.rule]).toEqual([true, null]);
-    for (const urls of [readFileSync(FIXTURE, "utf8"), readFileSync(PRIZE_URLS, "utf8")]) {
+    for (const urls of [readFileSync(FIXTURE, "utf8"), readFileSync(PRIZE_URLS_AT, "utf8")]) {
       const out = judgeSite({ site: "eurocontrol.int", verdicts: file, urls, readCapture: readerOf(robots), today: ROBOTS_CHECKED });
       expect(out.changed).toBe(true);
       const set = out.verdicts.sites["eurocontrol.int"];
@@ -4067,7 +4092,7 @@ describe("tick 57: eurocontrol.int's robots verdict (R1's repository grep ruled 
     // Set by the script, not by hand: from the tick-56 entry with the tick-57 note, on either list, judgeSite reading the
     // frozen copy allows the one rules path (no rule matches it) and writes exactly the committed entry.
     const prior = { ...file, sites: { ...v, [SITE]: { ...t56[SITE], note: e.note } } };
-    for (const urls of [readFileSync(FIXTURE, "utf8"), readFileSync(PRIZE_URLS, "utf8")]) {
+    for (const urls of [readFileSync(FIXTURE, "utf8"), readFileSync(PRIZE_URLS_AT, "utf8")]) {
       const out = judgeSite({ site: SITE, verdicts: prior, urls, readCapture: readerOf(capture), today: ROBOTS_CHECKED });
       expect(out.changed).toBe(true);
       expect(out.checked.map((c: { url: string; allowed: boolean; rule: unknown }) => [c.url, c.allowed, c.rule])).toEqual([[PRIZE_LINE.url, true, null]]);
@@ -4470,7 +4495,7 @@ describe("tick 57, third round: agenthon.net's Licensing Policy and Privacy Noti
     const before: Entry = { verdict: "NO_TERMS", source: e.source.slice(e.source.indexOf(BEFORE) + BEFORE.length), checked: e.checked, note: e.note, copying: e.copying };
     expect(isExhaustiveNegative(before)).toBe(true);
     const prior = { ...file, sites: { ...v, [SITE]: before } };
-    for (const urls of [readFileSync(FIXTURE, "utf8"), readFileSync(PRIZE_URLS, "utf8")]) {
+    for (const urls of [readFileSync(FIXTURE, "utf8"), readFileSync(PRIZE_URLS_AT, "utf8")]) {
       const out = judgeSite({ site: SITE, verdicts: prior, urls, readCapture: readerOf(capture), today: ROBOTS_CHECKED });
       expect(out.changed).toBe(true);
       expect(out.checked.map((c: { url: string; allowed: boolean; rule: { allow: boolean; pattern: string } | null }) => [c.url, c.allowed, c.rule])).toEqual([
@@ -4750,7 +4775,7 @@ describe("tick 58: the blocks above read the verdicts as they stood before any -
     // capture, as the weekly render would leave them.
     const raw = JSON.parse(readFileSync(VERDICTS, "utf8")).sites as Record<string, Entry>;
     const base = beforeRecheck(raw);
-    const urls = [URLS, PRIZE_URLS].map((file) => readFileSync(file, "utf8")).join("\n");
+    const urls = [URLS, PRIZE_URLS_AT].map((file) => readFileSync(file, "utf8")).join("\n");
     const recheck = (site: string, rule: string) => {
       const dir = mkdtempSync(join(tmpdir(), "prize-terms-recheck-"));
       try {

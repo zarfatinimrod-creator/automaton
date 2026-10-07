@@ -1,0 +1,145 @@
+[
+  {
+    "id": "T63-L1",
+    "file": "src/revenue/ledger.ts",
+    "find": "        SET name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "replace": "        SET budget_monthly_cents = ${Math.max(0, Math.floor(seed.budgetMonthlyCents))}, name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 63: the seed sync writes the seed's budget over the board's allocation again (the bug: four allocations of 0 became 4000, 4000, 3000 and 4000 cents; ledger.test.ts, the budget tests and the real-portfolio test)"
+  },
+  {
+    "id": "T63-L2",
+    "file": "src/revenue/ledger.ts",
+    "find": "        SET name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "replace": "        SET tier = '${seed.tier}', name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 63: the seed sync writes the seed's tier over the one revenue_decide set (ledger.test.ts, the tier test and the preservation test)"
+  },
+  {
+    "id": "T63-L3",
+    "file": "src/revenue/ledger.ts",
+    "find": "        SET name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "replace": "        SET status = '${seed.status ?? \"proposed\"}', name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 63: the seed sync writes a status (the seed's, or proposed) over the line's own (ledger.test.ts, the preservation test: live stays live)"
+  },
+  {
+    "id": "T63-L4",
+    "file": "src/revenue/ledger.ts",
+    "find": "        SET name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "replace": "        SET human_setup_done = 0, name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 63: the seed sync clears the owner's confirmed setup (ledger.test.ts, the preservation test)"
+  },
+  {
+    "id": "T63-L5",
+    "file": "src/revenue/ledger.ts",
+    "find": "        SET name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "replace": "        SET launched_at = NULL, name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 63: the seed sync forgets when the line launched (ledger.test.ts, the preservation test)"
+  },
+  {
+    "id": "T63-L6",
+    "file": "src/revenue/ledger.ts",
+    "find": "    JSON.stringify(seed.humanSetup),",
+    "nth": 2,
+    "replace": "    JSON.stringify(existing.humanSetup),",
+    "test": [
+      "src/__tests__/revenue/ledger.test.ts",
+      "src/__tests__/revenue/runner.test.ts"
+    ],
+    "note": "tick 63: the seed sync keeps the stored owner-step texts, so a text changed in portfolio.ts never reaches the report (runner.test.ts, the sync test; ledger.test.ts, the preservation test)"
+  },
+  {
+    "id": "T63-L7",
+    "file": "src/revenue/ledger.ts",
+    "find": "        SET name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "replace": "        SET killed_at = NULL, kill_reason = NULL, name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 63 review (its probe R63-X1): the seed sync clears a killed line's kill time and reason (ledger.test.ts, the killed-line test; the live-line preservation test has null kill fields and cannot see it)"
+  },
+  {
+    "id": "T63-L8",
+    "file": "src/revenue/ledger.ts",
+    "find": "        SET name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "replace": "        SET status = CASE WHEN status = 'killed' THEN 'awaiting_setup' ELSE status END, killed_at = NULL, kill_reason = NULL, name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 63 review (its probe R63-X4): the seed sync brings back a line the board review killed while portfolio.ts still lists it (ledger.test.ts, the killed-line test)"
+  },
+  {
+    "id": "T63-P1",
+    "file": "src/revenue/portfolio.ts",
+    "find": "    else if (updateLineFromSeed(db, seed)) out.updated.push(seed.id);",
+    "replace": "    else if (getLine(db, seed.id)) out.updated.push(seed.id);",
+    "test": [
+      "src/__tests__/revenue/ledger.test.ts",
+      "src/__tests__/revenue/runner.test.ts"
+    ],
+    "note": "tick 63: syncPortfolio no longer refreshes an existing line, as the scheduled run behaved before (runner.test.ts, the sync test; ledger.test.ts, the changed loop)"
+  },
+  {
+    "id": "T63-P2",
+    "file": "src/revenue/portfolio.ts",
+    "find": "    if (insertLineFromSeed(db, { ...seed, budgetMonthlyCents: 0 })) out.inserted.push(seed.id);",
+    "replace": "    if (insertLineFromSeed(db, seed)) out.inserted.push(seed.id);",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 63 review (blocking): a line the hourly sync inserts starts at its seed's budget again, 4000 cents with no board allocation (ledger.test.ts, the budget-0 insert test, both the test seed and the real portfolio on an empty database)"
+  },
+  {
+    "id": "T63-P3",
+    "file": "src/revenue/portfolio.ts",
+    "find": "  if (!isRevenueColonyEnabled(db)) return { ...out, disabled: true };",
+    "replace": "  if (!isRevenueColonyEnabled(db)) out.disabled = true;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 63 review: the sync says the colony is off and applies portfolio.ts anyway, so a switched-off colony's scheduled run changes lines again (ledger.test.ts, the switched-off test: rows and kv unchanged)"
+  },
+  {
+    "id": "T63-P4",
+    "file": "src/revenue/portfolio.ts",
+    "find": "    if (stored && stored.tier !== seed.tier) out.tierDiffers.push(",
+    "replace": "    if (stored && stored.tier !== seed.tier && seed.tier === \"growth\") out.tierDiffers.push(",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 63 review (note): a tier that differs between the database and portfolio.ts is dropped silently again (ledger.test.ts, the tier test)"
+  },
+  {
+    "id": "T63-W1",
+    "file": ".github/workflows/colony.yml",
+    "find": "          pnpm exec tsx scripts/colony.ts sync-portfolio\n",
+    "replace": "          echo \"no sync\"\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 63: the scheduled job runs no sync-portfolio, so the tick reports the stored texts (colony-cli.test.ts, both workflow tests)"
+  },
+  {
+    "id": "T63-W2",
+    "file": ".github/workflows/colony.yml",
+    "find": "          pnpm exec tsx scripts/colony.ts sync-portfolio\n",
+    "replace": "          pnpm exec tsx scripts/colony.ts sync-portfolio --db /tmp/colony-copy.db\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 63: the sync writes another database than the one the tick reads and the commit stages (colony-cli.test.ts, the exact command)"
+  },
+  {
+    "id": "T63-W3",
+    "file": ".github/workflows/colony.yml",
+    "find": "      - name: Apply portfolio.ts to the database\n",
+    "replace": "      - name: Apply portfolio.ts to the database\n        continue-on-error: true\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 63: a failed sync no longer stops the run, which then commits a report from stale texts (colony-cli.test.ts)"
+  },
+  {
+    "id": "T63-W4",
+    "file": ".github/workflows/colony.yml",
+    "find": "      - name: Apply portfolio.ts to the database\n        # The tick seeds only an empty database and never re-reads a seed, so a line's operating loop, owner steps,\n        # KPIs, criteria or target changed in src/revenue/portfolio.ts reached no report until someone ran this by hand\n        # (tick 63, 7.10.2026). Before the tick, so this run's REPORT.md and dashboard.html print the texts as the code\n        # has them; in this job, so the commit step's `git add -f state/colony` takes the database it wrote. A line it\n        # inserts starts at budget 0 for the board review to allocate, and a line it refreshes keeps its budget, tier,\n        # status, setup-done flag and launch date (portfolio.ts syncPortfolio, ledger.ts updateLineFromSeed); it kills\n        # only a line KILLED_LINES names that is not killed yet, and changes nothing while kv revenue.enabled is 0.\n        run: |\n          set -euo pipefail\n          pnpm exec tsx scripts/colony.ts sync-portfolio\n\n      - name: Run one colony tick\n        env:\n          # Present only once the owner adds them; each connector is skipped\n          # while its key is unset, and the tick makes no network calls at all\n          # when none are set.\n          LEMONSQUEEZY_API_KEY: ${{ secrets.LEMONSQUEEZY_API_KEY }}\n          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}\n          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}\n          # The il-biz-tools / pcn874 page-view read (src/revenue/page-views-reader.ts): a PostHog\n          # personal API key with the query-read scope only, and the project's numeric id (not a\n          # secret; site.json posthog.projectId is the fallback). Without both - and without the\n          # site's counter on and a D0 in state/colony/page-view-clock.json - it reads nothing and\n          # the report says which part is missing. At most one query per completed week.\n          POSTHOG_READ_KEY: ${{ secrets.POSTHOG_READ_KEY }}\n          POSTHOG_PROJECT_ID: ${{ vars.POSTHOG_PROJECT_ID }}\n        run: |\n          set -euo pipefail\n          # No orchestrator runs here, so filing a goal nothing can execute\n          # would freeze the queue at depth one. Governance runs; execution waits.\n          pnpm exec tsx scripts/colony.ts tick --no-feed ${{ inputs.force && '--force' || '' }} | tee /tmp/colony-tick.txt\n",
+    "replace": "      - name: Run one colony tick\n        env:\n          # Present only once the owner adds them; each connector is skipped\n          # while its key is unset, and the tick makes no network calls at all\n          # when none are set.\n          LEMONSQUEEZY_API_KEY: ${{ secrets.LEMONSQUEEZY_API_KEY }}\n          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}\n          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}\n          # The il-biz-tools / pcn874 page-view read (src/revenue/page-views-reader.ts): a PostHog\n          # personal API key with the query-read scope only, and the project's numeric id (not a\n          # secret; site.json posthog.projectId is the fallback). Without both - and without the\n          # site's counter on and a D0 in state/colony/page-view-clock.json - it reads nothing and\n          # the report says which part is missing. At most one query per completed week.\n          POSTHOG_READ_KEY: ${{ secrets.POSTHOG_READ_KEY }}\n          POSTHOG_PROJECT_ID: ${{ vars.POSTHOG_PROJECT_ID }}\n        run: |\n          set -euo pipefail\n          # No orchestrator runs here, so filing a goal nothing can execute\n          # would freeze the queue at depth one. Governance runs; execution waits.\n          pnpm exec tsx scripts/colony.ts tick --no-feed ${{ inputs.force && '--force' || '' }} | tee /tmp/colony-tick.txt\n\n      - name: Apply portfolio.ts to the database\n        # The tick seeds only an empty database and never re-reads a seed, so a line's operating loop, owner steps,\n        # KPIs, criteria or target changed in src/revenue/portfolio.ts reached no report until someone ran this by hand\n        # (tick 63, 7.10.2026). Before the tick, so this run's REPORT.md and dashboard.html print the texts as the code\n        # has them; in this job, so the commit step's `git add -f state/colony` takes the database it wrote. A line it\n        # inserts starts at budget 0 for the board review to allocate, and a line it refreshes keeps its budget, tier,\n        # status, setup-done flag and launch date (portfolio.ts syncPortfolio, ledger.ts updateLineFromSeed); it kills\n        # only a line KILLED_LINES names that is not killed yet, and changes nothing while kv revenue.enabled is 0.\n        run: |\n          set -euo pipefail\n          pnpm exec tsx scripts/colony.ts sync-portfolio\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 63: the sync step after the tick step, so this run's report prints the stored texts and only the next run's the new ones (colony-cli.test.ts, both workflow tests)"
+  },
+  {
+    "id": "T63-W5",
+    "file": ".github/workflows/colony.yml",
+    "find": "          pnpm exec tsx scripts/colony.ts sync-portfolio\n",
+    "replace": "          # pnpm exec tsx scripts/colony.ts sync-portfolio\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 63: the sync command commented out inside its step (colony-cli.test.ts: the exact command, and the every-workflow test, which reads no comment line)"
+  }
+]
