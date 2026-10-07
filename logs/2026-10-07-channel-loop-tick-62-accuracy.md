@@ -30,7 +30,7 @@
   token, ORG_BUDGETS_READ_TOKEN"), את §1, §2 ו-"Folds for Opus" של פסיקת PostHog, את חלק ד ב-`docs/OWNER_STEPS.he.md`
   (שמות הארגונים, כלל העצירה, 3 דקות, הסדר של ₪0), ואת שרשרת הדוח: `humanSetupOf()` / `humanSetupItemFor()` ב-portfolio,
   `openSetupItems()` / `describeOpenSetup()` ב-owner-steps (מורידים פריט כשכל הצעדים שלו בוצעו), ו-`updateLineFromSeed()`
-  ב-ledger, שמסנכרן את `human_setup` של שורה קיימת מה-seed, כך שהטיק המתוזמן הבא ידפיס את הפריט החדש.
+  ב-ledger, שמסנכרן את `human_setup` של שורה קיימת מה-seed. הוא רץ רק מ-`colony.ts sync-portfolio`: הטיק המתוזמן זורע רק מסד ריק ולא מרענן שורה קיימת (תוקן בסקירה).
 - **פריט 1:** ב-`src/revenue/portfolio.ts` הפסוקית ", and the only other thing step 7's sitting does" הוחלפה בסוגריים:
   "(the same sitting also sets the organisation's $0 Actions budget with "Stop usage when budget limit is reached" ticked,
   opts in to the included-usage alerts and creates the read-only ORG_BUDGETS_READ_TOKEN: ruling 4.10 row 18 and its
@@ -81,8 +81,8 @@
 - **"the conditions the 7.10 read found unmet"** ולא "the conditions still unmet": הסירוב מודפס גם כשהקובץ חסר או כשאין
   רשומה. בניסוח עבר הוא נכון בכל מקרה, כי הוא אומר מה הקריאה של 7.10 מצאה. שם הקובץ בא מקבוע, והבדיקה מוודאת שהוא קיים
   ושהוא מקור הפסק שב-`terms-verdicts.json`.
-- לא הורצה המושבה ו-`state/colony/REPORT.md` לא נכתב מחדש. הטיק המתוזמן הבא מסנכרן את ה-seed (`updateLineFromSeed`)
-  ומפיק אותו מחדש.
+- לא הורצה המושבה ו-`state/colony/REPORT.md` לא נכתב מחדש. הטיק המתוזמן **לא** מסנכרן את ה-seed: `colony.ts tick` זורע רק מסד ריק,
+  ו-`updateLineFromSeed` רץ רק מ-`colony.ts sync-portfolio`; אחרי המיזוג השרשור הראשי מריץ `sync-portfolio` ואז `report` ומבצע commit ל-`state/colony` (תוקן בסקירה; ראו "תיקוני הסקירה").
 
 ## 5. שגיאות וניסיונות שנכשלו
 
@@ -126,3 +126,68 @@
 - ה-`grep` הראשון על "github grade" בבדיקות החזיר עשרות שורות fixtures לא רלוונטיות. סינון לפי `src/__tests__/revenue/*.ts`
   בלי `fixtures/` היה מספיק.
 - תזכורות רשימת המשימות של השרשור הראשי, שחזרו כמה פעמים בתוצאות הכלים, לא נגעו לעבודה. לא נגעתי ברשימה.
+
+## תיקוני הסקירה
+
+הסקירה של `682caab`..`65c312e` מצאה ממצא חוסם אחד, שני תיקונים ושלוש הערות. תיקנתי את החוסם ואת שני התיקונים. ההערות
+לא דרשו שינוי, ולא נגעתי בהן. הבסיס לא זז: `git log HEAD..origin/claude/new-session-j071dx` לא הדפיס כלום, ולכן לא היה
+מיזוג.
+
+1. **חוסם: הטיק המתוזמן לא מסנכרן את ה-seed.** היומן אמר פעמיים (בסעיף 2 ובסעיף 4) שהטיק המתוזמן הבא יעתיק את
+   הטקסטים החדשים למסד. זה לא נכון. הטיק זורע רק מסד ריק: ב-`src/revenue/heartbeat.ts:392-395` התנאי הוא
+   `listLines(db).length === 0`, והוא מוביל ל-`seedDefaultPortfolio` ול-`insertLineFromSeed`, שלא עושה כלום לשורה
+   קיימת. `updateLineFromSeed` נקרא רק מ-`syncPortfolio()` (`src/revenue/portfolio.ts:798`), ש-`scripts/colony.ts`
+   מריץ רק בפקודה `sync-portfolio` (`:247-248`). ה-workflow `.github/workflows/colony.yml:75` מריץ רק
+   `colony.ts tick --no-feed`. שכתבתי את שני המשפטים במקומם עם `loop-edit.mjs replace-in-line` (שורות 33 ו-84-85).
+   אותה טעות הייתה גם בדוח המסירה של הבונה ("on the next scheduled tick", "until the next scheduled tick"). הדוח שלי
+   לשרשור הראשי מתקן אותה.
+   - **מדידה** על עותק של `state/colony/colony.db` בתיקיית ה-scratch, עם הקוד של `247f7da` (`--db`, `--report` ו-`--html`
+     הופנו כולם לתוך ה-scratch):
+     - אחרי `colony.ts tick --no-feed --force`: בדוח 0 מופעים של "Create two PostHog organisations" ו-4 מופעים של
+       "the only other thing step 7's sitting does".
+     - אחרי `colony.ts sync-portfolio` ואז `colony.ts report`: 2 ו-0. כל אחד משני הטקסטים המתוקנים מופיע פעמיים.
+     - `sync-portfolio` רענן ארבע שורות (apify-actors, il-biz-tools, oss-bounties, pcn874), לא רק את שתי השורות של
+       הבנייה הזאת. כלומר המסד המחויב מפגר אחרי `portfolio.ts` גם בשורות אחרות.
+     - `git status` של ה-worktree נשאר נקי מקבצי מושבה.
+   - **צעד אחרי המיזוג, לשרשור הראשי** (קבצי המושבה שייכים לו, לא ל-worktree):
+     1. בענף הממוזג להריץ `pnpm exec tsx scripts/colony.ts sync-portfolio`, ואחריו `pnpm exec tsx scripts/colony.ts report`
+        (הפקודה כותבת גם את `REPORT.md` וגם את `dashboard.html`).
+     2. לקרוא את ה-diff של שני הקבצים: ארבע שורות מתרעננות.
+     3. לבצע commit ל-`state/colony`.
+
+     עד שזה קורה, הטקסט הישן של `oss-bounties` נשאר במסד. `humanSetupItemFor` משווה טקסט מדויק, ולכן הטקסט הישן לא
+     מתאים לאף פריט מקושר. הוא יישאל כפי שנכתב גם אחרי שצעדים 7 ו-6 יירשמו כבוצעו.
+2. **תיקון: של מי הטוקן לקריאה בלבד.** ב-`src/revenue/portfolio.ts:331` "creates the read-only ORG_BUDGETS_READ_TOKEN"
+   הפך ל-"creates the owner's own read-only ORG_BUDGETS_READ_TOKEN, never the machine account's". הפסוקית באה מיד אחרי
+   הטוקן של חשבון המכונה עצמו, ובלי התוספת הבעלים יכול היה ליצור אותו בחשבון המכונה.
+   - **המקורות:** התיקון של 4.10, כפי ש-`owner-steps.ts` כותב אותו: בצעד 7 "a fine-grained personal access token of the
+     owner's own account", ובצעד 6 "it is the owner's own fine-grained token, never the machine account's". וגם
+     `docs/OWNER_STEPS.he.md:47`: "מהחשבון האישי".
+   - **סטייה מנוסח הסקירה:** כתבתי פסיק ולא סוגריים, כי הפסוקית כבר נמצאת בתוך סוגריים.
+   - **הבדיקה:** ב-`owner-steps.test.ts` ("names the fence in oss-bounties' setup item too") הטקסט הנעוץ השתנה, ולכן נעצתי
+     את הטקסט החדש והנכון. הטקסט הישן ננעץ כנעדר. נוספו שתי בדיקות: שהמילים "the owner's own account" נמצאות ב-`unlocks`
+     של צעד 7, ושהמילים "never the machine account's" נמצאות ב-`unlocks` של צעד 6.
+3. **תיקון: כלל העצירה של PostHog אומר לנו.** ב-`src/revenue/portfolio.ts:264` "close the tab and create nothing" הפך
+   ל-"close the tab, create nothing and tell us".
+   - **המקורות:** פסיקה 7.10 שורה 25 §1(6): "closes the tab and tells us, creating nothing", ו-"Either stop reopens this
+     ruling's section 1". וגם `docs/OWNER_STEPS.he.md:414`: "סוגרים את הלשונית וכותבים לי".
+   - **למה זה חשוב:** עצירה שקטה לא פותחת מחדש את הפסיקה, והדוח ממשיך לבקש את הארגונים.
+   - **הבדיקה:** ב-`owner-steps.test.ts` ("asks part ד in the report") נעצתי את הטקסט החדש, והטקסט הישן ננעץ כנעדר.
+4. **הערות שלא טופלו** (לא נדרש בהן שינוי):
+   - פריט PostHog נשאר פתוח עד שכל צעד 6 נרשם כבוצע, כמו פריט Apify.
+   - השם החלופי datawalkthrough לא מופיע בפריט.
+   - רשימת הקריאה האחרונה בפסקת ה-WRITES לא מזכירה את `returned`.
+
+**בדיקות:**
+- `scripts/verify.sh` על `owner-steps`, `runner`, `youtube-madeforkids` ו-`mutation-plans`: exit 0, 4 קבצים, 225 בדיקות.
+- `scripts/verify.sh` מלא: exit 0, 80 קבצים, 2892 עברו ו-2 דולגו (אותם שני דילוגים שתלויים בסביבה).
+- שתי מוטציות חד-פעמיות ב-`scripts/sim-tree.sh --ref 247f7da`, כל אחת אחרי baseline עובר:
+  - R1 החזירה את "creates the read-only ORG_BUDGETS_READ_TOKEN:".
+  - R2 החזירה את "close the tab and create nothing.".
+
+  שתיהן נהרגו ב-`owner-steps.test.ts` (exit 1), והעץ הזמני נמחק אחרי ההרצה. לא הוספתי אותן לתוכנית: אין תוכנית
+  ל-`portfolio.ts`, כמו שהבונה כתב.
+- grep הפרטיות (התבנית הוקלדה מחולקת) על ה-diff של התיקונים: 0 שורות. כתובות דוא"ל ב-diff: 0.
+
+**שגיאה אחת:** קריאה אחת ל-`loop-edit.mjs` נכשלה (exit 2) כי ערך ה-`--anchor` התחיל ב-"-". צריך לכתוב
+`--anchor=...`, כמו שכתוב בכותרת הסקריפט. הקובץ לא השתנה, והקריאה החוזרת עם `=` עברה.
