@@ -472,7 +472,7 @@ token-expiry hint at `scripts/youtube-analytics.ts:69` [asm: re-run].
 - **The repository's visibility** (`CHANNEL_LOOP.md:255-257`): the owner's.
 - [asm] **Tick 61's items (4) and (5)** (`CHANNEL_LOOP.md:395`) are done in part: the refusal is now the log call at the
   read-back `:126-130`, the WRITES paragraph (`:15-20`) names `firstRead` (`:17`), and `stayedPublic`'s doc names it
-  (the module `:193`); tick 62's list still asks that the latest-read list gain `returned` (`:399` item (1)).
+  (the module `:193`); the latest-read list gained `returned` in tick 63 (merge `8ab3e66`, the script's `:18`) [main thread, after assembly].
 
 **What a ruling would need that no file holds.**
 
