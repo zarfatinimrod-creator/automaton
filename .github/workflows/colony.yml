@@ -9,12 +9,13 @@ name: colony
 # the colony works from the SQLite file alone. Director and worker EXECUTION
 # still needs the automaton runtime; until that exists the report says so.
 
-# ⚠️ THIS DOES NOT RUN UNTIL IT IS ON THE DEFAULT BRANCH.
-# GitHub fires `schedule` only on the repository's default branch (main). While
-# this file lives on a feature branch it is not even registered — the Actions
-# API returns 404 for it — so the hourly loop is not running, however correct
-# the code is. Verified 2026-09-03: only ci, products-ci and release exist.
-# Until it is merged, colony state is produced by running both steps by hand:
+# It runs from the default branch (main), the only branch GitHub fires `schedule`
+# on: hourly at minute 17, and by hand from Actions (workflow_dispatch). GitHub may
+# delay or drop a scheduled run when it is under load: between 6.10.2026 18:00 and
+# 7.10.2026 13:00 UTC the colony ran 3 times against this hourly cron (its commits).
+# The report's "the loop did not run for N hours" blocker is what shows it. It reads
+# the last ledger sync, which only a tick records: `report` and `dashboard` render
+# without writing to the database (tick 64). By hand, the same two steps:
 #   pnpm exec tsx scripts/colony.ts sync-portfolio
 #   pnpm exec tsx scripts/colony.ts tick --no-feed
 

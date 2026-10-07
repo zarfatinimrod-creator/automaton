@@ -1,6 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { spawnSync } from "node:child_process";
+import crypto from "node:crypto";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
+import Database from "better-sqlite3";
 import { parse } from "yaml";
 
 const repoRoot = path.resolve(__dirname, "../../..");
@@ -119,5 +123,137 @@ describe("the scheduled run applies portfolio.ts before its tick", () => {
       expect(sync, `${f} runs a tick without sync-portfolio before it`).toBeGreaterThan(-1);
       expect(sync).toBeLessThan(tick);
     }
+  });
+});
+
+// Tick 64 (7.10.2026): `report` ran the tick with every due step, so a report run by hand ran the overdue ledger sync and
+// stamped its time; the next report and the dashboard then said there was no open blocker while the hourly schedule had
+// not run for hours. "the loop did not run for N hours" is the only instrument that shows GitHub dropping the schedule.
+describe("a command that only renders writes nothing to the database", () => {
+  const T0 = "2026-09-03T00:00:00.000Z";
+  const plus = (hours: number) => new Date(Date.parse(T0) + hours * 3_600_000).toISOString();
+  const LOOP_GAP = "the loop did not run for 7 hours (last ledger sync 2026-09-03T00:00:00.000Z)";
+  let dir: string;
+  let fixture: string;
+
+  // No connector key reaches the CLI: every connector is skipped and the tick makes no network call.
+  const env = { ...process.env };
+  for (const k of ["LEMONSQUEEZY_API_KEY", "GUMROAD_ACCESS_TOKEN", "STRIPE_SECRET_KEY", "POSTHOG_READ_KEY", "POSTHOG_PROJECT_ID"]) delete env[k];
+  const cli = (db: string, ...args: string[]) => {
+    const out = spawnSync(
+      process.execPath,
+      ["--import", "tsx", "scripts/colony.ts", ...args, "--db", db, "--report", path.join(dir, "REPORT.md"), "--html", path.join(dir, "dashboard.html")],
+      { cwd: repoRoot, encoding: "utf-8", env },
+    );
+    expect(out.status, `${args.join(" ")}: ${out.stderr}`).toBe(0);
+    return out.stdout;
+  };
+  const sha = (file: string) => crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+  /** Every row of every table, and the schema. */
+  const tables = (file: string): string => {
+    const db = new Database(file, { readonly: true, fileMustExist: true });
+    try {
+      const names = (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name").all() as { name: string }[]).map((t) => t.name);
+      const rows = names.map((t) => `${t}\t${JSON.stringify(db.prepare(`SELECT * FROM "${t}" ORDER BY rowid`).all())}`);
+      return [...rows, JSON.stringify(db.prepare("SELECT type, name, sql FROM sqlite_master ORDER BY name").all())].join("\n");
+    } finally {
+      db.close();
+    }
+  };
+  const kv = (file: string, key: string) => {
+    const db = new Database(file, { readonly: true, fileMustExist: true });
+    try {
+      return (db.prepare("SELECT value FROM kv WHERE key = ?").get(key) as { value: string } | undefined)?.value;
+    } finally {
+      db.close();
+    }
+  };
+  const copy = (name: string) => {
+    const to = path.join(dir, name);
+    fs.copyFileSync(fixture, to);
+    return to;
+  };
+  const read = (name: string) => fs.readFileSync(path.join(dir, name), "utf-8");
+
+  beforeAll(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "colony-render-only-"));
+    fixture = path.join(dir, "fixture.db");
+    cli(fixture, "tick", "--no-feed", "--now", T0); // seeds the portfolio and runs every step: the last ledger sync is T0
+    expect(kv(fixture, "revenue.last_run.revenue_ledger_sync")).toBe(T0);
+  }, 60_000);
+  afterAll(() => {
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("report, 7 hours after the last ledger sync: the database is byte-identical and the report and dashboard say the loop did not run", () => {
+    const db = copy("report.db");
+    const [bytes, rows] = [sha(db), tables(db)];
+    expect(cli(db, "report", "--now", plus(7))).toContain("Report written to");
+    expect(sha(db)).toBe(bytes);
+    expect(tables(db)).toBe(rows);
+    expect(kv(db, "revenue.last_run.revenue_ledger_sync")).toBe(T0);
+    const report = read("REPORT.md").split("\n");
+    expect(report.some((l) => l.startsWith(`- ${LOOP_GAP}`))).toBe(true);
+    expect(report).toContain("Due now, left for the scheduled tick: revenue_ledger_sync, revenue_supervisor_review");
+    expect(report).not.toContain("Ran: revenue_ledger_sync, revenue_supervisor_review");
+    expect(read("dashboard.html")).toContain(LOOP_GAP);
+    // Run again: nothing was stamped, so the blocker is still there.
+    cli(db, "report", "--now", plus(8));
+    expect(sha(db)).toBe(bytes);
+    expect(read("REPORT.md")).toContain("the loop did not run for 8 hours (last ledger sync 2026-09-03T00:00:00.000Z)");
+  }, 60_000);
+
+  it("status, dashboard, growth and criteria leave it byte-identical too, and the dashboard shows the blocker", () => {
+    const db = copy("render.db");
+    const bytes = sha(db);
+    for (const args of [["status"], ["dashboard", "--now", plus(7)], ["growth"], ["criteria"], ["criteria", "--json", "--due"]]) {
+      cli(db, ...args);
+      expect(sha(db), args.join(" ")).toBe(bytes);
+    }
+    expect(read("dashboard.html")).toContain(LOOP_GAP);
+    // The commands that do write are not refused: criteria --mark records its sweep.
+    cli(db, "criteria", "--mark", "storefronts", "--now", plus(7));
+    expect(sha(db)).not.toBe(bytes);
+  }, 120_000);
+
+  it("a scheduled tick on the same database records the sync, and the next report's blocker is gone", () => {
+    const db = copy("tick.db");
+    const bytes = sha(db);
+    const out = cli(db, "tick", "--no-feed", "--now", plus(7));
+    expect(out.split("\n")).toContain("Ran: revenue_ledger_sync, revenue_supervisor_review");
+    expect(sha(db)).not.toBe(bytes);
+    expect(kv(db, "revenue.last_run.revenue_ledger_sync")).toBe(plus(7));
+    expect(read("REPORT.md").split("\n")).toContain("Ran: revenue_ledger_sync, revenue_supervisor_review");
+
+    const after = sha(db);
+    cli(db, "report", "--now", plus(7.1));
+    expect(sha(db)).toBe(after);
+    expect(read("REPORT.md")).not.toContain("the loop did not run");
+    expect(read("dashboard.html")).not.toContain("the loop did not run");
+  }, 60_000);
+
+  it("opens the handle of every render-only command query_only before any command runs", () => {
+    // Defence in depth beside readOnly: a write anywhere on a render path throws instead of landing.
+    expect(cliSource).toMatch(/const db = openDb\(values\.db!\);\n {2}if \(rendersOnly\(command, values\)\) db\.raw\.pragma\("query_only = ON"\);\n/);
+    expect(cliSource).toContain('if (["report", "dashboard", "status", "growth"].includes(command)) return true;');
+    expect(cliSource).toContain('return command === "criteria" && !flags.mark && !flags.supervised && !flags.reconcile;');
+  });
+});
+
+describe("colony.yml's header says what is true", () => {
+  const header = workflow.slice(0, workflow.indexOf("\non:"));
+
+  it("no longer says the file lives on a feature branch and does not run", () => {
+    expect(header).not.toMatch(/feature branch|Until it is merged|DOES NOT RUN/);
+  });
+
+  it("says it runs hourly from main, that GitHub may drop a scheduled run, and which blocker shows it", () => {
+    expect(header).toContain("It runs from the default branch (main)");
+    expect(header).toContain("hourly at minute 17");
+    expect(header).toContain("GitHub may\n# delay or drop a scheduled run");
+    expect(header).toContain('The report\'s "the loop did not run for N hours" blocker is what shows it.');
+    expect(header).toContain("#   pnpm exec tsx scripts/colony.ts sync-portfolio\n#   pnpm exec tsx scripts/colony.ts tick --no-feed\n");
+    // The schedule the header describes is the one the file declares.
+    expect((parse(workflow) as { on: { schedule: { cron: string }[] } }).on.schedule).toEqual([{ cron: "17 * * * *" }]);
   });
 });

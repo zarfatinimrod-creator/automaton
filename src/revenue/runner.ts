@@ -245,6 +245,14 @@ export interface TickOptions {
   pageViewClockFile?: string;
   /** The site whose Gumroad Pro product the refund rate is read for (default products/il-biz-tools, relative to the cwd). */
   proSiteDir?: string;
+  /**
+   * A render, not a tick (`colony.ts report`, `colony.ts dashboard`): each step's due check is made and no step runs, so
+   * nothing a scheduled tick records is written — no last-run time, no ledger sync, no KPI, review, budget or kv row.
+   * The blockers are computed as a tick computes them, so "the loop did not run" reads the stored last ledger sync and
+   * stays until a scheduled tick runs the sync (tick 64, 7.10.2026: a report run by hand ran the due sync, stamped its
+   * time, and the next report and dashboard said there was no open blocker while the schedule had not run for hours).
+   */
+  readOnly?: boolean;
 }
 
 export interface TickResult {
@@ -252,6 +260,8 @@ export interface TickResult {
   enabled: boolean;
   ran: TaskName[];
   skipped: TaskName[];
+  /** A render's steps that were due and did not run (TickOptions.readOnly); absent on a tick. */
+  dueNotRun?: TaskName[];
   ledgerSync: LedgerSyncResult | null;
   /** Measurement files read into KPI snapshots this tick (with the ledger sync, hourly). */
   measurements: IngestResult[];
@@ -282,12 +292,14 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
   const nowMs = Date.parse(nowIso);
   const policy = options.policy ?? DEFAULT_DECISION_POLICY;
   const force = options.force === true;
+  const readOnly = options.readOnly === true;
 
   const result: TickResult = {
     at: nowIso,
     enabled: hasRevenueTables(db) && isRevenueColonyEnabled(db),
     ran: [],
     skipped: [],
+    ...(readOnly ? { dueNotRun: [] } : {}),
     ledgerSync: null,
     measurements: [],
     supervisor: null,
@@ -317,9 +329,12 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
   result.liveness = checkLiveness(db, nowMs);
   for (const finding of result.liveness) result.blockers.push(finding.detail);
 
+  // A render runs no step: a due one is listed as due, so the report never says "everything within its interval" while
+  // the sync is overdue, and nothing marks it ran.
   const shouldRun = (task: TaskName): boolean => {
-    if (force || isDue(db, task, nowMs)) return true;
-    result.skipped.push(task);
+    const due = force || isDue(db, task, nowMs);
+    if (due && !readOnly) return true;
+    (due ? result.dueNotRun! : result.skipped).push(task);
     return false;
   };
 
@@ -547,7 +562,12 @@ export function renderReport(db: Database, result: TickResult, site: SecretGateS
   const decisions = (result.board?.decisions ?? []).filter((d) => d.decision !== "hold");
   out.push("## This tick");
   out.push("");
-  out.push(`Ran: ${result.ran.length ? result.ran.join(", ") : "nothing (everything within its interval)"}`);
+  if (result.dueNotRun) {
+    out.push("Ran: nothing — a report-only render runs no step and records nothing; the scheduled tick runs the steps");
+    if (result.dueNotRun.length) out.push(`Due now, left for the scheduled tick: ${result.dueNotRun.join(", ")}`);
+  } else {
+    out.push(`Ran: ${result.ran.length ? result.ran.join(", ") : "nothing (everything within its interval)"}`);
+  }
   if (result.skipped.length) out.push(`Skipped as not yet due: ${result.skipped.join(", ")}`);
   out.push("");
 

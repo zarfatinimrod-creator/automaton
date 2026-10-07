@@ -768,3 +768,90 @@ describe("revenue/runner liveness watchdog", () => {
     expect(result.blockers.some((b) => b.includes("never taken money"))).toBe(true);
   });
 });
+
+// Tick 64 (7.10.2026): `colony.ts report` ran the tick with every due step, so a report run by hand ran the overdue
+// ledger sync, stamped its time, and the next report and dashboard said there was no open blocker while the hourly
+// schedule had not run for hours. A render (readOnly) runs no step and writes nothing; the blockers are still a tick's.
+describe("revenue/runner a report-only render records nothing a tick records", () => {
+  let db: BetterSqlite3.Database;
+  const t0 = Date.parse("2026-09-03T00:00:00.000Z");
+  const at = (ms: number) => new Date(ms).toISOString();
+  const LOOP_GAP = "the loop did not run for 7 hours (last ledger sync 2026-09-03T00:00:00.000Z)";
+
+  /** Every row of every table, and the schema: what a write of any kind would change. */
+  const snapshot = (): string => {
+    const tables = (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name").all() as { name: string }[]).map((t) => t.name);
+    const rows = tables.map((t) => `${t}\t${JSON.stringify(db.prepare(`SELECT * FROM "${t}" ORDER BY rowid`).all())}`);
+    return [...rows, JSON.stringify(db.prepare("SELECT type, name, sql FROM sqlite_master ORDER BY name").all())].join("\n");
+  };
+
+  beforeEach(async () => {
+    db = createInMemoryDb();
+    await tick(db, { nowIso: at(t0), feedGoals: false, env: {} }); // every step runs once: the last ledger sync is t0
+  });
+  afterEach(() => { db.close(); });
+
+  it("on a database whose last ledger sync is 7 hours old: no row and no kv value changes, and the blocker stays", async () => {
+    const before = snapshot();
+    const render = await tick(db, { nowIso: at(t0 + 7 * HOUR), readOnly: true, feedGoals: false, seed: false, env: {} });
+    expect(snapshot()).toBe(before);
+    expect(render.ran).toEqual([]);
+    expect(render.ledgerSync).toBeNull();
+    expect(render.supervisor).toBeNull();
+    expect(render.dueNotRun).toEqual(["revenue_ledger_sync", "revenue_supervisor_review"]);
+    expect(render.skipped).toEqual(["revenue_board_review", "revenue_audit"]);
+    expect(render.blockers.some((b) => b.startsWith(LOOP_GAP))).toBe(true);
+    expect(isDue(db, "revenue_ledger_sync", t0 + 7 * HOUR)).toBe(true);
+
+    const report = renderReport(db, render).split("\n");
+    expect(report).toContain("Ran: nothing — a report-only render runs no step and records nothing; the scheduled tick runs the steps");
+    expect(report).toContain("Due now, left for the scheduled tick: revenue_ledger_sync, revenue_supervisor_review");
+    expect(report).toContain("Skipped as not yet due: revenue_board_review, revenue_audit");
+    expect(report.some((l) => l.startsWith(`- ${LOOP_GAP}`))).toBe(true);
+    expect(renderDashboard(db, { nowIso: at(t0 + 7 * HOUR), blockers: render.blockers })).toContain(LOOP_GAP);
+
+    // A second render reads the same stored sync: the blocker is still there, an hour older.
+    const again = await tick(db, { nowIso: at(t0 + 8 * HOUR), readOnly: true, feedGoals: false, seed: false, env: {} });
+    expect(snapshot()).toBe(before);
+    expect(again.blockers.some((b) => b.startsWith("the loop did not run for 8 hours (last ledger sync 2026-09-03T00:00:00.000Z)"))).toBe(true);
+  });
+
+  it("issues no write at all, even with every step due (board review and budgets included): a query_only handle does not throw", async () => {
+    const before = snapshot();
+    db.pragma("query_only = ON");
+    const render = await tick(db, { nowIso: at(t0 + 8 * 24 * HOUR), readOnly: true, feedGoals: false, seed: false, env: {} });
+    db.pragma("query_only = OFF");
+    expect(snapshot()).toBe(before);
+    expect(render.ran).toEqual([]);
+    expect(render.dueNotRun).toEqual(TASK_ORDER);
+    expect(render.skipped).toEqual([]);
+    expect(render.board).toBeNull();
+    expect(render.audit).toBeNull();
+    // The guard is real: the same handle refuses a write while query_only is on.
+    db.pragma("query_only = ON");
+    expect(() => markRan(db, "revenue_ledger_sync", t0)).toThrow(/readonly/);
+    db.pragma("query_only = OFF");
+  });
+
+  it("a scheduled tick on the same database still records the sync, and the next render's blocker is gone", async () => {
+    const before = snapshot();
+    const scheduled = await tick(db, { nowIso: at(t0 + 7 * HOUR), feedGoals: false, env: {} });
+    expect(snapshot()).not.toBe(before);
+    expect(scheduled.ran).toEqual(["revenue_ledger_sync", "revenue_supervisor_review"]);
+    expect(scheduled.ledgerSync).not.toBeNull();
+    expect("dueNotRun" in scheduled).toBe(false);
+    // The tick's own report keeps the gap it found (checkLiveness runs before markRan), and says what ran.
+    expect(scheduled.blockers.some((b) => b.startsWith(LOOP_GAP))).toBe(true);
+    const report = renderReport(db, scheduled).split("\n");
+    expect(report).toContain("Ran: revenue_ledger_sync, revenue_supervisor_review");
+    expect(report.some((l) => l.startsWith("Due now"))).toBe(false);
+    expect(isDue(db, "revenue_ledger_sync", t0 + 7 * HOUR)).toBe(false);
+
+    const render = await tick(db, { nowIso: at(t0 + 7 * HOUR + 5 * 60_000), readOnly: true, feedGoals: false, seed: false, env: {} });
+    expect(render.blockers.some((b) => b.includes("the loop did not run"))).toBe(false);
+    expect(render.dueNotRun).toEqual([]);
+    expect(renderReport(db, render).split("\n")).toContain(
+      "Ran: nothing — a report-only render runs no step and records nothing; the scheduled tick runs the steps",
+    );
+  });
+});

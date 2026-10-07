@@ -1,0 +1,106 @@
+[
+  {
+    "id": "T64-R1",
+    "file": "src/revenue/runner.ts",
+    "find": "  const readOnly = options.readOnly === true;\n",
+    "replace": "  const readOnly = false;\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: a render ignores readOnly and runs every due step, so `report` stamps the ledger-sync time and the next render loses \"the loop did not run\" (under the CLI's query_only handle the report then fails)"
+  },
+  {
+    "id": "T64-R2",
+    "file": "src/revenue/runner.ts",
+    "find": "    if (due && !readOnly) return true;\n",
+    "replace": "    if (due) return true;\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: the step gate runs a due step in a render too: the measured defect, a report run by hand ran the overdue ledger sync"
+  },
+  {
+    "id": "T64-R3",
+    "file": "src/revenue/runner.ts",
+    "find": "    (due ? result.dueNotRun! : result.skipped).push(task);\n",
+    "replace": "    result.skipped.push(task);\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: a render lists an overdue step as \"Skipped as not yet due\" and prints no \"Due now\" line"
+  },
+  {
+    "id": "T64-R4",
+    "file": "src/revenue/runner.ts",
+    "find": "    ...(readOnly ? { dueNotRun: [] } : {}),\n",
+    "replace": "    dueNotRun: [],\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: a scheduled tick's result carries dueNotRun, so its report says a report-only render ran nothing while the tick ran the sync"
+  },
+  {
+    "id": "T64-R5",
+    "file": "src/revenue/runner.ts",
+    "find": "  if (result.dueNotRun) {\n",
+    "replace": "  if (false) {\n",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: a render's report says \"Ran: nothing (everything within its interval)\" while the ledger sync is overdue"
+  },
+  {
+    "id": "T64-R6",
+    "file": "src/revenue/runner.ts",
+    "find": "    if (result.dueNotRun.length) out.push(",
+    "replace": "    if (false) out.push(",
+    "test": ["src/__tests__/revenue/runner.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 64: a render's report drops the \"Due now, left for the scheduled tick\" line"
+  },
+  {
+    "id": "T64-C1",
+    "file": "scripts/colony.ts",
+    "find": "        const result = await tick(db.raw, { nowIso: values.now, readOnly: true, feedGoals: false, seed: false });\n",
+    "replace": "        const result = await tick(db.raw, { nowIso: values.now, readOnly: false, feedGoals: false, seed: false });\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: `colony.ts report` runs the due steps again (on the CLI's query_only handle the first write throws and the report fails)"
+  },
+  {
+    "id": "T64-C2",
+    "file": "scripts/colony.ts",
+    "find": "        const { blockers } = await tick(db.raw, { nowIso: values.now, readOnly: true, feedGoals: false, seed: false });\n",
+    "replace": "        const { blockers } = await tick(db.raw, { nowIso: values.now, readOnly: false, feedGoals: false, seed: false });\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: `colony.ts dashboard` runs the due steps to get its blockers"
+  },
+  {
+    "id": "T64-C3",
+    "file": "scripts/colony.ts",
+    "find": "        const html = renderDashboard(db.raw, { nowIso: values.now, blockers });\n",
+    "replace": "        const html = renderDashboard(db.raw, { nowIso: values.now });\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: `colony.ts dashboard` writes a page with no blocker, so it says there is no open blocker while the loop has not run for hours"
+  },
+  {
+    "id": "T64-C4",
+    "file": "scripts/colony.ts",
+    "find": "  if (rendersOnly(command, values)) db.raw.pragma(\"query_only = ON\");\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: the render-only commands' handle accepts writes again. No render path writes today, so only the source pin sees it: the guard is what makes a future write on a render path throw instead of landing"
+  },
+  {
+    "id": "T64-C5",
+    "file": "scripts/colony.ts",
+    "find": "  return command === \"criteria\" && !flags.mark && !flags.supervised && !flags.reconcile;\n",
+    "replace": "  return command === \"criteria\";\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: criteria --mark, --supervised and --reconcile are classed render-only, so their writes are refused"
+  },
+  {
+    "id": "T64-C6",
+    "file": "scripts/colony.ts",
+    "find": "  if ([\"report\", \"dashboard\", \"status\", \"growth\"].includes(command)) return true;\n",
+    "replace": "  if ([\"dashboard\", \"status\", \"growth\"].includes(command)) return true;\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: `report` loses its query_only handle. readOnly alone keeps it from writing today, so only the source pin sees it"
+  },
+  {
+    "id": "T64-W1",
+    "file": ".github/workflows/colony.yml",
+    "find": "# It runs from the default branch (main), the only branch GitHub fires `schedule`\n# on: hourly at minute 17, and by hand from Actions (workflow_dispatch). GitHub may\n# delay or drop a scheduled run when it is under load: between 6.10.2026 18:00 and\n# 7.10.2026 13:00 UTC the colony ran 3 times against this hourly cron (its commits).\n# The report's \"the loop did not run for N hours\" blocker is what shows it. It reads\n# the last ledger sync, which only a tick records: `report` and `dashboard` render\n# without writing to the database (tick 64). By hand, the same two steps:\n",
+    "replace": "# ⚠️ THIS DOES NOT RUN UNTIL IT IS ON THE DEFAULT BRANCH.\n# GitHub fires `schedule` only on the repository's default branch (main). While\n# this file lives on a feature branch it is not even registered — the Actions\n# API returns 404 for it — so the hourly loop is not running, however correct\n# the code is. Verified 2026-09-03: only ci, products-ci and release exist.\n# Until it is merged, colony state is produced by running both steps by hand:\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 64: colony.yml's header says again that the file lives on a feature branch and does not run, which is false since it reached main"
+  }
+]
