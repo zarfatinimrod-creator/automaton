@@ -63,8 +63,10 @@ Commands:
   seed                 Seed the default portfolio (no-op for lines that exist).
   sync-portfolio       Apply a board decision from src/revenue/portfolio.ts to this
                        database: insert new lines, refresh existing ones from their
-                       seed (targets, operating loop, owner steps), and kill the
-                       lines in KILLED_LINES with the board's stated reason. Run it
+                       seed (targets, operating loop, owner steps; never a line's
+                       budget, tier, status or setup-done flag), and kill the
+                       lines in KILLED_LINES with the board's stated reason. The
+                       scheduled workflow runs it before every tick; by hand, run it
                        after a board ruling, then \`report\`, or the report keeps
                        printing the portfolio the board just replaced.
   record               Record one ledger entry by hand. Currency ILS, USD, EUR or GBP (converted)

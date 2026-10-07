@@ -14,10 +14,14 @@ import {
   recordKpi,
   recordLedgerEntry,
   setHumanSetupDone,
+  setLineBudget,
+  setLineTier,
   setTargets,
+  updateLineFromSeed,
   updateLineStatus,
 } from "../../revenue/ledger.js";
 import { setFxRate, toAgorot, formatIls, agorotFromIls } from "../../revenue/money.js";
+import { DEFAULT_PORTFOLIO, KILLED_LINES, seedDefaultPortfolio, syncPortfolio } from "../../revenue/portfolio.js";
 import type { RevenueLineSeed } from "../../revenue/types.js";
 
 function seed(overrides: Partial<RevenueLineSeed> = {}): RevenueLineSeed {
@@ -217,5 +221,90 @@ describe("the ledger will not book money nobody paid", () => {
     expect(() => recordLedgerEntry(db, entry())).toThrow();
     const count = db.prepare("SELECT COUNT(*) AS c FROM revenue_ledger").get() as { c: number };
     expect(count.c).toBe(0);
+  });
+});
+
+// Tick 63 (7.10.2026). A seed sync wrote every column of an existing line from portfolio.ts, the board's budget
+// allocation among them: on the committed colony.db, where the board review had allocated 0 to the four lines (none is
+// working yet), `colony.ts sync-portfolio` set them to 4000, 4000, 3000 and 4000 cents until the next daily review.
+// The sync now runs before every scheduled tick, so it must keep what a decision recorded in the database owns.
+describe("a seed sync keeps what the board decided in the database", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => { db = createInMemoryDb(); });
+  afterEach(() => { db.close(); });
+
+  it("keeps the board's budget allocation when the seed carries another figure", () => {
+    insertLineFromSeed(db, seed({ budgetMonthlyCents: 1000 }));
+    setLineBudget(db, "test-line", 0);
+    const out = syncPortfolio(db, [seed({ budgetMonthlyCents: 4000, operatingLoop: "a changed loop, which does sync" })], []);
+    expect(out.updated).toEqual(["test-line"]);
+    expect(getLine(db, "test-line")!.budgetMonthlyCents).toBe(0);
+    expect(getLine(db, "test-line")!.operatingLoop).toBe("a changed loop, which does sync");
+    setLineBudget(db, "test-line", 700);
+    expect(updateLineFromSeed(db, seed({ budgetMonthlyCents: 4000 }))).toBe(true);
+    expect(getLine(db, "test-line")!.budgetMonthlyCents).toBe(700);
+  });
+
+  it("still starts a new line at its seed's budget", () => {
+    const out = syncPortfolio(db, [seed({ id: "new-line", budgetMonthlyCents: 2500 })], []);
+    expect(out.inserted).toEqual(["new-line"]);
+    expect(getLine(db, "new-line")!.budgetMonthlyCents).toBe(2500);
+  });
+
+  it("keeps the tier revenue_decide set, which the allocation weighs", () => {
+    insertLineFromSeed(db, seed({ tier: "core" }));
+    setLineTier(db, "test-line", "experimental");
+    syncPortfolio(db, [seed({ tier: "core" })], []);
+    expect(getLine(db, "test-line")!.tier).toBe("experimental");
+  });
+
+  it("keeps the line's status, setup-done flag, launch, creation and kill fields, and replaces portfolio.ts's columns", () => {
+    insertLineFromSeed(db, seed({ humanSetup: ["open account"] }));
+    setHumanSetupDone(db, "test-line", true);
+    updateLineStatus(db, "test-line", "building");
+    updateLineStatus(db, "test-line", "live");
+    const before = getLine(db, "test-line")!;
+    expect(before.launchedAt).toBeTruthy();
+    const next = seed({
+      name: "Renamed",
+      category: "paid_api",
+      directorRole: "director-renamed",
+      operatingLoop: "a new loop",
+      kpis: ["k1", "k2"],
+      killCriteria: ["new kill"],
+      scaleCriteria: ["new scale"],
+      targetMonthlyAgorot: agorotFromIls(1234),
+      humanSetup: ["a new step"],
+      skillName: "revenue-renamed",
+      status: "proposed",
+    });
+    expect(updateLineFromSeed(db, next)).toBe(true);
+    const after = getLine(db, "test-line")!;
+    expect({ status: after.status, humanSetupDone: after.humanSetupDone, launchedAt: after.launchedAt, createdAt: after.createdAt,
+      killedAt: after.killedAt, killReason: after.killReason, tier: after.tier, budgetMonthlyCents: after.budgetMonthlyCents })
+      .toEqual({ status: "live", humanSetupDone: true, launchedAt: before.launchedAt, createdAt: before.createdAt,
+        killedAt: before.killedAt, killReason: before.killReason, tier: before.tier, budgetMonthlyCents: before.budgetMonthlyCents });
+    expect({ name: after.name, category: after.category, directorRole: after.directorRole, operatingLoop: after.operatingLoop,
+      kpis: after.kpis, killCriteria: after.killCriteria, scaleCriteria: after.scaleCriteria,
+      targetMonthlyAgorot: after.targetMonthlyAgorot, humanSetup: after.humanSetup, skillName: after.skillName })
+      .toEqual({ name: "Renamed", category: "paid_api", directorRole: "director-renamed", operatingLoop: "a new loop",
+        kpis: ["k1", "k2"], killCriteria: ["new kill"], scaleCriteria: ["new scale"],
+        targetMonthlyAgorot: agorotFromIls(1234), humanSetup: ["a new step"], skillName: "revenue-renamed" });
+  });
+
+  it("on the real portfolio: every budget the board set survives, and an already-killed line is not killed again", () => {
+    seedDefaultPortfolio(db);
+    for (const dead of KILLED_LINES) {
+      insertLineFromSeed(db, seed({ id: dead.id, targetMonthlyAgorot: 0 }));
+      updateLineStatus(db, dead.id, "killed", { reason: dead.reason, force: true });
+    }
+    for (const line of listLines(db)) setLineBudget(db, line.id, 0);
+    expect(DEFAULT_PORTFOLIO.every((s) => s.budgetMonthlyCents > 0)).toBe(true);
+    const out = syncPortfolio(db);
+    expect(out.updated.sort()).toEqual(DEFAULT_PORTFOLIO.map((s) => s.id).sort());
+    expect(out.inserted).toEqual([]);
+    expect(out.killed).toEqual([]);
+    expect(listLines(db)).toHaveLength(DEFAULT_PORTFOLIO.length + KILLED_LINES.length);
+    expect(listLines(db).filter((l) => l.budgetMonthlyCents !== 0).map((l) => l.id)).toEqual([]);
   });
 });

@@ -780,11 +780,16 @@ export interface PortfolioSyncResult {
  * with the owner still being asked to open an Etsy shop.
  *
  * So the decision is applied rather than described: new lines are inserted,
- * surviving lines are refreshed from their seed, and killed lines are moved to
- * `killed` with the board's reason attached. Nothing else is touched — a line in
- * the database that this file does not know about is reported, not deleted,
- * because deleting a line the board never ruled on would lose its ledger history
- * silently.
+ * surviving lines are refreshed from their seed (never their budget or tier,
+ * which the board review and revenue_decide own: ledger.ts updateLineFromSeed),
+ * and killed lines are moved to `killed` with the board's reason attached.
+ * Nothing else is touched — a line in the database that this file does not know
+ * about is reported, not deleted, because deleting a line the board never ruled
+ * on would lose its ledger history silently.
+ *
+ * The scheduled colony run (.github/workflows/colony.yml) applies this before
+ * every tick: until tick 63 (7.10.2026) only `colony.ts sync-portfolio` did, by
+ * hand, so a text changed here reached no report the owner reads.
  */
 export function syncPortfolio(
   db: Database,

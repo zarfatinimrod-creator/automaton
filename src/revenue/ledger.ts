@@ -318,7 +318,19 @@ export function insertLineFromSeed(db: Database, seed: RevenueLineSeed): boolean
  *
  * The line's own history is not a seed's to overwrite: status, whether the owner
  * has confirmed setup, when it launched and when it was created all survive.
- * Everything the board actually decides is replaced.
+ * Everything portfolio.ts decides is replaced: the name, category, director,
+ * operating loop, KPIs, kill and scale criteria, target, owner steps and skill.
+ *
+ * Two columns a seed only starts a new line at, because a decision recorded in
+ * the database owns them afterwards. `budget_monthly_cents` is the board's
+ * CURRENT allocation (rules.ts allocateBudget, written by the board review in
+ * heartbeat.ts through setLineBudget); a seed writing its own figure over it
+ * raised the four allocations of 0 to 4000, 4000, 3000 and 4000 cents until
+ * the next daily review (measured on the committed colony.db, 7.10.2026).
+ * `tier` is set by the board's revenue_decide (tools.ts, setLineTier) and is
+ * the allocation's weight; a tier changed in portfolio.ts for a line that
+ * already exists is therefore not applied here. (`setLineTarget` has no caller,
+ * so the seed is the target's only writer and the target is still synced.)
  */
 export function updateLineFromSeed(db: Database, seed: RevenueLineSeed): boolean {
   const id = assertLineId(seed.id);
@@ -326,21 +338,19 @@ export function updateLineFromSeed(db: Database, seed: RevenueLineSeed): boolean
   if (!existing) return false;
   db.prepare(
     `UPDATE revenue_lines
-        SET name = ?, category = ?, tier = ?, director_role = ?, operating_loop = ?, kpis = ?,
-            kill_criteria = ?, scale_criteria = ?, target_monthly_agorot = ?, budget_monthly_cents = ?,
+        SET name = ?, category = ?, director_role = ?, operating_loop = ?, kpis = ?,
+            kill_criteria = ?, scale_criteria = ?, target_monthly_agorot = ?,
             human_setup = ?, skill_name = ?, updated_at = ?
       WHERE id = ?`,
   ).run(
     seed.name,
     seed.category,
-    seed.tier,
     seed.directorRole,
     seed.operatingLoop,
     JSON.stringify(seed.kpis),
     JSON.stringify(seed.killCriteria),
     JSON.stringify(seed.scaleCriteria),
     Math.max(0, Math.floor(seed.targetMonthlyAgorot)),
-    Math.max(0, Math.floor(seed.budgetMonthlyCents)),
     JSON.stringify(seed.humanSetup),
     seed.skillName ?? null,
     new Date().toISOString(),

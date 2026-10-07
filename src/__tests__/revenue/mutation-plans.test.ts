@@ -32,6 +32,7 @@ describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
       "address-kinds.json",
       "capture-check.json",
       "freeze-capture.json",
+      "ledger.json",
       "loop-edit.json",
       "mutate.json",
       "owner-steps.json",

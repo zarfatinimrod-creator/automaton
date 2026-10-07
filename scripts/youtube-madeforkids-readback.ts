@@ -15,7 +15,7 @@
  * WRITES state/colony/measurements/<line>-madeforkids.json: one entry per upload. EVERY listed upload is asked about on
  * every run (an override YouTube sets after the first read must be seen; corrected 4.10): the entry keeps the first read
  * for that id, designated or not (firstRead: readAt, returned, privacyStatus; written once, ruling 7.10 row 24
- * amendment 1), the first read that carried a designation, the latest read (madeForKids "true"/"false"/null,
+ * amendment 1), the first read that carried a designation, the latest read (returned, madeForKids "true"/"false"/null,
  * privacyStatus, readAt), and the times a read first contradicted the line's declaration or found a public upload no
  * longer public. readbackOf(<that file>, <the uploads>) is ExperimentReadings.madeForKidsReadback.
  *

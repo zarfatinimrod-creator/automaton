@@ -1,8 +1,9 @@
 name: colony
 
-# The revenue colony's governance loop. Runs the board's own cycle - ledger sync,
-# supervisor review, board review, audit - and commits the resulting state and
-# report back, so the owner can read every decision in the git history.
+# The revenue colony's governance loop. Applies src/revenue/portfolio.ts to the
+# database, runs the board's own cycle - ledger sync, supervisor review, board
+# review, audit - and commits the resulting state and report back, so the owner
+# can read every decision in the git history.
 #
 # This needs no wallet, no Conway key and no inference: the governance half of
 # the colony works from the SQLite file alone. Director and worker EXECUTION
@@ -13,7 +14,8 @@ name: colony
 # this file lives on a feature branch it is not even registered — the Actions
 # API returns 404 for it — so the hourly loop is not running, however correct
 # the code is. Verified 2026-09-03: only ci, products-ci and release exist.
-# Until it is merged, colony state is produced by running the tick by hand:
+# Until it is merged, colony state is produced by running both steps by hand:
+#   pnpm exec tsx scripts/colony.ts sync-portfolio
 #   pnpm exec tsx scripts/colony.ts tick --no-feed
 
 on:
@@ -52,6 +54,17 @@ jobs:
       - uses: pnpm/action-setup@v4
 
       - run: pnpm install --frozen-lockfile
+
+      - name: Apply portfolio.ts to the database
+        # The tick seeds only an empty database and never re-reads a seed, so a line's operating loop, owner steps,
+        # KPIs, criteria or target changed in src/revenue/portfolio.ts reached no report until someone ran this by hand
+        # (tick 63, 7.10.2026). Before the tick, so this run's REPORT.md and dashboard.html print the texts as the code
+        # has them; in this job, so the commit step's `git add -f state/colony` takes the database it wrote. It never
+        # writes a line's budget (the board review's allocation) or tier, status, setup-done flag or launch date
+        # (ledger.ts updateLineFromSeed), and kills only a line KILLED_LINES names that is not killed yet.
+        run: |
+          set -euo pipefail
+          pnpm exec tsx scripts/colony.ts sync-portfolio
 
       - name: Run one colony tick
         env:
