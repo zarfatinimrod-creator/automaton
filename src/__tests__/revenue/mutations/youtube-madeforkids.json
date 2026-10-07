@@ -42,26 +42,26 @@
   {
     "id": "T61-FW2",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "else if (first !== null && first.privacyStatus !== \"public\") p1 = false;",
+    "find": "else if (firstRead !== null && (firstRead.returned === false || firstRead.privacyStatus !== \"public\")) p1 = false;",
     "replace": "else if (false) p1 = false;",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (fold 2): firstUploadWindow's second false branch — a first designation read that is not public no longer fails P1"
+    "note": "tick 61 (fold 2): firstUploadWindow's second false branch — a first read that is not public no longer fails P1 (find moved with amendment 1: the branch reads firstRead)"
   },
   {
     "id": "T61-FW3",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "else if (first !== null && first.privacyStatus !== \"public\") p1 = false;",
-    "replace": "else if (first !== null && first.privacyStatus === \"private\") p1 = false;",
+    "find": "else if (firstRead !== null && (firstRead.returned === false || firstRead.privacyStatus !== \"public\")) p1 = false;",
+    "replace": "else if (firstRead !== null && (firstRead.returned === false || firstRead.privacyStatus === \"private\")) p1 = false;",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (fold 2): only private fails P1 — an unlisted first read is no longer a fail"
+    "note": "tick 61 (fold 2): only private fails P1 — an unlisted first read is no longer a fail (find moved with amendment 1)"
   },
   {
     "id": "T61-FW4",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "else if (publisherAccepted === true && first?.privacyStatus === \"public\") p1 = true;",
-    "replace": "else if (first?.privacyStatus === \"public\") p1 = true;",
+    "find": "else if (publisherAccepted === true && firstRead?.privacyStatus === \"public\") p1 = true;",
+    "replace": "else if (firstRead?.privacyStatus === \"public\") p1 = true;",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (fold 2): P1 passes on the read alone, with no publisher response recorded"
+    "note": "tick 61 (fold 2): P1 passes on the read alone, with no publisher response recorded (find moved with amendment 1)"
   },
   {
     "id": "T61-FW5",
@@ -150,5 +150,77 @@
     "replace": "{ signal: AbortSignal.timeout(30_000) }",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
     "note": "tick 61 (fold 4, §2 decision 3(iii)): the request follows redirects again"
+  },
+  {
+    "id": "T61-FR1",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "(firstRead.returned === false || firstRead.privacyStatus !== \"public\")",
+    "replace": "(firstRead.privacyStatus !== \"public\")",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 61 (amendment 1 of ruling 7.10 row 24): the returned === false branch dropped — a first read that says the video was not returned fails P1 only through its privacyStatus"
+  },
+  {
+    "id": "T61-FR2",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "(firstRead.returned === false || firstRead.privacyStatus !== \"public\")",
+    "replace": "(firstRead.returned === false)",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 61 (amendment 1): the privacyStatus !== \"public\" branch dropped — a private or unlisted first read no longer fails P1"
+  },
+  {
+    "id": "T61-FR3",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "firstRead: p.firstRead ?? { readAt: r.readAt, returned: r.returned, privacyStatus: r.privacyStatus },",
+    "replace": "firstRead: { readAt: r.readAt, returned: r.returned, privacyStatus: r.privacyStatus },",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 61 (amendment 1): firstRead is no longer written once — every run's read replaces it, so a later public read hides a first read that failed P1"
+  },
+  {
+    "id": "T61-FR4",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "else if (publisherAccepted === true && firstRead?.privacyStatus === \"public\") p1 = true;",
+    "replace": "else if (publisherAccepted === true && entry?.first?.privacyStatus === \"public\") p1 = true;",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 61 (amendment 1): P1's true branch reads first (the first designation read) again — an undesignated public first read no longer gives P1 true"
+  },
+  {
+    "id": "T61-FR5",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "else if (publisherAccepted === true && firstRead?.privacyStatus === \"public\") p1 = true;",
+    "replace": "else if (publisherAccepted === true) p1 = true;",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 61 (amendment 1): P1's true branch drops the public read — the publisher's yes alone passes P1 with no read taken"
+  },
+  {
+    "id": "T61-FR6",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "const firstRead = entry?.firstRead ?? null;",
+    "replace": "const firstRead = entry?.first ? { readAt: entry.first.readAt, returned: true, privacyStatus: entry.first.privacyStatus } : null;",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 61 (amendment 1): firstUploadWindow back to the pre-amendment P1, read through first — the measured fixture (a not-returned first read, designated public reads at +1 h and +73 h) passes again"
+  },
+  {
+    "id": "T61-FR7",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "returned: item !== undefined,",
+    "replace": "returned: true,",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 61 (amendment 1): the parser says every video asked for was returned — a video not in the response is recorded as returned"
+  },
+  {
+    "id": "T61-FR8",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "returned: r.returned, privacyStatus: r.privacyStatus },",
+    "replace": "returned: r.privacyStatus !== null, privacyStatus: r.privacyStatus },",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 61 (amendment 1): the merge guesses returned from privacyStatus — a returned video whose status carried no privacyStatus is recorded as not returned"
+  },
+  {
+    "id": "T61-FR9",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "    if (!r) return p;\n",
+    "replace": "    if (!r) return { ...p, firstRead: p.firstRead ?? { readAt: now, returned: false, privacyStatus: null } };\n",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 61 (amendment 1): a listed upload the run has no reading for gets a firstRead anyway — a read that was never taken is recorded"
   }
 ]
