@@ -15,19 +15,19 @@
 
 **The kill.** §13 stops this instrument after two consecutive quarters under 3 qualifying events. It is computed only from closed quarters whose every row is graded; a quarter with an ungraded row never counts toward it. A closed quarter's rows are kept below as the record of its last reading.
 
-Reading: 2026-10-06T03:24:34.098Z (UTC day 2026-10-06) of <https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json>, sha256 `ef0065f792832de1745f3656e40fb44ef996168a84c686cd4feea5d38a19d4d3`.
+Reading: 2026-10-07T13:59:05.575Z (UTC day 2026-10-07) of <https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json>, sha256 `ef0065f792832de1745f3656e40fb44ef996168a84c686cd4feea5d38a19d4d3`.
 
 ## Summary
 
 | Quarter | Deadlines | Position | Events | Graded | Qualifying | Awaiting | Unsettled |
 |---|---|---|---|---|---|---|---|
-| 2026-Q3 | 1 Jul – 30 Sep 2026 | closed | 39 | 3 | at least 0 (a floor) | 35 | 1 |
-| 2026-Q4 | 1 Oct – 31 Dec 2026 | current | 28 | 5 | at least 0 (a floor) | 22 | 1 |
+| 2026-Q3 | 1 Jul – 30 Sep 2026 | closed | 39 | 7 | at least 0 (a floor) | 23 | 9 |
+| 2026-Q4 | 1 Oct – 31 Dec 2026 | current | 28 | 8 | at least 1 (a floor) | 15 | 5 |
 | 2027-Q1 | 1 Jan – 31 Mar 2027 | next | 0 | 0 | not counted (no row graded) | 0 | 0 |
 
 Kill: not computable yet — no two consecutive closed quarters are fully graded.
 
-URLs awaiting a render: 93 in `research/measurements/ai-allowed-events.urls.txt`.
+URLs awaiting a render: 80 in `research/measurements/ai-allowed-events.urls.txt`.
 
 ## 2026-Q4 — deadlines 1 Oct – 31 Dec 2026 (current quarter)
 
@@ -112,5 +112,17 @@ No event on the list has a deadline in this quarter.
 
 ## Rows a session started but did not settle
 
+- 2026-10-11 · Predict Aircraft Taxi-Out Time at European Airports (<https://ansperformance.eu/study/data-challenge/dc2026/>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
 - 2026-10-11 · Weak Lensing Uncertainty under Distribution Shift (<https://www.codabench.org/competitions/10902/?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-11-15 · Predict Price Movements from Limit Order Book Data (<https://wundernn.io/connectome?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-11-20 · Language-Conditioned Visual Navigation (<https://www.codabench.org/competitions/18185/>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-12-31 · Predict Cross-sectional Equity Returns (<https://hub.crunchdao.com/competitions/datacrunch-2?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-07-01 · Agentic Pay Zone Identification in Well Logs (<https://thinkonward.com/app/c/challenges/no-second-guessing?ref=mlc>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-07-03 · Identify Gene Pairs Driving Metabolic Diseases (Part 3) (<https://hub.crunchdao.com/competitions/broad-obesity-3?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-08-01 · Benchmark LLMs on Industrial Automation Reasoning (<https://sites.google.com/view/ai-industrial-challenge-ijcai/home?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-08-01 · Project Omnibus: Optimise School Bus Routes (<https://competition.bcamlc.com?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-08-04 · Precipitation Nowcasting From Space (<https://community.solafune.com/competitions/f87811b8-1964-4f4b-84b3-6fddd67ec4b1?menu=about&tab=overview&ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-08-17 · Build Real Products with Google Gemini (<https://www.geminixprize.com/?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
 - 2026-09-12 · Design LLM Agents to Build Virtual Spacecraft (<https://www.kaggle.com/competitions/build-arena-human-ai-colleberation-engineering-challenge?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-09-17 · Detect Structural Breaks in Real-Time Time Series Data (<https://hub.crunchdao.com/competitions/structural-break-real-time?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.
+- 2026-09-19 · Estimate Neural Network Activations from Weights (<https://www.aicrowd.com/challenges/white-box-estimation-challenge-2026?ref=mlcontests>): no yes/no in the qualifies cell; the grade is not RENDERED, so the rules page was not read from a capture.

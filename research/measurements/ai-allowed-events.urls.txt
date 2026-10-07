@@ -9,7 +9,7 @@
 # research/rendered/<slug>.txt, the pointer a session cites in the table.
 # This is NOT research/rendered/urls.txt, and nothing here is ever appended to it.
 #
-# Every URL is verbatim from the mlcontests list (read 2026-10-06T03:24:34.098Z, sha256 ef0065f792832de1…)
+# Every URL is verbatim from the mlcontests list (read 2026-10-07T13:59:05.575Z, sha256 ef0065f792832de1…)
 # and appears verbatim in its event's row of the table. No rules-page URL is guessed.
 # tiktok.com URLs are refused (logs/CHANNEL_LOOP.md §9: no tiktok.com URL in any render list or override).
 
@@ -37,24 +37,11 @@ https://www.eurocontrol.int/air-navigation-services-performance-review	prize-www
 https://www.codabench.org/competitions/10902/?ref=mlcontests	prize-www-codabench-org-competitions-10902-ref-mlconte-1e3fd2ef
 https://fair-universe.lbl.gov/?ref=mlcontests	prize-fair-universe-lbl-gov-ref-mlcontests-0704eef5
 
-# 2026-Q4 · 2026-10-12 · Verifiable AI Agents for Quantitative Finance
-https://www.agenthon.net/?ref=mlcontests	prize-www-agenthon-net-ref-mlcontests-7f4f65c9
-https://www.codabench.org/competitions/17765/	prize-www-codabench-org-competitions-17765-124255c0
-https://www.codabench.org/competitions/17766/	prize-www-codabench-org-competitions-17766-393cbe4c
-https://www.codabench.org/competitions/17767/	prize-www-codabench-org-competitions-17767-8890be64
-https://www.codabench.org/competitions/17768/	prize-www-codabench-org-competitions-17768-e08d2147
-
-# 2026-Q4 · 2026-10-15 · Design Physics Experiments for Gravitational Waves
-https://www.learn2design2026.com/?ref=mlcontests	prize-www-learn2design2026-com-ref-mlcontests-291b339a
-
 # 2026-Q4 · 2026-10-22 · Detect Knee Abnormalities in Multimodal Imaging Data
 https://www.kaggle.com/competitions/rsna-knee-abnormality-detection?ref=mlcontests	prize-www-kaggle-com-competitions-rsna-knee-abnormalit-20ecd9f3
 
 # 2026-Q4 · 2026-10-25 · Generative Modeling of Mouse Embryo Development
 https://virtualembryo.ai/challenge?ref=mlcontests	prize-virtualembryo-ai-challenge-ref-mlcontests-6cd009a6
-
-# 2026-Q4 · 2026-10-26 · Infer Fusion Reactor Magnetic Geometry
-https://fusion-equilibrium-challenge.sophelio.io/?ref=mlcontests	prize-fusion-equilibrium-challenge-sophelio-io-ref-mlc-5c97e826
 
 # 2026-Q4 · 2026-10-30 · Predict Whether AI Systems Answer Benchmark Items Correctly
 https://aimslab.stanford.edu/competition?ref=mlcontests	prize-aimslab-stanford-edu-competition-ref-mlcontests-71212a54
@@ -114,10 +101,6 @@ https://hub.crunchdao.com/competitions/broad-obesity-3?ref=mlcontests	prize-hub-
 # 2026-Q3 · 2026-07-09 · Build Open-Source AI Agents on Qwen Cloud
 https://qwencloud-hackathon.devpost.com/?ref=mlcontests	prize-qwencloud-hackathon-devpost-com-ref-mlcontests-2151adcf
 
-# 2026-Q3 · 2026-07-14 · Detect next-generation identity document fraud
-https://freuid2026.microblink.com/	prize-freuid2026-microblink-com-3c4f48a5
-https://www.kaggle.com/competitions/the-freuid-challenge-2026-ijcai-ecai/overview	prize-www-kaggle-com-competitions-the-freuid-challenge-2fcfc78a
-
 # 2026-Q3 · 2026-07-15 · Build Tiny Neural Nets to Solve Visual Reasoning Tasks
 https://www.kaggle.com/competitions/neurogolf-2026?ref=mlcontests	prize-www-kaggle-com-competitions-neurogolf-2026-ref-m-ecb0f4d6
 
@@ -176,14 +159,8 @@ https://pengwin2026.grand-challenge.org/?ref=mlcontests	prize-pengwin2026-grand-
 # 2026-Q3 · 2026-08-24 · Build On-Device LLMs for Laptop Hardware
 https://adtc-2026.devpost.com/?ref=mlcontests	prize-adtc-2026-devpost-com-ref-mlcontests-63a931a5
 
-# 2026-Q3 · 2026-08-27 · Predict Student Learning Outcomes from Tutoring Transcripts
-https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/?ref=mlcontests	prize-platform-k12-ai-infrastructure-org-competitions-b57ad27f
-
 # 2026-Q3 · 2026-08-29 · Identify Reef Fish Species with Computer Vision Models
 https://zindi.africa/competitions/wishlist-hackathon-2026-marine-vision-challenge?utm_source=mlcontest&utm_medium=referral&utm_campaign=compupdates	prize-zindi-africa-competitions-wishlist-hackathon-202-143ee082
-
-# 2026-Q3 · 2026-08-31 · Build Useful End-to-End Differentiable Systems
-https://pasteurlabs.ai/tesseract-hackathon-2026/?ref=mlcontests	prize-pasteurlabs-ai-tesseract-hackathon-2026-ref-mlco-ab132ac0
 
 # 2026-Q3 · 2026-09-01 · Find Multi-step AI Agent Attack Paths
 https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks?ref=mlcontests	prize-www-kaggle-com-competitions-ai-agent-security-mu-e2a94dd2
@@ -206,10 +183,6 @@ https://openreview.net/forum?id=QAQKmIp3SZ	prize-openreview-net-forum-id-qaqkmip
 # 2026-Q3 · 2026-09-13 · Develop and Explain Pokemon Card Battle Agents
 https://www.kaggle.com/competitions/pokemon-tcg-ai-battle-challenge-strategy?ref=mlcontests	prize-www-kaggle-com-competitions-pokemon-tcg-ai-battl-b5b82384
 https://www.kaggle.com/competitions/pokemon-tcg-ai-battle	prize-www-kaggle-com-competitions-pokemon-tcg-ai-battl-c2c06d05
-
-# 2026-Q3 · 2026-09-16 · Classify DaT Scans for Parkinson's Detection
-https://www.drivendata.org/competitions/311/dat-parkinsons-challenge/?ref=mlcontests	prize-www-drivendata-org-competitions-311-dat-parkinso-e9e5099c
-https://www.health-data-hub.fr/bibliotheque-ouverte-algorithmes-sante	prize-www-health-data-hub-fr-bibliotheque-ouverte-algo-10896c14
 
 # 2026-Q3 · 2026-09-17 · Detect Structural Breaks in Real-Time Time Series Data
 https://hub.crunchdao.com/competitions/structural-break-real-time?ref=mlcontests	prize-hub-crunchdao-com-competitions-structural-break-e54af348
