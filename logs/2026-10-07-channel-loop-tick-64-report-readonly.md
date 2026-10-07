@@ -48,7 +48,7 @@ for 7 hours ..." נעלמה מהדוח, והלוח אמר שאין חסימות 
   ב-render, :302) שער הצעדים `shouldRun` (לפני :320-324, אחרי :331-338): צעד שהגיע זמנו רץ רק כשאין readOnly; ב-render הוא
   נרשם ב-`TickResult.dueNotRun` (:263-264, שדה אופציונלי) ולא ב-`skipped`, ושום `markRan` לא נקרא. כל השאר ב-tick
   (`checkLiveness`, שערי הצפיות, `findStalledLines`, `findStuckGoals`, הבדיקה של brand-mail, רשימת המשימות של הבעלים,
-  `computePortfolioSummary`) רץ כמו בטיק, ולכן החסימות הן של טיק. `renderReport` (לפני :550, אחרי :565-570): ב-render
+  `computePortfolioSummary`) רץ כמו בטיק, ולכן החסימות שאינן של צעד הן של טיק — אבל לא החסימות שרק צעד מחשב (קובץ מדידה פגום, צפיות הדף, שגיאות הסנכרון, ממצאי הביקורת): ה-render הזה השמיט אותן, והטענה "החסימות הן של טיק" כאן הייתה שקרית; הסקירה מצאה ותוקן ("תיקוני הסקירה" בסוף). `renderReport` (לפני :550, אחרי :565-570): ב-render
   "Ran: nothing — a report-only render runs no step and records nothing; the scheduled tick runs the steps" ו-"Due now, left
   for the scheduled tick: …"; טיק מדפיס בדיוק כמו קודם.
 - **`scripts/colony.ts`**: `rendersOnly()` (:149-159, חדש) — `report`, `dashboard`, `status`, `growth`, ו-`criteria` בלי
@@ -80,6 +80,7 @@ for 7 hours ..." נעלמה מהדוח, והלוח אמר שאין חסימות 
 - **למה טיק במצב readOnly ולא נתיב הצגה נפרד**: החסימות מחושבות בתוך `tick` מעשרה מקורות (חסימת הטריות, שורות שקטות,
   שערי הצפיות, brand-mail, מטרות תקועות, צעדי בעלים…). נתיב שני היה משכפל את כל זה ונשחק ממנו עם הזמן — בדיוק סוג ההבדל
   שהסתיר את הפגם. הדגל עוצר את ארבעת הצעדים בנקודה אחת (`shouldRun`), וכל השאר הוא אותו קוד. השינוי ב-tick עצמו: שתי שורות חדשות ושתיים ששונו בשער, ועוד הערה.
+  **תיקון (סקירה):** "אותו קוד" נכון רק לבדיקות שמחוץ לצעדים; עצירת הצעדים בנקודה אחת עצרה גם את החסימות שהם מחשבים, וזה הפגם שהסקירה מצאה ("תיקוני הסקירה").
 - **ולמה גם `query_only`**: הוא מה ש"פותח את המסד לקריאה בלבד" מבלי לעקוף את `createDatabase` (`readonly: true` של
   better-sqlite3 היה מדלג על המיגרציות, וקובץ במצב WAL לקריאה בלבד דורש קבצי ‎-shm). ה-pragma מופעל אחרי הפתיחה, כך
   שמיגרציה של מסד ישן עדיין חלה כמו בכל פקודה, וכל כתיבה אחרי זה זורקת `attempt to write a readonly database`. נמדד: על
@@ -150,3 +151,50 @@ for 7 hours ..." נעלמה מהדוח, והלוח אמר שאין חסימות 
 - הלולאה המיותרת עם `--db /dev/null` (סעיף 5) והבדיקה אחריה.
 - נרמול ה-dump בשני סבבים (סעיף 5).
 - תזכורות רשימת המשימות של השרשור הראשי שחזרו בתוצאות הכלים (כל הרשימה בכל פעם); לא נגעתי בה.
+
+## תיקוני הסקירה
+
+הסקירה (Opus) אישרה ש-`report` לא כותב דבר ושהטיק המתוזמן לא השתנה, ומצאה פגם חוסם אחד, תיקון אחד ושלוש הערות. התיקונים
+ב-commit `c532ff2`, אחרי מיזוג הבסיס `992f1e5` (commit של colony-bot, `state/colony/` בלבד; בלי קונפליקט) ב-`01c628b`.
+
+- **ממצא 1 (חוסם): render השמיט כל חסימה שרק צעד מחשב.** נכון, ונמדד מחדש (למטה). המשפט "החסימות הן של טיק" בסעיפים 2 ו-4
+  ובהודעת ה-commit `2467fdd` היה שקרי: קובץ מדידה שאינו JSON, "page views: not configured while a clock runs", "page views:
+  <error>", המוצרים הלא-ממופים והשגיאות של הסנכרון, וממצאי הביקורת לא הופיעו ב-render, בעוד שטיק באותו רגע והדוח הישן
+  הראו אותם. התיקון, לפי טקסט הסקירה:
+  - **סנכרון בזמנו ב-render** (`runner.ts`, ענף `else if (result.dueNotRun?.includes("revenue_ledger_sync"))`): קבצי
+    המדידה נבדקים כמו שה-ingest בודק אותם ולא נרשמים (`measurements.ts`: `readMeasurementFile` משותף ל-ingest ול-
+    `invalidMeasurementFiles`, `MEASUREMENT_FILES`); קריאת הצפיות במצב `offline` (`page-views-reader.ts`): כל בדיקה שלפני
+    השאילתה הראשונה — כולל רשימת דפי האתר — ואז סטטוס חדש `due` ("N completed week(s) to read … a render sends no query") בלי
+    שאילתה ובלי כתיבה. כך "page views: <error>", "not configured while a clock runs" ושורת "Page views:" הם של טיק, מילה במילה.
+  - **הממצאים של הצעד עצמו** — מהריצה השמורה האחרונה, כל אחד פותח ב-"last ledger sync, <זמן>: " או "last audit, <זמן>: "
+    (`heartbeat.ts`: `LAST_LEDGER_SYNC_KEY`, `LAST_AUDIT_KEY`, `lastLedgerSync`, `lastAudit`). זמן הסנכרון הוא
+    `revenue.last_run.revenue_ledger_sync` (אותו זמן שחסימת הטריות מדפיסה), לא ה-`at` של הרשומה, שהוא שעון קיר גם תחת
+    `--now`. `revenue.last_audit` לא שמר ממצאים, ולכן `runAudit` שומר עכשיו גם `chiefFindings` (שיעור הדגלים מחושב
+    flagged / sampled, כמו ב-`runAudit`; רשומה מלפני התיקון — בלי ממצאים). **זה השינוי היחיד בכתיבות של טיק מתוזמן**: ערך
+    ה-kv הזה, פעם בשבוע, מקבל שדה נוסף.
+  - הממצאים השמורים מודפסים רק כשהצעד בזמנו ולא רץ: צעד שלא בזמנו לא מוסיף חסימה משלו גם בטיק, ולכן render שאין בו צעד
+    בזמנו זהה לטיק. מה שצעד שלא רץ היה משנה לבדיקות שאחריו לא מדומה, ונאמר כך: ביקורת מפקח שלא רצה לא מרעננת את האות האחרון
+    של שורה (בדיקת התקיעה), וביקורת לוח שלא רצה לא משנה סטטוס.
+  - **הטקסטים**: `TickOptions.readOnly`, ה-USAGE של `report` ו-`dashboard`, ההערות ב-`colony.ts` — כולם אומרים עכשיו את
+    זה במפורש. בדוח של render עם צעד בזמנו נוספה שורה אחת: "What a render cannot show: what the due steps would find now. …".
+- **ממצא 2 (תיקון): ארבעת המוטנטים של הסקירה שרדו.** בדיקה חדשה ב-`runner.test.ts` ("a render's blockers are a tick's at the
+  same moment"): fixture עם כל מחלקה — `apify-runs.json` שאינו JSON, `algora-supply.json` בלי measuredAt, brand-mail שאינו
+  JSON, שעון il-biz-tools רץ ו-`pcn874.d0` שאינו יום UTC, שורה תקועה 8 ימים, צעדי בעלים — render וטיק באותו רגע (T0+8 ימים,
+  רק הסנכרון בזמנו): אותן חסימות באותו סדר ובאותן מילים, ואותה שורת "Page views:"; וחמש דקות אחרי, בלי צעד בזמנו, שוב
+  שוויון. בדיקה שנייה: ממצאי סנכרון וביקורת שמורים מופיעים עם הזמן שלהם, והשאר שווה לטיק; שלישית: ביקורת מתוזמנת אמיתית
+  (עלות על שורה שנהרגה) שומרת את הממצא, ו-render שבוע אחרי מדפיס אותו. ב-`page-views-reader.test.ts`: render עם שבועות
+  לקריאה — 0 קריאות fetch, טבלאות זהות, סטטוס `due`, והטיק באותו רגע קורא 2 שבועות; ושגיאת apiHost זהה ב-render ובטיק.
+  `colony.json`: RV-G1..G4 נכנסו כ-T64R-G1..G4, ועוד 17 (T64R-S1..S10, A1..A5, L1, W2); ה-find של T64-R6 עבר עם השורה
+  לבלוק החדש.
+- **הערה 3 (כותרת colony.yml)**: תוקנה — "which only a tick (or the automaton's heartbeat task of the same name) records";
+  ה-find של T64-W1 עבר איתה, pin חדש ב-`colony-cli.test.ts` ומוטנט T64R-W2.
+- **הערה 4 (להדפיס ב-render את החלטת הלוח, ביקורת המפקח והסנכרון האחרונים)**: אופציונלית, לא נעשתה.
+- **הערה 5 (`/dev/null-journal`)**: לא נמחק (הכלל: רק תיקיית ה-scratch שלי) — נשאר לשרשור הראשי; המשפט השקרי ביומן תוקן
+  במקומו בסעיפים 2 ו-4.
+- **מדידה מחדש** (סעיף 6 של הסקירה, על עותקים של `colony.db` מ-`992f1e5`, בעצי `sim-tree.sh`, `--now 2026-10-07T23:50Z`,
+  `apify-runs.json` שאינו JSON ו-d0 של il-biz-tools 2026-10-05, בלי מפתחות): ב-`fa897b7` (לפני הבנייה) `tick --no-feed` ו-`report` — 7 חסימות כל אחד, זהות, אבל `report` שינה את המסד; ב-`04050f0` (הבנייה) `report` לא שינה את המסד אבל הראה 5: חסרו "measurement state/colony/measurements/apify-runs.json: not JSON …" ו-"page views: not configured while a clock runs (il-biz-tools from 2026-10-05) …" (כמו שהסקירה מדדה); ב-`c532ff2` `report` — המסד זהה בבית, 7 חסימות **זהות** לטיק (diff ריק), אותה שורת "Page views: not configured …", שורות "Due now" ו-"What a render cannot show", והלוח מכיל את שתי החסימות. הטיק: רשימת החסימות, REPORT.md ו-dashboard.html זהים בבית בין `fa897b7` ל-`c532ff2`, וה-dump של המסד אחרי הטיק זהה (`updated_at`/`created_at`, ULID ו-`at` של `last_ledger_sync` ממוסכים). ב-`--now 2026-10-14T21:30Z` (כל הצעדים בזמנם): `report` של `c532ff2` לא שינה את המסד, ו-7 החסימות שלו זהות לטיק; טיק ישן וחדש — אותן חסימות, וההבדל היחיד שנמצא הוא `revenue.last_audit` עם `"chiefFindings":[]`.
+- **בדיקות**: `scripts/verify.sh` על `runner.test.ts`, `page-views-reader.test.ts`, `colony-cli.test.ts`, `measurements.test.ts`, `apify-runs.test.ts`, `brand-mail.test.ts` ו-`mutation-plans.test.ts` — exit 0 (typecheck 0; 7 קבצים, 242 בדיקות). `scripts/verify.sh` המלא — exit 0 (typecheck 0; 80 קבצים, 2922 עברו ו-2 skipped שהיו קודם; 6 בדיקות חדשות), 112 שניות. אף assertion לא הוחלש, דולג או נמחק.
+- **מוטציות**: `node scripts/mutate.mjs --check` על `colony.json` — 34 of 34; `scripts/sim-tree.sh -- node scripts/mutate.mjs --plan src/__tests__/revenue/mutations/colony.json` — 34 applied, 34 killed, 0 survived, 218 שניות, exit 0 (נרשם ב-README).
+- grep לשם הבעלים ולכתובות דוא"ל ב-diff: 0 שורות; אין אסימון דילוג על CI בהודעות.
+- אסימונים: רוב הזמן הלך על קריאת `readPageViews`, `runAudit` ו-`ingestFile` כדי למצוא איפה בדיוק נגמרות הבדיקות שאינן רשת
+  ואינן כתיבה; ותזכורות רשימת המשימות של השרשור הראשי שחזרו בתוצאות הכלים.
