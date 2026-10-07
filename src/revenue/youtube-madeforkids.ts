@@ -167,9 +167,58 @@ export function readbackOf(state: MadeForKidsState, uploads: readonly { id: stri
  * never the watch page): true once its first designation read and its latest read, at least `hours` apart, both found it
  * public and no read since a public one found it otherwise; false once one did (or the latest read found it not public
  * after a public one); null while that is not yet known. Reads are periodic, so the answer is as good as their spacing.
+ * The clock starts at the first designation read, which the read-back takes in the same colony run as the publisher's
+ * response, so the window is never judged early and at worst one run late; a read with no designation does not start it
+ * (research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md §4 decisions 1-2).
  */
 export function stayedPublic(v: UploadReadback, hours: number): boolean | null {
   if (v.leftPublicAt !== null) return false;
   if (v.first?.privacyStatus !== "public" || v.latest?.privacyStatus !== "public") return null;
   return Date.parse(v.latest.readAt) - Date.parse(v.first.readAt) >= hours * 3_600_000 ? true : null;
+}
+
+/**
+ * The first-upload window's four readings and its verdict (T1-PROTOCOL.md P1-P4; K-T1k on the kids line). Each is true,
+ * false, or null while unread.
+ */
+export interface FirstUploadWindow {
+  /** The upload returns public: the publisher's response (success and the id) and the first designation read `public`. */
+  p1: boolean | null;
+  /** Still public `hours` later: `stayedPublic(entry, hours)`. */
+  p2: boolean | null;
+  /** The brand mailbox's reading, as the caller supplies it. */
+  p3: boolean | null;
+  /** The publisher's channel-state reading, as the caller supplies it. */
+  p4: boolean | null;
+  /** false if any of the four is false; true if all four are true; else null. ExperimentReadings.t1Passed. */
+  passed: boolean | null;
+}
+
+/**
+ * ExperimentReadings.t1Passed as one pure function of the readings, never a typed-in boolean
+ * (research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md §4 decision 3). `entry` is the read-back's
+ * entry for the line's first upload, or null; `publisherAccepted` is P1's publisher half (true: the response said success
+ * for YouTube and returned the id; false: it did not; null: no response recorded); `p3` and `p4` are the protocol's own
+ * readings. P1 is false when the publisher did not accept the upload or the first designation read found it anything but
+ * public, true when the publisher accepted it and that read found it public, else null; P2 is `stayedPublic(entry, hours)`.
+ * It fetches nothing: an auditor re-derives the verdict from the same state.
+ */
+export function firstUploadWindow(
+  entry: UploadReadback | null,
+  publisherAccepted: boolean | null,
+  p3: boolean | null,
+  p4: boolean | null,
+  hours = 72,
+): FirstUploadWindow {
+  const first = entry?.first ?? null;
+  let p1: boolean | null = null;
+  if (publisherAccepted === false) p1 = false;
+  else if (first !== null && first.privacyStatus !== "public") p1 = false;
+  else if (publisherAccepted === true && first?.privacyStatus === "public") p1 = true;
+  const p2 = entry === null ? null : stayedPublic(entry, hours);
+  const readings = [p1, p2, p3, p4];
+  let passed: boolean | null = null;
+  if (readings.includes(false)) passed = false;
+  else if (readings.every((r) => r === true)) passed = true;
+  return { p1, p2, p3, p4, passed };
 }

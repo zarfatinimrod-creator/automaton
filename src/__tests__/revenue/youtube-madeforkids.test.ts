@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -8,6 +9,7 @@ import {
   READ_HOST,
   VIDEOS_LIST_URL,
   emptyState,
+  firstUploadWindow,
   mergeReadings,
   parseVideosList,
   readbackOf,
@@ -18,7 +20,15 @@ import {
   type UploadReadback,
 } from "../../revenue/youtube-madeforkids.js";
 import { FACELESS_YOUTUBE_EXPERIMENT, KIDS_EXPLAINERS_EXPERIMENT, evaluateExperiment, type ExperimentReadings } from "../../revenue/experiments.js";
-import { API_KEY_ENV, defaultPaths, runReadback } from "../../../scripts/youtube-madeforkids-readback.js";
+import {
+  API_KEY_ENV,
+  API_TERMS_SITE,
+  TERMS_VERDICTS,
+  apiTermsGate,
+  defaultPaths,
+  readTermsVerdicts,
+  runReadback,
+} from "../../../scripts/youtube-madeforkids-readback.js";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { termsBarred } from "../../../scripts/render-watch.mjs";
 
@@ -35,6 +45,15 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const fixture = (name: string) => JSON.parse(readFileSync(resolve(ROOT, `src/__tests__/revenue/fixtures/youtube-videos-list-mfk-${name}.json`), "utf8"));
 const AT = "2027-03-11T06:00:00.000Z";
 const KEY = "test-key-not-a-real-one";
+/** A terms-verdicts.json fixture: two other sites, and a googleapis.com entry with this verdict (none when null). */
+function verdictsWith(verdict: string | null, extra: Record<string, unknown> = {}) {
+  const sites: Record<string, unknown> = {
+    "github.com": { verdict: "NOT_BARRED", source: "fixture", checked: "2026-10-07", copying: "unread" },
+    "youtube.com": { verdict: "BARRED", source: "fixture", checked: "2026-09-29", copying: "unread" },
+  };
+  if (verdict !== null) sites["googleapis.com"] = { verdict, source: "fixture", checked: "2026-10-07", copying: "unread", ...extra };
+  return { _about: "test fixture", sites };
+}
 
 describe("the request (ruling 4.10 §6 rule 2: videos.list, part=status)", () => {
   it("asks Google's Data API host for the id and status parts of the given videos, with the key", () => {
@@ -208,6 +227,31 @@ describe("the experiment state: every upload re-read on every run", () => {
     expect(stayedPublic(mergeReadings(neverPublic, uploads, [read("v1", "true", at(80), "private")], at(80)).videos[0]!, 72)).toBeNull();
   });
 
+  it("a public read that carried no designation does not start the clock (ruling 7.10 row 24 §4 decision 2)", () => {
+    // The 72 h are counted from the first read that carried a designation: a public read whose madeForKids is null is an
+    // instrument fault (§10 rule 2), and a window that could pass on it would pass on a half-working instrument.
+    const uploads = [{ id: "v1" }];
+    const at = (h: number) => new Date(Date.parse(T0) + h * 3_600_000).toISOString();
+    const undesignated = mergeReadings(emptyState("faceless-youtube"), uploads, [read("v1", null, at(0))], at(0));
+    expect(undesignated.videos[0]!.latest).toEqual(read("v1", null, at(0))); // public, no madeForKids
+    expect(undesignated.videos[0]!.first).toBeNull();
+    const day3 = mergeReadings(undesignated, uploads, [read("v1", null, at(72))], at(72));
+    expect(stayedPublic(day3.videos[0]!, 72)).toBeNull(); // never true
+    const day6 = mergeReadings(day3, uploads, [read("v1", null, at(144))], at(144));
+    expect(stayedPublic(day6.videos[0]!, 72)).toBeNull();
+    const departed = mergeReadings(day3, uploads, [read("v1", null, at(80), "private")], at(80));
+    expect(departed.videos[0]!.leftPublicAt).toBe(at(80));
+    expect(stayedPublic(departed.videos[0]!, 72)).toBe(false); // a departure still fails it
+    // The first read that does carry one starts the clock: 72 h from it, not from the undesignated read.
+    const designated = mergeReadings(day3, uploads, [read("v1", "false", at(96))], at(96));
+    expect(designated.videos[0]!.first).toEqual(read("v1", "false", at(96)));
+    expect(stayedPublic(designated.videos[0]!, 72)).toBeNull();
+    const later = mergeReadings(designated, uploads, [read("v1", "false", at(167))], at(167));
+    expect(stayedPublic(later.videos[0]!, 72)).toBeNull();
+    const window = mergeReadings(designated, uploads, [read("v1", "false", at(168))], at(168));
+    expect(stayedPublic(window.videos[0]!, 72)).toBe(true);
+  });
+
   describe("feeds the experiment", () => {
     const base: Omit<ExperimentReadings, "madeForKidsReadback"> = {
       day: 20, t1Passed: true, videosPassedGate: 3, medianStrangerViews: null, strangerWatchHours28d: null,
@@ -245,31 +289,149 @@ describe("the experiment state: every upload re-read on every run", () => {
   });
 });
 
+describe("firstUploadWindow: P1-P4 and t1Passed from the read-back state (ruling 7.10 row 24 §4 decision 3)", () => {
+  const T0 = "2027-03-01T00:00:00.000Z";
+  const at = (h: number) => new Date(Date.parse(T0) + h * 3_600_000).toISOString();
+  const read = (madeForKids: "true" | "false" | null, h: number, privacyStatus: string | null = "public"): MadeForKidsReading =>
+    ({ id: "t1Video001", madeForKids, privacyStatus, readAt: at(h) });
+  const uploads = [{ id: "t1Video001" }];
+  /** The read-back's entry for the first upload after these reads, one colony run each. */
+  const after = (...reads: MadeForKidsReading[]): UploadReadback =>
+    reads.reduce((s, r) => mergeReadings(s, uploads, [r], r.readAt), emptyState("faceless-youtube")).videos[0]!;
+
+  const stayed = after(read("false", 0), read("false", 24), read("false", 72)); // public from the first read to +72 h
+  const early = after(read("false", 0), read("false", 24)); // public, not yet 72 h
+  const privated = after(read("false", 0), read("false", 30, "private")); // public, then private at +30 h
+  const firstPrivate = after(read("false", 0, "private"));
+  const firstUnlisted = after(read("false", 0, "unlisted"));
+  const undesignated = after(read(null, 0)); // public, but no madeForKids: no first designation read
+  const notReturned = after(read(null, 0, null));
+
+  it("P1 is true when the publisher accepted the upload and the first designation read found it public", () => {
+    expect(firstUploadWindow(stayed, true, true, true).p1).toBe(true);
+    expect(firstUploadWindow(early, true, null, null).p1).toBe(true);
+    expect(firstUploadWindow(privated, true, null, null).p1).toBe(true); // a later departure is P2's, not P1's
+  });
+
+  it("P1 is false when the publisher did not accept the upload, whatever the read says", () => {
+    expect(firstUploadWindow(stayed, false, true, true).p1).toBe(false);
+    expect(firstUploadWindow(null, false, true, true).p1).toBe(false);
+  });
+
+  it("P1 is false when the first designation read found the upload private or unlisted, whatever the publisher said", () => {
+    for (const entry of [firstPrivate, firstUnlisted]) {
+      expect(firstUploadWindow(entry, true, true, true).p1).toBe(false);
+      expect(firstUploadWindow(entry, null, true, true).p1).toBe(false);
+    }
+  });
+
+  it("P1 is null while either half is unread", () => {
+    expect(firstUploadWindow(stayed, null, true, true).p1).toBeNull(); // no publisher response recorded
+    expect(firstUploadWindow(null, true, true, true).p1).toBeNull(); // no read yet
+    const neverAsked: UploadReadback = { id: "t1Video001", first: null, latest: null, contradictedAt: null, leftPublicAt: null };
+    expect(firstUploadWindow(neverAsked, true, true, true).p1).toBeNull(); // an entry no read has reached yet
+    expect(firstUploadWindow(undesignated, true, true, true).p1).toBeNull();
+    expect(firstUploadWindow(notReturned, true, true, true).p1).toBeNull();
+  });
+
+  it("P2 is stayedPublic(entry, hours): true at 72 h, false on a departure, null before 72 h or with no entry", () => {
+    expect(firstUploadWindow(stayed, true, true, true).p2).toBe(true);
+    expect(firstUploadWindow(privated, true, true, true).p2).toBe(false);
+    expect(firstUploadWindow(early, true, true, true).p2).toBeNull();
+    expect(firstUploadWindow(null, true, true, true).p2).toBeNull();
+    for (const entry of [stayed, privated, early, firstPrivate, undesignated]) {
+      expect(firstUploadWindow(entry, true, true, true).p2).toBe(stayedPublic(entry, 72));
+    }
+  });
+
+  it("P2's window is 72 hours unless the caller says otherwise", () => {
+    expect(firstUploadWindow(after(read("false", 0), read("false", 71)), true, true, true).p2).toBeNull();
+    expect(firstUploadWindow(after(read("false", 0), read("false", 72)), true, true, true).p2).toBe(true);
+    expect(firstUploadWindow(early, true, true, true, 24).p2).toBe(true);
+  });
+
+  it("P3 and P4 are the caller's readings, passed through as true, false or null", () => {
+    for (const r of [true, false, null]) {
+      expect(firstUploadWindow(stayed, true, r, true).p3).toBe(r);
+      expect(firstUploadWindow(stayed, true, true, r).p4).toBe(r);
+    }
+  });
+
+  it("passed is true only when all four readings are true", () => {
+    expect(firstUploadWindow(stayed, true, true, true)).toEqual({ p1: true, p2: true, p3: true, p4: true, passed: true });
+  });
+
+  it("passed is false when any one reading is false, whatever the others", () => {
+    expect(firstUploadWindow(stayed, false, true, true).passed).toBe(false); // P1, the publisher's half
+    expect(firstUploadWindow(firstPrivate, true, true, true).passed).toBe(false); // P1, the read's half
+    expect(firstUploadWindow(privated, true, true, true).passed).toBe(false); // P2
+    expect(firstUploadWindow(stayed, true, false, true).passed).toBe(false); // P3
+    expect(firstUploadWindow(stayed, true, true, false).passed).toBe(false); // P4
+    expect(firstUploadWindow(early, null, false, null)).toEqual({ p1: null, p2: null, p3: false, p4: null, passed: false });
+  });
+
+  it("passed is null while any reading is unread and none is false", () => {
+    expect(firstUploadWindow(stayed, null, true, true).passed).toBeNull(); // P1
+    expect(firstUploadWindow(early, true, true, true).passed).toBeNull(); // P2
+    expect(firstUploadWindow(stayed, true, null, true).passed).toBeNull(); // P3
+    expect(firstUploadWindow(stayed, true, true, null).passed).toBeNull(); // P4
+    expect(firstUploadWindow(undesignated, true, true, true).passed).toBeNull(); // never true on an undesignated read
+  });
+
+  it("with no entry (nothing read yet) P1 and P2 are unread, so it never passes; the publisher's no still fails it", () => {
+    expect(firstUploadWindow(null, null, null, null)).toEqual({ p1: null, p2: null, p3: null, p4: null, passed: null });
+    expect(firstUploadWindow(null, true, true, true)).toEqual({ p1: null, p2: null, p3: true, p4: true, passed: null });
+    expect(firstUploadWindow(null, false, null, null)).toEqual({ p1: false, p2: null, p3: null, p4: null, passed: false });
+  });
+
+  it("is pure: it changes nothing it is given and answers the same twice", () => {
+    const copy = structuredClone(privated);
+    const once = firstUploadWindow(privated, true, true, true);
+    expect(firstUploadWindow(privated, true, true, true)).toEqual(once);
+    expect(privated).toEqual(copy);
+  });
+
+  it("is t1Passed: its false is K-T1 on T1's line and K-T1k on the kids line", () => {
+    const base: Omit<ExperimentReadings, "t1Passed"> = {
+      day: 3, videosPassedGate: 1, medianStrangerViews: null, strangerWatchHours28d: null, averageViewPercentage: null,
+      policySignal: false, ungrantedRecurringCost: false, maxRunnerMinutesPerVideo: 20, maxTokenCostIlsPerVideo: 0,
+      madeForKidsReadback: ["false"],
+    };
+    const t1Passed = firstUploadWindow(privated, true, true, true).passed;
+    expect(evaluateExperiment(FACELESS_YOUTUBE_EXPERIMENT, { ...base, t1Passed }).triggered).toContain("K-T1");
+    expect(evaluateExperiment(KIDS_EXPLAINERS_EXPERIMENT, { ...base, t1Passed, madeForKidsReadback: ["true"] }).triggered).toContain("K-T1k");
+  });
+});
+
 describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => {
-  function setup(uploads: { id: string }[] | null, prior: MadeForKidsState | null = null) {
+  function setup(uploads: { id: string }[] | null, prior: MadeForKidsState | null = null, verdicts: string | null = JSON.stringify(verdictsWith("NOT_BARRED"))) {
     const dir = mkdtempSync(join(tmpdir(), "mfk-"));
     const videosPath = join(dir, "videos.json");
     const statePath = join(dir, "state.json");
+    const verdictsPath = join(dir, "terms-verdicts.json");
     if (uploads) writeFileSync(videosPath, JSON.stringify(uploads));
     if (prior) writeFileSync(statePath, JSON.stringify(prior));
+    if (verdicts !== null) writeFileSync(verdictsPath, verdicts);
     const lines: string[] = [];
     const calls: string[] = [];
+    const inits: ({ signal?: AbortSignal; redirect?: "error" } | undefined)[] = [];
     const answers: Record<string, unknown> = {};
-    const fetchImpl = async (url: string) => {
+    const fetchImpl = async (url: string, init?: { signal?: AbortSignal; redirect?: "error" }) => {
       calls.push(url);
+      inits.push(init);
       const ids = new URL(url).searchParams.get("id") ?? "";
       const body = answers[ids];
       if (body === undefined) return { status: 500, text: async () => "unexpected request" };
       return { status: (body as { error?: { code: number } }).error?.code ?? 200, text: async () => JSON.stringify(body) };
     };
-    return { dir, videosPath, statePath, lines, calls, answers, fetchImpl, log: (s: string) => lines.push(s) };
+    return { dir, videosPath, statePath, verdictsPath, lines, calls, inits, answers, fetchImpl, log: (s: string) => lines.push(s) };
   }
 
   it("refuses to run without YOUTUBE_DATA_API_KEY: no request, no file", async () => {
     expect(API_KEY_ENV).toBe("YOUTUBE_DATA_API_KEY");
     const s = setup([{ id: "kidsVid0001" }]);
     for (const env of [{}, { [API_KEY_ENV]: "" }, { [API_KEY_ENV]: "   " }]) {
-      const code = await runReadback({ env, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, now: AT, log: s.log });
+      const code = await runReadback({ env, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now: AT, log: s.log });
       expect(code).toBe(2);
     }
     expect(s.calls).toEqual([]);
@@ -282,7 +444,7 @@ describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => 
     s.answers["kidsVid0001,kidsVid0003,kidsVid0004"] = {
       items: [fixture("true").items[0], fixture("missing").items[0]],
     };
-    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, now: AT, log: s.log });
+    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now: AT, log: s.log });
     expect(code).toBe(0);
     expect(s.calls).toHaveLength(1);
     expect(new URL(s.calls[0]!).hostname).toBe("www.googleapis.com");
@@ -307,7 +469,7 @@ describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => 
     };
     const s = setup([{ id: "kidsVid0001" }], prior);
     s.answers.kidsVid0001 = fixture("true");
-    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "faceless-youtube", videosPath: s.videosPath, statePath: s.statePath, now: AT, log: s.log });
+    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "faceless-youtube", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now: AT, log: s.log });
     expect(code).toBe(0);
     expect(s.calls).toHaveLength(1);
     const state = JSON.parse(readFileSync(s.statePath, "utf8")) as MadeForKidsState;
@@ -319,14 +481,14 @@ describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => 
 
   it("asks nothing when the uploads list is empty", async () => {
     const s = setup([]);
-    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, now: AT, log: s.log });
+    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now: AT, log: s.log });
     expect(code).toBe(0);
     expect(s.calls).toEqual([]);
   });
 
   it("asks nothing when nothing has been uploaded", async () => {
     const s = setup(null);
-    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, now: AT, log: s.log });
+    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now: AT, log: s.log });
     expect(code).toBe(0);
     expect(s.calls).toEqual([]);
     expect(existsSync(s.statePath)).toBe(false);
@@ -337,7 +499,7 @@ describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => 
     const s = setup(uploads);
     s.answers[uploads.slice(0, 50).map((u) => u.id).join(",")] = { items: [] };
     s.answers[uploads[50]!.id] = { items: [] };
-    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, now: AT, log: s.log });
+    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now: AT, log: s.log });
     expect(code).toBe(0);
     expect(s.calls).toHaveLength(2);
   });
@@ -345,7 +507,7 @@ describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => 
   it("fails on an API error without writing, and redacts the key from what it prints", async () => {
     const s = setup([{ id: "kidsVid0001" }]);
     s.answers.kidsVid0001 = { error: { code: 403, message: `API key ${KEY} not valid` } };
-    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, now: AT, log: s.log });
+    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now: AT, log: s.log });
     expect(code).toBe(1);
     expect(existsSync(s.statePath)).toBe(false);
     expect(s.lines.join("\n")).toMatch(/HTTP 403/);
@@ -354,7 +516,7 @@ describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => 
 
   it("refuses a line it does not know", async () => {
     const s = setup([{ id: "kidsVid0001" }]);
-    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-shorts" as "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, now: AT, log: s.log });
+    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-shorts" as "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now: AT, log: s.log });
     expect(code).toBe(2);
     expect(s.calls).toEqual([]);
   });
@@ -386,5 +548,143 @@ describe("no live call before Stage A (ruling 4.10 fold 7)", () => {
     expect(script).toContain("YOUTUBE_DATA_API_KEY");
     expect(script).not.toMatch(/AIza[0-9A-Za-z_-]{20,}/); // the shape of a Google API key
     expect(script.slice(0, script.indexOf("*/"))).toMatch(/YOUTUBE_DATA_API_KEY/);
+  });
+
+  it("its header names both gates: the googleapis.com terms verdict and the key", () => {
+    const header = script.slice(0, script.indexOf("*/"));
+    expect(header).toMatch(/Two gates/);
+    expect(header).toMatch(/terms-verdicts\.json/);
+    expect(header).toMatch(/googleapis\.com entry/);
+    expect(header).toMatch(/ACTIVE_VERDICTS/);
+    expect(header).toMatch(/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand\.md/);
+    expect(header).toMatch(/redirect: "error"/);
+  });
+});
+
+describe("the terms gate: no call until the API's terms are read (ruling 7.10 row 24 (b), decision 2)", () => {
+  function setup(verdicts: string | null) {
+    const dir = mkdtempSync(join(tmpdir(), "mfk-terms-"));
+    const videosPath = join(dir, "videos.json");
+    const statePath = join(dir, "state.json");
+    const verdictsPath = join(dir, "terms-verdicts.json");
+    writeFileSync(videosPath, JSON.stringify([{ id: "kidsVid0001" }]));
+    if (verdicts !== null) writeFileSync(verdictsPath, verdicts);
+    const lines: string[] = [];
+    const calls: string[] = [];
+    const inits: ({ signal?: AbortSignal; redirect?: "error" } | undefined)[] = [];
+    const fetchImpl = async (url: string, init?: { signal?: AbortSignal; redirect?: "error" }) => {
+      calls.push(url);
+      inits.push(init);
+      return { status: 200, text: async () => JSON.stringify(fixture("true")) };
+    };
+    const run = (env: Record<string, string | undefined> = { [API_KEY_ENV]: KEY }) =>
+      runReadback({ env, fetchImpl, experiment: "kids-explainers", videosPath, statePath, verdictsPath, now: AT, log: (s) => lines.push(s) });
+    return { statePath, verdictsPath, lines, calls, inits, run };
+  }
+
+  it("refuses with a verdicts file that has no googleapis.com entry, even with the key: no request, no file", async () => {
+    const s = setup(JSON.stringify(verdictsWith(null)));
+    expect(await s.run()).toBe(2);
+    expect(s.calls).toEqual([]);
+    expect(existsSync(s.statePath)).toBe(false);
+    expect(s.lines.join("\n")).toMatch(/there is no googleapis\.com entry in .*terms-verdicts\.json — refusing to run/);
+    expect(s.lines.join("\n")).toMatch(/ruling 7\.10 row 24 \(b\)/);
+  });
+
+  it("refuses under CONDITIONAL_UNMET, and under every verdict that is not active", async () => {
+    for (const verdict of ["CONDITIONAL_UNMET", "BARRED", "TERMS_PENDING", "NO_TERMS", "UNKNOWN"]) {
+      const s = setup(JSON.stringify(verdictsWith(verdict)));
+      expect(await s.run(), verdict).toBe(2);
+      expect(s.calls, verdict).toEqual([]);
+      expect(existsSync(s.statePath), verdict).toBe(false);
+      expect(s.lines.join("\n"), verdict).toContain(`googleapis.com is ${verdict}, not one a call may run under`);
+    }
+  });
+
+  it("fails closed on a missing or unreadable verdicts file", async () => {
+    for (const verdicts of [null, "{ not json", "null", JSON.stringify({ sites: null }), JSON.stringify({ _about: "no sites" })]) {
+      const s = setup(verdicts);
+      expect(await s.run(), String(verdicts)).toBe(2);
+      expect(s.calls, String(verdicts)).toEqual([]);
+      expect(existsSync(s.statePath), String(verdicts)).toBe(false);
+    }
+  });
+
+  it("with NOT_BARRED (or CONDITIONAL_MET) the key gate applies next", async () => {
+    for (const verdict of ["NOT_BARRED", "CONDITIONAL_MET"]) {
+      const s = setup(JSON.stringify(verdictsWith(verdict)));
+      expect(await s.run({}), verdict).toBe(2);
+      expect(s.calls, verdict).toEqual([]);
+      expect(s.lines.join("\n"), verdict).toMatch(/YOUTUBE_DATA_API_KEY is not set/);
+      expect(s.lines.join("\n"), verdict).not.toMatch(/terms-verdicts/);
+      expect(await s.run(), verdict).toBe(0); // and with the key, it reads
+      expect(s.calls, verdict).toHaveLength(1);
+    }
+  });
+
+  it("checks the terms before the key: without either, it names the terms", async () => {
+    const s = setup(JSON.stringify(verdictsWith(null)));
+    expect(await s.run({})).toBe(2);
+    expect(s.lines.join("\n")).toMatch(/no googleapis\.com entry/);
+    expect(s.lines.join("\n")).not.toMatch(/YOUTUBE_DATA_API_KEY is not set/);
+  });
+
+  it("reads the verdicts as termsGate does: NO_TERMS_ROBOTS_OK counts only when scripts/robots-verdict.mjs set it", () => {
+    expect(apiTermsGate(verdictsWith("NO_TERMS_ROBOTS_OK")).ok).toBe(false); // hand-set
+    const scriptSet = verdictsWith("NO_TERMS_ROBOTS_OK", { note: "exhaustive-negative: fixture", source: "scripts/robots-verdict.mjs (fixture)" });
+    expect(apiTermsGate(scriptSet)).toEqual({ ok: true, verdict: "NO_TERMS_ROBOTS_OK", why: "googleapis.com is NO_TERMS_ROBOTS_OK" });
+    expect(apiTermsGate(verdictsWith("NOT_BARRED")).ok).toBe(true);
+    expect(apiTermsGate(verdictsWith("CONDITIONAL_MET")).ok).toBe(true);
+    expect(apiTermsGate(verdictsWith(null)).why).toBe("there is no googleapis.com entry");
+    // Only the site's own entry counts: not a host under it, not another site's active verdict.
+    expect(apiTermsGate({ sites: { "www.googleapis.com": { verdict: "NOT_BARRED" }, "github.com": { verdict: "NOT_BARRED" } } }).ok).toBe(false);
+    expect(apiTermsGate({ sites: { "googleapis.com": { verdict: "NOT_BARRED" } } }).ok).toBe(true);
+    expect(apiTermsGate({ sites: { "googleapis.com": {} } }).why).toBe("googleapis.com is an entry with no verdict, not one a call may run under");
+    expect(API_TERMS_SITE).toBe("googleapis.com");
+  });
+
+  it("makes every request with redirect: \"error\", so a redirect is refused, never followed", async () => {
+    const s = setup(JSON.stringify(verdictsWith("NOT_BARRED")));
+    expect(await s.run()).toBe(0);
+    expect(s.inits).toHaveLength(1);
+    expect(s.inits[0]!.redirect).toBe("error");
+    expect(s.inits[0]!.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it("a refused redirect is logged and nothing is written", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "mfk-redirect-"));
+    const videosPath = join(dir, "videos.json");
+    const statePath = join(dir, "state.json");
+    const verdictsPath = join(dir, "terms-verdicts.json");
+    writeFileSync(videosPath, JSON.stringify([{ id: "kidsVid0001" }]));
+    writeFileSync(verdictsPath, JSON.stringify(verdictsWith("NOT_BARRED")));
+    const lines: string[] = [];
+    // What fetch does with redirect: "error" when the answer is a redirect: it rejects instead of following it.
+    const fetchImpl = async (_url: string, init?: { redirect?: "error" }) => {
+      if (init?.redirect === "error") throw new TypeError("fetch failed");
+      return { status: 200, text: async () => JSON.stringify(fixture("true")) };
+    };
+    const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl, experiment: "kids-explainers", videosPath, statePath, verdictsPath, now: AT, log: (l) => lines.push(l) });
+    expect(code).toBe(1);
+    expect(existsSync(statePath)).toBe(false);
+    expect(lines.join("\n")).toMatch(/fetch failed — nothing written/);
+  });
+
+  it("the committed verdicts hold no active googleapis.com entry today, so the script as committed refuses", () => {
+    // Fold 5 of the ruling (the terms read at github grade) writes the entry; when it is active, this pin changes with
+    // the fold that wires the run, as the no-workflow assertion above does.
+    expect(TERMS_VERDICTS).toBe(resolve(ROOT, "research/channel-loop/terms-verdicts.json"));
+    expect(readTermsVerdicts()).not.toBeNull();
+    expect(apiTermsGate(readTermsVerdicts()).ok).toBe(false);
+    const dir = mkdtempSync(join(tmpdir(), "mfk-cli-"));
+    const r = spawnSync(
+      process.execPath,
+      ["--import", "tsx", "scripts/youtube-madeforkids-readback.ts", "--line", "kids-explainers", "--videos", join(dir, "none.json"), "--state", join(dir, "state.json")],
+      { cwd: ROOT, encoding: "utf8", env: { ...process.env, [API_KEY_ENV]: KEY } },
+    );
+    expect(r.status, `${r.stdout}${r.stderr}`).toBe(2);
+    expect(r.stdout).toMatch(/googleapis\.com/);
+    expect(r.stdout).toMatch(/refusing to run/);
+    expect(existsSync(join(dir, "state.json"))).toBe(false);
   });
 });
