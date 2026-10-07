@@ -420,10 +420,11 @@ describe("classifyCapture on the real committed captures", () => {
     });
   });
   it("the live terms-adaptionlabs (7.10: the once-only js render timed out at 30 s, status 200, no body) is a status error, not a shell", () => {
-    const r = real("terms-adaptionlabs");
-    expect(r.kind).toBe("status");
-    expect(r.evidence).toContain('status 200: the server answered, but the fetch recorded an error; error "timeout after 30000ms');
-    expect(r.evidence).toContain("an older capture's text is still on disk");
+    expect(real("terms-adaptionlabs")).toEqual({
+      kind: "status",
+      evidence:
+        'status 200: the server answered, but the fetch recorded an error; error "timeout after 30000ms (the rendered page could not be read within the time left)"; an older capture\'s text is still on disk (85 characters, from an earlier fetch: git history has its date)',
+    });
   });
 
   it("the near misses in the store stay short: a title alone, a title of 7-11 words above a menu, help pages of real links", () => {
