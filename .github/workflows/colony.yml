@@ -14,8 +14,9 @@ name: colony
 # delay or drop a scheduled run when it is under load: between 6.10.2026 18:00 and
 # 7.10.2026 13:00 UTC the colony ran 3 times against this hourly cron (its commits).
 # The report's "the loop did not run for N hours" blocker is what shows it. It reads
-# the last ledger sync, which only a tick records: `report` and `dashboard` render
-# without writing to the database (tick 64). By hand, the same two steps:
+# the last ledger sync, which only a tick (or the automaton's heartbeat task of the
+# same name) records: `report` and `dashboard` render without writing to the
+# database (tick 64). By hand, the same two steps:
 #   pnpm exec tsx scripts/colony.ts sync-portfolio
 #   pnpm exec tsx scripts/colony.ts tick --no-feed
 

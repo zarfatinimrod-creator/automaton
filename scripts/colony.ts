@@ -61,7 +61,11 @@ Commands:
   status               Print the portfolio status block.
   report               Re-render the report and the dashboard from the database as it stands. No step
                        runs and nothing is written to the database: a step that is due is listed for
-                       the scheduled tick, and the blockers are a tick's, "the loop did not run" included.
+                       the scheduled tick. The blockers are a tick's at the same moment, "the loop did
+                       not run" included, but for what only running a due step can know: a due ledger
+                       sync's and audit's own blockers are their last runs', each led by its time, no
+                       page-view query is sent, and a review not run changes nothing the later checks
+                       read (a line's last signal, its status). The report says so in one line.
   seed                 Seed the default portfolio (no-op for lines that exist).
   sync-portfolio       Apply a board decision from src/revenue/portfolio.ts to this
                        database: insert new lines (at budget 0; the board review
@@ -90,9 +94,9 @@ Commands:
                        the workflow writes reports and cannot reach this database.
                        --wave-args <group,group> prints the Workflow args for the
                        next wave, with already-swept criteria pre-excluded.
-  dashboard            Regenerate the manager's screen (HTML) from the ledger, with the blockers a tick
-                       would show. Writes nothing to the database, like report, status, growth and
-                       criteria without --mark, --supervised or --reconcile.
+  dashboard            Regenerate the manager's screen (HTML) from the ledger, with report's blockers
+                       (a tick's, as report says). Writes nothing to the database, like report, status,
+                       growth and criteria without --mark, --supervised or --reconcile.
   growth               Model the path to the final goal (₪1M/year) and print the scenarios.
 
 Common options:
@@ -250,7 +254,8 @@ async function main(): Promise<void> {
 
       case "report": {
         // A render, not a tick: no step runs (readOnly) and the handle refuses every write (query_only, above), so the
-        // report prints the blockers a tick would, "the loop did not run" included, and records nothing.
+        // report records nothing and keeps "the loop did not run". Its blockers are a tick's at the same moment but for
+        // what only running a due step can know (TickOptions.readOnly in src/revenue/runner.ts lists them).
         const result = await tick(db.raw, { nowIso: values.now, readOnly: true, feedGoals: false, seed: false });
         writeReport(values.report!, renderReport(db.raw, result));
         writeReport(values.html!, renderDashboard(db.raw, { nowIso: values.now, blockers: result.blockers }));
@@ -392,8 +397,8 @@ async function main(): Promise<void> {
       }
 
       case "dashboard": {
-        // The blockers a tick would show, computed by a render that runs no step: without them the page said there was
-        // no open blocker while the schedule had stopped.
+        // Report's blockers, computed by a render that runs no step (TickOptions.readOnly says how they differ from a
+        // tick's): without them the page said there was no open blocker while the schedule had stopped.
         const { blockers } = await tick(db.raw, { nowIso: values.now, readOnly: true, feedGoals: false, seed: false });
         const html = renderDashboard(db.raw, { nowIso: values.now, blockers });
         writeReport(values.html!, html);

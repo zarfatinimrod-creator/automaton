@@ -256,4 +256,9 @@ describe("colony.yml's header says what is true", () => {
     // The schedule the header describes is the one the file declares.
     expect((parse(workflow) as { on: { schedule: { cron: string }[] } }).on.schedule).toEqual([{ cron: "17 * * * *" }]);
   });
+
+  it("names both writers of the last ledger sync: the tick and the automaton's heartbeat task (src/revenue/heartbeat.ts)", () => {
+    expect(header).toContain("the last ledger sync, which only a tick (or the automaton's heartbeat task of the\n# same name) records");
+    expect(header).not.toContain("which only a tick records");
+  });
 });
