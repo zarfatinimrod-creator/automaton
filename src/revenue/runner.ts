@@ -88,7 +88,7 @@ export const TASK_ORDER: TaskName[] = [
 
 // Same KV key shape the heartbeat scheduler uses, so a standalone tick and the
 // automaton's own heartbeat cannot double-run the same task.
-const lastRunKey = (task: TaskName): string => `revenue.last_run.${task}`;
+export const lastRunKey = (task: TaskName): string => `revenue.last_run.${task}`;
 
 function getKv(db: Database, key: string): string | undefined {
   const row = db.prepare("SELECT value FROM kv WHERE key = ?").get(key) as { value: string } | undefined;
@@ -810,7 +810,7 @@ function askedNowList(lineId: string): string {
  * The site facts a secret row's gate reads (owner-steps.ts `askedOnlyWhen`). A site.json that cannot be read holds
  * every gated row back, so a row is never asked before the thing it opens exists.
  */
-function secretGateSite(siteDir: string = DEFAULT_PAGE_VIEW_SITE_DIR): SecretGateSite {
+export function secretGateSite(siteDir: string = DEFAULT_PAGE_VIEW_SITE_DIR): SecretGateSite {
   try {
     return readSite(siteDir);
   } catch {

@@ -44,8 +44,7 @@ import {
   type OwnerStep,
   type SecretGateSite,
 } from "./owner-steps.js";
-import { readSite } from "./page-views-reader.js";
-import { checkLiveness, LOOP_GAP_ALERT_MS } from "./runner.js";
+import { checkLiveness, lastRunKey, LOOP_GAP_ALERT_MS, secretGateSite } from "./runner.js";
 import type { RevenueLineStatus, RevenueLineTier } from "./types.js";
 
 const DAY_MS = 86_400_000;
@@ -54,8 +53,8 @@ const HOUR_MS = 60 * 60 * 1000;
 /** Later than any row's occurred_at, so the all-time window holds every row, a future-dated one included. */
 const END_OF_TIME = "9999-12-31T23:59:59.999Z";
 
-/** The kv key the tick writes when the ledger sync runs (runner.ts markRan; heartbeat.ts uses the same shape). */
-const LEDGER_SYNC_LAST_RUN_KEY = "revenue.last_run.revenue_ledger_sync";
+/** The kv key the tick writes when the ledger sync runs: runner.ts's own key builder, so a rename there moves this too. */
+const LEDGER_SYNC_LAST_RUN_KEY = lastRunKey("revenue_ledger_sync");
 
 /** One window of the ledger, converted money apart from wallet money, as ledger.ts sums it. Agorot, all positive. */
 export interface MoneyWindow {
@@ -179,13 +178,9 @@ function moneyWindow(db: Database, lineIds: string[], sinceIso: string, untilIso
   return out;
 }
 
-/** The site facts a secret row's gate reads; an unreadable site.json holds every gated row back (runner.ts secretGateSite). */
+/** The site facts a secret row's gate reads; an unreadable site.json holds every gated row back. runner.ts's own reader, the one renderReport uses. */
 export function gateSite(siteDir?: string): SecretGateSite {
-  try {
-    return readSite(siteDir);
-  } catch {
-    return { projectId: "" };
-  }
+  return secretGateSite(siteDir);
 }
 
 type DbLine = ReturnType<typeof listLines>[number];
