@@ -48,7 +48,7 @@ document's own bytes), **[SNIPPET]** (a search summary quoting a page I could no
 (the primary source exists and the proxy refused it). Most of what this directory exists to fix is
 the second and third of those. To move one:
 
-0. **Run `node scripts/capture-check.mjs <slug...>` on new captures before reading them** (exit 3 = flagged: `status`, `bot-challenge`, `js-shell` or `short`, with the evidence); it only flags, the reader still judges. Every render-watch run now does this for the captures it just stored (`--changed --summary`, before its commit): the run's job summary lists the flagged ones in a table (slug, kind, evidence), and each also gets a warning annotation, but GitHub may show only some of them on the run page, so start from the job summary.
+0. **Run `node scripts/capture-check.mjs <slug...>` on new captures before reading them** (exit 3 = flagged: `status`, `bot-challenge`, `js-shell`, `nav-shell` (a large page whose text is only its menu, since 7.10) or `short`, with the evidence); it only flags, the reader still judges. Every render-watch run now does this for the captures it just stored (`--changed --summary`, before its commit): the run's job summary lists the flagged ones in a table (slug, kind, evidence), and each also gets a warning annotation, but GitHub may show only some of them on the run page, so start from the job summary.
 1. **Read the text.** `research/rendered/<slug>.txt` for HTML and PDF, the raw file otherwise. If the
    `.txt` comes back nearly empty, the page is client-rendered and the server sent a shell (or, for a
    PDF, the pages are images with no text layer) — record that as what happened, do not conclude the
@@ -446,8 +446,9 @@ instead of fetched. What that does and does not do:
   [--dry-run]`. It refuses unless the slug starts `terms-`; no `js` line for that slug is in this file (active or
   commented out) and no meta of it, or of a frozen copy of it, has `renderedWith`; the plain capture of the same URL
   is here (meta and HTML) with `robots` `allowed` or `none`; `scripts/capture-check.mjs`'s classifier grades it
-  `js-shell`; and the site is `TERMS_PENDING`, or `NO_TERMS` with a note opening `shell` (the terms gate passes such a
-  site's terms page only as a `js` line). The line takes the place of the URL's active plain line, or goes under its
+  `js-shell`, or `nav-shell` (a nav-only shell, since 7.10: the comment names which); and the site is
+  `TERMS_PENDING`, or `NO_TERMS` with a note opening `shell` (the terms gate passes such a site's terms page only as a
+  `js` line). The line takes the place of the URL's active plain line, or goes under its
   commented-out one, below a comment naming the ruling and the plain capture's sha256 prefix. Freeze the plain shell
   first (`freeze-capture.mjs <slug> --allow-flagged`, then `--cited` to repoint what cites it by line: the active line
   makes it a live capture; the script says whether a frozen copy exists). Whatever the render brings back is the

@@ -6,7 +6,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as queue-zero-test.mjs)
-import { changedSlugs, classifyCapture, readCapture, summaryMarkdown, WEAK_SIGN_TEXT, warningLine } from "../../../scripts/capture-check.mjs";
+import { changedSlugs, classifyCapture, NAV_CHARS_PER_TAG, NAV_LINE_WORDS, NAV_MIN_LINES, NAV_SHELL_BYTES, readCapture, summaryMarkdown, WEAK_SIGN_TEXT, warningLine } from "../../../scripts/capture-check.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { MIN_TERMS_TEXT } from "../../../scripts/queue-zero-test.mjs";
 
@@ -301,8 +301,134 @@ describe("classifyCapture: short, and what counts as a page", () => {
   });
 });
 
+/**
+ * nav-shell (tick 60, logs/CHANNEL_LOOP.md §9 tick 54 item (5)): a large page whose text is only its menu. The four
+ * tests (capture-check.mjs above NAV_SHELL_BYTES) each have a boundary case here, and the order of the kinds holds:
+ * status, bot-challenge and js-shell come first; short is what is left.
+ */
+describe("classifyCapture: nav-only shells (nav-shell)", () => {
+  // adaptionlabs.ai's shape: a title and a menu of one-word links, five anchors and 27 scripts, in a large page.
+  const MENU = ["Terms of Service", "Home", "Research", "Enterprise", "Resources", "Careers", "Login Login"].join("\n");
+  const navHtml = ({ anchors = 5, scripts = 27, extra = "" } = {}) =>
+    page(
+      `<header><nav>${Array.from({ length: anchors }, (_, i) => `<a href="/p${i}">label</a>`).join("")}</nav></header>${extra}` +
+        Array.from({ length: scripts }, (_, i) => `<script src="/_next/static/chunks/${i}.js" async></script>`).join(""),
+    );
+  // Padded to exactly `bytes` bytes (UTF-8) with a comment in the head (comments are not counted as tags): as many
+  // `fill` characters as fit, then x's for the bytes left.
+  const sized = (html: string, bytes = NAV_SHELL_BYTES, fill = "x") => {
+    const room = bytes - Buffer.byteLength(html, "utf8") - "<!---->".length;
+    const n = Math.floor(room / Buffer.byteLength(fill, "utf8"));
+    const padded = html.replace("</head>", `<!--${fill.repeat(n)}${"x".repeat(room - n * Buffer.byteLength(fill, "utf8"))}--></head>`);
+    expect(Buffer.byteLength(padded, "utf8")).toBe(bytes);
+    return padded;
+  };
+  const nav = (text: string, html = sized(navHtml()), meta = {}) => classify({ text, html, meta });
+
+  it("nav-shell: a large page whose text is only a menu of short labels, the markup links and scripts", () => {
+    const r = nav(MENU);
+    expect(r.kind).toBe("nav-shell");
+    expect(r.evidence).toBe(
+      `${MENU.length} characters of text, fewer than ${MIN_TERMS_TEXT}; nav-only shell: 7 lines of at most 3 words; ${NAV_SHELL_BYTES} bytes of HTML with 5 anchors and 27 scripts`,
+    );
+  });
+
+  it("the HTML must be at least NAV_SHELL_BYTES bytes, counted in UTF-8: one byte fewer is short", () => {
+    // The value is pinned (review, tick 60): the fixtures below are built from the constant, so they alone would let it move.
+    expect(NAV_SHELL_BYTES).toBe(20_000);
+    expect(nav(MENU, sized(navHtml(), 19_999)).kind).toBe("short");
+    expect(nav(MENU, sized(navHtml(), NAV_SHELL_BYTES)).kind).toBe("nav-shell");
+    expect(nav(MENU, sized(navHtml(), NAV_SHELL_BYTES - 1)).kind).toBe("short");
+    // Bytes, not characters: 3-byte characters make a page of NAV_SHELL_BYTES bytes in far fewer characters.
+    const wide = sized(navHtml(), NAV_SHELL_BYTES, "€");
+    expect(wide.length).toBeLessThan(NAV_SHELL_BYTES);
+    expect(nav(MENU, wide).kind).toBe("nav-shell");
+  });
+
+  it("the text must have at least NAV_MIN_LINES non-empty lines: a menu, not a title alone (blank lines do not count)", () => {
+    const lines = (n: number) => Array.from({ length: n }, (_, i) => `Item ${i}`).join("\n\n  \n");
+    expect(NAV_MIN_LINES).toBe(3);
+    expect(nav(lines(NAV_MIN_LINES)).kind).toBe("nav-shell");
+    expect(nav(lines(NAV_MIN_LINES - 1)).kind).toBe("short");
+    expect(nav("Wunder Fund RNN challenge").kind).toBe("short");
+  });
+
+  it("no line may have more than NAV_LINE_WORDS words: a line of NAV_LINE_WORDS is a label, one more is a sentence", () => {
+    const line = (n: number) => Array.from({ length: n }, (_, i) => `w${i}`).join(" ");
+    expect(nav(`${MENU}\n${line(NAV_LINE_WORDS)}`).kind).toBe("nav-shell");
+    expect(nav(`${MENU}\n${line(NAV_LINE_WORDS + 1)}`).kind).toBe("short");
+    // A short page with a sentence in it, in the same large page of links and scripts: short.
+    const r = nav(`${MENU}\nThese terms govern your use of the site and our services.`);
+    expect(r.kind).toBe("short");
+    expect(r.evidence).not.toMatch(/nav-only/);
+  });
+
+  it("the HTML must hold one <a> or <script> tag per NAV_CHARS_PER_TAG characters of text, anchors and scripts both counted", () => {
+    // 9 lines of 8 characters: 80 characters, so 8 tags are enough and 7 are not.
+    const text = Array.from({ length: 9 }, (_, i) => `Section${i + 1}`).join("\n");
+    expect(text.length).toBe(80);
+    const need = text.length / NAV_CHARS_PER_TAG;
+    // The value is pinned (review, tick 60): 8 tags for 80 characters pass and 7 do not, whatever the constant says.
+    expect(NAV_CHARS_PER_TAG).toBe(10);
+    expect(nav(text, sized(navHtml({ anchors: 8, scripts: 0 }))).kind).toBe("nav-shell");
+    expect(nav(text, sized(navHtml({ anchors: 7, scripts: 0 }))).kind).toBe("short");
+    expect(nav(text, sized(navHtml({ anchors: need, scripts: 0 }))).kind).toBe("nav-shell");
+    expect(nav(text, sized(navHtml({ anchors: 0, scripts: need }))).kind).toBe("nav-shell");
+    expect(nav(text, sized(navHtml({ anchors: need - 1, scripts: 0 }))).kind).toBe("short");
+    expect(nav(text, sized(navHtml({ anchors: 0, scripts: need - 1 }))).kind).toBe("short");
+    // A tag inside a comment is not markup.
+    const commented = sized(navHtml({ anchors: need - 1, scripts: 0, extra: "<!-- <a href=/x>x</a> -->" }));
+    expect(nav(text, commented).kind).toBe("short");
+    // Nor is a script inside a comment (review, tick 60).
+    const commentedScript = sized(navHtml({ anchors: 0, scripts: need - 1, extra: '<!-- <script src="/x.js"></script> -->' }));
+    expect(nav(text, commentedScript).kind).toBe("short");
+  });
+
+  it("a nav-only shell of 250 to 999 characters is nav-shell too, and its evidence keeps the sensor, captcha and framework notes", () => {
+    // 40 one-word lines: 389 characters, above WEAK_SIGN_TEXT, so framework markup is a note, not a js-shell sign.
+    const text = Array.from({ length: 40 }, (_, i) => `Section${i}`).join("\n");
+    expect(text.length).toBeGreaterThanOrEqual(WEAK_SIGN_TEXT);
+    expect(text.length).toBeLessThan(MIN_TERMS_TEXT);
+    const signs = '<script src="https://js.datadome.co/tags.js"></script><div class="g-recaptcha"></div><script>window.__NEXT_DATA__={}</script>';
+    const r = nav(text, sized(navHtml({ anchors: 40, scripts: 0, extra: signs })));
+    expect(r.kind).toBe("nav-shell");
+    expect(r.evidence).toMatch(/; nav-only shell: 40 lines of at most 1 words; /);
+    expect(r.evidence).toMatch(/ scripts; also DataDome tag "js\.datadome\.co"; also reCAPTCHA "/);
+    expect(r.evidence).toMatch(/; also page state shipped for scripts to render "__NEXT_DATA__" \(framework markup; with 250\+ characters of text not taken as a shell\)$/);
+  });
+
+  it("the kinds before it decide first: a nav-only page that is also a js-shell, a challenge page or a failed fetch is that", () => {
+    const shell = nav(MENU, sized(navHtml({ extra: '<div id="root"></div>' })));
+    expect(shell.kind).toBe("js-shell");
+    expect(shell.evidence).toMatch(/empty app root/);
+    expect(nav(MENU, sized(navHtml({ extra: "<p>cf_chl_opt</p>" }))).kind).toBe("bot-challenge");
+    expect(nav(MENU, sized(navHtml()), { status: 403, error: "HTTP 403 Forbidden" }).kind).toBe("status");
+    // Enough text is ok, however short its lines.
+    expect(nav("Item\n".repeat(MIN_TERMS_TEXT / 4)).kind).toBe("ok");
+  });
+});
+
 describe("classifyCapture on the real committed captures", () => {
   const real = (slug: string) => classifyCapture(readCapture(slug, RENDERED));
+
+  it("terms-adaptionlabs (6.10: 200, 51,664 bytes of HTML, 85 characters of navigation) is a nav-shell, not short", () => {
+    expect(real("terms-adaptionlabs")).toEqual({
+      kind: "nav-shell",
+      evidence: `85 characters of text, fewer than ${MIN_TERMS_TEXT}; nav-only shell: 8 lines of at most 3 words; 51664 bytes of HTML with 5 anchors and 27 scripts`,
+    });
+  });
+
+  it("the near misses in the store stay short: a title alone, a title of 7-11 words above a menu, help pages of real links", () => {
+    for (const slug of [
+      "prize-wundernn-io-connectome-docs-quick-start-7dfa4b97", // 36,886 bytes, one line of 4 words, 42 scripts, no link
+      "prize-hub-crunchdao-com-competitions-datacrunch-2-ref-043f8900", // a 7-word title above a 5-word menu
+      "prize-hub-crunchdao-com-competitions-broad-obesity-3-r-e0e23a1f", // an 11-word title
+      "help-streetlib-com-category-613-content-policy", // 7-word lines, 59 tags for 912 characters
+      "sweep2-algora-primeintellect", // 35 tags for 831 characters
+    ]) {
+      expect(real(slug).kind, slug).toBe("short");
+    }
+  });
 
   it("terms-israel-post (tick 31: 200, 4,375 bytes, a React index.html) is a js-shell: an empty app root, with Radware's connector and reCAPTCHA v3 named, not a challenge page", () => {
     // That capture is the frozen copy terms-israel-post-2026-09-30 since 6.10: the once-only js render of the live slug
