@@ -29,6 +29,8 @@ route exists, for the cost of one honest short video and one owner sign-in. If i
    28.9.2026 by `research/channel-loop/BOARD-LOOP.md` rank 5 and `PREREG-DECISIONS.md` §3: a `*.netlify.app`
    sub-brand host; D0 = public deploy **and** a recorded discovery submission; under 5 engaged stranger page views at
    D0+56 → Stage A is never asked (`evaluateWebArm`, `src/revenue/experiments.ts`).
+   Prerequisite added 7.10.2026: the sub-brand's own PostHog project (`products/chart-explainer/counter.json`), live with its four settings read back, before the deploy that is D0 (ruling 7.10 §3, `research/channel-loop/RULING-2026-10-07-posthog-organisation.md`).
+   At that deploy: the page's counter disclosure (`PREREG-DECISIONS.md:591-596`) stays as written, and it is true only after M2 of ruling 7.10 §2 (GeoIP off, "Discard client IP data" on), so the deploy waits on M2.
    **Sub-brand name (29.9.2026, `research/channel-loop/RULING-2026-09-29-lines.md` (e)): `chartsplained`, host
    `https://chartsplained.netlify.app`.** Round 1 (`chartexplained`, `plotnotes`, `axisnotes`, `dataplotted`,
    `linesandbars`) had no name free everywhere (runner, 08:54 UTC, `c752cfc`); round 2 found `chartsplained` and
