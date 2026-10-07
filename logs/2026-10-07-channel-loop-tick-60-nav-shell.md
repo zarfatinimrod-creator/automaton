@@ -136,3 +136,49 @@
    הודעות הסירוב נבדקים ב-regex מדויק.
 2. רשימת המשימות של ה-harness שחזרה בכל תזכורת — רעש, לא בשליטתי.
 3. ניסיון הריפוד שנכשל (סעיף 5.1) — הרצת בדיקה אחת נוספת.
+
+## Review fixes
+
+מתקן (Opus) אחרי הסקירה של ה-build, על `fcfc272`. `origin/claude/new-session-j071dx` לא זז (בסיס המיזוג עדיין `4602c44`), כך שלא נדרש מיזוג.
+
+**מה תוקן (כל ממצאי ה-fix שבתחום הקבצים המותרים, ושתי ההערות שהיו טריוויאליות ובטוחות):**
+
+1. **R3, R4 — ערכי הסף לא היו נעוצים בבדיקה.** ב-`capture-check.test.ts` נוספו `expect(NAV_SHELL_BYTES).toBe(20_000)` ו-`expect(NAV_CHARS_PER_TAG).toBe(10)`,
+   ולצדם מקרים מילוליים שאינם נבנים מהקבוע: דף של 19,999 בתים הוא `short`; 8 תגיות ל-80 תווים הן `nav-shell` ו-7 הן `short`.
+2. **R8 — `<script>` בתוך הערת HTML לא נבדק.** נוסף מקרה תאום למקרה העוגן שבתוך הערה: `need - 1` סקריפטים ועוד סקריפט בתוך הערה → `short`.
+3. **R9, R7 (הערות, טריוויאליות) — nav-shell של 250 עד 999 תווים, וההערות "also" שבראיה שלו.** בדיקה חדשה: 40 שורות של מילה אחת (389 תווים),
+   40 קישורים, תג DataDome, `g-recaptcha` ו-`__NEXT_DATA__` → `nav-shell`, והראיה כוללת "also DataDome tag", "also reCAPTCHA" ואת הערת ה-framework
+   ("with 250+ characters of text not taken as a shell").
+4. **מוטציות:** חמש המוטציות ששרדו אצל הסוקר (R3, R4, R7, R8, R9) נוספו לתוכנית `mutations/capture-check.json` כ-T60R-N1 עד N5 (59 → 64 רשומות),
+   וה-README של התוכניות עודכן (ספירה, תיאור, זמן).
+5. **כותרות שמנו רק את הסוגים הישנים (הערה, טריוויאלית):** `scripts/freeze-capture.mjs` (רשימת הסוגים שהוא מסרב להקפיא) ו-`scripts/queue-zero-test.mjs`
+   (תיאור המסלול `--js --terms-shell`) מזכירים עכשיו גם nav-only shell. הערות בלבד; אין שינוי התנהגות.
+
+**מה לא תוקן, ולמה:**
+
+- **הפסיקה (RULING-2026-10-06-robots-and-terms.md, 3(1) K4 ו-3(2)(i)) עדיין אומרת js-shell בלבד.** קובץ RULING אסור לי לעריכה. ההערה שהמסלול כותב
+  ל-`urls.txt` מצטטת את 3(2) עבור לכידה שהיא nav-shell, ולכן לפני שה-main thread מכניס לתור את השורה של adaptionlabs צריך לרשום תיקון לפסיקה או
+  החלטה של ה-main thread שמרחיבה את K4 ל-nav-shell. זה לא חוסם את המיזוג: שום דבר לא נכנס לתור.
+- **ההערה של adaptionlabs.ai ב-`terms-verdicts.json`** ("capture-check grades short") אינה נכונה עוד אחרי המיזוג, ו-`prize-terms-audit.test.ts:2418` נועץ את
+  הנוסח שלה. הקובץ אסור לי לעריכה; ה-main thread צריך לעדכן את ההערה ואת הבדיקה יחד כשהוא מכניס את השורה לתור.
+- **CLAUDE.md** ("exit 3 = flagged: status, bot-challenge, js-shell or short") — אסור לי לעריכה; נשאר ל-main thread.
+- **R11** (מסלול שמקבל כל סוג שהראיה שלו מכילה "nav-only") — שקול לקוד הנוכחי, ולכן לא נוסף.
+- **השוליים הדקים של כלל המילים (CrunchDAO, datacrunch, StreetLib, primeintellect ב-7 מילים מול 6) ו-soft-404 סינתטי** — הערה בלבד; לא שיניתי את הכלל.
+- **התוכנית `capture-check.json` עדיין לא רצה במלואה מאז tick 56** (64 רשומות, כ-25 דקות) — מעבר למסגרת הזמן; רצו רק חמש הרשומות החדשות.
+
+**בדיקות (נשפטו לפי קוד היציאה):**
+
+- `npx vitest run src/__tests__/revenue/capture-check.test.ts`: נכשל פעם אחת (ה-regex של הראיה לא כלל את הציטוטים שה-classifier מוסיף לכל סימן, למשל
+  `"js.datadome.co"`); תוקן ל-regex שכולל אותם; אחר כך יציאה 0, 137 בדיקות.
+- `scripts/verify.sh` ממוקד (capture-check, queue-zero-test, prize-terms-audit, render-watch*, frozen-citations, mutation-plans): יציאה 0; typecheck 0,
+  vitest 0, 9 קבצים, 656 בדיקות.
+- `scripts/verify.sh` מלא: יציאה 0; typecheck 0, vitest 0, 80 קבצים, 2,773 עברו ו-2 דולגו.
+- `node scripts/mutate.mjs --check --plan src/__tests__/revenue/mutations/capture-check.json`: 64 מתוך 64 יחולו, יציאה 0.
+- `scripts/sim-tree.sh -- node scripts/mutate.mjs --plan <תת-תוכנית של 5 הרשומות החדשות>` (TMPDIR בתיקיית ה-scratch, על `6ba641c`): baseline יציאה 0;
+  5 הוחלו, 5 נהרגו, 0 שרדו; יציאה 0; 207 שניות כולל הקמת העץ. התת-תוכנית הייתה קובץ ב-scratch (ל-`mutate.mjs` אין בחירה לפי מזהה); כל הרשומות
+  שמורות בתוכנית שבריפו.
+- `node scripts/capture-check.mjs --all`: יציאה 3 (כצפוי); 657 לכידות: status 81, ok 453, short 40, bot-challenge 5, js-shell 77, nav-shell 1 — זהה
+  לספירה של ה-build.
+- `git grep` עם התבנית הפרטית (משני חצאים) על כל קובץ ששונה: לא הדפיס דבר.
+
+**אסימונים:** רוב העלות בקריאת הבדיקות והתוכנית הקיימות כדי לכתוב מקרים שאינם נבנים מהקבועים; ריצה נוספת אחת של קובץ הבדיקה בגלל ה-regex.
