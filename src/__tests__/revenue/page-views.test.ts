@@ -594,6 +594,8 @@ describe("a priced query API and the gates — RULING-2026-10-07-posthog-organis
     expect(late.verdict).toBe("instrument_fault");
     expect(late.notes[0]).toMatch(/^week\(s\) 1, 2, 3, 4, 5, 6, 7, 8 were still unread 60 days after/);
     expect(gate(written(at(68, 0), 0, 0, 0, 0, 0, 0, 0, 0, 0), at(69), fired).verdict).toBe("pause");
+    // A read on the 60th day ends the suspension in time even when it wrote one week: the moved deadline runs again.
+    expect(gate(written(at(68, 0), 0), at(69), fired).verdict).toBe("uninstrumented");
   });
 
   it("an instrumented clock: the reader down while suspended, the weeks a gate waits on a fault after 60 days", () => {
@@ -634,7 +636,9 @@ describe("a priced query API and the gates — RULING-2026-10-07-posthog-organis
     expect(cleared.notes.join(" ")).not.toMatch(/answered as priced|moved/);
     // Cleared on the anchor day itself: it still held then, and nothing has been read since.
     expect(gate([], at(21), [{ at: old, clearedOn: D0 }]).verdict).toBe("reader_down");
-    expect(gate([], at(21), [{ at: at(30, 0), clearedOn: null }]).verdict).toBe("instrument_fault");
+    const future = gate([], at(21), [{ at: at(30, 0), clearedOn: null }]);
+    expect(future.verdict).toBe("instrument_fault");
+    expect(future.notes.join(" ")).not.toMatch(/answered as priced/);
   });
 
   it("a firing after the deadline had passed suspends nothing: the M-instrument fault stands", () => {
