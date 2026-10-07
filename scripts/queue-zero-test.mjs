@@ -47,8 +47,8 @@
  * no js line for either in urls.txt, active or commented, no meta of either (live or frozen) with renderedWith, and no
  * "shell: rendered once" record in the site's note (once only, 3(2)(vi));
  * the plain capture of the same URL exists (research/rendered/<slug>.meta.json and .html, the meta naming that URL);
- * its meta says robots "allowed" or "none"; scripts/capture-check.mjs's own classifier grades it js-shell (not
- * bot-challenge, not short, not status, not ok) — a capture scripts/trim-capture.mjs trimmed (a `trimmed` block in its
+ * its meta says robots "allowed" or "none"; scripts/capture-check.mjs's own classifier grades it js-shell, or nav-shell
+ * (a nav-only shell: since tick 60, SHELL_KINDS; not bot-challenge, not short, not status, not ok) — a capture scripts/trim-capture.mjs trimmed (a `trimmed` block in its
  * meta) needs no .html, and the classifier grades it by the kind its block records from before the trim (captureCheck),
  * never by its emptied text, so a trimmed shell still qualifies and any other is refused "trimmed: its pre-trim kind was
  * <kind>" (tick 59); the site is TERMS_PENDING or NO_TERMS and its note names no other
@@ -132,7 +132,7 @@ export function isExhaustiveNegative(entry) {
 
 /**
  * A NO_TERMS entry whose note opens with the kind word "shell": its terms page answered 2xx with a page capture-check
- * classifies js-shell (kind K4, research/channel-loop/RULING-2026-10-06-robots-and-terms.md 3(1); the kind words are
+ * classifies js-shell, or since tick 60 nav-shell (SHELL_KINDS) (kind K4, research/channel-loop/RULING-2026-10-06-robots-and-terms.md 3(1); the kind words are
  * set by that ruling's fold 2). Its terms page may be rendered in js mode once (3(2)): termsGate passes that one js
  * terms- line, and nothing else of the site.
  */
@@ -537,6 +537,13 @@ export const TERMS_SHELL_RULING = "ruling 6.10 row 21 (c), once-only js render o
 /** The first word of a NO_TERMS / TERMS_PENDING note that names a kind other than K4 shell (ruling 6.10 3(1)). */
 const OTHER_KIND = /^(refusal-type|exhaustive-negative|unanswered|deferred)\b/;
 
+/**
+ * The capture-check kinds the once-only js render reads (3(1) K4, a shell), each with the words the line's comment
+ * names it by: a JavaScript shell, and since tick 60 a nav-only shell (capture-check's nav-shell: a large page whose text
+ * is only its menu; logs/CHANNEL_LOOP.md §9 tick 54 item (5), adaptionlabs.ai's terms page).
+ */
+export const SHELL_KINDS = { "js-shell": "a js shell", "nav-shell": "a nav-only shell" };
+
 /** The robots readings under which the plain capture was fetched with nothing disallowing it (3(2)(ii)). */
 const SHELL_ROBOTS = new Set(["allowed", "none"]);
 
@@ -665,21 +672,22 @@ export function queueTermsShell({
   if (!SHELL_ROBOTS.has(meta?.robots)) {
     throw why(`the plain capture's meta says robots ${JSON.stringify(meta?.robots ?? null)}, not "allowed" or "none" (3(2)(ii))`);
   }
-  // capture-check's own classifier, never a copy of it (3(2)(i)): js-shell, not bot-challenge, short, status or ok.
+  // capture-check's own classifier, never a copy of it (3(2)(i)): js-shell or nav-shell, not bot-challenge, short,
+  // status or ok.
   let graded;
   try {
     graded = classify(slug, dir);
   } catch (err) {
     throw why(`scripts/capture-check.mjs cannot read the plain capture: ${err.message}`);
   }
-  if (graded?.kind !== "js-shell") {
+  if (!Object.hasOwn(SHELL_KINDS, graded?.kind ?? "")) {
     const reason = "only a shell is read by the once-only js render (3(1) K4; a bot-challenge is K1, no js attempt ever)";
     // capture-check grades a trimmed capture by its block's captureCheck (its kind whole), "trimmed" when the block
     // records none (render-watch's route), and a failed fetch status, trimmed or not.
     if (trimmed && graded?.kind !== "status") {
-      throw why(`trimmed: its pre-trim kind was ${graded?.kind === "trimmed" ? "not recorded" : graded?.kind} (${graded?.evidence}), not js-shell; ${reason}`);
+      throw why(`trimmed: its pre-trim kind was ${graded?.kind === "trimmed" ? "not recorded" : graded?.kind} (${graded?.evidence}), not js-shell or nav-shell; ${reason}`);
     }
-    throw why(`scripts/capture-check.mjs grades the plain capture ${graded?.kind} (${graded?.evidence}), not js-shell: ${reason}`);
+    throw why(`scripts/capture-check.mjs grades the plain capture ${graded?.kind} (${graded?.evidence}), not js-shell or nav-shell: ${reason}`);
   }
   // The site's verdict: terms unread, of kind K4 (3(1)).
   let parsed;
@@ -716,8 +724,8 @@ export function queueTermsShell({
   const day = String(meta?.fetchedAt ?? "").slice(0, 10) || "an unknown day";
   const comment =
     `# ${TERMS_SHELL_RULING} (research/channel-loop/RULING-2026-10-06-robots-and-terms.md 3(2)): the plain capture ` +
-    `research/rendered/${slug} (sha256 ${prefix}, fetched ${day}, robots ${meta.robots}) is js-shell by ` +
-    `scripts/capture-check.mjs; ${site} is ${verdict}. Whatever comes back is the answer: read it, set the verdict, ` +
+    `research/rendered/${slug} (sha256 ${prefix}, fetched ${day}, robots ${meta.robots}) is ${graded.kind} ` +
+    `(${SHELL_KINDS[graded.kind]}) by scripts/capture-check.mjs; ${site} is ${verdict}. Whatever comes back is the answer: read it, set the verdict, ` +
     `retire this line; no second attempt in any mode (${date}).`;
   const line = `${url}\t${slug}\tjs`;
   // In place of the URL's own active plain line (two lines may not share a slug; the comment records the plain capture

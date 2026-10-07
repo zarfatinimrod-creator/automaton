@@ -358,5 +358,117 @@
     "replace": "    if (false) return null;",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 56 build: a trimmed capture whose body left the tree is unreadable"
+  },
+  {
+    "id": "T60-N1",
+    "file": "scripts/capture-check.mjs",
+    "find": "  if (bytes < NAV_SHELL_BYTES) return null;",
+    "replace": "  if (bytes <= NAV_SHELL_BYTES) return null;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: a page of exactly NAV_SHELL_BYTES bytes of HTML is no longer large enough"
+  },
+  {
+    "id": "T60-N2",
+    "file": "scripts/capture-check.mjs",
+    "find": "const bytes = Buffer.byteLength(html, \"utf8\");",
+    "replace": "const bytes = html.length;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: the HTML's size is counted in characters, not UTF-8 bytes"
+  },
+  {
+    "id": "T60-N3",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (lines.length < NAV_MIN_LINES || words > NAV_LINE_WORDS) return null;",
+    "replace": "if (lines.length < 1 || words > NAV_LINE_WORDS) return null;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: one or two lines of text (a title alone) pass as a menu"
+  },
+  {
+    "id": "T60-N4",
+    "file": "scripts/capture-check.mjs",
+    "find": ".map((l) => l.trim()).filter(Boolean);",
+    "replace": ".map((l) => l.trim());",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: blank lines count towards NAV_MIN_LINES"
+  },
+  {
+    "id": "T60-N5",
+    "file": "scripts/capture-check.mjs",
+    "find": "if (lines.length < NAV_MIN_LINES || words > NAV_LINE_WORDS) return null;",
+    "replace": "if (lines.length < NAV_MIN_LINES || words > NAV_LINE_WORDS + 1) return null;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: a line of NAV_LINE_WORDS + 1 words passes as a label"
+  },
+  {
+    "id": "T60-N6",
+    "file": "scripts/capture-check.mjs",
+    "find": "if ((anchors + scripts) * NAV_CHARS_PER_TAG < String(text).trim().length) return null;",
+    "replace": "if (false) return null;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: the anchor/script rule is dropped (a page of prose in short lines passes)"
+  },
+  {
+    "id": "T60-N7",
+    "file": "scripts/capture-check.mjs",
+    "find": "if ((anchors + scripts) * NAV_CHARS_PER_TAG < String(text).trim().length) return null;",
+    "replace": "if ((anchors + scripts) * NAV_CHARS_PER_TAG <= String(text).trim().length) return null;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: exactly one tag per NAV_CHARS_PER_TAG characters is no longer enough"
+  },
+  {
+    "id": "T60-N8",
+    "file": "scripts/capture-check.mjs",
+    "find": "(anchors + scripts) * NAV_CHARS_PER_TAG",
+    "replace": "(0 + scripts) * NAV_CHARS_PER_TAG",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: anchors are not counted as tags"
+  },
+  {
+    "id": "T60-N9",
+    "file": "scripts/capture-check.mjs",
+    "find": "(anchors + scripts) * NAV_CHARS_PER_TAG",
+    "replace": "(anchors + 0) * NAV_CHARS_PER_TAG",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: scripts are not counted as tags"
+  },
+  {
+    "id": "T60-N10",
+    "file": "scripts/capture-check.mjs",
+    "find": "const anchors = (bare.match(/<a\\b/gi) ?? []).length;",
+    "replace": "const anchors = (html.match(/<a\\b/gi) ?? []).length;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: an anchor inside a comment counts as markup"
+  },
+  {
+    "id": "T60-N11",
+    "file": "scripts/capture-check.mjs",
+    "find": "  if (nav) return { kind: \"nav-shell\",",
+    "replace": "  if (false && nav) return { kind: \"nav-shell\",",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: the kind is never given (short decides first)"
+  },
+  {
+    "id": "T60-N12",
+    "file": "scripts/capture-check.mjs",
+    "find": "  const shellSigns = length < WEAK_SIGN_TEXT ? [...strong, ...weak] : strong;",
+    "replace": "  if (nav) return { kind: \"nav-shell\", evidence: nav };\n  const shellSigns = length < WEAK_SIGN_TEXT ? [...strong, ...weak] : strong;",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: decided before js-shell (an empty app root on a nav-only page is called nav-shell)"
+  },
+  {
+    "id": "T60-N13",
+    "file": "scripts/capture-check.mjs",
+    "find": "  if (challenges.length) {",
+    "replace": "  if (nav) return { kind: \"nav-shell\", evidence: nav };\n  if (challenges.length) {",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: decided before bot-challenge (a challenge page's marker on a nav-only page is called nav-shell)"
+  },
+  {
+    "id": "T60-N14",
+    "file": "scripts/capture-check.mjs",
+    "find": "with ${anchors} anchors and ${scripts} scripts",
+    "replace": "with ${scripts} anchors and ${anchors} scripts",
+    "test": "src/__tests__/revenue/capture-check.test.ts",
+    "note": "tick 60 nav-shell: the evidence swaps the anchor and script counts"
   }
 ]
