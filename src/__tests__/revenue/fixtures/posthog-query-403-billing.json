@@ -1,0 +1,1 @@
+{ "type": "authentication_error", "code": "permission_denied", "detail": "The query API is not included in your organization's current plan.", "attr": null }

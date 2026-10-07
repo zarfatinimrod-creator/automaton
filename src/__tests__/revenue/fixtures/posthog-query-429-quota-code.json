@@ -1,0 +1,1 @@
+{ "type": "throttled_error", "code": "quota_limited", "detail": "Request was throttled. Expected available in 3600 seconds.", "attr": null }
