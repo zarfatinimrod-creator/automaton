@@ -111,6 +111,23 @@
  *   - That token is a step-6 secret row, ORG_BUDGETS_READ_TOKEN, made in step 7's sitting as BRAND_GITHUB_TOKEN is
  *     (`madeIn`), from the owner's own account (amendment 4.10). Nothing reads it yet: the budgets read is built after step 7.
  *   - Step 7's estimate goes from 10-15 to 15-20 minutes for the two additions.
+ *
+ * Ruling of 7.10.2026 on the PostHog organisation (research/channel-loop/RULING-2026-10-07-posthog-organisation.md
+ * §1-§2) — no step added, removed, renumbered or reordered:
+ *
+ *   - Step 6 gains part ד, the owner's PostHog organisation click-set: two free organisations, named for the brand and
+ *     for the T1 sub-brand, inside the PostHog login the connector already reaches (about three minutes; no card, no
+ *     identity, nothing pasted). The free plan allows one project per organisation and the login's only organisation
+ *     holds another product's project, which the brand never shares; organisations are free and unlimited; the MCP
+ *     server has no tool that creates one (research/measurements/posthog-free-tier.md:199-204). Struck if the
+ *     connector gains such a command (ruling 1(5)).
+ *   - It joins step 6's early part beside the Apify token, asked now, after step 1: every page deploy's D0 waits on the
+ *     counter being live, so it comes before the deploy route (state/colony/page-view-clock.json; BOARD-LOOP PUBLISH-3).
+ *   - The brand's project is still the colony's, made the minute after the click in the organisation's own "Default
+ *     Project" (renamed and configured, never created beside it), never by the owner; the gated row below is asked
+ *     only then. The stop rules (a card, a payment, an ID, a phone; a trial or paid plan offered) are printed in the
+ *     Hebrew part ד, not in `stopIf`, which the bounty ruling pins to step 4.
+ *   - Step 6's estimate goes from 15-20 to 18-23 minutes; its early part from 5 to 8.
  */
 
 import { DEFAULT_PORTFOLIO, humanSetupItemFor } from "./portfolio.js";
@@ -130,7 +147,9 @@ export type OwnerStepId =
  * A condition on the site's own config under which a secret row is asked. The colony makes it true, never the owner.
  *   - "posthog-project-exists": `posthog.projectId` in products/il-biz-tools/src/config/site.json is non-empty. The agent
  *     creates the brand's PostHog project through the connector and writes the id there first
- *     (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4).
+ *     (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4) — in the organisation the owner creates in step 6
+ *     part ד (research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2), the minute after that click; so the
+ *     row is never asked before the click, and never asked twice.
  */
 export type SecretRowGate = "posthog-project-exists";
 
@@ -381,10 +400,10 @@ export const OWNER_STEPS: OwnerStep[] = [
     id: "ci-tokens",
     number: 6,
     order: 8,
-    title: "לחבר את Netlify, להדביק את הטוקנים ב-GitHub, וקליק אחד ב-Apify",
-    minutes: [15, 20],
+    title: "לחבר את Netlify, להדביק את הטוקנים ב-GitHub, קליק אחד ב-Apify ושני ארגונים ב-PostHog",
+    minutes: [18, 23],
     unlocks:
-      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN, made in step 7's sitting and pasted here with the others, lets bounty PRs leave the brand account once the board's week-4 clock allows it — the intake is gated in code until then (RULING-2026-09-28-bounty-rail.md §4.4). ORG_BUDGETS_READ_TOKEN, also made in step 7's sitting (Administration: read on the organisation, nothing else), lets a runner read the organisation's $0 Actions budget back before the first metered-capable minute; nothing reads it yet, because the budgets read is built after step 7 (RULING-2026-10-04-mozilla-precondition.md §2), and it is the owner's own fine-grained token, never the machine account's: the machine account is never made a billing manager (the ruling's amendment of 4.10). POSTHOG_READ_KEY, a PostHog personal API key with the query-read scope only, turns on the weekly page-view reader, which is a strict no-op without it, so without it Pro's PASS gate is never read; it is asked only after the agent has created the brand's PostHog project and written its id to site.json, and only while PostHog's query API stays on the free tier (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4). The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
+      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN, made in step 7's sitting and pasted here with the others, lets bounty PRs leave the brand account once the board's week-4 clock allows it — the intake is gated in code until then (RULING-2026-09-28-bounty-rail.md §4.4). ORG_BUDGETS_READ_TOKEN, also made in step 7's sitting (Administration: read on the organisation, nothing else), lets a runner read the organisation's $0 Actions budget back before the first metered-capable minute; nothing reads it yet, because the budgets read is built after step 7 (RULING-2026-10-04-mozilla-precondition.md §2), and it is the owner's own fine-grained token, never the machine account's: the machine account is never made a billing manager (the ruling's amendment of 4.10). POSTHOG_READ_KEY, a PostHog personal API key with the query-read scope only, turns on the weekly page-view reader, which is a strict no-op without it, so without it Pro's PASS gate is never read; it is asked only after the agent has created the brand's PostHog project and written its id to site.json, and only while PostHog's query API stays on the free tier (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4). The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can. Part ד (ruling 7.10, research/channel-loop/RULING-2026-10-07-posthog-organisation.md): two PostHog organisations, named for the brand and for the T1 sub-brand, inside the PostHog login the connector already reaches — the free plan allows one project per organisation and the login's only organisation holds another product's project, which the brand never shares; the organisations are free and unlimited, need no card and no identity, and the colony renames and configures each one's included project the minute after (session recording off, the GeoIP transformation off, \"Discard client IP data\" on, cookieless server-hash mode on, each read back) and writes the brand project's public key, host and id into site.json — which is what lets POSTHOG_READ_KEY be asked, and what every page deploy's D0 waits on.",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.5",
     secrets: [
@@ -410,9 +429,9 @@ export const OWNER_STEPS: OwnerStep[] = [
     ],
     earlyPart: {
       what:
-        "Apify sign-up with the BRAND as the username (the Store URL apify.com/<username>/… is public) and APIFY_TOKEN into GitHub secrets. This alone starts the 30-day stranger count a month earlier than the rest of the checklist would, and it needs no identity verification.",
+        "Apify sign-up with the BRAND as the username (the Store URL apify.com/<username>/… is public) and APIFY_TOKEN into GitHub secrets; and part ד, two PostHog organisations named for the brand and for the T1 sub-brand, created by the owner inside the PostHog login the connector already reaches (ruling 7.10, research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2; free, no card, no identity, nothing pasted; the owner stops and says so if PostHog asks for a card, a payment, an ID or a phone, or offers the new organisation only a trial or a paid plan). The Apify part alone starts the 30-day stranger count a month earlier than the rest of the checklist would; the PostHog part is what every page deploy's D0 waits on, since the counter must be live at D0, so it comes before the deploy route. Neither needs identity verification.",
       afterStep: "merge-pr",
-      minutes: 5,
+      minutes: 8,
     },
   },
 ];

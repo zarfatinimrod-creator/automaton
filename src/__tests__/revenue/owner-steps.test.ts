@@ -64,6 +64,10 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     const apify = ownerStepById("ci-tokens")!.earlyPart!;
     expect(apify.afterStep).toBe("merge-pr");
     expect(apify.what).toMatch(/APIFY_TOKEN/);
+    // Ruling 7.10 (research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2): part ד, the owner's two PostHog
+    // organisations, joins the early part beside the Apify token, and the early part goes from 5 minutes to 8.
+    expect(apify.what).toMatch(/PostHog/);
+    expect(apify.minutes).toBe(8);
   });
 
   it("makes step 4 the Stripe form alone, 4b, held for a held reward — 4a is dropped (research/breadth/BOARD.md Part B(b))", () => {
@@ -517,7 +521,8 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(box).toMatch(/ה-₪200 שאישרת ב-3\.9 \*\*מושהים\*\*/);
     // The free sequence, in order: step 8 (the brand mailbox, asked now since the
     // breadth board of 28.9.2026), then the Apify half of 6, then 7, then Netlify
-    // half of 6, then 3, then 2 only when a paid product is ready.
+    // half of 6, then 3, then 2 only when a paid product is ready. Since ruling 7.10
+    // (RULING-2026-10-07-posthog-organisation.md §2 edit 9) the second item is step 6's Apify and PostHog parts together.
     const at = (needle: string) => {
       const i = box.indexOf(needle);
       expect(i, `the ₪0 box does not mention "${needle}"`).toBeGreaterThan(-1);
@@ -525,7 +530,7 @@ describe("the Hebrew document has not drifted from the code", () => {
     };
     const order = [
       at("**צעד 8 — תיבת דואר של המותג**"),
-      at("**צעד 6 — רק החלק של Apify**"),
+      at("**צעד 6 — רק החלק של Apify והחלק של PostHog**"),
       at("**צעד 7**"),
       at("**צעד 6 — חיבור Netlify.**"),
       at("**צעד 3 — חשבון Gumroad.**"),
@@ -715,7 +720,7 @@ describe("the Hebrew document has not drifted from the code", () => {
   // other free step, so it is listed first among the free steps, and what waits on it is stated ONCE.
   it("lists step 8 first among the free steps and states once, plainly, what waits on it (ruling (b))", () => {
     const box = doc.slice(doc.indexOf("### כלל ה-0 ₪ (27.9)"), doc.indexOf("סדר ביצוע של הדירקטוריון"));
-    const item8 = box.slice(box.indexOf("**צעד 8 — תיבת דואר של המותג**"), box.indexOf("**צעד 6 — רק החלק של Apify**"));
+    const item8 = box.slice(box.indexOf("**צעד 8 — תיבת דואר של המותג**"), box.indexOf("**צעד 6 — רק החלק של Apify והחלק של PostHog**"));
     const flat = item8.replace(/>\s*/g, " ").replace(/\s+/g, " ");
     for (const waits of ["7 שאלות בכתב", "il-biz-tools", "pcn874", "npm", "Displate"]) {
       expect(flat, `the count line does not name "${waits}"`).toContain(waits);
@@ -892,6 +897,17 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
     expect(row).toContain("נשאל רק אחרי שהפרויקט קיים");
     expect(row).toContain("`posthog.projectId`");
     expect(row).toContain("RULING-2026-09-30-documents.md");
+  });
+
+  // Ruling 7.10 (research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2): the PostHog organisation click is
+  // not a ninth step but part ד of step 6, two free organisations (the brand, the T1 sub-brand) inside the login the
+  // connector already reaches. Its stop rules are printed in the Hebrew part, not in `stopIf` (step 4 alone has one).
+  it("puts part ד, two PostHog organisations, inside step 6 with its time and its stop rule (ruling 7.10)", () => {
+    const step6 = ownerStepById("ci-tokens")!;
+    expect(step6.minutes).toEqual([18, 23]);
+    expect(step6.unlocks).toMatch(/two PostHog organisations/);
+    expect(step6Doc).toContain("### חלק ד");
+    expect(step6Doc).toContain("עצור אם");
   });
 });
 

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "T61-OS1",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "      minutes: 8,",
+    "replace": "      minutes: 5,",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 61, ruling 7.10 row 25 §2 edit 6: step 6's early part back to 5 minutes, without part ד's three (owner-steps.test.ts, the early-part test's apify.minutes)"
+  },
+  {
+    "id": "T61-OS2",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "Apify sign-up with the BRAND as the username (the Store URL apify.com/<username>/… is public) and APIFY_TOKEN into GitHub secrets; and part ד, two PostHog organisations named for the brand and for the T1 sub-brand, created by the owner inside the PostHog login the connector already reaches (ruling 7.10, research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2; free, no card, no identity, nothing pasted; the owner stops and says so if PostHog asks for a card, a payment, an ID or a phone, or offers the new organisation only a trial or a paid plan). The Apify part alone starts the 30-day stranger count a month earlier than the rest of the checklist would; the PostHog part is what every page deploy's D0 waits on, since the counter must be live at D0, so it comes before the deploy route. Neither needs identity verification.",
+    "replace": "Apify sign-up with the BRAND as the username (the Store URL apify.com/<username>/… is public) and APIFY_TOKEN into GitHub secrets. This alone starts the 30-day stranger count a month earlier than the rest of the checklist would, and it needs no identity verification.",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 61, ruling 7.10 row 25 §2 edit 6: the early part's text back to the Apify half alone, part ד's two PostHog organisations gone (the early-part test's /PostHog/)"
+  },
+  {
+    "id": "T61-OS3",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "    minutes: [18, 23],",
+    "replace": "    minutes: [15, 20],",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 61, ruling 7.10 row 25 §2 edit 4: step 6's estimate back to 15-20 minutes (the part ד test's step6.minutes)"
+  },
+  {
+    "id": "T61-OS4",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "): two PostHog organisations, named for the brand",
+    "replace": "): two organisations, named for the brand",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 61, ruling 7.10 row 25 §2 edit 5: step 6's unlocks no longer says the two organisations are PostHog's (the part ד test's /two PostHog organisations/)"
+  },
+  {
+    "id": "T61-OS5",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "### חלק ד — שני ארגונים ב-PostHog",
+    "replace": "### חלק ה — שני ארגונים ב-PostHog",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 61, ruling 7.10 row 25 §2 edit 14: the Hebrew step 6 has no heading for part ד (the part ד test's step6Doc '### חלק ד')"
+  },
+  {
+    "id": "T61-OS6",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "**עצור אם:** PostHog מבקש",
+    "replace": "**שימו לב:** PostHog מבקש",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 61, ruling 7.10 row 25 §1 ruling 6 and §2 edit 14: part ד's stop rule is no longer printed as 'עצור אם' (the part ד test's step6Doc 'עצור אם')"
+  },
+  {
+    "id": "T61-OS7",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": ">   2. **צעד 6 — רק החלק של Apify והחלק של PostHog**",
+    "replace": ">   2. **צעד 6 — רק החלק של Apify**",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 61, ruling 7.10 row 25 §2 edit 9: the ₪0 box's item 2 names the Apify part alone again (the ₪0-box order test's needle, moved with edit 9)"
+  }
+]
