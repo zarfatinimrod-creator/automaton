@@ -305,5 +305,13 @@
     "replace": "${graded?.kind}",
     "test": "src/__tests__/revenue/queue-zero-test.test.ts",
     "note": "tick 59 closure 2: a capture render-watch's route stored trimmed (no kind recorded) is said to have had the kind \"trimmed\""
+  },
+  {
+    "id": "T59R-Q6-null-block-trimmed",
+    "file": "scripts/queue-zero-test.mjs",
+    "find": "  const trimmed = meta?.trimmed !== null && typeof meta?.trimmed === \"object\";",
+    "replace": "  const trimmed = typeof meta?.trimmed === \"object\";",
+    "test": "src/__tests__/revenue/queue-zero-test.test.ts",
+    "note": "tick 59 review (reviewer's Q59-5, survived before): a meta whose trimmed field is null is read as trimmed, so its missing .html is not refused"
   }
 ]

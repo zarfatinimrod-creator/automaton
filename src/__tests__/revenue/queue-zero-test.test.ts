@@ -272,6 +272,7 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     "trimok.example": { verdict: "TERMS_PENDING", note: "terms unread: a trimmed read page" },
     "trimroute.example": { verdict: "TERMS_PENDING", note: "terms unread: stored trimmed by render-watch's route" },
     "trimfailed.example": { verdict: "TERMS_PENDING", note: "terms unread: a trimmed capture whose last fetch failed" },
+    "trimnull.example": { verdict: "TERMS_PENDING", note: "terms unread: a meta whose trimmed field is null" },
   };
   // The fixtures: a js-shell (one per kind of site), a bot-challenge, a short page, a read page, a failed fetch, a
   // missing capture, a robots-disallowed one, one from before robots.txt was read, and two already rendered in js.
@@ -337,6 +338,9 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     rmSync(join(dir, `${slug}.html`));
     writeFileSync(join(dir, `${slug}.txt`), "\n");
   }
+  // A meta whose trimmed field is null is no trimmed capture (tick 59 review): it still needs its .html.
+  capture("terms-trimnull", "https://trimnull.example/terms", { extra: { trimmed: null } });
+  rmSync(join(dir, "terms-trimnull.html"));
 
   const URLS_TXT = [
     "# research/rendered/urls.txt — a fixture",
@@ -424,8 +428,12 @@ describe("queue-zero-test --js --terms-shell — the once-only js render of a sh
     // No kind recorded (render-watch's route) is said so; a failed fetch is graded status, trimmed or not.
     refuses({ url: "https://trimroute.example/terms", slug: "terms-trimroute", urls }, /refuses terms-trimroute: trimmed: its pre-trim kind was not recorded \(trimmed 2026-10-06 /);
     refuses({ url: "https://trimfailed.example/terms", slug: "terms-trimfailed", urls }, /refuses terms-trimfailed: scripts\/capture-check\.mjs grades the plain capture status \(/);
-    // An untrimmed capture without its .html is still no plain capture.
+    // An untrimmed capture without its .html is still no plain capture, and so is one whose trimmed field is null.
     refuses({ slug: "terms-nohtml" }, /no plain capture at research\/rendered\/terms-nohtml\.meta\.json with its terms-nohtml\.html/);
+    refuses(
+      { url: "https://trimnull.example/terms", slug: "terms-trimnull", urls },
+      /refuses terms-trimnull: no plain capture at research\/rendered\/terms-trimnull\.meta\.json with its terms-trimnull\.html/,
+    );
   });
 
   it("refuses a missing plain capture, a meta without its HTML, and a capture of another URL", () => {

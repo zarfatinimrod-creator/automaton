@@ -720,6 +720,26 @@ describe("trim-capture on a fixture store", () => {
     expect(meta.trimmed.fullBytesIn).toBe(`commit ${head} (git show ${head}:research/rendered/bar-live.<ext>)`);
   });
 
+  it("in a git repository whose git status fails, the dry run refuses too: only uncommitted changes are reported instead", () => {
+    // Tick 59 review: the dry run tolerates historyOf's uncommitted error alone; git failing to read a capture (here a
+    // corrupt index) is no state of the capture, and stays a refusal in the dry run as in --apply.
+    const { root, dir } = makeStore("git-broken");
+    const git = (...args: string[]) => spawnSync("git", ["-c", "user.name=t", "-c", `user.email=${["t", "example.invalid"].join("@")}`, "-c", "commit.gpgsign=false", ...args], { cwd: root, encoding: "utf8" });
+    expect(git("init", "-q").status).toBe(0);
+    expect(git("add", "-A").status).toBe(0);
+    expect(git("commit", "-q", "-m", "fixture").status).toBe(0);
+    writeFileSync(join(root, ".git", "index"), "not an index");
+    expect(git("status", "--porcelain").status).not.toBe(0);
+    const before = snapshot(dir);
+    for (const apply of [false, true]) {
+      const got = run(root, { apply });
+      expect(got.code, got.out).toBe(1);
+      expect(got.out).toMatch(/^REFUSED bar-live: git cannot read bar-live: /m);
+      expect(got.out).not.toMatch(/^uncommitted:/m);
+      expect(snapshot(dir)).toEqual(before);
+    }
+  });
+
   it("main: --apply writes, an unknown flag or slug is exit 1", () => {
     const { root } = makeStore("cli");
     const quiet = () => undefined;

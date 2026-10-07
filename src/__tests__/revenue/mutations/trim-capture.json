@@ -432,5 +432,13 @@
     "replace": "    throw err;",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 59 closure 3: historyOf's uncommitted error is not marked, so the dry run cannot tell it from another and refuses"
+  },
+  {
+    "id": "T59R-T4-git-failure-tolerated",
+    "file": "scripts/trim-capture.mjs",
+    "find": "  if (status.status !== 0) throw new Error(`git cannot read ${slug}: ${String(status.stderr).trim()}`);",
+    "replace": "  if (status.status !== 0) throw Object.assign(new Error(`git cannot read ${slug}: ${String(status.stderr).trim()}`), { uncommitted: true });",
+    "test": "src/__tests__/revenue/trim-capture.test.ts",
+    "note": "tick 59 review (reviewer's T59R-4, survived before): a git status that fails is marked uncommitted, so the dry run tolerates it instead of refusing"
   }
 ]

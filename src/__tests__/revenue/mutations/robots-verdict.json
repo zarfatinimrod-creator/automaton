@@ -831,7 +831,7 @@
   {
     "id": "T59-DP1-outcome-suppressed",
     "file": "scripts/robots-verdict.mjs",
-    "find": "    return out(\"disallowed-path\", `${same}; but ${judged.why}`, { checked: judged.checked, refused: judged.refused });",
+    "find": "    return out(\"disallowed-path\", `${same}; but ${judged.why}${unjudged}`, { checked: judged.checked, refused: judged.refused });",
     "replace": "    return out(\"unchanged\", same);",
     "test": "src/__tests__/revenue/robots-verdict.test.ts",
     "note": "tick 59 closure 1: an unchanged robots.txt that disallows a path queued since the verdict is reported unchanged, the path never named"
@@ -867,5 +867,77 @@
     "replace": "? [`${name}:${i}`] : []",
     "test": "src/__tests__/revenue/robots-verdict.test.ts",
     "note": "tick 59 closure 1: the list line that queues a disallowed path is named one line off"
+  },
+  {
+    "id": "T59R-DP6-uncited-host-never-read",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "    const readCapture = (url) => (frozen.has(url) ? frozen.get(url) : readRobotsCapture(url, renderedDir));",
+    "replace": "    const readCapture = (url) => frozen.get(url) ?? null;",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 review fix (reviewer's R59-3, survived before): the unchanged branch never reads a host the source does not cite, so a path there that its live robots.txt disallows is never reported"
+  },
+  {
+    "id": "T59R-DP7-no-rejudge",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "    if (judged.kind === \"no-capture\" || judged.kind === \"refused\" || judged.kind === \"unreachable\") {",
+    "replace": "    if (false) {",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 review fix: a page on an uncited host with no robots.txt read hides a disallowed path on the cited host (the site reported unchanged)"
+  },
+  {
+    "id": "T59R-DP8-refused-not-rejudged",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "    if (judged.kind === \"no-capture\" || judged.kind === \"refused\" || judged.kind === \"unreachable\") {",
+    "replace": "    if (judged.kind === \"no-capture\" || judged.kind === \"unreachable\") {",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 review fix: an uncited host whose capture is a 401/403/429 or an HTML page still hides a disallowed path on the cited host"
+  },
+  {
+    "id": "T59R-DP9-unreachable-not-rejudged",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "    if (judged.kind === \"no-capture\" || judged.kind === \"refused\" || judged.kind === \"unreachable\") {",
+    "replace": "    if (judged.kind === \"no-capture\" || judged.kind === \"refused\") {",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 review fix: an uncited host whose capture is a 5xx or no answer still hides a disallowed path on the cited host"
+  },
+  {
+    "id": "T59R-DP10-nothing-left-out",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "          return pages.length === 0;",
+    "replace": "          return true;",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 review fix: the re-judgement keeps the unreadable host's lines, so it fails the same way and the disallowed path stays hidden"
+  },
+  {
+    "id": "T59R-DP11-probe-named-unjudged",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "          const pages = queuedPaths(line, site).filter((p) => !isRobotsProbe(p.url, p.slug) && !reads(robotsTxtUrl(p.url)));",
+    "replace": "          const pages = queuedPaths(line, site).filter((p) => !reads(robotsTxtUrl(p.url)));",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 review fix: a robots probe line of the unreadable host (queued, not fetched yet) is named as an unjudged page"
+  },
+  {
+    "id": "T59R-DP12-unchanged-silent",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "    if (judged.kind !== \"disallowed\") return out(\"unchanged\", `${same}${unjudged}`);",
+    "replace": "    if (judged.kind !== \"disallowed\") return out(\"unchanged\", same);",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 review fix: an unchanged line no longer says which queued page went unjudged"
+  },
+  {
+    "id": "T59R-DP13-disallowed-silent",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "    return out(\"disallowed-path\", `${same}; but ${judged.why}${unjudged}`, { checked: judged.checked, refused: judged.refused });",
+    "replace": "    return out(\"disallowed-path\", `${same}; but ${judged.why}`, { checked: judged.checked, refused: judged.refused });",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 review fix: a disallowed-path line no longer says which queued page went unjudged"
+  },
+  {
+    "id": "T59R-DP14-pause-remedy",
+    "file": "scripts/robots-verdict.mjs",
+    "find": "retire the line or remove it (a paused line is still queued; research/rendered/README.md)",
+    "replace": "pause the line or take it off its list (research/rendered/README.md)",
+    "test": "src/__tests__/revenue/robots-verdict.test.ts",
+    "note": "tick 59 review fix: the console names pausing as the remedy again, which leaves the line queued and the report standing"
   }
 ]

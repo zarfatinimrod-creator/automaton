@@ -369,10 +369,14 @@ verdict), then queue the line. A line for a site with no verdict fails CI, and s
   `unchanged` (the live bytes are the copy's, or a 404 is still a 404, and every path queued now is allowed by it):
   nothing to do. `disallowed-path` (the robots.txt is unchanged, but it disallows a path queued since the verdict, such as
   a new prize line): reported with each such path, its rule and the list line that queues it (`<list>:<line>`), and
-  nothing is written, `--apply` included; the verdict stays, and the tick pauses that line in this list or takes it off
-  the prize list (`research/measurements/ai-allowed-events.urls.txt`). Render-watch's own robots check already refuses
-  that page before any fetch. `unreachable` (no live capture, a 401/403/429, an HTML page, a 5xx): reported and left as
-  it is; render-watch still reads that answer before it fetches a page. `refresh` (changed, every queued path still
+  nothing is written, `--apply` included; the verdict stays, and the tick retires that line in this list (a `# retired …`
+  comment, which the re-check never reads as queued) or removes it, from this list or the prize list
+  (`research/measurements/ai-allowed-events.urls.txt`). Pausing it is no remedy: a `# paused …` line is still a queued
+  path, so every later re-check reports it again. Render-watch's own robots check already refuses that page before any
+  fetch. A page queued on a host the source does not cite, with no robots.txt read there, is left out and named on the
+  site's line (`not judged, on a host with no robots.txt read: …`); the site's other paths are still judged.
+  `unreachable` (no live capture, a 401/403/429, an HTML page, a 5xx): reported and left as it is; render-watch still
+  reads that answer before it fetches a page. `refresh` (changed, every queued path still
   allowed): the live capture is frozen as a new dated copy (`FROZEN.sha256` following), the source cites it and the note
   gains a dated sentence. `revert` (a queued path is now disallowed): the site is NO_TERMS again, so its lines stop
   passing `termsGate` at once, its probe stays on the weekly watch, and no line of this list is edited. `error` (exit 1):

@@ -56,11 +56,15 @@
  *                after the verdict, such as a new prize line, or in a list the verdict was not judged on: judgeSite judged
  *                only the paths queued then, and an unchanged robots.txt is otherwise not read again). Reported with each
  *                such path, its rule and the list line(s) that queue it (<list>:<line>); the verdict stays
- *                NO_TERMS_ROBOTS_OK and nothing is written, --apply included. The main thread then pauses that line in
- *                urls.txt or takes it off the prize list (research/measurements/ai-allowed-events.urls.txt); meanwhile
- *                render-watch's own robots check, run before every fetch, already refuses the page. A path on a host the
- *                source does not cite is judged on that host's live capture; when there is none, or it is not a robots.txt
- *                read, the site stays unchanged (render-watch's run-time check still reads that host's answer)
+ *                NO_TERMS_ROBOTS_OK and nothing is written, --apply included. The main thread then retires that line in
+ *                urls.txt (a `# retired …` comment, which queuedPaths never reads as queued) or removes it, from urls.txt
+ *                or the prize list (research/measurements/ai-allowed-events.urls.txt). Pausing it is no remedy: a
+ *                `# paused …` line is still queued (step 2), so every later run reports it again. Meanwhile render-watch's
+ *                own robots check, run before every fetch, already refuses the page. A path on a host the source does not
+ *                cite is judged on that host's live capture; when there is none, or it is not a robots.txt read, that path
+ *                is left out and named on the line ("not judged, on a host with no robots.txt read: <slug> (<url>) — <why>"),
+ *                every other queued path is still judged (so it never hides a disallowed one), and a site with nothing
+ *                else to report stays unchanged (render-watch's run-time check still reads that host's answer)
  *   unreachable  there is no live capture, or it is no robots.txt read (a 401/403/429, an HTML page, a 5xx, no answer:
  *                readableCapture): reported, nothing changes. Render-watch's run-time check still reads that answer
  *                before it fetches a page
@@ -614,11 +618,34 @@ export function recheckSite({ site, entry, urls, urlsText = urls, renderedDir = 
     // The robots.txt is the one the verdict was set on, but the queue may have grown since: a page queued on the site
     // later (a new prize line) was never judged. Every queued path is judged on it (judgeRobots on the frozen copies, the
     // same bytes; a host the source does not cite on its live capture); a disallowed one is reported, never acted on.
+    // A path on an uncited host with no robots.txt read is left out and named on the line ("not judged, …").
     const same = hosts.map((h) => h.why).join("; ");
     const frozen = new Map(hosts.map((h) => [h.cite.robotsUrl, h.frozen]));
-    const judged = judgeRobots({ site, urls, readCapture: (url) => (frozen.has(url) ? frozen.get(url) : readRobotsCapture(url, renderedDir)) });
-    if (judged.kind !== "disallowed") return out("unchanged", same);
-    return out("disallowed-path", `${same}; but ${judged.why}`, { checked: judged.checked, refused: judged.refused });
+    const readCapture = (url) => (frozen.has(url) ? frozen.get(url) : readRobotsCapture(url, renderedDir));
+    let judged = judgeRobots({ site, urls, readCapture });
+    let unjudged = "";
+    if (judged.kind === "no-capture" || judged.kind === "refused" || judged.kind === "unreachable") {
+      // judgeRobots stops at the first host it cannot read, and that is a host the source does not cite (each cited one
+      // reads its frozen copy, which frozenProblem found readable): the lines of every such page are left out and the rest
+      // judged again, so a page there never hides a disallowed path on another host, and the line names what was left.
+      const reads = (url) => {
+        const capture = readCapture(url);
+        const kind = capture ? readableCapture(capture.meta, capture.body).kind : null;
+        return kind === "file" || kind === "absent";
+      };
+      const left = new Set();
+      const kept = String(urls)
+        .split(/\r?\n/)
+        .filter((line) => {
+          const pages = queuedPaths(line, site).filter((p) => !isRobotsProbe(p.url, p.slug) && !reads(robotsTxtUrl(p.url)));
+          for (const p of pages) left.add(`${p.slug} (${p.url})`);
+          return pages.length === 0;
+        });
+      unjudged = `; not judged, on a host with no robots.txt read: ${[...left].join(", ")} — ${judged.why}`;
+      judged = judgeRobots({ site, urls: kept.join("\n"), readCapture });
+    }
+    if (judged.kind !== "disallowed") return out("unchanged", `${same}${unjudged}`);
+    return out("disallowed-path", `${same}; but ${judged.why}${unjudged}`, { checked: judged.checked, refused: judged.refused });
   }
 
   // The robots.txt changed: every queued path is judged again (judgeRobots), on the copy that would be frozen of each
@@ -830,7 +857,7 @@ function recheckMain(values) {
       for (const c of r.refused) {
         console.log(`      DISALLOWED  ${c.slug}  ${c.url}  (${c.state}; ${quoteRule(c.rule)})  queued at ${queuedAt(texts, site, c).join(", ")}`);
       }
-      console.log("      report only, nothing written: pause the line or take it off its list (research/rendered/README.md)");
+      console.log("      report only, nothing written: retire the line or remove it (a paused line is still queued; research/rendered/README.md)");
       continue;
     }
     if (r.outcome !== "refresh" && r.outcome !== "revert") continue;
