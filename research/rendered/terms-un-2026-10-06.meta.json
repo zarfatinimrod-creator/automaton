@@ -21,5 +21,232 @@
     "from": "research/rendered/terms-un.meta.json",
     "commit": "364bf71",
     "why": "A dated copy of the render-watch capture of terms-un as commit 364bf71 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-09-29.md keep pointing at the lines the terms reading of 7.10 (tick 60: one Opus reader, one adversarial Opus verifier, the main thread's ruling) rests on. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-un stays in urls.txt, paused after the reading."
+  },
+  "trimmed": {
+    "on": "2026-10-07",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "un.org",
+    "copying": "barred",
+    "keptLines": [
+      [
+        1,
+        3
+      ],
+      [
+        8,
+        12
+      ],
+      [
+        80,
+        94
+      ],
+      [
+        102,
+        124
+      ],
+      [
+        128,
+        136
+      ],
+      [
+        142,
+        148
+      ],
+      [
+        271,
+        278
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "b6ca28600cf3430dd3823b027c6f6649d20e87d06be760f6346ad234576be918",
+    "fullByteLength": 11448,
+    "lineCount": 278,
+    "body": {
+      "path": "research/rendered/terms-un-2026-10-06.html",
+      "sha256": "b07855d4206e1c68567349e050d717a561ca0e1c41ae5f09ddca5800e3026a4d",
+      "byteLength": 93843,
+      "lineCount": 1663,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          1,
+          1
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:767"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          10,
+          10
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:767"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          82,
+          82
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:767"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          84,
+          84
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:281",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:283",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:289",
+          "research/channel-loop/terms-verdicts.json:767",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          88,
+          88
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:281",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:283",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          90,
+          90
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:281",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:283",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:285",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:289",
+          "research/channel-loop/ZERO-TESTS.md:219",
+          "research/channel-loop/terms-verdicts.json:767",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          92,
+          92
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:283",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          104,
+          104
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:285",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          108,
+          122
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:281",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          130,
+          130
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:283",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          134,
+          134
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:283",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:289",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          144,
+          144
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:281",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          146,
+          146
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:285",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          273,
+          273
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:285",
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:291",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          276,
+          276
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:291",
+          "research/channel-loop/terms-verdicts.json:769"
+        ]
+      }
+    ],
+    "wide": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit dae60a11e91c4a2179fa1635fc6f0ce6ac3abde5 (git show dae60a11e91c4a2179fa1635fc6f0ce6ac3abde5:research/rendered/terms-un-2026-10-06.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }

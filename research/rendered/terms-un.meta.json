@@ -15,5 +15,87 @@
   "changed": true,
   "firstFetch": false,
   "previousSha256": "27e7163cd901ba60266ce9c6d630799304c9ae7d5b789878d7f9a81617e3622c",
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-07",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "un.org",
+    "copying": "barred",
+    "keptLines": [
+      [
+        82,
+        86
+      ],
+      [
+        88,
+        92
+      ],
+      [
+        132,
+        136
+      ],
+      [
+        274,
+        278
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "b6ca28600cf3430dd3823b027c6f6649d20e87d06be760f6346ad234576be918",
+    "fullByteLength": 11448,
+    "lineCount": 278,
+    "body": {
+      "path": "research/rendered/terms-un.html",
+      "sha256": "b07855d4206e1c68567349e050d717a561ca0e1c41ae5f09ddca5800e3026a4d",
+      "byteLength": 93843,
+      "lineCount": 1663,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          84,
+          84
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:289"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          90,
+          90
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:289"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          134,
+          134
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:289"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          276,
+          276
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-09-29.md:291"
+        ]
+      }
+    ],
+    "wide": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 364bf71a84e7fe6e5e2bd1f44cb35cbc6c608b99 (git show 364bf71a84e7fe6e5e2bd1f44cb35cbc6c608b99:research/rendered/terms-un.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }
