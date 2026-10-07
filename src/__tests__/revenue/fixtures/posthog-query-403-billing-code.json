@@ -1,0 +1,1 @@
+{ "type": "authentication_error", "code": "billing_limit_exceeded", "detail": "You do not have permission to perform this action.", "attr": null }

@@ -395,14 +395,20 @@ the missing one:
 1. **The PostHog project** (cookieless server-hash mode on), its `phc_` key in `posthog.projectKey`
    and its numeric id in `posthog.projectId` (or the `POSTHOG_PROJECT_ID` Actions variable). **Agent work, through
    the PostHog connector attached to the session** - the board assigned it there (`research/colony-sweep/BOARD.md`
-   §6.3; `research/channel-loop/BOARD-LOOP.md` rank 2, first action (4)); it is not an owner step. Not done: this
-   change creates nothing.
+   §6.3; `research/channel-loop/BOARD-LOOP.md` rank 2, first action (4)); the project is still the colony's, never an
+   owner step, but it is made in the organisation the owner creates in step 6 part ד (ruling 7.10 §1-§2,
+   `research/channel-loop/RULING-2026-10-07-posthog-organisation.md`), the minute after that click: the free plan
+   allows one project per organisation and the login's only organisation holds another product's project, which the
+   brand never shares, so the colony renames and configures the new organisation's own "Default Project" rather than
+   creating one beside it. Not done: this change creates nothing.
 2. **`POSTHOG_READ_KEY`**: a PostHog personal API key with the "Performing analytics queries" (query read) scope
    and nothing else, as a GitHub Actions secret. PostHog mints personal keys in a signed-in user's settings; whether
    the connector's account can mint one was not checked here (that is a live call). Putting it into the repository's
-   secrets needs a repository admin, which today means the owner's one-time step-6 sitting, beside the tokens pasted
-   there - **but it is not on the owner's list**: adding it is a proposed step for the next Fable sitting, never
-   something a builder adds.
+   secrets needs a repository admin, which means the owner's one-time step-6 sitting, beside the tokens pasted
+   there. **It is on the owner's list since 30.9** (step 6's `POSTHOG_READ_KEY` row in `src/revenue/owner-steps.ts`;
+   `research/channel-loop/RULING-2026-09-30-documents.md` (c)), **held until the project exists**: it is asked only
+   after the owner's organisation click (step 6 part ד) and the colony's project in it, with its id in
+   `posthog.projectId` (ruling 7.10 §1-§2).
 3. **D0**: the loop writes the public deploy day, with its evidence, into `state/colony/page-view-clock.json` on
    the day the deploy is public (runner 200, clean identifier grep) - and only with the counter live in the
    deployed `site.json`, or its first weeks would read as zeros nobody measured. pcn874 rides the same deploy.
@@ -789,7 +795,7 @@ GitHub Pages, Vercel) works too — copy the headers from `netlify.toml` if the 
    domain no line that depends on search exists (`src/revenue/owner-steps.ts`).
 3. **Google Search Console** — optional, not a checklist step (`research/colony-sweep/BOARD.md` §6.3, §8): only if
    the owner chooses to add the property in their own Google account, and asked for only after the site shows traffic.
-4. Not an owner step: analytics. The board assigned page views to the PostHog connector attached to the agent's session (`research/colony-sweep/BOARD.md` §6.3), so the project key, the project id and the cookieless server-hash toggle are ours to set; `posthog.projectKey` and `posthog.projectId` stay empty until then, and Plausible is not planned. The one open question is the colony reader's `POSTHOG_READ_KEY` secret: pasting a secret into the repository needs a repository admin, and it is not on the owner's list — see "Page views" under the pcn874 section; whether to add it is for the next Fable sitting.
+4. Analytics: one owner click-set, the rest ours. The board assigned page views to the PostHog connector attached to the agent's session (`research/colony-sweep/BOARD.md` §6.3), so the project, its key, its id and the cookieless server-hash toggle are ours to set — in the organisation the owner creates in step 6 part ד (two free PostHog organisations, one for the brand and one for the T1 sub-brand; ruling 7.10 §1-§2, `research/channel-loop/RULING-2026-10-07-posthog-organisation.md`), the minute after that click, because the free plan allows one project per organisation and the login's only organisation holds another product's project; `posthog.projectKey` and `posthog.projectId` stay empty until then, and Plausible is not planned. The colony reader's `POSTHOG_READ_KEY` secret is on the owner's list since 30.9 (step 6's row in `src/revenue/owner-steps.ts`): pasting a secret into the repository needs a repository admin, so it is the owner's paste at step 6, held until the project exists — see "Page views" under the pcn874 section.
 5. Tax: income from the site is business income — an Israeli osek patur/murshe registration is
    the owner's responsibility (Gumroad invoices the buyer, the owner reports Gumroad payouts).
 6. Not an owner step (`docs/OWNER_STEPS.he.md` step 3: "זה אצלי, לא אצלך"): `net-salary.html` stays

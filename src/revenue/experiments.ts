@@ -24,6 +24,10 @@ export interface ExperimentReadings {
    * The first-upload window: one honest test video through the audited publisher stayed public for 72 h. T1 for
    * faceless-youtube (K-T1); the kids channel's own window for kids-explainers (K-T1k, ruling 4.10 §8 rule 3). null = not
    * run yet. A non-null value means at least one upload exists.
+   *
+   * It is `firstUploadWindow(entry, publisherAccepted, p3, p4).passed` (src/revenue/youtube-madeforkids.ts), never a
+   * typed-in boolean: P1's API half and P2 from the read-back's entry for the first upload, P1's publisher half, P3 and
+   * P4 as recorded (research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md §4 decision 3).
    */
   t1Passed: boolean | null;
   /** Videos that passed the publication gate (licence snapshot, fact-check, no-advice check). */

@@ -24,29 +24,44 @@
  * A week that cannot be read is not written: the next tick tries again, and the gates read a missing week as
  * unmeasured, never as zero — and as `reader_down` once it is a day overdue (page-views.ts READ_GRACE_MS): a blocker until
  * a later tick reads it, never a clock restart, and never an instrument fault from the gates: a week that can never be
- * read at all is one only by the loop's call, with a new d0 and its evidence (RULING-2026-09-30-documents (c)).
+ * read at all is one only by the loop's call, with a new d0 and its evidence (RULING-2026-09-30-documents (c)) — save
+ * under a priced query API, where the gates name the weeks still unread 60 days after the firing (below).
  *
  * A row is dated by when it was WRITTEN (the tick's time), and says which week it covers in its unit. M-instrument
  * ("two consecutive weekly writes by D0+21") is judged on the write time, so a late backfill cannot pass for an
  * instrument that worked on time (netlify period only; the domain clock has no instrument deadline).
+ *
+ * A PRICED QUERY API (research/channel-loop/RULING-2026-10-07-posthog-organisation.md §4(1) R1). Every `/query` answer
+ * is classified (page-views.ts `queryApiPriced`): HTTP 402; a 403 or 429 whose body names billing, a plan, credits,
+ * quota or an upgrade; a 2xx carrying a charge or billed-usage field. On the first such answer the reader sends
+ * nothing more, writes `reader_down` with reason `query_api_priced` (the status, what matched, the body's first 200
+ * characters masked, never the key) and records the firing in the clock file's `queryApi.priced`: the persistent
+ * flag. While any firing there has no hand clearance, this tick and every later one sends no query; only a hand
+ * clears one, with `clearedOn` (a UTC day) and `clearedReason` (naming the REOPEN record). A rate-limit 429 is not a
+ * trigger: it is an ordinary failed read, and the next tick tries again. The host pinning above is unchanged.
  */
 
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { Database } from "better-sqlite3";
 import { getLine, recordKpi } from "./ledger.js";
 import {
+  PAGE_VIEW_GATES,
   PAGE_VIEW_KPI,
   PAGE_VIEW_LINES,
+  QUERY_API_PRICED,
   completedWeeks,
   countWeek,
   evaluatePageViewGates,
   isUtcDay,
+  maskPricedBody,
   pageViewQuery,
+  queryApiPriced,
   weekWindow,
   type HogQLQueryResponse,
   type PageViewClock,
+  type QueryApiFiring,
   type ExclusionReason,
   type PageViewGateReading,
   type PageViewLine,
@@ -140,19 +155,81 @@ export async function sitePages(siteDir: string = DEFAULT_PAGE_VIEW_SITE_DIR): P
   return pages.map((page) => ({ page, noindex: withheld.has(page) || hasRobotsNoindex(readFileSync(join(root, page), "utf8")) }));
 }
 
+const ISO_INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
+/** A clearance names its REOPEN record: a ruling file, `RULING-YYYY-MM-DD-<slug>`. */
+const RULING_NAME = /\bRULING-\d{4}-\d{2}-\d{2}-[a-z0-9][a-z0-9-]*/;
+
+/**
+ * `queryApi.priced` of the clock file (ruling 7.10 §4(1) R1): the firings, each kept as written, its clearance only
+ * when a hand wrote both halves of it — `clearedOn`, a UTC day not before the day it fired, and `clearedReason`,
+ * naming the REOPEN record. Anything else in a clearance is a problem, and the firing stays set. No block is no
+ * firing; a block or a firing that cannot be read is null, and the reader then sends nothing (it fails closed).
+ */
+function readQueryApi(block: unknown, problems: string[]): QueryApiFiring[] | null {
+  if (block === undefined) return [];
+  const priced = block && typeof block === "object" && !Array.isArray(block) ? (block as { priced?: unknown }).priced : undefined;
+  if (!Array.isArray(priced)) {
+    problems.push('queryApi is not { "priced": [ … ] }: the reader sends nothing until a hand fixes it');
+    return null;
+  }
+  const firings: QueryApiFiring[] = [];
+  for (const [i, entry] of priced.entries()) {
+    const where = `queryApi.priced[${i}]`;
+    const e = (entry && typeof entry === "object" ? entry : {}) as Record<string, unknown>;
+    const at = e.at;
+    if (typeof at !== "string" || !ISO_INSTANT.test(at) || Number.isNaN(Date.parse(at)) || e.reason !== QUERY_API_PRICED) {
+      problems.push(`${where} is not a firing the reader wrote (an ISO "at" and reason ${QUERY_API_PRICED}): the reader sends nothing until a hand fixes it`);
+      return null;
+    }
+    const firedOn = at.slice(0, 10);
+    const on = e.clearedOn;
+    const why = str(e.clearedReason);
+    const onSet = on !== null && on !== undefined && on !== "";
+    let clearedOn: string | null = null;
+    if (onSet || why) {
+      const fault = !onSet
+        ? "has a clearedReason but no clearedOn"
+        : !isUtcDay(on)
+          ? `clearedOn is not a UTC day (YYYY-MM-DD): ${String(on)}`
+          : on < firedOn
+            ? `clearedOn ${on} is before the day it fired, ${firedOn}`
+            : !RULING_NAME.test(why)
+              ? `clearedOn ${on} has no clearedReason naming the REOPEN record (a RULING-YYYY-MM-DD-… file)`
+              : null;
+      if (fault) problems.push(`${where} ${fault}: the flag stays set until a hand clears it with a dated reason`);
+      else clearedOn = on as string;
+    }
+    firings.push({
+      at,
+      reason: QUERY_API_PRICED,
+      status: typeof e.status === "number" ? e.status : 0,
+      matched: str(e.matched),
+      body: typeof e.body === "string" ? e.body : "",
+      clearedOn,
+      clearedReason: why || null,
+    });
+  }
+  return firings;
+}
+
 /** Where D0 and the domain deploy day are recorded, one entry per line, each with its evidence. */
 export function readPageViewClock(file: string = DEFAULT_PAGE_VIEW_CLOCK_FILE): {
   clocks: Record<PageViewLine, PageViewClock>;
   problems: string[];
+  /**
+   * `queryApi.priced`: every priced answer the reader met, with any hand clearance (ruling 7.10 §4(1) R1); null when the
+   * file or the block cannot be read, and then the reader sends nothing until a hand fixes it.
+   */
+  queryApi: QueryApiFiring[] | null;
 } {
   const clocks = Object.fromEntries(PAGE_VIEW_LINES.map((l) => [l, { d0: null, domainDeployDay: null }])) as Record<PageViewLine, PageViewClock>;
   const problems: string[] = [];
-  if (!existsSync(file)) return { clocks, problems };
+  if (!existsSync(file)) return { clocks, problems, queryApi: [] };
   let data: Record<string, unknown>;
   try {
     data = JSON.parse(readFileSync(file, "utf8"));
   } catch (error) {
-    return { clocks, problems: [`${file} is not JSON (${error instanceof Error ? error.message : String(error)})`] };
+    return { clocks, problems: [`${file} is not JSON (${error instanceof Error ? error.message : String(error)})`], queryApi: null };
   }
   for (const line of PAGE_VIEW_LINES) {
     const e = (data?.[line] ?? {}) as Record<string, unknown>;
@@ -177,7 +254,43 @@ export function readPageViewClock(file: string = DEFAULT_PAGE_VIEW_CLOCK_FILE): 
     }
     clocks[line] = { d0, domainDeployDay };
   }
-  return { clocks, problems };
+  const queryApi = readQueryApi(data?.queryApi, problems);
+  return { clocks, problems, queryApi };
+}
+
+/** A JSON value on one line, as the clock file writes it: `{ "k": v, … }`, `[a, b]`; `{}` and `[]` when empty. */
+function inlineJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(inlineJson).join(", ")}]`;
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value);
+    return entries.length ? `{ ${entries.map(([k, v]) => `${JSON.stringify(k)}: ${inlineJson(v)}`).join(", ")} }` : "{}";
+  }
+  return JSON.stringify(value);
+}
+
+/** The clock file's layout: one top-level key a line, its value on that line, and a final newline. */
+export function serializePageViewClock(data: Record<string, unknown>): string {
+  return `{\n${Object.entries(data).map(([k, v]) => `  ${JSON.stringify(k)}: ${inlineJson(v)}`).join(",\n")}\n}\n`;
+}
+
+/** The clock file's text with one more firing in `queryApi.priced`; every other key kept, in its place. */
+export function withQueryApiFiring(text: string, firing: QueryApiFiring): string {
+  const data = JSON.parse(text) as unknown;
+  if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("the clock file is not a JSON object");
+  const record = data as Record<string, unknown>;
+  const block = record.queryApi ?? { priced: [] };
+  const priced = block && typeof block === "object" && !Array.isArray(block) ? (block as { priced?: unknown }).priced : undefined;
+  if (!Array.isArray(priced)) throw new Error('queryApi is not { "priced": [ … ] }');
+  record.queryApi = { ...(block as Record<string, unknown>), priced: [...priced, firing] };
+  return serializePageViewClock(record);
+}
+
+/** Records a firing in the clock file: the persistent flag (ruling 7.10 §4(1) R1). Written through a temp file. */
+export function recordQueryApiFiring(file: string, firing: QueryApiFiring): void {
+  const next = withQueryApiFiring(readFileSync(file, "utf8"), firing);
+  const tmp = `${file}.tmp-${process.pid}`;
+  writeFileSync(tmp, next);
+  renameSync(tmp, file);
 }
 
 // ── KPI rows ─────────────────────────────────────────────────────────────────
@@ -235,6 +348,11 @@ export interface PageViewReadResult {
   recorded: { lineId: PageViewLine; week: number; views: number; anchorDay: string }[];
   /** Every week read in this call, with its exclusions, so the /preview/, noindex and other volumes are visible. */
   weeks: PageViewWeekRead[];
+  /**
+   * Set when the reader is down because the query API answered as priced, in this tick or an earlier one not yet
+   * cleared by hand: the status is then `error` and the detail starts `reader_down — query_api_priced` (ruling 7.10 §4).
+   */
+  reason?: typeof QUERY_API_PRICED;
 }
 
 const EXCLUSION_WORDS: Record<ExclusionReason, string> = { preview: "preview", noindex: "noindex", "not-a-site-page": "other paths" };
@@ -254,6 +372,20 @@ export interface PageViewReaderOptions {
   clockFile?: string;
 }
 
+/** A `/query` answer R1 reads as priced (ruling 7.10 §4(1)): its status, what matched, and its masked first characters. */
+export class QueryApiPricedError extends Error {
+  readonly status: number;
+  readonly matched: string;
+  readonly body: string;
+  constructor(status: number, matched: string, body: string) {
+    super(`PostHog's query API answered as priced: ${matched}`);
+    this.name = "QueryApiPricedError";
+    this.status = status;
+    this.matched = matched;
+    this.body = body;
+  }
+}
+
 async function postQuery(
   fetchImpl: typeof fetch,
   queryHost: string,
@@ -268,6 +400,9 @@ async function postQuery(
     signal: AbortSignal.timeout(QUERY_TIMEOUT_MS),
   });
   const text = await res.text();
+  // R1, on every answer, before anything else reads it: a priced answer stops the reader (ruling 7.10 §4(1)).
+  const priced = queryApiPriced(res.status, text);
+  if (priced) throw new QueryApiPricedError(res.status, priced, maskPricedBody(text, key));
   let body: unknown = null;
   try {
     body = JSON.parse(text);
@@ -290,9 +425,16 @@ export async function readPageViews(db: Database, options: PageViewReaderOptions
   const env = options.env ?? process.env;
   const siteDir = options.siteDir ?? DEFAULT_PAGE_VIEW_SITE_DIR;
   const nowIso = options.nowIso ?? new Date().toISOString();
+  const clockFile = options.clockFile ?? DEFAULT_PAGE_VIEW_CLOCK_FILE;
   const recorded: PageViewReadResult["recorded"] = [];
   const weeksRead: PageViewWeekRead[] = [];
-  const done = (status: PageViewReadStatus, detail: string): PageViewReadResult => ({ status, detail, recorded, weeks: weeksRead });
+  const done = (status: PageViewReadStatus, detail: string, reason?: typeof QUERY_API_PRICED): PageViewReadResult => ({
+    status,
+    detail,
+    recorded,
+    weeks: weeksRead,
+    ...(reason ? { reason } : {}),
+  });
 
   const key = str(env[POSTHOG_READ_KEY_ENV]);
   let site: PageViewSite | null = null;
@@ -317,7 +459,21 @@ export async function readPageViews(db: Database, options: PageViewReaderOptions
   const queryHost = QUERY_HOSTS[site.apiHost.replace(/\/+$/, "")];
   if (!queryHost) return done("error", `posthog.apiHost ${site.apiHost} is not a PostHog cloud ingestion host; the read key is sent nowhere else`);
 
-  const { clocks } = readPageViewClock(options.clockFile ?? DEFAULT_PAGE_VIEW_CLOCK_FILE);
+  const { clocks, queryApi } = readPageViewClock(clockFile);
+  // The flag of a priced query API (ruling 7.10 §4(1) R1): fail closed on a block that cannot be read, and send nothing
+  // while a firing has no hand clearance.
+  if (queryApi === null) {
+    return done("error", `${clockFile}'s queryApi block cannot be read (see the page-view clock problems): it holds the flag that stops a priced query API, so nothing is sent until a hand fixes it`);
+  }
+  const open = queryApi.find((f) => f.clearedOn === null);
+  if (open) {
+    return done(
+      "error",
+      `reader_down — ${QUERY_API_PRICED} since ${open.at} (${open.matched}): no query is sent while ${clockFile} queryApi.priced holds a firing ` +
+        "no hand has cleared (clearedOn, a UTC day, and clearedReason, naming the REOPEN record; RULING-2026-10-07-posthog-organisation §4(1) R1)",
+      QUERY_API_PRICED,
+    );
+  }
   const byAnchor = new Map<string, PageViewLine[]>();
   for (const line of PAGE_VIEW_LINES) {
     const anchor = clocks[line].domainDeployDay ?? clocks[line].d0;
@@ -365,8 +521,31 @@ export async function readPageViews(db: Database, options: PageViewReaderOptions
         excluded: counts.excluded,
       });
     } catch (error) {
-      const why = (error instanceof Error ? error.message : String(error)).split(key).join("[key]");
       const before = weeksRead.length ? `; read before it, and kept: ${weeksRead.map(describeWeekRead).join("; ")}` : "";
+      if (error instanceof QueryApiPricedError) {
+        // R1 fired: nothing more is sent in this tick (the loop ends here) or any later one (the flag, recorded now).
+        let flag = `the flag is set in ${clockFile} (queryApi.priced)`;
+        try {
+          recordQueryApiFiring(clockFile, {
+            at: nowIso,
+            reason: QUERY_API_PRICED,
+            status: error.status,
+            matched: error.matched,
+            body: error.body,
+            clearedOn: null,
+            clearedReason: null,
+          });
+        } catch (writeError) {
+          const why = writeError instanceof Error ? writeError.message : String(writeError);
+          flag = `the flag could NOT be written to ${clockFile} (${why}): write the firing there by hand, or the next tick queries again`;
+        }
+        const detail =
+          `reader_down — ${QUERY_API_PRICED}: week ${p.week} from ${p.anchor} not read: PostHog's query API answered as priced ` +
+          `(${error.matched}; the answer began "${error.body}"); nothing more is sent, this tick or any later one, until a hand ` +
+          `clears the firing with a dated reason — ${flag} (RULING-2026-10-07-posthog-organisation §4(1) R1)${before}`;
+        return done("error", detail.split(key).join("[key]"), QUERY_API_PRICED);
+      }
+      const why = (error instanceof Error ? error.message : String(error)).split(key).join("[key]");
       return done("error", `week ${p.week} from ${p.anchor} not read: ${why}${before}`);
     }
   }
@@ -381,7 +560,7 @@ export function evaluatePageViewLines(
   db: Database,
   options: { nowIso: string; siteDir?: string; clockFile?: string },
 ): { readings: PageViewGateReading[]; problems: string[] } {
-  const { clocks, problems } = readPageViewClock(options.clockFile ?? DEFAULT_PAGE_VIEW_CLOCK_FILE);
+  const { clocks, problems, queryApi } = readPageViewClock(options.clockFile ?? DEFAULT_PAGE_VIEW_CLOCK_FILE);
   let host: string | null = null;
   try {
     host = readSite(options.siteDir ?? DEFAULT_PAGE_VIEW_SITE_DIR).host;
@@ -392,7 +571,9 @@ export function evaluatePageViewLines(
     const clock = clocks[line];
     const anchor = clock.domainDeployDay ?? clock.d0;
     const weeks = anchor && host ? pageViewSeries(db, line, host, anchor) : [];
-    return evaluatePageViewGates(line, clock, weeks, options.nowIso);
+    // A priced query API's firings suspend the M-instrument deadline (ruling 7.10 §4(2)(iv)); an unreadable block
+    // suspends nothing, and its problem is a blocker of its own.
+    return evaluatePageViewGates(line, clock, weeks, options.nowIso, PAGE_VIEW_GATES, queryApi ?? []);
   });
   return { readings, problems };
 }

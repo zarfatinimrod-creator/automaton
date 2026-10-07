@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -17,6 +17,7 @@ import {
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/render-watch.mjs";
 import {
+  ACTIVE_VERDICTS,
   PATH_LIMITS,
   TERMS_SHELL_RULING,
   applyVerdicts,
@@ -767,8 +768,22 @@ const UN60_FIXTURE = "src/__tests__/revenue/fixtures/terms-verdicts-4602c44-un-r
 const UN60_FIXTURE_SHA256 = "f38c6ff7bfc80507cb54e00153e4c17108e17d7e6fc8697769cc5f438bf0a395";
 const UN60_BASE = "4602c44";
 const un60Fixture = () => JSON.parse(readFileSync(UN60_FIXTURE, "utf8")) as Record<string, Entry>;
-/** The verdicts as they stood before un.org's terms read (tick 60): its entry put back from that fixture. */
-const un60Before = (v: Record<string, Entry>): Record<string, Entry> => ({ ...v, ...un60Fixture() });
+/**
+ * Tick 61 (7.10.2026): googleapis.com's entry is new (the YouTube API Services Terms read at github grade, ruling 7.10 row
+ * 24 §2 decision 2; research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md): CONDITIONAL_UNMET, copying
+ * barred. The site had no entry before it, so yt61Before() takes it out, and un60Before() does too (the file had none
+ * before tick 60 either); the blocks that count entries as earlier ticks left them hold what they held. The "tick 61"
+ * block holds the new state.
+ */
+const YT61_SITE = "googleapis.com";
+const YT61_BASE = "c1df0c8";
+/** The sentence ruling 7.10 row 25 fold 8 appended to posthog.com's note in the same tick (merged after YT61_BASE). */
+const PH61_SENTENCE =
+  " A second and a third free organisation, one per public face (brand, T1 sub-brand), each using its one included project, is use of PostHog's documented unit (organizations.mdx:24-28), not a circumvention under 2.1(d) (ruling 7.10 §1 option 8).";
+/** The verdicts as they stood before googleapis.com's entry (tick 61): that entry taken out. */
+const yt61Before = (v: Record<string, Entry>): Record<string, Entry> => Object.fromEntries(Object.entries(v).filter(([site]) => site !== YT61_SITE));
+/** The verdicts as they stood before un.org's terms read (tick 60): its entry put back from that fixture, and tick 61's taken out. */
+const un60Before = (v: Record<string, Entry>): Record<string, Entry> => ({ ...yt61Before(v), ...un60Fixture() });
 /** The frozen copies tick 56 read and cites: the two terms pages (4f3527d) and eurocontrol.int's robots.txt (364bf71). */
 const AG_TERMS = "research/rendered/terms-agenthon-2026-10-06";
 const EU_DISCLAIMERS = "research/rendered/terms-eurocontrol-disclaimers-2026-10-06";
@@ -2612,7 +2627,8 @@ describe("tick 54: the terms read on 6.10", () => {
     // read (121 unread); kaggle.com's read later on 6.10 made it 120, which the shell section states.
     expect(audit).toContain('"allowed" for virtualembryo.ai, and "unread" for the other 121, which is not "allowed".');
     expect(audit).toContain("for the two other sites whose verdicts already rested on a read copying clause (codabench.org,");
-    expect(Object.keys(v).length - 12).toBe(120);
+    // Counted without googleapis.com's entry, which tick 61 added ("tick 61" below).
+    expect(Object.keys(yt61Before(v)).length - 12).toBe(120);
     expect(audit).toContain("so eleven entries of `terms-verdicts.json` are barred and 120 unread, against ten and 121 after the terms read above.");
     // No note or row names a person: the footer's words before " Lab," (the lab's name) stay out of both.
     const footer = readFileSync(fz("terms-virtualembryo"), "utf8").split("\n")[108];
@@ -4893,8 +4909,9 @@ describe("tick 60: un.org's terms read (7.10), CONDITIONAL_UNMET, copying barred
     expect(parts[1]).toBe(
       `${before.source} (checked ${before.checked}; its note: "${before.note}", the record of that failure frozen as research/rendered/terms-un-2026-09-29.meta.json:5, :10)`,
     );
-    // Nothing else in the file moved: every other entry is what it was before the reading.
-    expect({ ...v, [SITE]: before }).toEqual(un60Before(v));
+    // Nothing else in the file moved: every other entry is what it was before the reading (googleapis.com's entry, which
+    // tick 61 added, taken out on both sides; "tick 61" below checks it moved nothing either).
+    expect(yt61Before({ ...v, [SITE]: before })).toEqual(un60Before(v));
     // No other entry names un.org (population.un.org and data.un.org are its hosts, not other sites' cross-references).
     for (const [site, entry] of Object.entries(raw)) if (site !== SITE) expect(/(^|[^a-z0-9.-])un\.org\b/.test(JSON.stringify(entry)), site).toBe(false);
     expect(ADDRESS.test(e.source) || ADDRESS.test(e.note ?? "")).toBe(false);
@@ -4975,8 +4992,9 @@ describe("tick 60: un.org's terms read (7.10), CONDITIONAL_UNMET, copying barred
     expect(cells[2]).toContain(`(\`${COPY}:90\`)`);
     expect(cells[4]).toBe(verdicts()[SITE].copying);
     expect(cells[5]).toBe(`\`${SLUG}\` (row 210), \`# paused (terms read, left paused, 7.10.2026)\` |`);
-    // The counts paragraph, its counts computed from the file.
-    const v = verdicts();
+    // The counts paragraph, its counts computed from the file as tick 60 left it (googleapis.com's entry of tick 61 taken
+    // out; "tick 61" below holds the counts now).
+    const v = yt61Before(verdicts());
     const count = (verdict: string) => Object.values(v).filter((e) => e.verdict === verdict).length;
     const copying = (value: string) => Object.values(v).filter((e) => e.copying === value).length;
     expect([barred(v).length, copying("unread"), copying("allowed"), count("CONDITIONAL_UNMET"), count("TERMS_PENDING")]).toEqual([12, 119, 1, 9, 3]);
@@ -5026,7 +5044,8 @@ describe("tick 60: un.org's terms read (7.10), CONDITIONAL_UNMET, copying barred
   it("moves un.org alone: one more copying-barred entry, one fewer kindless note", () => {
     const v = verdicts();
     const then = un60Before(v);
-    expect(barred(v)).toEqual([...barred(then), SITE].sort());
+    // googleapis.com's entry, added in tick 61, taken out of the file's side ("tick 61" below).
+    expect(barred(yt61Before(v))).toEqual([...barred(then), SITE].sort());
     expect(barred(then)).toHaveLength(11);
     expect(kindless(v)).toEqual(kindless(then).filter((s) => s !== SITE));
     expect(kindless(then)).toContain(SITE);
@@ -5150,5 +5169,105 @@ describe("tick 60: adaptionlabs.ai's once-only js render came back empty (a time
     const groups = text.split("\n").filter((l) => l.startsWith("- **"));
     expect(groups.find((l) => l.startsWith("- **Terms page a shell after the 6.10 fetch "))).toMatch(/: 0 URLs on 0 sites\*\* \(5\.10: 40 URLs on 9 sites, /);
     expect(groups.find((l) => l.startsWith("- **Shut by the 6.10 terms fetch and the once-only js render "))).toContain("(ticks 54 and 60): 38 URLs on 7 sites** ");
+  });
+});
+
+/**
+ * Tick 61 (7.10.2026): googleapis.com's entry, new. Ruling 7.10 row 24 §2 decision 2 had the YouTube API Services Terms
+ * of Service and Developer Policies read at github grade (Open Terms Archive's copy at commit 80db0630, pinned by sha256)
+ * by one Opus reader and one adversarial Opus verifier; the main thread's verdict is CONDITIONAL_UNMET, copying barred
+ * (OTA:661 with :799 (ii)), and the read-back's gate stays shut. The excerpt file and its checks are
+ * terms-saved-copies.test.ts's; this block holds the file's counts after the entry, which the blocks above read back
+ * through yt61Before().
+ */
+describe("tick 61: googleapis.com's entry (7.10), CONDITIONAL_UNMET, copying barred, the read-back's gate kept shut", () => {
+  const EXCERPTS = "research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md";
+  const barred = (s: Record<string, Entry>) => Object.keys(s).filter((x) => s[x].copying === "barred").sort();
+
+  it("adds googleapis.com alone, in its sorted place, and moves no other entry", () => {
+    const raw = JSON.parse(readFileSync(VERDICTS, "utf8")).sites as Record<string, Entry>;
+    const keys = Object.keys(raw);
+    expect(keys).toEqual([...keys].sort());
+    expect(keys.slice(keys.indexOf(YT61_SITE) - 1, keys.indexOf(YT61_SITE) + 2)).toEqual(["google.com", YT61_SITE, "googlesource.com"]);
+    expect(Object.keys(raw[YT61_SITE])).toEqual(["verdict", "source", "checked", "note", "copying"]);
+    // Where the base is reachable, every other entry is byte for byte what it held there, in the same order.
+    let base: string | null = null;
+    try {
+      base = execFileSync("git", ["show", `${YT61_BASE}:${VERDICTS}`], { stdio: ["ignore", "pipe", "ignore"], encoding: "utf8" });
+    } catch {
+      base = null;
+    }
+    if (base === null) return;
+    const then = JSON.parse(base).sites as Record<string, Entry>;
+    expect(then[YT61_SITE]).toBeUndefined();
+    expect(Object.keys(yt61Before(raw))).toEqual(Object.keys(then));
+    // One other entry moved in the same tick, by another fold: ruling 7.10 row 25 fold 8 appended one sentence to
+    // posthog.com's note (option 8, 2.1(d)). Everything else is byte for byte what the base held.
+    expect(raw["posthog.com"].note).toBe(then["posthog.com"].note + PH61_SENTENCE);
+    const before = yt61Before(raw);
+    expect({ ...before, "posthog.com": { ...before["posthog.com"], note: then["posthog.com"].note } }).toEqual(then);
+  });
+
+  it("gives it the main thread's verdict: CONDITIONAL_UNMET, copying barred, checked 7.10, sourced to the excerpt file at the pinned commit", () => {
+    const e = verdicts()[YT61_SITE];
+    expect([e.verdict, e.checked, e.copying]).toEqual(["CONDITIONAL_UNMET", "2026-10-07", "barred"]);
+    expect(e.source.startsWith(`${EXCERPTS} (YouTube API Services Terms of Service, Americas version, and Developer Policies; `)).toBe(true);
+    expect(e.source).toContain("OpenTermsArchive/vlopses-us-versions YouTube/Developer Terms.md at commit 80db0630, sha256 c7a39369…");
+    expect(e.source).toContain("read in full by one Opus reader and one adversarial Opus verifier, verdict by the main thread, tick 61; github grade)");
+    expect(existsSync(EXCERPTS)).toBe(true);
+    // Inactive: the read-back runs only under an active-eligible verdict (scripts/youtube-madeforkids-readback.ts).
+    expect(ACTIVE_VERDICTS.has(e.verdict)).toBe(false);
+    expect(termsBarred(YT61_SITE)).toBeNull();
+  });
+
+  it("says in its note why it is not BARRED, what is unmet, and the copying clause the field rests on", () => {
+    const note = verdicts()[YT61_SITE].note ?? "";
+    expect(note.startsWith("CONDITIONAL_UNMET: nothing in the five documents Open Terms Archive bundles bars a keyed status read")).toBe(true);
+    // The verifier's corrections: the read is contemplated in general, not videos.list by name; credentials may go to
+    // confidential agents; git history as storage is an inference; the one-client ruling brings in OTA:550.
+    expect(note).toContain("non-authorized Data API requests are contemplated (OTA:437, :457), Made for Kids status reads through the Data API are expected (OTA:602, :1176)");
+    expect(note).toContain("that videos.list with part=status returns these fields to a bare key is not in the document [inference until the first live read]");
+    expect(note).toContain("agents operating solely on the owner's behalf under a written duty of confidentiality, with no other third party, and never embedded in open source projects (OTA:450)");
+    expect(note).toContain("[inference: git history is storage]");
+    expect(note).toContain("The main thread ruled the colony one API Client");
+    expect(note).toContain("(OTA:550)");
+    // The review's fixes: OTA:550 with its exception for agents the user approved, as the clause words it; and the memo's
+    // condition 3 for the ten committed developers.google.com/youtube captures, which the trim does not reach.
+    expect(note).toContain("may then be shown to no one but the authorizing user or agents that user expressly approved (OTA:550)");
+    expect(note).toContain(
+      '(OTA:661 with :799 (ii)), which the ten developers.google.com/youtube captures under research/rendered/ would break from the owner\'s acceptance (they belong to google.com, whose copying is "unread", so scripts/trim-capture.mjs does not reach them, and their trim to cited lines, or a ruling on them, precedes Stage A); ',
+    );
+    // The facts that clause rests on: google.com's copying is "unread" (so the trim leaves its captures), and exactly ten
+    // committed captures' metas name a developers.google.com/youtube URL.
+    expect(verdicts()["google.com"].copying).toBe("unread");
+    const devYoutube = readdirSync("research/rendered")
+      .filter((f) => f.endsWith(".meta.json"))
+      .filter((f) => String(JSON.parse(readFileSync(join("research/rendered", f), "utf8")).url ?? "").startsWith("https://developers.google.com/youtube/"));
+    expect(devYoutube).toHaveLength(10);
+    expect(note).toContain("on the literal words of OTA:245 with :163, its scope unknown given §24.1 (OTA:241)");
+    expect(note).toContain("(OTA:516)");
+    expect(note).toContain("not decided here: a Fable sitting rules before Stage A");
+    expect(note).toContain("The read-back's gate stays closed");
+    // The copying field rests on :661 with :799 (ii); §16.1-16.2 are a reservation, not the bar (the _about's rule).
+    expect(note).toContain("Copying barred: OTA:661 bars redistributing \"all or any portion of YouTube API Services\"");
+    expect(note).toContain("(OTA:799 (ii))");
+    expect(note).toContain("§16.1-16.2 (OTA:163, :165) reserve rights and grant no licence, a reservation and not a bar");
+    // Four to eight sentences, and no address of any kind.
+    const sentences = note.split(/(?<=[.\]])\s+(?=[A-Z§])/);
+    expect(sentences.length).toBeGreaterThanOrEqual(4);
+    expect(sentences.length).toBeLessThanOrEqual(8);
+    expect(ADDRESS.test(note) || ADDRESS.test(verdicts()[YT61_SITE].source)).toBe(false);
+  });
+
+  it("counts one more copying-barred entry (13) and one more CONDITIONAL_UNMET (10); the rest as tick 60 left them", () => {
+    const v = verdicts();
+    const then = yt61Before(v);
+    expect(barred(v)).toEqual([...barred(then), YT61_SITE].sort());
+    expect(barred(v)).toHaveLength(13);
+    const count = (s: Record<string, Entry>, verdict: string) => Object.values(s).filter((e) => e.verdict === verdict).length;
+    const copying = (s: Record<string, Entry>, value: string) => Object.values(s).filter((e) => e.copying === value).length;
+    expect([barred(v).length, copying(v, "unread"), copying(v, "allowed"), count(v, "CONDITIONAL_UNMET"), count(v, "TERMS_PENDING")]).toEqual([13, 119, 1, 10, 3]);
+    expect([barred(then).length, copying(then, "unread"), copying(then, "allowed"), count(then, "CONDITIONAL_UNMET"), count(then, "TERMS_PENDING")]).toEqual([12, 119, 1, 9, 3]);
+    expect(Object.keys(v)).toHaveLength(133);
   });
 });

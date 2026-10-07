@@ -182,6 +182,14 @@ All YouTube-help grounds in this section are [against-bar], compliance; the FTC'
    youtube.com is `BARRED` (`research/channel-loop/terms-verdicts.json:460-464`, repo). A list pushed before the fix would
    probe youtube.com against its bar. The 30.9 08:53 run (`research/measurements/t1-subbrand-check.md:3`) was made after
    the bar and is not repeated (ruling §7, the compliance finding).
+   **Recorded 7.10.2026** (`research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md` (e)): the kids
+   sub-brand is **`worldincharts`**, the first name free on all three probes in the 4.10 09:28Z run
+   (`research/measurements/kids-subbrand-check.md`, `218ffca`); the owner may veto; next in line `askthechart`; the
+   handle `@worldincharts` is tried at Stage A. One web search for the name before Stage A, recorded here: 7.10.2026 ~07:40 UTC, one WebSearch for the exact token "worldincharts" (snippet grade): no business,
+   channel, handle or trademark of that name in the results; the nearest names are "Our World in Charts" (a chart
+   collection of The Outlier, a South African data-journalism site), the "Our World in Data" chart API and a Goodreads
+   blog post titled "the world in charts" — none a YouTube channel, none the token itself; no YouTube search was made
+   (youtube.com is barred); the handle itself is tested only at Stage A.
 5. **REOPEN** (ruling §7 rule 5): rule 1 reopens if the Open Terms Archive copy of YouTube's Community Guidelines on GitHub
    states that termination of one channel bars the Google account's other channels; then the kids channel moves to its
    own Google account before its first upload (and only then does a second Stage A exist, asked in the batch). Also if
@@ -248,7 +256,7 @@ All YouTube-help grounds in this section are [against-bar], compliance; the FTC'
      click, never a relabel (§6 rule 2).
    - `K-policy` (KILL-3): any warning, strike, removal, auto-privating, age-gating, "limited or no ads" on kids-quality
      grounds, or any YPP action kills the line the same day; never a workaround channel ([against-bar], compliance).
-   - `K-T1k`: the kids channel's own first-upload window, P1-P4 as T1's (`research/faceless-youtube/T1-PROTOCOL.md:72-82`),
+   - `K-T1k`: the kids channel's own first-upload window, P1-P4 as T1's (`research/faceless-youtube/T1-PROTOCOL.md:77-83`, fail rule `:85-89`),
      but read through the publisher's response and the Data API (`videos.list`, `part=status`, `privacyStatus`), never a
      fetch of the watch page (youtube.com is barred). Fails → kill.
    - `K-supply`, `K0`, `K3`, `K-cash`, `K-compute` with T1's numbers, on the kids channel's own D0
@@ -308,7 +316,8 @@ All YouTube-help grounds in this section are [against-bar], compliance; the FTC'
    terms under D2 before any re-render.
 9. The repo-public decision: the owner's; every ₪0 render depends on it.
 10. Whether Google issues the second channel, or asks for more than a phone, at Stage A: known only there.
-11. T1's reads of the watch page: the ruling names P2 and P4 (`T1-PROTOCOL.md:75`, `:77`), but the rows that read the
-    video's public URL are P1 (`:74`) and P2 (`:75`); P4 reads channel state through the publisher and the manager
-    account, not the watch page. Flagged in `T1-PROTOCOL.md`'s P1 and P2 rows for T1's own row (P4 carries a note saying
-    why it has no flag); not ruled here.
+11. T1's reads of the watch page: ruled 7.10.2026
+    (`research/channel-loop/RULING-2026-10-07-t1-watch-reads-and-kids-subbrand.md` (a)-(d)): P1's second half and P2
+    read `status.privacyStatus` through `videos.list part=id,status` on the Stage A key, P2 as
+    `stayedPublic(entry, 72)`; P4 reads the publisher and the brand mailbox and never a runner's sign-in; the rows are
+    `T1-PROTOCOL.md:79`, `:80`, `:82` (the ruling named `:75`, `:77` on an older tree).

@@ -1,8 +1,9 @@
 """The web comparison arm (T1-PROTOCOL order item 4): the same analysis as one static HTML page.
 
 Same question, same filled text, same charts, same figures and attribution as the video, built from the same spec and
-the same figures.json, so the two arms cannot drift apart. It is not deployed: that waits on the brand domain (owner
-step 5). The page carries the brand from the spec (`page.brand`, decided in
+the same figures.json, so the two arms cannot drift apart. It is not deployed: that waits on the deploy route
+(logs/CHANNEL_LOOP.md §6) and on the sub-brand's own PostHog project (ruling 7.10). The page carries the brand
+from the spec (`page.brand`, decided in
 research/measurements/brand-name-decision.md); the video carries none.
 
 Self-contained: the charts are inlined as data URIs and the CSS is inline; the only links are to the sources. The page

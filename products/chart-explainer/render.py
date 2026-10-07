@@ -7,6 +7,10 @@ Writes, under --out: <id>.mp4, <id>.srt, charts/*.png, page/index.html, figures.
 manifest.notes.json and render-report.json. Nothing is uploaded or published: this program has no network code
 beyond fetch.py's pinned, hash-checked downloads from GitHub.
 
+The page's page-view counter comes from counter.json beside this file (ruling 7.10 §3): off, with no script at all,
+while its projectKey is empty; set, it is checked before anything is fetched or rendered, and a personal API key
+(phx_), a malformed token or a host other than the two PostHog cloud ingestion hosts stops the render.
+
 Exit status is non-zero, and no manifest is written, when a claim is false for the data, a template holds a
 hand-typed number, a download does not match its hash, or the video falls outside the spec's duration bounds.
 """
@@ -38,6 +42,28 @@ class RenderError(RuntimeError):
     pass
 
 
+# The T1 sub-brand's own PostHog project (ruling 7.10 §3), never the brand's: products/il-biz-tools/src/config/site.json
+# holds the brand's, and the two never share a token.
+COUNTER_CONFIG = HERE / "counter.json"
+
+
+def load_counter(path: Path = COUNTER_CONFIG) -> dict[str, str] | None:
+    """The `counter` argument for page.build_page, read from counter.json: None while `projectKey` is "" (the page is
+    built with no counter, byte for byte the page before the counter existed), otherwise {"host": apiHost, "key":
+    projectKey}, checked by page.counter_config before it is returned. Fails closed: a personal API key (phx_), anything
+    that is not a project token, a host other than the two PostHog cloud ingestion hosts, a missing field or a file that
+    is not a JSON object raises ValueError, whose message never repeats the key. `projectId` is not read: the page never
+    uses it."""
+    cfg = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(cfg, dict):
+        raise ValueError("counter.json must be a JSON object")
+    if cfg.get("projectKey") == "":
+        return None
+    counter = {"host": cfg.get("apiHost"), "key": cfg.get("projectKey")}
+    page.counter_config(counter)
+    return counter
+
+
 def _write_json(path: Path, data) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
@@ -52,6 +78,10 @@ def render(spec_path: Path, out: Path, clock_start: float | None, repo_root: Pat
         return time.time()
 
     spec = json.loads(Path(spec_path).read_text(encoding="utf-8"))
+    try:
+        counter = load_counter(COUNTER_CONFIG)
+    except (OSError, ValueError) as e:
+        raise RenderError(f"{COUNTER_CONFIG.name}: {e}") from None
     video = spec["video"]
     out.mkdir(parents=True, exist_ok=True)
 
@@ -98,7 +128,8 @@ def render(spec_path: Path, out: Path, clock_start: float | None, repo_root: Pat
     probe = assemble.probe(mp4)
     (out / "page").mkdir(exist_ok=True)
     (out / "page" / "index.html").write_text(
-        page.build_page(spec, filled, fj, {s["id"]: p for s, p in zip(filled.scenes, images)}), encoding="utf-8")
+        page.build_page(spec, filled, fj, {s["id"]: p for s, p in zip(filled.scenes, images)}, counter=counter),
+        encoding="utf-8")
     t = lap("probeAndPage", t)
 
     finished = time.time()
