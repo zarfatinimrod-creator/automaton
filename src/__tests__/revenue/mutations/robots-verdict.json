@@ -939,5 +939,181 @@
     "replace": "pause the line or take it off its list (research/rendered/README.md)",
     "test": "src/__tests__/revenue/robots-verdict.test.ts",
     "note": "tick 59 review fix: the console names pausing as the remedy again, which leaves the line queued and the report standing"
+  },
+  {
+    "id": "T60-UN1-verdict-word",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"un.org\": {\n   \"verdict\": \"CONDITIONAL_UNMET\",",
+    "replace": "\"un.org\": {\n   \"verdict\": \"TERMS_PENDING\",",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: un.org's verdict word back to TERMS_PENDING, the reading not applied"
+  },
+  {
+    "id": "T60-UN2-copying-unread",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "either of which may add terms.\",\n   \"copying\": \"barred\"",
+    "replace": "either of which may add terms.\",\n   \"copying\": \"unread\"",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: un.org's copying field left unread, though the reading bars copying (decision 4(2))"
+  },
+  {
+    "id": "T60-UN3-live-capture",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"source\": \"research/rendered/terms-un-2026-10-06.txt (",
+    "replace": "\"source\": \"research/rendered/terms-un.txt (",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the source names the live capture, which the weekly run rewrites and the trim empties"
+  },
+  {
+    "id": "T60-UN4-unpaused",
+    "file": "research/rendered/urls.txt",
+    "find": "# paused (terms read, left paused, 7.10.2026): un.org is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://www.un.org/en/about-us/terms-of-use\tterms-un",
+    "replace": "https://www.un.org/en/about-us/terms-of-use\tterms-un",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the terms- line of a CONDITIONAL_UNMET site left active"
+  },
+  {
+    "id": "T60-UN5-reason-unread",
+    "file": "research/rendered/urls.txt",
+    "find": "# paused (terms read, left paused, 7.10.2026): un.org",
+    "replace": "# paused (terms unread): un.org",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the pause comment says the terms are unread, as --apply-verdicts writes it, after they were read"
+  },
+  {
+    "id": "T60-UN6-frozen-commit",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "by the 6.10 weekly render, frozen as 364bf71 stored it), read in full by one Opus reader and one adversarial Opus verifier, ruled by the main thread (tick 60;",
+    "replace": "by the 6.10 weekly render, frozen as 5f4853a stored it), read in full by one Opus reader and one adversarial Opus verifier, ruled by the main thread (tick 60;",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the source names the 07:15 render's commit, not the 12:05 one that stored the capture read"
+  },
+  {
+    "id": "T60-UN7-decisive-line",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "therefrom\\\" (research/rendered/terms-un-2026-10-06.txt:90); the runner serves",
+    "replace": "therefrom\\\" (research/rendered/terms-un-2026-10-06.txt:92); the runner serves",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the note points the decisive clause at the wrong line of the frozen copy"
+  },
+  {
+    "id": "T60-UN8-scope",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "Scope: www.un.org is covered; population.un.org and data.un.org are unclear,",
+    "replace": "Scope: www.un.org, population.un.org and data.un.org are covered,",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the note settles the subdomains' scope the reading left unclear"
+  },
+  {
+    "id": "T60-UN9-before-kept",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "; TERMS_PENDING before: https://www.un.org/en/about-us/terms-of-use (checked 2026-09-29;",
+    "replace": "; TERMS_PENDING before: https://www.un.org/en/about-us/terms-of-use (checked 2026-09-30;",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the source's TERMS_PENDING record is not the entry it replaced"
+  },
+  {
+    "id": "T60-UN10-fixture",
+    "file": "src/__tests__/revenue/fixtures/terms-verdicts-4602c44-un-read.json",
+    "find": "\"checked\": \"2026-09-29\",",
+    "replace": "\"checked\": \"2026-09-30\",",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the fixture of un.org's entry before the reading is not 4602c44's"
+  },
+  {
+    "id": "T60-UN11-zero-tests",
+    "file": "research/channel-loop/ZERO-TESTS.md",
+    "find": "**READ 7.10 (tick 60): CONDITIONAL_UNMET: research/rendered/terms-un-2026-10-06.txt:90 allows",
+    "replace": "**READ 7.10 (tick 60): CONDITIONAL_UNMET: research/rendered/terms-un.txt:90 allows",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: ZERO-TESTS row 210's mark cites the live capture"
+  },
+  {
+    "id": "T60-UN12-audit-count",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "so twelve entries are barred (",
+    "replace": "so eleven entries are barred (",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the audit's count of copying-barred entries is the one before un.org's"
+  },
+  {
+    "id": "T60-UN13-round2-row",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "| TERMS_PENDING; **CONDITIONAL_UNMET since 7.10.2026 (tick 60): read, copying barred; see \"un.org read (7.10.2026, tick 60)\" below.** |",
+    "replace": "| TERMS_PENDING |",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the 29.9 audit's Round 2 row still gives TERMS_PENDING as the final verdict"
+  },
+  {
+    "id": "T60-UN14-frozen-meta-commit",
+    "file": "research/rendered/terms-un-2026-10-06.meta.json",
+    "find": "\"commit\": \"364bf71\",",
+    "replace": "\"commit\": \"5f4853a\",",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60: the frozen copy's meta names a commit that did not store these bytes"
+  },
+  {
+    "id": "T60-RV1-note-igo-path",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "research/faceless-youtube/LICENCE-IGO-DECISION.md's matter, untouched by this reading",
+    "replace": "research/faceless-youtube/LICENCE-DECISION.md's matter, untouched by this reading",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R9): the note's cross-reference names a file that does not exist"
+  },
+  {
+    "id": "T60-RV2-audit-igo-path",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "`research/faceless-youtube/LICENCE-IGO-DECISION.md`'s matter, which this reading leaves untouched",
+    "replace": "`research/faceless-youtube/LICENCE-DECISION.md`'s matter, which this reading leaves untouched",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review: the audit section's copy of that cross-reference names a file that does not exist"
+  },
+  {
+    "id": "T60-RV3-scope-130",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "(:88, :90, :92, :130), and \"UN.ORG\" (:134)",
+    "replace": "(:88, :90, :92, :131), and \"UN.ORG\" (:134)",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R10): the Scope paragraph points at :131, an empty line of the frozen copy"
+  },
+  {
+    "id": "T60-RV4-deny-144",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": ":144 is a discretionary right to deny",
+    "replace": ":142 is a discretionary right to deny",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R11): the discretionary denial pointed at :142, not the clause (:144)"
+  },
+  {
+    "id": "T60-RV5-browsewrap-88",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "no date stated, a browsewrap (:88).",
+    "replace": "no date stated, a browsewrap (:86).",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R17): the browsewrap pointed at :86, not the line that says it (:88)"
+  },
+  {
+    "id": "T60-RV6-unread-276",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "Privacy Notice (`research/rendered/terms-un-2026-10-06.txt:273`, :276).",
+    "replace": "Privacy Notice (`research/rendered/terms-un-2026-10-06.txt:273`, :277).",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R12): the Unread pointer names :277 (Terms of Use), not the Privacy Notice (:276)"
+  },
+  {
+    "id": "T60-RV7-table-scope-134",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "data.un.org unclear (:84, :90, :134) | barred",
+    "replace": "data.un.org unclear (:84, :90, :135) | barred",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review (R13): the table's scope cell points at :135, an empty line"
+  },
+  {
+    "id": "T60-RV8-unread-swapped",
+    "file": "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
+    "find": "Privacy Notice (`research/rendered/terms-un-2026-10-06.txt:273`, :276).",
+    "replace": "Privacy Notice (`research/rendered/terms-un-2026-10-06.txt:276`, :273).",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 60 review fixer: both Unread pointers are cited lines but swapped, so only the pairing catches it"
   }
 ]
