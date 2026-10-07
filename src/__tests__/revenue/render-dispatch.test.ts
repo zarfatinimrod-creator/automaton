@@ -161,6 +161,9 @@ function world(opts: { short?: boolean; raw?: boolean; forms?: boolean; oldCaptu
   mkdirSync(join(seed, "research", "rendered"), { recursive: true });
   mkdirSync(bin, { recursive: true });
   git(bare, "init", "-q", "--bare");
+  // No background gc in the fixture: a detached "gc --auto" after a push could repack while a clone reads the packs.
+  git(bare, "config", "gc.auto", "0");
+  git(bare, "config", "receive.autogc", "false");
   git(seed, "init", "-q");
   for (const f of COPY) copyFileSync(join(ROOT, "scripts", f), join(seed, "scripts", f));
   chmodSync(join(seed, "scripts", "render-dispatch.sh"), 0o755);
@@ -177,9 +180,10 @@ function world(opts: { short?: boolean; raw?: boolean; forms?: boolean; oldCaptu
   git(seed, ...who, "commit", "-q", "-m", "scripts");
   git(seed, "push", "-q", bare, `HEAD:refs/heads/${REF}`);
   git(seed, "push", "-q", bare, "HEAD:refs/heads/main");
-  // --no-hardlinks: a local clone hardlinks the bare repository's pack files, and the two pushes just above can repack them
-  // mid-clone ("fatal: hardlink different from source at .../tmp_pack_..."; CI, 6.10). Copying the objects has no race.
-  git(base, "clone", "-q", "--no-hardlinks", "-b", REF, bare, checkout);
+  // --no-local: a local clone links or copies the bare repository's objects/pack directory as it finds it, and the pushes
+  // just above can still be finishing a pack there (".tmp-<pid>-pack-..." vanished mid-copy; "hardlink different from
+  // source"; CI, 6.10 and 7.10). The transport clone asks upload-pack for the objects instead and sees no transient file.
+  git(base, "clone", "-q", "--no-local", "-b", REF, bare, checkout);
 
   const rendered = join(seed, "research", "rendered");
   const forms = opts.forms ? ` ${FORMS.map((f) => `Or ${f} .`).join(" ")}` : "";
