@@ -22,6 +22,7 @@ import {
 import { FACELESS_YOUTUBE_EXPERIMENT, KIDS_EXPLAINERS_EXPERIMENT, evaluateExperiment, type ExperimentReadings } from "../../revenue/experiments.js";
 import {
   API_KEY_ENV,
+  API_TERMS_EXCERPT,
   API_TERMS_SITE,
   TERMS_VERDICTS,
   apiTermsGate,
@@ -704,6 +705,23 @@ describe("the terms gate: no call until the API's terms are read (ruling 7.10 ro
       expect(existsSync(s.statePath), verdict).toBe(false);
       expect(s.lines.join("\n"), verdict).toContain(`googleapis.com is ${verdict}, not one a call may run under`);
     }
+  });
+
+  it("says what the refusal waits for since the 7.10 read: an active-eligible verdict, with the unmet conditions' file", async () => {
+    // Tick 62 (7.10.2026): the refusal said no call is made "until the YouTube API Services Terms are read at github grade
+    // and recorded there"; they were read on 7.10 (tick 61) and recorded CONDITIONAL_UNMET, so it names what is missing now.
+    const s = setup(JSON.stringify(verdictsWith("CONDITIONAL_UNMET")));
+    expect(await s.run()).toBe(2);
+    const said = s.lines.join("\n");
+    expect(said).toContain("No call is made until googleapis.com's verdict there is active-eligible (ruling 7.10 row 24 (b))");
+    expect(said).toContain(`the conditions the 7.10 read found unmet are listed in ${API_TERMS_EXCERPT}; nothing asked, nothing written.`);
+    expect(said).not.toContain("until the YouTube API Services Terms are read");
+    expect(API_TERMS_EXCERPT).toBe("research/channel-loop/terms/youtube-api-services-terms-2026-10-07.md");
+    expect(existsSync(resolve(ROOT, API_TERMS_EXCERPT))).toBe(true);
+    // The file it names is the one the committed googleapis.com verdict cites, and it lists the unmet conditions.
+    const committed = (readTermsVerdicts() as { sites: Record<string, { source: string }> }).sites["googleapis.com"];
+    expect(committed.source.startsWith(`${API_TERMS_EXCERPT} (`)).toBe(true);
+    expect(readFileSync(resolve(ROOT, API_TERMS_EXCERPT), "utf8")).toContain("conditions unmet");
   });
 
   it("fails closed on a missing or unreadable verdicts file", async () => {

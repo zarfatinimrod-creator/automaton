@@ -909,6 +909,25 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
     expect(step6Doc).toContain("### חלק ד");
     expect(step6Doc).toContain("עצור אם");
   });
+
+  // Tick 62 (7.10.2026): the hourly report prints the lines' setup items, and none named PostHog, so part ד was asked
+  // nowhere in it. il-biz-tools now carries it as its second item, after the mailbox and before Gumroad (the ₪0 order).
+  it("asks part ד in the report: il-biz-tools' second setup item is the two PostHog organisations, linked to step 6", () => {
+    const items = DEFAULT_PORTFOLIO.find((l) => l.id === "il-biz-tools")!.humanSetupItems!;
+    expect(items.map((i) => i.steps)).toEqual([[8], [6], [3], [6]]);
+    const ph = items[1];
+    expect(ph.text).toMatch(/^Create two PostHog organisations, Mehudak and chartsplained, in the PostHog login the connector already reaches/);
+    expect(ph.text).toContain("(owner step 6 part ד)");
+    expect(ph.text).toContain("about 3 minutes, free, no card and no identity");
+    expect(ph.text).toContain("close the tab and create nothing");
+    expect(ph.text).toContain("Without them no page-view counter runs and no D0 is recorded");
+    expect(ph.text).toContain("ruling 7.10 row 25");
+    expect(ph.contextSteps).toBeUndefined();
+    // Exactly one item names PostHog, and it never asks for the key, which waits for the project (the held-row note).
+    const all = DEFAULT_PORTFOLIO.flatMap((l) => l.humanSetupItems ?? []);
+    expect(all.filter((i) => /PostHog/.test(i.text))).toEqual([ph]);
+    expect(ph.text).not.toContain("POSTHOG_READ_KEY");
+  });
 });
 
 // Open from the tick-26 builds (logs/CHANNEL_LOOP.md §9): a step marked done while its gated row was still held back
@@ -1020,6 +1039,22 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     // The step's earlier text stands.
     expect(u).toMatch(/same sitting/);
     expect(u).toMatch(/BRAND_GITHUB_TOKEN/);
+  });
+
+  // Tick 62 (7.10.2026): oss-bounties' setup item, which the hourly report prints, still called BRAND_GITHUB_TOKEN "the
+  // only other thing step 7's sitting does" after the fence joined the sitting on 4.10. It now names the fence.
+  it("names the fence in oss-bounties' setup item too, in step 7's own words, not the token alone", () => {
+    const machine = DEFAULT_PORTFOLIO.find((l) => l.id === "oss-bounties")!.humanSetupItems![0];
+    expect(machine.text).not.toContain("the only other thing step 7's sitting does");
+    expect(machine.text).toContain("the same sitting also sets the organisation's $0 Actions budget");
+    expect(machine.text).toContain('"Stop usage when budget limit is reached" ticked');
+    expect(machine.text).toContain("opts in to the included-usage alerts");
+    expect(machine.text).toContain("creates the read-only ORG_BUDGETS_READ_TOKEN");
+    expect(machine.text).toContain("ruling 4.10 row 18 and its amendment");
+    for (const words of ['"Stop usage when budget limit is reached" ticked', "included-usage alerts", "ORG_BUDGETS_READ_TOKEN"]) {
+      expect(step7.unlocks, `step 7's own words: ${words}`).toContain(words);
+    }
+    expect(machine.text).not.toMatch(/write/i);
   });
 
   it("writes the fence in the Hebrew step 7: the five by-sight items, the alerts, the stop rule and the token", () => {
