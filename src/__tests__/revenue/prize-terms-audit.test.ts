@@ -756,6 +756,19 @@ const tick56 = (v: Record<string, Entry>): Record<string, Entry> => ({
   ...tick57e(v),
   ...(JSON.parse(readFileSync(ROBOTS57_FIXTURE, "utf8")) as Record<string, Entry>),
 });
+/**
+ * Tick 60 (7.10.2026): un.org's terms page, captured by the 6.10 weekly render (364bf71), frozen as terms-un-2026-10-06, read
+ * by one Opus reader and one adversarial Opus verifier, and ruled CONDITIONAL_UNMET, copying barred, by the main thread. Its
+ * TERMS_PENDING entry, as terms-verdicts.json held it at UN60_BASE (the tick-60 build's base), is a fixture pinned by sha256;
+ * un60Before() puts it back, so the blocks above that count copying-barred entries and kindless notes as ticks 54-57 left
+ * them hold what they held. The "tick 60" block holds the new state.
+ */
+const UN60_FIXTURE = "src/__tests__/revenue/fixtures/terms-verdicts-4602c44-un-read.json";
+const UN60_FIXTURE_SHA256 = "f38c6ff7bfc80507cb54e00153e4c17108e17d7e6fc8697769cc5f438bf0a395";
+const UN60_BASE = "4602c44";
+const un60Fixture = () => JSON.parse(readFileSync(UN60_FIXTURE, "utf8")) as Record<string, Entry>;
+/** The verdicts as they stood before un.org's terms read (tick 60): its entry put back from that fixture. */
+const un60Before = (v: Record<string, Entry>): Record<string, Entry> => ({ ...v, ...un60Fixture() });
 /** The frozen copies tick 56 read and cites: the two terms pages (4f3527d) and eurocontrol.int's robots.txt (364bf71). */
 const AG_TERMS = "research/rendered/terms-agenthon-2026-10-06";
 const EU_DISCLAIMERS = "research/rendered/terms-eurocontrol-disclaimers-2026-10-06";
@@ -2487,7 +2500,8 @@ describe("tick 54: the terms read on 6.10", () => {
   });
 
   it("gives every site a copying field: barred with its clause cited, allowed for virtualembryo.ai, unread for the rest", () => {
-    const v = verdicts();
+    // As ticks 54-59 left the field: un.org's TERMS_PENDING entry put back (copying barred since tick 60, "tick 60" below).
+    const v = un60Before(verdicts());
     const raw = JSON.parse(readFileSync(VERDICTS, "utf8"));
     for (const [site, e] of Object.entries(v)) expect(["barred", "allowed", "unread"], site).toContain(e.copying);
     const barred = Object.keys(v).filter((s) => v[s].copying === "barred").sort();
@@ -2609,7 +2623,9 @@ describe("tick 54: the terms read on 6.10", () => {
   });
 
   it("opens every NO_TERMS and TERMS_PENDING note with its kind word, but for the sites no kind fits yet, which are named", () => {
-    const v = verdicts();
+    // As ticks 54-59 left the notes: un.org's TERMS_PENDING entry put back. Its terms were read in tick 60 (CONDITIONAL_UNMET),
+    // so NO_KIND has shrunk by one since ("tick 60" below holds the kindless notes now).
+    const v = un60Before(verdicts());
     const pending = Object.keys(v).filter((s) => ["NO_TERMS", "TERMS_PENDING"].includes(v[s].verdict));
     const kindless = pending.filter((s) => !KIND.test(v[s].note ?? ""));
     // NO_KIND as the terms read left it, and (tick 55) the two sites a terms link reopened: their terms pages were not
@@ -2948,7 +2964,8 @@ describe("tick 54: the shell terms pages rendered once (6.10)", () => {
     expect(post).toContain("HTTP 403, no body (`research/rendered/terms-israel-post.meta.json`");
     expect(post).toContain("NO_TERMS (refusal-type; shell before)");
     expect(text).toContain("eleven entries of `terms-verdicts.json` are barred and 120 unread");
-    expect(Object.values(v).filter((e) => e.copying === "barred")).toHaveLength(11);
+    // Eleven until tick 60; twelve since un.org's terms read ("tick 60" below).
+    expect(Object.values(un60Before(v)).filter((e) => e.copying === "barred")).toHaveLength(11);
     expect(ADDRESS.test(text)).toBe(false);
   });
 });
@@ -4383,8 +4400,9 @@ describe("tick 57, third round: agenthon.net's Licensing Policy and Privacy Noti
     // The notes with no kind word: agenthon.net's left the list with this reading.
     const kindless = (s: Record<string, Entry>) =>
       Object.keys(s).filter((x) => ["NO_TERMS", "TERMS_PENDING"].includes(s[x].verdict) && !KIND.test(s[x].note ?? "")).sort();
-    expect(kindless(v)).toHaveLength(23);
-    expect(kindless(tick57e(v))).toEqual([...kindless(v), SITE].sort());
+    // As tick 57 left the notes: un.org's TERMS_PENDING entry put back (its terms read in tick 60, "tick 60" below).
+    expect(kindless(un60Before(v))).toHaveLength(23);
+    expect(kindless(tick57e(un60Before(v)))).toEqual([...kindless(un60Before(v)), SITE].sort());
   });
 
   it("names both frozen copies and the audit section in the source, tick 56's source kept after it, then the robots verdict's in front", () => {
@@ -4602,7 +4620,9 @@ describe("tick 57, third round: agenthon.net's Licensing Policy and Privacy Noti
     const open = (s: Record<string, Entry>) => audited().filter((e) => termsGate(e.url, e.slug, s).ok).length;
     const negative = Object.keys(AUDITED).filter((x) => v[x].verdict === "NO_TERMS" && isExhaustiveNegative(v[x]));
     const pending = Object.keys(AUDITED).filter((x) => v[x].verdict === "TERMS_PENDING");
-    const kindless = Object.keys(v).filter((x) => ["NO_TERMS", "TERMS_PENDING"].includes(v[x].verdict) && !KIND.test(v[x].note ?? ""));
+    // The kindless notes as tick 57 counted them: un.org's TERMS_PENDING entry put back (read in tick 60, "tick 60" below).
+    const u = un60Before(v);
+    const kindless = Object.keys(u).filter((x) => ["NO_TERMS", "TERMS_PENDING"].includes(u[x].verdict) && !KIND.test(u[x].note ?? ""));
     expect([ok(v).length, ok(t57e).length, cleared, open(v), open(t57e), open(tick56(v))]).toEqual([18, 17, 21, 35, 34, 33]);
     expect([negative.sort(), pending, kindless.length]).toEqual([Object.keys(ROBOTS_NOT_SET).sort(), ["adaptionlabs.ai"], 23]);
     expect(paragraph("**Lines, rows and counts.** ")).toBe(
@@ -4758,6 +4778,259 @@ describe("tick 58: the blocks above read the verdicts as they stood before any -
     // A hand edit of an entry is not a re-check: it is not put back, so the blocks above still see it.
     const edited = { ...raw, "drivendata.org": { ...refresh.entry, copying: "allowed" } };
     expect(beforeRecheck(edited)["drivendata.org"]).toEqual(edited["drivendata.org"]);
+  });
+});
+
+/**
+ * Tick 60 (7.10.2026): un.org's terms read. The 29.9 audit (research/channel-loop/TERMS-AUDIT-2026-09-29.md) left un.org
+ * TERMS_PENDING with its terms page queued (ZERO-TESTS row 210, terms-un): the 29.9 fetch answered 504, and the 6.10 weekly
+ * render (364bf71) captured the page, 277 lines. It was frozen as terms-un-2026-10-06, read in full by one Opus reader and
+ * one adversarial Opus verifier, and ruled by the main thread: CONDITIONAL_UNMET, copying barred (ruling 6.10 row 21
+ * decision 4(2)). The one grant (:90) is for the User's personal, non-commercial use, with no right to redistribute or
+ * compile; no clause bars automated access as such. The terms- line is paused as read. The trim of both captures (ruling 6.10
+ * row 21 (d)) follows the merge, so the frozen copy's full bytes are read through fullSha256Of and only its cited lines are
+ * read from its .txt. The blocks above read un.org's TERMS_PENDING entry back through un60Before().
+ */
+describe("tick 60: un.org's terms read (7.10), CONDITIONAL_UNMET, copying barred", () => {
+  const SITE = "un.org";
+  const SLUG = "terms-un";
+  const FROZEN = "terms-un-2026-10-06";
+  const COPY = `research/rendered/${FROZEN}.txt`;
+  const TERMS_URL = "https://www.un.org/en/about-us/terms-of-use";
+  const COMMIT = "364bf71";
+  const KIND = /^(refusal-type|exhaustive-negative|unanswered|shell|deferred to [a-z0-9.-]+)\b/;
+  const PAUSED = `# paused (terms read, left paused, 7.10.2026): un.org is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — ${TERMS_URL}\t${SLUG}`;
+  const GRANT =
+    "The United Nations grants permission to Users to visit the Site and to download and copy the information, documents and materials (collectively, “Materials”) from the Site for the User’s personal, non-commercial use, without any right to resell or redistribute them or to compile or create derivative works therefrom";
+  const DENY = "The United Nations reserves the right to deny in its sole discretion any user access to this Site or any portion thereof without notice.";
+  /** The lines of the frozen copy the note cites, and words each holds. */
+  const CITED: { line: number; words: string }[] = [
+    { line: 84, words: "Terms and conditions of use of United Nations websites" },
+    { line: 88, words: "The use of this web site constitutes agreement with the following terms and conditions:" },
+    { line: 90, words: GRANT },
+    { line: 90, words: "this web site (the “Site”)" },
+    { line: 90, words: "more specific restrictions" },
+    { line: 92, words: "this Site" },
+    { line: 104, words: "As a condition of use of this Site, the User agrees to indemnify the United Nations" },
+    { line: 108, words: "(collectively, “Forums”)" },
+    { line: 122, words: "(g) Advertise or offer to sell any goods or services" },
+    { line: 130, words: "this website" },
+    { line: 134, words: "UN.ORG" },
+    { line: 144, words: DENY },
+    { line: 146, words: "No waiver by the United Nations of any provision of these Terms and Conditions shall be binding" },
+    { line: 273, words: "Copyright" },
+    { line: 276, words: "Privacy Notice" },
+  ];
+  const meta = () => JSON.parse(readFileSync(`research/rendered/${FROZEN}.meta.json`, "utf8")) as Capture["meta"];
+  const kindless = (s: Record<string, Entry>) =>
+    Object.keys(s).filter((x) => ["NO_TERMS", "TERMS_PENDING"].includes(s[x].verdict) && !KIND.test(s[x].note ?? "")).sort();
+  const barred = (s: Record<string, Entry>) => Object.keys(s).filter((x) => s[x].copying === "barred").sort();
+
+  it("keeps un.org's entry before the reading as a fixture, as terms-verdicts.json held it at 4602c44", () => {
+    expect(createHash("sha256").update(readFileSync(UN60_FIXTURE)).digest("hex")).toBe(UN60_FIXTURE_SHA256);
+    const fixture = un60Fixture();
+    expect(Object.keys(fixture)).toEqual([SITE]);
+    expect(fixture[SITE]).toEqual({
+      verdict: "TERMS_PENDING",
+      source: TERMS_URL,
+      checked: "2026-09-29",
+      note: "the terms page returned 504 on 29.9; retried by the weekly run",
+      copying: "unread",
+    });
+    // The page a TERMS_PENDING site may show: its terms- line passed the gate then, and fails it now.
+    expect(termsGate(TERMS_URL, SLUG, un60Before(verdicts())).ok).toBe(true);
+    expect(termsGate(TERMS_URL, SLUG, verdicts())).toMatchObject({ ok: false, site: SITE, verdict: "CONDITIONAL_UNMET" });
+    // Where 4602c44 is reachable, the fixture is byte for byte its entry; a shallow checkout has the pinned sha256 only.
+    let base: string | null = null;
+    try {
+      base = execFileSync("git", ["show", `${UN60_BASE}:${VERDICTS}`], { stdio: ["ignore", "pipe", "ignore"], encoding: "utf8" });
+    } catch {
+      base = null;
+    }
+    if (base === null) return;
+    expect((JSON.parse(base).sites as Record<string, Entry>)[SITE]).toEqual(fixture[SITE]);
+  });
+
+  it("rests the verdict on a frozen copy of the 6.10 capture as 364bf71 stored it, which no urls.txt line names", () => {
+    const m = meta();
+    expect(m.slug).toBe(FROZEN);
+    expect(m.url).toBe(TERMS_URL);
+    expect(m.frozen?.from).toBe(`research/rendered/${SLUG}.meta.json`);
+    expect(m.frozen?.commit).toBe(COMMIT);
+    expect(m.frozen?.on).toBe("2026-10-07");
+    expect(m.frozen?.why).toContain(`as commit ${COMMIT} stored it`);
+    expect([m.status, m.fetchedAt]).toEqual([200, "2026-10-06T12:06:36.352Z"]);
+    // The full bytes, whether or not scripts/trim-capture.mjs has trimmed the copy yet.
+    expect(fullSha256Of("research/rendered", FROZEN, "html")).toBe(m.sha256);
+    expect(fullSha256Of("research/rendered", FROZEN, "txt")).toBe(fullSha256Of("research/rendered", SLUG, "txt"));
+    const lines = readFileSync(COPY, "utf8").split("\n");
+    expect(lines).toHaveLength(278);
+    for (const { line, words } of CITED) expect(lines[line - 1], `:${line}`).toContain(words);
+    expect(listedNames(readFileSync(URLS, "utf8")).has(FROZEN)).toBe(false);
+    const manifest = readFileSync("research/rendered/FROZEN.sha256", "utf8");
+    for (const ext of ["txt", "meta.json"]) expect(manifest, `${FROZEN}.${ext}`).toContain(`  ${FROZEN}.${ext}\n`);
+    expect(manifest.includes(`  ${FROZEN}.html\n`)).toBe(existsSync(`research/rendered/${FROZEN}.html`));
+    // The 29.9 record of the 504 stays as it was.
+    const failed = JSON.parse(readFileSync("research/rendered/terms-un-2026-09-29.meta.json", "utf8")) as Capture["meta"];
+    expect([failed.status, failed.error]).toEqual([504, "HTTP 504 Gateway Time-out"]);
+  });
+
+  it("gives un.org the main thread's verdict: CONDITIONAL_UNMET, copying barred, checked 7.10, its source naming what was read and keeping the TERMS_PENDING one", () => {
+    const v = verdicts();
+    const e = v[SITE];
+    const before = un60Fixture()[SITE];
+    expect([e.verdict, e.checked, e.copying]).toEqual(["CONDITIONAL_UNMET", "2026-10-07", "barred"]);
+    const raw = JSON.parse(readFileSync(VERDICTS, "utf8")).sites as Record<string, Entry>;
+    expect(Object.keys(raw[SITE])).toEqual(["verdict", "source", "checked", "note", "copying"]);
+    const m = meta();
+    expect(e.source.startsWith(`${COPY} (the UN's "Terms of Use" (:1, :82), "Terms and conditions of use of United Nations websites" (:84), no date stated, the decisive clause at :90; `)).toBe(true);
+    expect(e.source).toContain(`${TERMS_URL}, fetched ${m.fetchedAt} by the 6.10 weekly render, frozen as ${m.frozen!.commit} stored it)`);
+    expect(e.source).toContain(
+      'read in full by one Opus reader and one adversarial Opus verifier, ruled by the main thread (tick 60; research/channel-loop/TERMS-AUDIT-2026-09-29.md, "un.org read (7.10.2026, tick 60)")',
+    );
+    const parts = e.source.split(TERMS_BEFORE);
+    expect(parts).toHaveLength(2);
+    expect(parts[1]).toBe(
+      `${before.source} (checked ${before.checked}; its note: "${before.note}", the record of that failure frozen as research/rendered/terms-un-2026-09-29.meta.json:5, :10)`,
+    );
+    // Nothing else in the file moved: every other entry is what it was before the reading.
+    expect({ ...v, [SITE]: before }).toEqual(un60Before(v));
+    // No other entry names un.org (population.un.org and data.un.org are its hosts, not other sites' cross-references).
+    for (const [site, entry] of Object.entries(raw)) if (site !== SITE) expect(/(^|[^a-z0-9.-])un\.org\b/.test(JSON.stringify(entry)), site).toBe(false);
+    expect(ADDRESS.test(e.source) || ADDRESS.test(e.note ?? "")).toBe(false);
+  });
+
+  it("states the ruling in the note: the condition first, then scope, grant, access, carve-outs and the WPP remark, each with its frozen line", () => {
+    const note = verdicts()[SITE].note!;
+    expect(note.startsWith(`CONDITIONAL_UNMET: "${GRANT}" (${COPY}:90); the runner serves an income-seeking project`)).toBe(true);
+    for (const words of [
+      "so the condition is unmet and copying is barred for this use (ruling 6.10 row 21 decision 4(2))",
+      '"The use of this web site constitutes agreement with the following terms and conditions:" (:88)',
+      "Access: no clause mentions robots, crawling or automated access, so access as such is not barred.",
+      `"${DENY}" (:144) is a discretionary right to deny, not a bar`,
+      'the "shall not" list of the Forums clause (:108-122) is confined to Forums and does not reach a GET',
+      "use is conditioned on an indemnity (:104), a condition of use, not an access bar",
+      "The single permission at :90 may qualify the visit as well as the download and copy",
+      "Scope: www.un.org is covered; population.un.org and data.un.org are unclear, since the heading is plural (:84)",
+      '("this web site", :88, :90; "this Site", :92; "this website", :130) and names no host beyond "UN.ORG" in its privacy reference (:134)',
+      'Carve-outs: none. Material-specific terms appear only as "more specific restrictions" (:90)',
+      "The waiver clause (:146) governs waivers of these Terms and is not the only route to a wider grant",
+      "So these terms do not open WPP data for commercial charts: that rests on the CC BY 3.0 IGO notice on population.un.org's own pages",
+      "the retired population.un.org WPP line (un-wpp-downloads) stays retired, and any replacement is judged on its own host's notice",
+      "Unread: the footer's Copyright page and Privacy Notice (:273, :276)",
+    ]) {
+      expect(note, words).toContain(words);
+    }
+    // The WPP line it names is retired, and stays so.
+    const wpp = readFileSync(URLS, "utf8").split("\n").filter((l) => /\tun-wpp-downloads$/.test(l));
+    expect(wpp).toHaveLength(1);
+    expect(wpp[0].startsWith("# retired (")).toBe(true);
+    // Every line number the note cites is one CITED checks against the frozen copy.
+    const cited = new Set(CITED.map((c) => c.line));
+    for (const n of [...note.matchAll(/:(\d+)(?:-(\d+))?/g)].flatMap((x) => (x[2] ? [Number(x[1]), Number(x[2])] : [Number(x[1])]))) {
+      expect(cited.has(n), `:${n}`).toBe(true);
+    }
+  });
+
+  it("pauses the terms- line as read, and no other urls.txt line changes state", () => {
+    const text = readFileSync(URLS, "utf8");
+    const lines = text.split("\n").filter((l) => l.endsWith(`\t${SLUG}`));
+    expect(lines).toEqual([PAUSED]);
+    expect(PAUSED_LINE.exec(PAUSED)?.slice(1)).toEqual([TERMS_URL, SLUG]);
+    expect(active().some((l) => l.slug === SLUG)).toBe(false);
+    // The pause comment is current (scripts/urls-pause-comments.mjs keeps a CONDITIONAL_UNMET reason as written).
+    const sync = syncPauseComments(text, verdicts(), { today: "7.10.2026" });
+    expect((sync.changes as { line: number }[]).length).toBe(0);
+    // queue-zero-test --apply-verdicts would pause nothing more, and with the entry before the reading it pauses nothing.
+    expect(applyVerdicts(text, verdicts()).paused).toEqual([]);
+    expect(applyVerdicts(text.replace(PAUSED, `${TERMS_URL}\t${SLUG}`), un60Before(verdicts())).paused).toEqual([]);
+    expect(applyVerdicts(text.replace(PAUSED, `${TERMS_URL}\t${SLUG}`), verdicts()).paused).toEqual([SLUG]);
+  });
+
+  it("marks ZERO-TESTS row 210 and the 29.9 audit's Round 2 row as read, and records the reading at the end of the audit", () => {
+    const zero = readFileSync(ZERO, "utf8").split("\n").filter((l) => l.startsWith("| 210 | "));
+    expect(zero).toHaveLength(1);
+    expect(zero[0]).toBe(
+      `| 210 | terms audit (tick 20): un.org | ${TERMS_URL} | whether un.org's terms bar automated access by the runner (research/channel-loop/TERMS-AUDIT-2026-09-29.md; NO_TERMS_CAPTURE) **READ 7.10 (tick 60): CONDITIONAL_UNMET: ${COPY}:90 allows visiting, downloading and copying only for personal, non-commercial use, with no right to redistribute, compile or make derivative works; copying barred; the line is paused.** |`,
+    );
+    const audit = readFileSync("research/channel-loop/TERMS-AUDIT-2026-09-29.md", "utf8");
+    const round2 = audit.split("\n").filter((l) => l.startsWith("| `un.org` | NO_TERMS_CAPTURE | TERMS_PENDING"));
+    expect(round2).toHaveLength(1);
+    expect(round2[0].split(" | ")).toHaveLength(5);
+    expect(round2[0].split(" | ")[2]).toBe('TERMS_PENDING; **CONDITIONAL_UNMET since 7.10.2026 (tick 60): read, copying barred; see "un.org read (7.10.2026, tick 60)" below.**');
+    // The section is the note's last.
+    const start = audit.indexOf("\n## un.org read (7.10.2026, tick 60)\n");
+    expect(start).toBeGreaterThan(audit.indexOf("\n## Round 4 (tick 23, 29.9.2026)\n"));
+    const text = audit.slice(start + 1);
+    expect(text.indexOf("\n## ")).toBe(-1);
+    expect(text).toContain(`frozen as \`${COPY}\` (the capture as commit ${COMMIT} stored it, byte for byte)`);
+    expect(text).toContain(`"for the User’s personal, non-commercial use, without any right to resell or redistribute them or to compile or create derivative works therefrom" (:90)`);
+    expect(text).toContain("so the condition is unmet and copying is barred (ruling 6.10 row 21 decision 4(2))");
+    expect(text).toContain("The retired population.un.org WPP line (`un-wpp-downloads`) stays retired");
+    const rows = text.split("\n").filter((l) => l.startsWith("| `un.org` |"));
+    expect(rows).toHaveLength(1);
+    const cells = rows[0].split(" | ");
+    expect(cells).toHaveLength(6);
+    expect(cells[1].startsWith(verdicts()[SITE].verdict)).toBe(true);
+    expect(cells[2]).toContain(`(\`${COPY}:90\`)`);
+    expect(cells[4]).toBe(verdicts()[SITE].copying);
+    expect(cells[5]).toBe(`\`${SLUG}\` (row 210), \`# paused (terms read, left paused, 7.10.2026)\` |`);
+    // The counts paragraph, its counts computed from the file.
+    const v = verdicts();
+    const count = (verdict: string) => Object.values(v).filter((e) => e.verdict === verdict).length;
+    const copying = (value: string) => Object.values(v).filter((e) => e.copying === value).length;
+    expect([barred(v).length, copying("unread"), copying("allowed"), count("CONDITIONAL_UNMET"), count("TERMS_PENDING")]).toEqual([12, 119, 1, 9, 3]);
+    expect(text).toContain(
+      `so twelve entries are barred (${barred(v).join(", ")}), ${copying("unread")} unread and one allowed; nine sites are CONDITIONAL_UNMET and three TERMS_PENDING.`,
+    );
+    expect(text).toContain("the main thread runs `--apply` after this fold is merged");
+    expect(ADDRESS.test(text)).toBe(false);
+  });
+
+  it("cites in the audit section only lines CITED checks against the frozen copy, each beside the words its line holds", () => {
+    const audit = readFileSync("research/channel-loop/TERMS-AUDIT-2026-09-29.md", "utf8");
+    const text = audit.slice(audit.indexOf("\n## un.org read (7.10.2026, tick 60)\n") + 1);
+    // Every :N or :N-M in the section (a timestamp's :06:36 excluded) is a line CITED checks against the frozen copy.
+    const cited = new Set(CITED.map((c) => c.line));
+    const pointers = [...text.matchAll(/(?<!\d):(\d+)(?:-(\d+))?/g)].flatMap((x) => (x[2] ? [Number(x[1]), Number(x[2])] : [Number(x[1])]));
+    expect(pointers).toHaveLength(22);
+    for (const n of pointers) expect(cited.has(n), `:${n}`).toBe(true);
+    // The pointers the reading rests on, each beside what its line says (CITED pins the words of each line).
+    for (const words of [
+      `the UN's "Terms and conditions of use of United Nations websites" (\`${COPY}:84\`), no date stated, a browsewrap (:88).`,
+      ":144 is a discretionary right to deny any user access, and the Forum list (:108-122) does not reach a GET.",
+      `the heading is plural (\`${COPY}:84\`), the operative text singular (:88, :90, :92, :130), and "UN.ORG" (:134) is the only host-like name.`,
+      `The waiver clause (\`${COPY}:146\`) is not the only route to a wider permission`,
+      "or the footer's uncaptured Copyright page (:273), would be a separate grant.",
+      "The single permission at :90 may qualify the visit as well as the copy",
+      ":104 is an indemnity condition of use, not an access bar.",
+      `Unread: the footer's Copyright page and Privacy Notice (\`${COPY}:273\`, :276).`,
+    ]) {
+      expect(text, words).toContain(words);
+    }
+    const row = text.split("\n").filter((l) => l.startsWith("| `un.org` |"));
+    expect(row).toHaveLength(1);
+    expect(row[0].split(" | ")[3]).toBe("www.un.org yes; population.un.org and data.un.org unclear (:84, :90, :134)");
+  });
+
+  it("names the IGO licence decision, a file that exists, in the note and in the audit section", () => {
+    const IGO = "research/faceless-youtube/LICENCE-IGO-DECISION.md";
+    expect(existsSync(IGO)).toBe(true);
+    expect(readFileSync(IGO, "utf8")).toContain("population.un.org");
+    expect(verdicts()[SITE].note).toContain(`on population.un.org's own pages (${IGO}'s matter, untouched by this reading)`);
+    const audit = readFileSync("research/channel-loop/TERMS-AUDIT-2026-09-29.md", "utf8");
+    const text = audit.slice(audit.indexOf("\n## un.org read (7.10.2026, tick 60)\n") + 1);
+    expect(text).toContain(`on population.un.org's own pages, \`${IGO}\`'s matter, which this reading leaves untouched.`);
+  });
+
+  it("moves un.org alone: one more copying-barred entry, one fewer kindless note", () => {
+    const v = verdicts();
+    const then = un60Before(v);
+    expect(barred(v)).toEqual([...barred(then), SITE].sort());
+    expect(barred(then)).toHaveLength(11);
+    expect(kindless(v)).toEqual(kindless(then).filter((s) => s !== SITE));
+    expect(kindless(then)).toContain(SITE);
+    expect(kindless(v)).toHaveLength(22);
   });
 });
 

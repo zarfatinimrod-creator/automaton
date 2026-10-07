@@ -411,14 +411,15 @@ describe("classifyCapture: nav-only shells (nav-shell)", () => {
 describe("classifyCapture on the real committed captures", () => {
   const real = (slug: string) => classifyCapture(readCapture(slug, RENDERED));
 
-  it("terms-adaptionlabs (6.10: 200, 51,664 bytes of HTML, 85 characters of navigation) is a nav-shell, not short", () => {
-    // That capture is the frozen copy terms-adaptionlabs-2026-10-06 since 7.10 (frozen before the once-only js render of
-    // ruling 6.10 row 21 (c) 3(2), amendment 2). The render of the live slug (9e02a08, tick 60) timed out with nothing read,
-    // so the live meta is a status now: 200 with an error, and the 6.10 shell's text still on disk beside it.
+  // The live slug was re-rendered once in js mode on 7.10 (tick 60) and timed out, so the 6.10 shell lives on in its frozen
+  // copy and the live capture reads as a status error ("the live terms-adaptionlabs" below).
+  it("terms-adaptionlabs-2026-10-06 (the 6.10 plain GET: 200, 51,664 bytes of HTML, 85 characters of navigation) is a nav-shell, not short", () => {
     expect(real("terms-adaptionlabs-2026-10-06")).toEqual({
       kind: "nav-shell",
       evidence: `85 characters of text, fewer than ${MIN_TERMS_TEXT}; nav-only shell: 8 lines of at most 3 words; 51664 bytes of HTML with 5 anchors and 27 scripts`,
     });
+  });
+  it("the live terms-adaptionlabs (7.10: the once-only js render timed out at 30 s, status 200, no body) is a status error, not a shell", () => {
     expect(real("terms-adaptionlabs")).toEqual({
       kind: "status",
       evidence:
