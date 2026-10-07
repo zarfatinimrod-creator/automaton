@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 import {
@@ -705,6 +705,155 @@ describe("robots-verdict --recheck", () => {
     // The same bytes under another fetchedAt are the same robots.txt: only the bytes are compared.
     const later = recheckFixture({ law: { body: FROZEN_LAW, fetchedAt: T1 } });
     expect(later.run().status).toBe(3);
+  });
+
+  it("disallowed-path: an unchanged robots.txt that disallows a path queued after the verdict is reported with the list line that queues it; exit 0, nothing written even with --apply", () => {
+    // Tick 59 (logs/CHANNEL_LOOP.md §9, "Queued 6.10 (tick 58)" item 2): law.example's verdict was set on its two law pages;
+    // a prize list queues a third page on it later, under /search, which the robots.txt it was set on (unchanged) disallows.
+    const f = recheckFixture();
+    const prize = join(f.dir, "prize.urls.txt");
+    writeFileSync(prize, "# a prize list\nhttps://www.law.example/search/prize\tprize-law-search\n");
+    const before = [f.raw(), f.files()];
+    for (const args of [[], ["--apply"]]) {
+      const got = f.run("--urls", prize, ...args);
+      expect(got.status, got.stdout + got.stderr).toBe(0);
+      expect(outcomes(got.stdout)).toEqual([
+        ["disallowed-path", "law.example"],
+        ["unchanged", "gone.example"],
+      ]);
+      expect(got.stdout).toContain(
+        `  disallowed-path law.example  ${LAW_ROBOTS}: the live capture research/rendered/robots-law.txt is the bytes of the frozen copy ` +
+          `research/rendered/robots-law-2026-10-06.txt (sha256 ${hash(FROZEN_LAW).slice(0, 12)}); but robots.txt disallows 1 queued path(s) for ` +
+          'MehudakRenderWatch: prize-law-search (https://www.law.example/search/prize, "Disallow: /search")\n',
+      );
+      expect(got.stdout).toContain(
+        `      DISALLOWED  prize-law-search  https://www.law.example/search/prize  (active; "Disallow: /search")  queued at ${relative(process.cwd(), prize)}:2\n`,
+      );
+      expect(got.stdout).toContain("      report only, nothing written: retire the line or remove it (a paused line is still queued; research/rendered/README.md)\n");
+      expect(got.stdout).toContain("totals: 2 site(s): 1 unchanged, 0 unreachable, 0 refresh, 0 revert, 0 error, 1 disallowed-path\n");
+      expect(got.stdout).toContain(args.length ? "\nnothing written\n" : "\ndry run: nothing written\n");
+      expect([f.raw(), f.files()]).toEqual(before);
+    }
+    // recheckSite reports the path and rewrites nothing: the verdict stays NO_TERMS_ROBOTS_OK.
+    const urls = `${RE_URLS}${readFileSync(prize, "utf8")}`;
+    const r = recheckSite({ site: "law.example", entry: f.sites()["law.example"], urls, renderedDir: f.rendered, today: "2026-10-13" });
+    expect([r.outcome, r.entry, r.freezes, r.refused.map((c: { slug: string }) => c.slug), r.checked.length]).toEqual(["disallowed-path", null, [], ["prize-law-search"], 3]);
+    // Without that line the site is unchanged again, exit 3.
+    expect(f.run().status).toBe(3);
+  });
+
+  it("disallowed-path: a paused line is still queued, so pausing it leaves the report; retiring or removing the line clears it", () => {
+    // Tick 59 review fix: queuedPaths reads a `# paused … URL<TAB>slug` line as queued (judgeSite judges paused lines on
+    // purpose), so the remedy the output names is to retire the line (a `# retired …` comment, never queued) or remove it.
+    const f = recheckFixture();
+    const prize = join(f.dir, "prize.urls.txt");
+    const line = "https://www.law.example/search/prize\tprize-law-search";
+    writeFileSync(prize, `# a prize list\n# paused (robots.txt disallows /search, tick 59) — ${line}\n`);
+    const paused = f.run("--urls", prize);
+    expect(paused.status, paused.stdout + paused.stderr).toBe(0);
+    expect(outcomes(paused.stdout)).toEqual([
+      ["disallowed-path", "law.example"],
+      ["unchanged", "gone.example"],
+    ]);
+    expect(paused.stdout).toContain(
+      `      DISALLOWED  prize-law-search  https://www.law.example/search/prize  (paused; "Disallow: /search")  queued at ${relative(process.cwd(), prize)}:2\n`,
+    );
+    for (const text of [`# a prize list\n# retired (robots.txt disallows /search, tick 59) — ${line}\n`, "# a prize list\n"]) {
+      writeFileSync(prize, text);
+      const cleared = f.run("--urls", prize);
+      expect(cleared.status, cleared.stdout + cleared.stderr).toBe(3);
+      expect(outcomes(cleared.stdout)).toEqual([
+        ["unchanged", "law.example"],
+        ["unchanged", "gone.example"],
+      ]);
+      expect(cleared.stdout).toContain("totals: 2 site(s): 2 unchanged, 0 unreachable, 0 refresh, 0 revert, 0 error, 0 disallowed-path\n");
+    }
+  });
+
+  it("disallowed-path on a host the source does not cite: the path is judged on that host's live robots.txt capture", () => {
+    // Tick 59 review fix (the reviewer's mutation R59-3 survived): law.example's source cites www.law.example's robots.txt
+    // only; a page queued since on the bare host law.example is judged on that host's live capture, which disallows it.
+    const f = recheckFixture();
+    const bare = "https://law.example/robots.txt";
+    writeRobots(f.rendered, "robots-law-bare", bare, { body: "User-agent: *\nDisallow: /nowww\n" });
+    const prize = join(f.dir, "prize.urls.txt");
+    writeFileSync(prize, "# a prize list\nhttps://law.example/nowww\tprize-law-nowww\n");
+    const got = f.run("--urls", prize);
+    expect(got.status, got.stdout + got.stderr).toBe(0);
+    expect(outcomes(got.stdout)).toEqual([
+      ["disallowed-path", "law.example"],
+      ["unchanged", "gone.example"],
+    ]);
+    expect(got.stdout).toContain('; but robots.txt disallows 1 queued path(s) for MehudakRenderWatch: prize-law-nowww (https://law.example/nowww, "Disallow: /nowww")\n');
+    expect(got.stdout).toContain(
+      `      DISALLOWED  prize-law-nowww  https://law.example/nowww  (active; "Disallow: /nowww")  queued at ${relative(process.cwd(), prize)}:2\n`,
+    );
+    // The same host allowing it: unchanged, exit 3, and every path was judged (nothing named as unjudged).
+    writeRobots(f.rendered, "robots-law-bare", bare, { body: "User-agent: *\nDisallow: /search\n" });
+    const ok = f.run("--urls", prize);
+    expect(ok.status, ok.stdout + ok.stderr).toBe(3);
+    expect(ok.stdout).not.toContain("not judged");
+  });
+
+  it("a page on an uncited host with no robots.txt read never hides a disallowed path on the cited host; the line names the page it left unjudged", () => {
+    // Tick 59 review fix (probe P2): judgeRobots stops at the first host it cannot read, so the bare host's page, with no
+    // robots.txt capture of its own, used to leave law.example "unchanged" with the /search page never judged.
+    const f = recheckFixture();
+    const prize = join(f.dir, "prize.urls.txt");
+    const at = relative(process.cwd(), prize);
+    // The bare host's robots probe, queued but not fetched yet, is no page: it is never named as unjudged.
+    writeFileSync(
+      prize,
+      "# a prize list\nhttps://law.example/nowww\tprize-law-nowww\nhttps://www.law.example/search/prize\tprize-law-search\nhttps://law.example/robots.txt\trobots-law-bare\n",
+    );
+    const unjudged =
+      "; not judged, on a host with no robots.txt read: prize-law-nowww (https://law.example/nowww) — no committed robots.txt capture for " +
+      "https://law.example: queue https://law.example/robots.txt as a robots- probe line in urls.txt (a slug starting robots-), let " +
+      "render-watch fetch it, then run this again\n";
+    const got = f.run("--urls", prize);
+    expect(got.status, got.stdout + got.stderr).toBe(0);
+    expect(outcomes(got.stdout)).toEqual([
+      ["disallowed-path", "law.example"],
+      ["unchanged", "gone.example"],
+    ]);
+    expect(got.stdout).toContain(
+      `; but robots.txt disallows 1 queued path(s) for MehudakRenderWatch: prize-law-search (https://www.law.example/search/prize, "Disallow: /search")${unjudged}`,
+    );
+    expect(got.stdout).toContain(`      DISALLOWED  prize-law-search  https://www.law.example/search/prize  (active; "Disallow: /search")  queued at ${at}:3\n`);
+    expect(got.stdout).not.toContain("DISALLOWED  prize-law-nowww");
+    const urls = `${RE_URLS}${readFileSync(prize, "utf8")}`;
+    const r = recheckSite({ site: "law.example", entry: f.sites()["law.example"], urls, renderedDir: f.rendered, today: "2026-10-13" });
+    expect([r.outcome, r.checked.map((c: { slug: string }) => c.slug), r.refused.map((c: { slug: string }) => c.slug)]).toEqual([
+      "disallowed-path",
+      ["law-one", "law-two", "prize-law-search"],
+      ["prize-law-search"],
+    ]);
+    // Only the uncited page: the site stays unchanged (exit 3), and its line says which page went unjudged.
+    writeFileSync(prize, "# a prize list\nhttps://law.example/nowww\tprize-law-nowww\n");
+    const only = f.run("--urls", prize);
+    expect(only.status, only.stdout + only.stderr).toBe(3);
+    expect(outcomes(only.stdout)).toEqual([
+      ["unchanged", "law.example"],
+      ["unchanged", "gone.example"],
+    ]);
+    expect(only.stdout).toContain(`(sha256 ${hash(FROZEN_LAW).slice(0, 12)})${unjudged}`);
+    // A capture there that is no robots.txt read (a 403) leaves the page unjudged the same way, with its own reason.
+    writeRobots(f.rendered, "robots-law-bare", "https://law.example/robots.txt", { body: "<html>no</html>", status: 403 });
+    writeFileSync(prize, "# a prize list\nhttps://law.example/nowww\tprize-law-nowww\nhttps://www.law.example/search/prize\tprize-law-search\n");
+    const refused = f.run("--urls", prize);
+    expect(refused.status, refused.stdout + refused.stderr).toBe(0);
+    expect(outcomes(refused.stdout)[0]).toEqual(["disallowed-path", "law.example"]);
+    expect(refused.stdout).toContain(
+      '"Disallow: /search"); not judged, on a host with no robots.txt read: prize-law-nowww (https://law.example/nowww) — the robots.txt capture of https://law.example (research/rendered/robots-law-bare.meta.json) is not a robots.txt the site served: HTTP 403',
+    );
+    // And a 5xx there (no answer: complete disallow for a verdict, so nothing to judge that page on).
+    writeRobots(f.rendered, "robots-law-bare", "https://law.example/robots.txt", { body: null, status: 503 });
+    const down = f.run("--urls", prize);
+    expect(down.status, down.stdout + down.stderr).toBe(0);
+    expect(outcomes(down.stdout)[0]).toEqual(["disallowed-path", "law.example"]);
+    expect(down.stdout).toContain(
+      '"Disallow: /search"); not judged, on a host with no robots.txt read: prize-law-nowww (https://law.example/nowww) — the robots.txt capture of https://law.example (research/rendered/robots-law-bare.meta.json) is not a read file (status 503',
+    );
   });
 
   it("unreachable: no live capture, a 403, a 503 or an HTML page; reported, exit 3, nothing written", () => {
