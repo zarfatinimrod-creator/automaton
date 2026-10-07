@@ -681,3 +681,5 @@ disagree; §1 is the protocol's reading and wins.
    public first read gives `p1 = true` while `p2` stays null until a designation read), the mutation plan
    `mutations/youtube-madeforkids.json` (the `returned === false` branch and the `firstRead` write-once rule), and the one
    sentence in `T1-PROTOCOL.md`'s Recording text that names the readings, if it names `first`. No other file.
+
+**Noted 7.10 ~09:05 (the build, merge `6db0827`):** the builder gave every reading a `returned` field, since a video missing from the response and one returned without a `privacyStatus` would otherwise both read as null — accepted; `first`'s meaning is unchanged and it still anchors `stayedPublic()`. Two sentences still name the old shape (the read-back script's WRITES paragraph and `stayedPublic`'s doc); the next build that touches the file carries them. A state saved before the amendment would take its next read as the first; none exists, the read-back has never run live.
