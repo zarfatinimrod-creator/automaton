@@ -1,0 +1,20 @@
+{
+  "url": "https://virtualembryo.ai/challenge?ref=mlcontests",
+  "slug": "prize-virtualembryo-ai-challenge-ref-mlcontests-6cd009a6",
+  "fetchedAt": "2026-10-08T07:20:12.605Z",
+  "status": 200,
+  "contentType": "text/html;charset=utf-8",
+  "byteLength": 153191,
+  "sha256": "bdf1cfc515de44682f6930e1a17b33378e57781ad2e4bd18154fa28b70279a93",
+  "truncated": false,
+  "redacted": 2,
+  "error": null,
+  "bodyPath": "research/rendered/prize-virtualembryo-ai-challenge-ref-mlcontests-6cd009a6.html",
+  "textPath": "research/rendered/prize-virtualembryo-ai-challenge-ref-mlcontests-6cd009a6.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://virtualembryo.ai/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

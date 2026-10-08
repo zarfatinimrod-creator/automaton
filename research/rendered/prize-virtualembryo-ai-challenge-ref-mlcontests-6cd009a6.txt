@@ -1,0 +1,164 @@
+Virtual Embryo Challenge · NeurIPS 2026
+
+Virtual Embryo
+
+Virtual Embryo Challenge Annual competition
+Overview Competition
+Leaderboard Timeline Prizes
+FAQ
+Submit Sections
+
+P2 is open: validation submissions are scored and ranked, and the starter kit and reference baselines are out. Next: Test phase starts, validation data released, test leaderboard opens on 20 October 2026. Full timeline →
+
+Hosted by
+Qiu Lab
+In collaboration with
+
+Virtual Embryo Challenge
+Compete to predict how life takes shape across space , scale , time , and perturbation .
+Join the Challenge Publish with us →
+Nature Methods comment → NeurIPS competition → NeurIPS 2026 announcement ↗ Laude Moonshot ↗
+
+~1M
+cells
+
+11
+time points
+
+3
+tasks
+
+2
+human and agent team
+
+How life emerges from a single zygote remains largely unknown and unmodelled
+Embryogenesis is one of the most fundamental yet least understood processes in biology. A single fertilised cell gives rise to a complete organism through hierarchical spatiotemporal orchestration of gene regulation, cell fate transitions, tissue morphogenesis, and organ formation. When this process is disrupted, the consequences can be severe: congenital defects affect 1 in 33 newborns and remain a leading cause of infant mortality worldwide. Despite decades of progress, we still lack predictive and generative AI frameworks that can model when, where, and how embryonic development goes off course.
+Recent advances in single-cell and spatial genomics have created unprecedented opportunities to model development at the whole-embryo scale, turning embryogenesis into a compelling frontier for the NeurIPS community. The problem presents a new frontier for machine learning: learning to predict, generate, and perturb complex biological systems across space, scale, and time . Large single-cell and spatial transcriptomics-based embryonic atlases across species provide rich molecular snapshots across developmental time, but they do not by themselves reveal how cell states transition, how local molecular changes propagate to tissue- and organ-level phenotypes, or how development responds to perturbations. This creates a challenging benchmark for models that must jointly learn spatial context, temporal dynamics, biological hierarchy, and perturbation effects .
+The Virtual Embryo Challenge addresses this gap by establishing a standardised benchmark for predictive embryogenesis modelling . The competition will advance generative, causal, and agentic AI systems that model embryonic development across space, scale, and time under genetic perturbations. Grounded in multimodal whole-embryo and early cardiac development datasets spanning eleven developmental stages , the benchmark will evaluate models on spatial context, multiscale reasoning, and temporal dynamics. By releasing curated datasets, baselines, and evaluation tools, this competition will catalyse open innovation toward robust, interpretable, and generalisable virtual embryo models.
+Ultimately, this challenge aims to catalyse the development of predictive digital twins of mammalian embryogenesis : models that can simulate how an embryo develops, predict when and where development goes awry, and eventually guide targeted interventions. If successful, this could help shift the study and treatment of congenital disease from reaction toward prediction, and ultimately, prevention .
+
+Why go beyond virtual cells to virtual embryos?
+Inspired by and complementary to virtual-cell efforts, virtual embryos extend the vision from modeling individual cells to modeling how cells interact, self-organize, and collectively build living systems.
+Collective . life emerges from interactions among cells, not from cells in isolation.
+Multiscale . from RNA kinetics to cells, tissues, organs, whole organisms, development, and aging.
+Spatiotemporal . cells change state, communicate, migrate, and organize in 3D space over time.
+Emergent . development self-organizes; system-level behaviors cannot always be understood from individual components alone.
+From reductionism to holism . a testbed for modeling life as an integrated, dynamic whole.
+
+Our unique track
+◇ Evolvable agentic scientific workflows
+
+Three tasks, one shared atlas
+Each task uses staged training, validation, and hidden-test splits over the same whole-embryo and heart-focused resource. At the final test phase, all validation ground truth is released for retraining, while test ground truth remains hidden. Teams may run unlimited format checks but receive no biological performance feedback before designating up to two official test submissions per task. Official submissions are scored on the hidden test set, posted to the public Test Leaderboard, and locked.
+
+T1 Temporal
+Temporal gene-expression distribution prediction
+Given stages before a target time, predict the gene-expression distribution, a set of cells, at a future stage. Tests temporal extrapolation.
+Models train on E8.5 and E9.5, are scored against E10.5 through the leaderboard, and are ranked on a hidden E12.5.
+
+T2 Spatial-temporal
+Spatial-temporal multiscale prediction
+Predict future gene expression and 3D spatial location jointly. Molecular, cellular and tissue scale at once. Scored separately on the heart and on the whole embryo.
+Interpolation is trained and validated on both heart and embryo, but only tested on embryo; extrapolation lives entirely in the heart setting. Heart, in order: E8.25 train, E8.5 interpolation validation, E8.75 train (also Task 3’s wild-type reference), E9.5 train, E10.5 extrapolation validation, E12.5 extrapolation test, and in the final phase every heart stage is training input. Embryo, in order: E6.75 train, E7.25 train, E7.5 validation, E7.75 test, E8.0 train. The embryo setting has no extrapolation target, E8.0 being its latest stage.
+
+T3 Perturbation
+Mutant perturbation prediction
+Predict a held-out knockout, expression and 3D coordinates, from wild-type development plus one observed perturbation.
+The Mab21l2 knockout at E9.5 is released to train on, Gata4 at E8.75 is the validation target, and β-catenin at E8.75 is the hidden test.
+
+Human-designed vs agent-designed, scored side by side
+Both tracks address the same three tasks and are scored on the same metrics and hidden test sets. Prizes are awarded separately so the leaderboards directly contrast the two approaches.
+
+Track 1 Human Team
+Conventional ML-competition workflow.
+Methods designed and supervised by human participants. Algorithm/model design → submission → evaluation. Standard NeurIPS competition track.
+
+Track 2 Agent Team
+Coding agents / LLM-driven recursive systems.
+Methods produced by coding agents or LLM-based evolutionary systems. A human may write the initial prompt; from there the run must be the agent’s own, no human inspecting intermediate results and feeding judgement back in. What counts is either carrying a published method through optimisation end to end, or inventing and implementing a new algorithm from scratch. Prizes require evidence: the trajectory, the prompts, and the harness code. What cannot be verified cannot win.
+
+Launch → development → final
+P1 · Site and submission portal live; validation leaderboard opens
+10 Aug
+
+Final evaluation · Official evaluation starts
+4 Dec
+
+28 Jul
+NeurIPS 2026 competitions announced
+
+15 Aug
+P2 · Starter kit and reference baselines released
+
+20 Oct
+P3 · Test phase starts, validation data released, test leaderboard opens
+
+2 Dec
+Final submissions due
+
+11 Dec
+Winners announced at NeurIPS
+
+2026-07-28
+NeurIPS 2026 competitions announced
+
+2026-08-10
+P1 · Site and submission portal live; validation leaderboard opens
+
+2026-08-15
+P2 · Starter kit and reference baselines released
+
+2026-10-20
+P3 · Test phase starts, validation data released, test leaderboard opens
+
+Full timeline through the NeurIPS announcement →
+
+$112K in prizes and awards
+Supported by the Laude Institute Moonshots Seed Grant . The Challenge is organised by the Qiu Lab at Stanford University and its collaborators, who set the criteria and decide the awards.
+$54K
+Winner prizes
+
+Per track ($27K × 2): one $8K first prize, two $5K second prizes, three $3K third prizes. Tracks are scored on the same hidden tests but awarded separately.
+
+$8K
+Generality Award
+
+One award, not one per track: the single best entry answering more than one task with one shared architecture, whether it came from a Human Team or an Agent Team. Held in addition to any placed prize.
+
+$30K
+Travel awards
+
+15-20 grants for early-career researchers to attend the NeurIPS workshop.
+
+$20K
+Community Contribution Award
+
+Up to $200 per contribution, for tutorials, notebooks, tools, documentation and fixes that help other people compete; one person may be awarded for several. Not decided on leaderboard ranking, and open to people who are not competing at all. Paid after the Challenge closes, together with the leaderboard prizes.
+
+Prize breakdown and compute →
+
+Virtual Embryo Challenge
+Join us in modelling how a single cell becomes an organism.
+
+Overview
+Tasks
+Data
+Evaluation
+Reference rows
+
+Community resources
+Leaderboard
+Timeline
+Prizes
+Community award
+Publish with us
+FAQ
+Submit
+
+Contact
+Back to the atlas
+Challenge Rules
+Terms of Use
+
+© 2026 Qiu Lab, Stanford University. All rights reserved. Virtual Embryo Challenge is a NeurIPS 2026 competition.
+Rules | Terms
