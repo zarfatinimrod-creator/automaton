@@ -12,16 +12,20 @@ import {
   heldSecretRows,
   isOwnerStepOpen,
   isSecretRowAsked,
+  LINE_PAYMENT_WAITS,
   linesWithNoOwnerStep,
   openOwnerStepsForLine,
+  OWNER_STEP_ORDER_REVIEW,
   ownerStepById,
   ownerStepMinutes,
   ownerStepsForLine,
   ownerStepsInOrder,
   secretRowsPastedBeforeMade,
 } from "../../revenue/owner-steps.js";
-import { DEFAULT_PORTFOLIO } from "../../revenue/portfolio.js";
+import { DEFAULT_PORTFOLIO, TARGET_BASIS } from "../../revenue/portfolio.js";
 import { readSite } from "../../revenue/page-views-reader.js";
+import { PAGE_VIEW_GATES } from "../../revenue/page-views.js";
+import { SUPPLY_THRESHOLDS } from "../../revenue/bounties/supply.js";
 
 const repoRoot = path.resolve(__dirname, "../../..");
 const doc = fs.readFileSync(path.join(repoRoot, "docs/OWNER_STEPS.he.md"), "utf-8");
@@ -1326,5 +1330,194 @@ describe("the osek patur ceiling in the owner's documents keeps its grade (rulin
     expect(GRADE_WORD.test("עוד לא נבדקה")).toBe(false);
     expect(GRADE_WORD.test("₪122,833 (נבדק)")).toBe(true);
     expect(GRADE_WORD.test("unverified")).toBe(false);
+  });
+});
+
+// Tick 69 (11.10.2026): an adversarial check of the owner-facing texts (logs/2026-10-11-owner-can-you-earn-now.md) found
+// step 6 at 18-23 minutes in the code and 18 in the Hebrew document, step 7 and step 6 at their old minutes in
+// INCOME_PLAN.he.md, and Apify's identity verification placed in three different sittings. The minutes are parsed out of
+// both Hebrew documents here and compared with the code, step by step, so the next drift fails the build.
+describe("the owner's documents state each step's minutes as the code does (tick 69)", () => {
+  const income = fs.readFileSync(path.join(repoRoot, "docs/INCOME_PLAN.he.md"), "utf-8");
+  const flat = (t: string) => t.replace(/\s+/g, " ");
+  /** "18–23 דקות" → [18, 23]; "10 דקות" → [10, 10]; the first such phrase in the text. */
+  const minutesIn = (text: string): [number, number] | null => {
+    const m = /(\d+)(?:\s*[–-]\s*(\d+))?\s*דקות/.exec(text);
+    return m ? [Number(m[1]), Number(m[2] ?? m[1])] : null;
+  };
+  /** A table's minutes cell, "18–23" or "2". */
+  const cell = (c: string): [number, number] => {
+    const [a, b] = c.trim().split(/\s*[–-]\s*/).map(Number);
+    return [a, b ?? a];
+  };
+  const section = (n: number) => {
+    const start = doc.search(new RegExp(`^## צעד ${n} —`, "m"));
+    const rest = doc.slice(start + 1);
+    return doc.slice(start, start + 1 + rest.search(/^## /m));
+  };
+
+  it("parses a minutes phrase and a minutes cell", () => {
+    expect(minutesIn("**זמן: 18–23 דקות** (מהן")).toEqual([18, 23]);
+    expect(minutesIn("**זמן (אם יחזור): 10 דקות.**")).toEqual([10, 10]);
+    expect(minutesIn("no minutes here")).toBeNull();
+    expect(cell(" 60–90 ")).toEqual([60, 90]);
+    expect(cell("2")).toEqual([2, 2]);
+  });
+
+  it("each step's own time line in OWNER_STEPS.he.md carries the code's minutes", () => {
+    for (const step of OWNER_STEPS) {
+      const timeLine = section(step.number).split("\n").find((l) => l.startsWith("**זמן"));
+      expect(timeLine, `step ${step.number} has no time line`).toBeDefined();
+      expect(minutesIn(timeLine!), `step ${step.number}: ${timeLine}`).toEqual(step.minutes);
+    }
+    // Step 6's line also states its early part, which may follow step 1.
+    const six = ownerStepById("ci-tokens")!;
+    const early = /כ-(\d+) לחלק המוקדם/.exec(section(6).split("\n").find((l) => l.startsWith("**זמן"))!);
+    expect(Number(early?.[1])).toBe(six.earlyPart!.minutes);
+  });
+
+  it("the summary table of OWNER_STEPS.he.md has one row per step with the code's minutes", () => {
+    const table = doc.slice(doc.indexOf("## סיכום בטבלה אחת"));
+    const rows = [...table.matchAll(/^\| (\d) \| [^\n]*? \| ([\d–\s-]+) \| [^\n]*\|$/gm)];
+    expect(rows.map((r) => Number(r[1])).sort()).toEqual(OWNER_STEPS.map((s) => s.number).sort());
+    for (const [, n, minutes] of rows) {
+      expect(cell(minutes), `table row ${n}`).toEqual(OWNER_STEPS.find((s) => s.number === Number(n))!.minutes);
+    }
+  });
+
+  it("the table in INCOME_PLAN.he.md §6 has one row per step with the code's minutes", () => {
+    const start = income.indexOf("## 6.");
+    const six = income.slice(start, start + 1 + income.slice(start + 1).search(/^## /m));
+    const rows = [...six.matchAll(/^\| (\d) \| [^\n]*? \| ([\d–\s-]+) \| [^\n]*\|$/gm)];
+    expect(rows.map((r) => Number(r[1])).sort()).toEqual(OWNER_STEPS.map((s) => s.number).sort());
+    for (const [, n, minutes] of rows) {
+      expect(cell(minutes), `INCOME_PLAN row ${n}`).toEqual(OWNER_STEPS.find((s) => s.number === Number(n))!.minutes);
+    }
+  });
+
+  it("the totals are the code's: all eight steps, and the free steps asked now", () => {
+    const total = ownerStepMinutes();
+    expect(flat(doc)).toContain(`**סך הכול: ${total.min}–${total.max} דקות`);
+    expect(flat(income)).toContain(`הרשימה המינימלית בסעיף 6 — ${total.min}–${total.max} דקות`);
+    // The free steps' sentence: step 8, the network setting (no number on the list), step 6's early part and step 7.
+    const sentence = flat(doc.slice(doc.indexOf("ארבעת הצעדים החינמיים שמבוקשים עכשיו")));
+    const network = Number(/שינוי הגדרה של כ-(\d+) דקות/.exec(sentence)?.[1]);
+    expect(network).toBeGreaterThan(0);
+    const [eight, seven, early] = [ownerStepById("brand-mailbox")!, ownerStepById("github-org")!, ownerStepById("ci-tokens")!.earlyPart!];
+    const min = eight.minutes[0] + network + early.minutes + seven.minutes[0];
+    const max = eight.minutes[1] + network + early.minutes + seven.minutes[1];
+    expect(sentence).toContain(`לוקחים יחד ${min}–${max} דקות`);
+  });
+});
+
+describe("each step says whether it needs an identity check, and the Hebrew document agrees (tick 69)", () => {
+  const section = (n: number) => {
+    const start = doc.search(new RegExp(`^## צעד ${n} —`, "m"));
+    const rest = doc.slice(start + 1);
+    return doc.slice(start, start + 1 + rest.search(/^## /m));
+  };
+  const ID_DOCUMENT = /תעודת זהות/;
+
+  it("pins each step's identity check", () => {
+    expect(Object.fromEntries(OWNER_STEPS.map((s) => [s.id, s.identity.needs]))).toEqual({
+      "merge-pr": "no",
+      "brand-mailbox": "no",
+      "tax-file": "yes",
+      gumroad: "yes",
+      domain: "no",
+      "github-org": "no",
+      "algora-stripe": "yes",
+      "ci-tokens": "part",
+    });
+    for (const s of OWNER_STEPS) expect(s.identity.what.length, s.id).toBeGreaterThan(20);
+  });
+
+  it("a step that asks for identity names an ID card in its Hebrew section, and a step that does not, never does", () => {
+    for (const s of OWNER_STEPS) {
+      const text = section(s.number);
+      if (s.identity.needs === "no") expect(text, `step ${s.number}`).not.toMatch(ID_DOCUMENT);
+      else expect(text, `step ${s.number}`).toMatch(ID_DOCUMENT);
+    }
+  });
+
+  it("step 6 asks it in part ג only: Apify's verification at the Publish sitting, with its stop rule (Q5)", () => {
+    const six = section(6);
+    const partC = six.slice(six.indexOf("### חלק ג"), six.indexOf("### חלק ד"));
+    expect(partC).toMatch(ID_DOCUMENT);
+    expect(six.replace(partC, "")).not.toMatch(ID_DOCUMENT);
+    const c = partC.replace(/\s+/g, " ");
+    expect(c).toContain("באותה ישיבה — אימות הזהות של Apify");
+    expect(c).toContain("**עצור אם** המסך מבקש סלפי, בדיקת חיוּת או וידאו");
+    expect(c).toContain("`research/breadth/BOARD.md` Q5");
+    expect(c).toContain("`research/measurements/apify-visibility.md`");
+    expect(ownerStepById("ci-tokens")!.identity.what).toMatch(/^part ג only, the Apify Publish sitting/);
+  });
+
+  it("the read the step rests on exists and says documents only", () => {
+    const read = fs.readFileSync(path.join(repoRoot, "research/measurements/apify-visibility.md"), "utf-8").replace(/\s+/g, " ");
+    expect(read).toContain("Verification is document-only as written");
+    const board = fs.readFileSync(path.join(repoRoot, "research/breadth/BOARD.md"), "utf-8").replace(/\s+/g, " ");
+    expect(board).toContain('Apify identity verification moves from "after 50 stranger users" to **the Publish-click sitting**');
+  });
+
+  it("no owner document puts Apify's verification before pricing or among the steps that wait for income", () => {
+    const income = fs.readFileSync(path.join(repoRoot, "docs/INCOME_PLAN.he.md"), "utf-8").replace(/\s+/g, " ");
+    const flat = doc.replace(/\s+/g, " ");
+    expect(flat).not.toContain("אימות זהות ב-Apify לפני שמתמחרים");
+    const later = flat.slice(flat.indexOf("## מה מגיע רק אם"), flat.indexOf("## מה קורה אחרי שסיימת"));
+    expect(later).toContain("**Apify — אמצעי תשלום**");
+    expect(later).toContain("**אימות הזהות של Apify כבר לא כאן**");
+    expect(later).not.toContain("**Apify — אימות זהות**");
+    expect(income).not.toMatch(/רק אם קו מתחיל להרוויח \(אימות זהות ב-Apify/);
+    expect(income).not.toContain("ולכן לא עכשיו:** אימות זהות ב-Apify");
+    expect(income).toContain("אימות הזהות של Apify הוא לא מהם: הוא נשאל בישיבה של ה-Publish (צעד 6, חלק ג)");
+  });
+});
+
+describe("what each line waits on besides the steps, and the order note (tick 69)", () => {
+  it("names an entry for every live line and only live lines", () => {
+    expect(Object.keys(LINE_PAYMENT_WAITS).sort()).toEqual(DEFAULT_PORTFOLIO.map((l) => l.id).sort());
+    for (const waits of Object.values(LINE_PAYMENT_WAITS)) for (const w of waits) expect(w.rule.length).toBeGreaterThan(10);
+  });
+
+  it("il-biz-tools' and pcn874's reads carry page-views.ts's own numbers, under the rulings that set them", () => {
+    const [ilb] = LINE_PAYMENT_WAITS["il-biz-tools"]!;
+    expect(ilb.kind).toBe("read");
+    expect(ilb.what).toContain(`the day-${PAGE_VIEW_GATES.reachDay} page-view read`);
+    expect(ilb.what).toContain(`under ${PAGE_VIEW_GATES.reachMinTotal} page views over the ${PAGE_VIEW_GATES.reachDay} days`);
+    expect(ilb.what).toContain(`${PAGE_VIEW_GATES.passMinWeeklyAverage} a week or more averaged over weeks 5-8 → PASS`);
+    expect(ilb.what).toContain(`one extension to day ${PAGE_VIEW_GATES.extensionDay}`);
+    expect(ilb.what).toContain("the paid tier's owner steps (2, 3");
+    expect(ilb.rule).toContain("RULING-2026-09-28-floors.md");
+    expect(ilb.rule).toContain("row 9");
+    const [pcn] = LINE_PAYMENT_WAITS.pcn874!;
+    expect(pcn.what).toContain(`day-${PAGE_VIEW_GATES.reachDay} page-view read`);
+    expect(TARGET_BASIS.pcn874!.basis).toContain("no price before the D0+56 PASS of the validator page");
+  });
+
+  it("oss-bounties' read carries supply.ts's own thresholds", () => {
+    const [b] = LINE_PAYMENT_WAITS["oss-bounties"]!;
+    expect(b.kind).toBe("read");
+    expect(b.what).toContain(`the week-${SUPPLY_THRESHOLDS.weeks} claimable-supply read`);
+    expect(b.what).toContain(`under ${SUPPLY_THRESHOLDS.killBelow} → the line is killed and step 4 is never asked`);
+    expect(b.rule).toContain("§4.1");
+  });
+
+  it("apify-actors' read and its owner action outside the steps are the line's own criteria", () => {
+    const [read, later] = LINE_PAYMENT_WAITS["apify-actors"]!;
+    const apify = DEFAULT_PORTFOLIO.find((l) => l.id === "apify-actors")!;
+    expect(read.kind).toBe("read");
+    expect(read.what).toContain("until strangerUsers30d reaches 200 and pricing is designed");
+    expect(apify.scaleCriteria.join(" ")).toContain("strangerUsers30d at or above 200 → design pricing");
+    expect(apify.killCriteria.join(" ")).toContain("strangerUsers30d under 10 at day 30 → TEST_MORE");
+    expect(later.kind).toBe("owner-later");
+    expect(apify.humanSetup.join(" ")).toContain("A PayPal or Wise payout waits for pricing");
+    // The only owner action outside the eight steps the code knows of.
+    expect(Object.entries(LINE_PAYMENT_WAITS).filter(([, ws]) => ws.some((w) => w.kind === "owner-later")).map(([id]) => id)).toEqual(["apify-actors"]);
+  });
+
+  it("names the row the order waits on, while the Hebrew document still says the code's order awaits the board", () => {
+    expect(OWNER_STEP_ORDER_REVIEW).toMatch(/^the order is under review \(FABLE_QUEUE row 29\)/);
+    expect(doc).toContain("**הוא ממתין לפסיקה");
   });
 });
