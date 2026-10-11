@@ -16,12 +16,44 @@
  * after` (:282) and `link_id` on `product_id` (:285), answers ten sales a page (RESULTS_PER_PAGE, :14) and pages with
  * `next_page_key` / `page_key` (base_controller.rb:163-167, sales_controller.rb:91-98); every answer carries
  * `success` (base_controller.rb:42-44).
+ *
+ * No entry carries a raw sale id: the sale, its refund and its fee are booked as `sha256:<hex>`, `sha256:<hex>:refund`
+ * and `sha256:<hex>:fee`, the unkeyed SHA-256 of `sale.id` (`storedExternalId`, RULING-2026-10-11-ledger-sale-ids.md),
+ * because the ledger is committed to a public repository and a sale id is an identifier of a buyer's purchase.
  */
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fetchJson, UNASSIGNED_LINE_ID, type RevenueConnector } from "./types.js";
+import { storedExternalId } from "../money.js";
 import type { LedgerEntryInput } from "../types.js";
+
+/**
+ * The ledger entries one Gumroad sale object books on `lineId`: the sale, its refund when `refunded` is true, its
+ * Gumroad fee when there is one. Their ids are the stored form only (RULING-2026-10-11-ledger-sale-ids.md C1): the raw
+ * `sale.id` leaves this function in no field. `colony.ts verify-gumroad` compares the ledger with these same entries.
+ */
+export function gumroadSaleEntries(sale: any, lineId: string): LedgerEntryInput[] {
+  const createdAt = String(sale.created_at ?? "");
+  const price = Math.abs(Number(sale.price ?? 0)); // cents
+  const currency = String(sale.currency ?? "usd").toUpperCase();
+  const occurredAt = Number.isNaN(Date.parse(createdAt)) ? new Date().toISOString() : new Date(createdAt).toISOString();
+  const saleId = sale.id === undefined || sale.id === null ? null : storedExternalId("gumroad", String(sale.id));
+  const entries: LedgerEntryInput[] = [
+    { lineId, kind: "sale", amountMinor: price, currency, source: "gumroad", externalId: saleId, occurredAt, note: sale.product_name ?? null },
+  ];
+  // A sale with no id has no family: the ledger refuses the sale itself (MISSION rule 2), and a refund or fee keyed on
+  // the digest of "undefined" or "null" would be an id the platform never gave.
+  if (saleId === null) return entries;
+  if (sale.refunded === true) {
+    entries.push({ lineId, kind: "refund", amountMinor: price, currency, source: "gumroad", externalId: `${saleId}:refund`, occurredAt, note: "refunded" });
+  }
+  const fee = Math.abs(Number(sale.gumroad_fee ?? 0));
+  if (fee > 0) {
+    entries.push({ lineId, kind: "cost", amountMinor: fee, currency, source: "gumroad", externalId: `${saleId}:fee`, occurredAt, note: "gumroad fee" });
+  }
+  return entries;
+}
 
 export const gumroadConnector: RevenueConnector = {
   source: "gumroad",
@@ -43,20 +75,9 @@ export const gumroadConnector: RevenueConnector = {
       const productId = String(sale.product_id ?? "");
       const lineId = resolveLine(`gumroad:${productId}`) ?? env.GUMROAD_DEFAULT_LINE ?? UNASSIGNED_LINE_ID;
       if (lineId === UNASSIGNED_LINE_ID && productId) unmapped.add(`gumroad:${productId}`);
-      const createdAt = String(sale.created_at ?? "");
-      const day = createdAt.slice(0, 10);
+      const day = String(sale.created_at ?? "").slice(0, 10);
       if (day > newestDay) newestDay = day;
-      const price = Math.abs(Number(sale.price ?? 0)); // cents
-      const currency = String(sale.currency ?? "usd").toUpperCase();
-      const occurredAt = Number.isNaN(Date.parse(createdAt)) ? new Date().toISOString() : new Date(createdAt).toISOString();
-      entries.push({ lineId, kind: "sale", amountMinor: price, currency, source: "gumroad", externalId: String(sale.id), occurredAt, note: sale.product_name ?? null });
-      if (sale.refunded === true) {
-        entries.push({ lineId, kind: "refund", amountMinor: price, currency, source: "gumroad", externalId: `${sale.id}:refund`, occurredAt, note: "refunded" });
-      }
-      const fee = Math.abs(Number(sale.gumroad_fee ?? 0));
-      if (fee > 0) {
-        entries.push({ lineId, kind: "cost", amountMinor: fee, currency, source: "gumroad", externalId: `${sale.id}:fee`, occurredAt, note: "gumroad fee" });
-      }
+      entries.push(...gumroadSaleEntries(sale, lineId));
     }
     return { entries, nextCursor: newestDay, unmapped: [...unmapped] };
   },
@@ -226,18 +247,48 @@ export async function readProRefundCount(params: {
 }): Promise<{ ok: true; count: RefundRateCount } | { ok: false; detail: string }> {
   const { token, productId, nowIso, fetchImpl = fetch } = params;
   const after = new Date(Date.parse(nowIso) - (REFUND_RATE_WINDOW_DAYS + 1) * DAY_MS).toISOString().slice(0, 10);
+  const listing = await listGumroadSalesSince({ token, after, productId, fetchImpl });
+  if (listing.ok) return { ok: true, count: countProRefunds(listing.sales, productId, nowIso) };
+  if (listing.problem === "refused") {
+    return { ok: false, detail: `GET /v2/sales for the Pro product was refused (HTTP ${listing.status}, page ${listing.page})` };
+  }
+  return { ok: false, detail: `more than ${MAX_REFUND_RATE_PAGES} pages of Pro sales since ${after}, so the count would not be complete` };
+}
+
+export type GumroadSalesListing =
+  | { ok: true; sales: unknown[]; pages: number }
+  | { ok: false; problem: "refused"; status: number; page: number }
+  | { ok: false; problem: "too_many_pages"; pages: number };
+
+/**
+ * Every sale `GET /v2/sales` lists from `after` (a day; Gumroad keeps `created_at >= after`), of one product when
+ * `productId` is given, following `next_page_key` to the last page. A refused page, or more than `maxPages` pages, is
+ * not a listing: the caller gets which, never a partial list passed off as the whole. The token goes in the query, as
+ * the index asks, and nowhere else. Shared by the refund-rate read and `colony.ts verify-gumroad`
+ * (RULING-2026-10-11-ledger-sale-ids.md, fold 6).
+ */
+export async function listGumroadSalesSince(params: {
+  token: string;
+  after: string;
+  productId?: string;
+  fetchImpl?: typeof fetch;
+  maxPages?: number;
+}): Promise<GumroadSalesListing> {
+  const { token, after, productId, fetchImpl = fetch, maxPages = MAX_REFUND_RATE_PAGES } = params;
   const sales: unknown[] = [];
   let pageKey: string | null = null;
-  for (let page = 1; page <= MAX_REFUND_RATE_PAGES; page += 1) {
-    const q = new URLSearchParams({ access_token: token, product_id: productId, after });
+  for (let page = 1; page <= maxPages; page += 1) {
+    const q = new URLSearchParams({ access_token: token });
+    if (productId !== undefined) q.set("product_id", productId);
+    q.set("after", after);
     if (pageKey) q.set("page_key", pageKey);
     const res = await fetchJson(fetchImpl, `https://api.gumroad.com/v2/sales?${q}`);
     if (!res.ok || res.body?.success !== true || !Array.isArray(res.body.sales)) {
-      return { ok: false, detail: `GET /v2/sales for the Pro product was refused (HTTP ${res.status}, page ${page})` };
+      return { ok: false, problem: "refused", status: res.status, page };
     }
     sales.push(...res.body.sales);
     pageKey = typeof res.body.next_page_key === "string" && res.body.next_page_key ? res.body.next_page_key : null;
-    if (!pageKey) return { ok: true, count: countProRefunds(sales, productId, nowIso) };
+    if (!pageKey) return { ok: true, sales, pages: page };
   }
-  return { ok: false, detail: `more than ${MAX_REFUND_RATE_PAGES} pages of Pro sales since ${after}, so the count would not be complete` };
+  return { ok: false, problem: "too_many_pages", pages: maxPages };
 }

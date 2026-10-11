@@ -4,6 +4,7 @@
  * Everything is integer minor units. ILS agorot is the reporting currency.
  */
 
+import { createHash } from "node:crypto";
 import type { Database } from "better-sqlite3";
 import { REVENUE_KV } from "./types.js";
 
@@ -106,6 +107,53 @@ export function chainTxId(id: string | null | undefined): string | null {
   if (EVM_TX_HASH_RE.test(text)) return text.toLowerCase();
   if (SOLANA_SIGNATURE_RE.test(text)) return text;
   return null;
+}
+
+// ─── Stored external ids (RULING-2026-10-11-ledger-sale-ids.md, FABLE_QUEUE row 26) ───
+
+/**
+ * Sources whose platform id the ledger stores as its digest, never as itself. The ledger is committed to a public
+ * repository, and a Gumroad sale id with the buyer's email is the way to their receipt and its licence key
+ * (RULING-2026-10-05-refund-state.md §2.4); its digest identifies no one and still keys and verifies the row. Stripe
+ * and Lemon Squeezy are not here: their ids wait for their own evidence, and the ruling is reopened before either key
+ * is set ("What this does not decide" 2).
+ */
+export const DIGESTED_SOURCES: ReadonlySet<string> = new Set(["gumroad"]);
+
+/** The stored form: `sha256:`, 64 lower-case hex digits, then the connector's `:refund` or `:fee`, or nothing. */
+export const STORED_EXTERNAL_ID_RE = /^sha256:[0-9a-f]{64}(?::(?:refund|fee))?$/;
+
+/** The suffixes the Gumroad connector puts after a sale's id for its refund entry and its fee entry. */
+const ENTRY_SUFFIX_RE = /:(?:refund|fee)$/;
+
+/**
+ * The external id the ledger stores for `source` (RULING-2026-10-11-ledger-sale-ids.md, C1 and C2). For a digested
+ * source it is `sha256:` and the lower-case hex SHA-256 of the UTF-8 bytes of the platform's own id, trimmed: no key, no
+ * salt, no secret, so whoever holds the platform's credential re-derives it from the platform's own listing, and no
+ * rotated secret can ever re-key every sale and book it again. A trailing `:refund` or `:fee` is split off first and put
+ * back after the digest, so a sale, its refund and its fee share one digest and read as one family. An id already in
+ * the stored form is returned unchanged — the function is idempotent on it — so the connector, `colony.ts record` and
+ * `revenue_record` may pass the raw id or the stored one and the ledger keys both on one value. Any other source's id
+ * is returned as given; null, or a digested source's id that is empty once trimmed, is null.
+ */
+export function storedExternalId(source: string, id: string | null | undefined): string | null {
+  if (id === null || id === undefined) return null;
+  if (!DIGESTED_SOURCES.has(source.trim().toLowerCase())) return id;
+  const text = id.trim();
+  if (!text) return null;
+  if (STORED_EXTERNAL_ID_RE.test(text)) return text;
+  const suffix = ENTRY_SUFFIX_RE.exec(text)?.[0] ?? "";
+  const base = suffix ? text.slice(0, -suffix.length) : text;
+  return `sha256:${createHash("sha256").update(base, "utf8").digest("hex")}${suffix}`;
+}
+
+/**
+ * Whether `id` is what the ledger stores for `source` (C4, the chief auditor's check): for a digested source, the stored
+ * form; for any other source, any id. A null id is no raw id.
+ */
+export function isStoredForm(source: string, id: string | null | undefined): boolean {
+  if (id === null || id === undefined) return true;
+  return !DIGESTED_SOURCES.has(source.trim().toLowerCase()) || STORED_EXTERNAL_ID_RE.test(id);
 }
 
 const ISRAEL_DAY = new Intl.DateTimeFormat("en-CA", {

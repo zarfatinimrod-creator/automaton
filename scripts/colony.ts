@@ -6,6 +6,7 @@
  *   pnpm exec tsx scripts/colony.ts status
  *   pnpm exec tsx scripts/colony.ts record --line paid-apis --kind sale --amount 200 --currency USD --source stripe --external-id ch_abc
  *   pnpm exec tsx scripts/colony.ts fx --currency USDC --date 2026-09-29 --rate 3.71
+ *   pnpm exec tsx scripts/colony.ts verify-gumroad
  *   pnpm exec tsx scripts/colony.ts setup-done apify-actors --evidence "owner confirmed 2026-09-03"
  *
  * The governance half of the colony needs only a SQLite file: no wallet, no
@@ -25,7 +26,8 @@ import {
   setTargets,
   updateLineStatus,
 } from "../src/revenue/ledger.js";
-import { agorotFromIls, formatIls, setFxRateOn } from "../src/revenue/money.js";
+import { agorotFromIls, formatIls, setFxRateOn, storedExternalId } from "../src/revenue/money.js";
+import { renderGumroadVerify, verifyGumroadLedger } from "../src/revenue/gumroad-verify.js";
 import { seedDefaultPortfolio, syncPortfolio } from "../src/revenue/portfolio.js";
 import { getRevenueStatus } from "../src/revenue/status.js";
 import { renderCommitSummary, renderReport, tick, type TickResult } from "../src/revenue/runner.js";
@@ -83,6 +85,13 @@ Commands:
                        on-chain transaction id as --external-id and --occurred-at; it is flagged
                        unconverted and valued at the rate recorded for its receipt day (see fx),
                        and with none it is refused (RULING-2026-09-28-bounty-rail.md §6.2).
+  verify-gumroad       Re-derive the ledger's Gumroad rows (RULING-2026-10-11-ledger-sale-ids.md C3): with
+                       GUMROAD_ACCESS_TOKEN, list the account's sales from a day before the oldest row,
+                       digest each id and match the rows. Prints counts, stored ids and days, never a
+                       sale id, an email or the token; writes nothing. Exit 0 clean, 3 with findings
+                       (a row no sale explains, a row that differs from its sale, a refund row out of
+                       step), 2 when the token is not set (nothing fetched), 1 when the listing is
+                       refused or incomplete. --json for the result as JSON.
   fx                   Record one day's rate: --currency USDC --date YYYY-MM-DD --rate <ILS per unit>
                        (the Israeli calendar day of the receipt, not later than today). A held USDC
                        receipt names it.
@@ -119,7 +128,9 @@ record options:
   --source <name>      stripe | lemonsqueezy | gumroad | x402 | manual  (required)
   --external-id <id>   Platform transaction id. REQUIRED for sale, subscription,
                        payout and refund — money only counts when it carries the
-                       platform's id. Only a cost may omit it.
+                       platform's id. Only a cost may omit it. A gumroad id is
+                       stored as its sha256 digest (sha256:<hex>): pass the sale id
+                       or that stored form, and both book as one.
   --note <text>        Free text
   --occurred-at <iso>  Defaults to now
 
@@ -155,9 +166,10 @@ function openDb(dbPath: string) {
  * the scheduled tick records — a last-run time, a ledger sync, a KPI, review, budget or kv row — and so never silences
  * "the loop did not run for N hours", the one blocker that shows the hourly schedule stopped (tick 64, 7.10.2026: a
  * report run by hand ran the due ledger sync and stamped its time). `criteria` renders unless it marks, supervises or
- * reconciles.
+ * reconciles. `verify-gumroad` only reads too (RULING-2026-10-11-ledger-sale-ids.md, decision 2 item 8).
  */
 function rendersOnly(command: string, flags: { mark?: string; supervised?: string; reconcile?: boolean }): boolean {
+  if (command === "verify-gumroad") return true;
   if (["report", "dashboard", "status", "growth"].includes(command)) return true;
   return command === "criteria" && !flags.mark && !flags.supervised && !flags.reconcile;
 }
@@ -327,13 +339,24 @@ async function main(): Promise<void> {
           note: values.note ?? null,
         });
         if (!entry) {
-          console.log(`Already recorded: ${source}/${values["external-id"]}. Nothing changed.`);
+          console.log(`Already recorded: ${source}/${storedExternalId(source, values["external-id"] ?? null)}. Nothing changed.`);
         } else {
           const flag = entry.unconverted ? " unconverted (wallet money, counted in no target)" : "";
           console.log(`Recorded ${entry.kind} ${formatIls(entry.amountAgorot)}${flag} on ${entry.lineId} via ${entry.source}.`);
           const line = getLine(db.raw, lineId)!;
           console.log(`  ${line.id} is now ${line.status}.`);
         }
+        break;
+      }
+
+      case "verify-gumroad": {
+        // C3 of RULING-2026-10-11-ledger-sale-ids.md: the re-derivation as code. The handle is query-only (rendersOnly);
+        // without the token nothing is fetched, so the command costs nothing and makes no call.
+        const result = await verifyGumroadLedger(db.raw, { token: process.env.GUMROAD_ACCESS_TOKEN, nowIso: values.now });
+        console.log(values.json ? JSON.stringify(result, null, 2) : renderGumroadVerify(result));
+        if (result.status === "not_configured") process.exitCode = 2;
+        else if (result.status === "incomplete") process.exitCode = 1;
+        else process.exitCode = result.findings > 0 ? 3 : 0;
         break;
       }
 

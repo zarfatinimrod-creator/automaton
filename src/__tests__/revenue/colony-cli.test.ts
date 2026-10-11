@@ -262,3 +262,110 @@ describe("colony.yml's header says what is true", () => {
     expect(header).not.toContain("which only a tick records");
   });
 });
+
+// RULING-2026-10-11-ledger-sale-ids.md (FABLE_QUEUE row 26), folds 5, 6 and 7: `record` books a gumroad id as its digest
+// and prints the stored form on a duplicate; `verify-gumroad` lists the account's sales with the token (a fake index
+// here, preloaded over globalThis.fetch), digests each id and matches the ledger. Exit 2 without the token (nothing
+// fetched), 0 clean, 3 with findings, 1 when the listing is refused; its output names rows by their stored form only,
+// never the id or the token.
+describe("record and verify-gumroad keep the raw Gumroad id and the token out of their output", () => {
+  const FAKE_FETCH = path.join(repoRoot, "src/__tests__/revenue/fixtures/fake-gumroad-fetch.mjs");
+  const TOKEN = "fake-token-Q7rT";
+  const RAW = "fake-sale-K9p2==";
+  const EXTRA = "fake-sale-extra==";
+  const AT = "2026-10-05T09:30:00.000Z";
+  const stored = (raw: string) => `sha256:${crypto.createHash("sha256").update(raw, "utf8").digest("hex")}`;
+  let dir: string;
+  let db: string;
+  let salesFile: string;
+  let logFile: string;
+
+  const run = (args: string[], token: string | null, extra: NodeJS.ProcessEnv = {}) => {
+    const env: NodeJS.ProcessEnv = { ...process.env, FAKE_GUMROAD_SALES: salesFile, FAKE_GUMROAD_LOG: logFile, ...extra };
+    for (const k of ["LEMONSQUEEZY_API_KEY", "GUMROAD_ACCESS_TOKEN", "STRIPE_SECRET_KEY", "POSTHOG_READ_KEY", "POSTHOG_PROJECT_ID"]) delete env[k];
+    if (token) env.GUMROAD_ACCESS_TOKEN = token;
+    const out = spawnSync(process.execPath, ["--import", "tsx", "--import", FAKE_FETCH, "scripts/colony.ts", ...args, "--db", db], {
+      cwd: repoRoot, encoding: "utf-8", env,
+    });
+    return { status: out.status, stdout: out.stdout, stderr: out.stderr };
+  };
+  const record = (externalId: string) =>
+    run(["record", "--line", "il-biz-tools", "--kind", "sale", "--amount", "7900", "--currency", "USD", "--source", "gumroad", "--external-id", externalId, "--occurred-at", AT], null);
+  const requests = () => (fs.existsSync(logFile) ? fs.readFileSync(logFile, "utf-8").split("\n").filter(Boolean).length : 0);
+  const free = (text: string) => {
+    for (const secret of [RAW, EXTRA, TOKEN]) expect(text).not.toContain(secret);
+  };
+
+  beforeAll(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "colony-sale-ids-"));
+    db = path.join(dir, "colony.db");
+    salesFile = path.join(dir, "sales.json");
+    logFile = path.join(dir, "requests.log");
+    fs.writeFileSync(salesFile, JSON.stringify([{ id: RAW, price: 7900, currency: "usd", created_at: AT, refunded: false, gumroad_fee: 0, email: "fake-buyer-email-field" }]));
+    const seeded = run(["seed"], null);
+    expect(seeded.status, seeded.stderr).toBe(0);
+  }, 60_000);
+  afterAll(() => {
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("record: the second booking of a raw gumroad id says it is already recorded, by its stored form", () => {
+    const first = record(RAW);
+    expect(first.status, first.stderr).toBe(0);
+    expect(first.stdout).toContain("Recorded sale");
+    const again = record(RAW);
+    expect(again.status, again.stderr).toBe(0);
+    expect(again.stdout).toContain(`Already recorded: gumroad/${stored(RAW)}. Nothing changed.`);
+    free(first.stdout + again.stdout + first.stderr + again.stderr);
+    const conn = new Database(db, { readonly: true, fileMustExist: true });
+    try {
+      expect(conn.prepare("SELECT external_id AS id FROM revenue_ledger WHERE source = 'gumroad'").all()).toEqual([{ id: stored(RAW) }]);
+    } finally {
+      conn.close();
+    }
+  }, 60_000);
+
+  it("verify-gumroad without the token: exit 2, not configured, no request made", () => {
+    const out = run(["verify-gumroad"], null);
+    expect(out.status, out.stderr).toBe(2);
+    expect(out.stdout).toContain("not configured");
+    expect(requests()).toBe(0);
+  }, 60_000);
+
+  it("verify-gumroad with the token: the booked sale matches its listed sale, exit 0, and the database is unchanged", () => {
+    const bytes = crypto.createHash("sha256").update(fs.readFileSync(db)).digest("hex");
+    const out = run(["verify-gumroad"], TOKEN);
+    expect(out.status, out.stderr).toBe(0);
+    expect(out.stdout).toContain("1 matched, 0 finding(s)");
+    expect(out.stdout).toContain("Findings: 0.");
+    expect(requests()).toBeGreaterThan(0);
+    free(out.stdout + out.stderr);
+    expect(crypto.createHash("sha256").update(fs.readFileSync(db)).digest("hex")).toBe(bytes);
+  }, 60_000);
+
+  it("verify-gumroad with a ledger row no listed sale explains: exit 3 and the finding, by its stored form, in prose and JSON", () => {
+    expect(record(EXTRA).status).toBe(0);
+    const out = run(["verify-gumroad"], TOKEN);
+    expect(out.status, out.stderr).toBe(3);
+    expect(out.stdout).toContain(`- unexplained: ${stored(EXTRA)} 2026-10-05`);
+    expect(out.stdout).toContain("Findings: 1.");
+    const json = run(["verify-gumroad", "--json"], TOKEN);
+    expect(json.status).toBe(3);
+    expect(JSON.parse(json.stdout)).toMatchObject({ status: "findings", findings: 1, unexplained: [{ externalId: stored(EXTRA), day: "2026-10-05" }] });
+    free(out.stdout + out.stderr + json.stdout + json.stderr);
+    expect(out.stdout + json.stdout).not.toContain("fake-buyer-email-field");
+  }, 60_000);
+
+  it("verify-gumroad when the listing is refused: exit 1, incomplete, nothing verified, the token in no line", () => {
+    const out = run(["verify-gumroad"], TOKEN, { FAKE_GUMROAD_STATUS: "401" });
+    expect(out.status, out.stderr).toBe(1);
+    expect(out.stdout).toContain("incomplete — GET /v2/sales was refused (HTTP 401, page 1)");
+    expect(out.stdout).not.toContain("Findings:");
+    free(out.stdout + out.stderr);
+  }, 60_000);
+
+  it("is read-only: its handle is query-only, as report's is, and its help names the exit codes", () => {
+    expect(cliSource).toContain('if (command === "verify-gumroad") return true;');
+    expect(cliSource).toContain("Exit 0 clean, 3 with findings");
+  });
+});

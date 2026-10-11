@@ -53,6 +53,7 @@ import { enqueueGoal, feedNextGoal, lineGoalStatus, listQueuedGoals, removeQueue
 import { renderBoardDirective } from "./org.js";
 import { policyForLine, seedDefaultPortfolio } from "./portfolio.js";
 import { describeOpenSetup } from "./owner-steps.js";
+import { DIGESTED_SOURCES, isStoredForm } from "./money.js";
 import { allocateBudget, auditDecision, decideLine, describeDecision, experimentsToPause } from "./rules.js";
 import {
   DEFAULT_DECISION_POLICY,
@@ -657,6 +658,16 @@ export function runAudit(
        GROUP BY source, external_id HAVING COUNT(*) > 1)`,
   ).get() as { c: number };
   if (dupRow.c > 0) out.chiefFindings.push(`${dupRow.c} duplicate external ids in the ledger`);
+
+  // RULING-2026-10-11-ledger-sale-ids.md C4: a digested source's id is stored as its digest (`sha256:<hex>`), so a raw
+  // one that reached the ledger by any path is seen at the next audit, before the public history is where it is found.
+  for (const source of DIGESTED_SOURCES) {
+    const ids = db.prepare(
+      "SELECT external_id AS externalId FROM revenue_ledger WHERE source = ? AND external_id IS NOT NULL",
+    ).all(source) as { externalId: string }[];
+    const raw = ids.filter((r) => !isStoredForm(source, r.externalId)).length;
+    if (raw > 0) out.chiefFindings.push(`${raw} ${source} ledger rows carry a raw external id (RULING-2026-10-11 row 26)`);
+  }
 
   const killedRevenue = db.prepare(
     `SELECT COUNT(*) AS c FROM revenue_ledger l JOIN revenue_lines r ON r.id = l.line_id

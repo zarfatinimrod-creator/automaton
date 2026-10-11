@@ -21,7 +21,16 @@ import {
   updateLineFromSeed,
   updateLineStatus,
 } from "../../revenue/ledger.js";
-import { setFxRate, toAgorot, formatIls, agorotFromIls } from "../../revenue/money.js";
+import { createHash } from "node:crypto";
+import {
+  setFxRate,
+  toAgorot,
+  formatIls,
+  agorotFromIls,
+  isStoredForm,
+  storedExternalId,
+  STORED_EXTERNAL_ID_RE,
+} from "../../revenue/money.js";
 import { DEFAULT_PORTFOLIO, KILLED_LINES, seedDefaultPortfolio, syncPortfolio } from "../../revenue/portfolio.js";
 import type { RevenueLineSeed } from "../../revenue/types.js";
 
@@ -222,6 +231,108 @@ describe("the ledger will not book money nobody paid", () => {
     expect(() => recordLedgerEntry(db, entry())).toThrow();
     const count = db.prepare("SELECT COUNT(*) AS c FROM revenue_ledger").get() as { c: number };
     expect(count.c).toBe(0);
+  });
+});
+
+// RULING-2026-10-11-ledger-sale-ids.md (FABLE_QUEUE row 26), fold 7: the ledger is committed to a public repository, so a
+// Gumroad sale id is stored as `sha256:` and the unkeyed SHA-256 of the platform's id, applied in recordLedgerEntry first,
+// whichever path books it. The ids below are invented strings, as every fixture here is.
+describe("a Gumroad sale id is stored as its digest, and still keys the row", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => {
+    db = createInMemoryDb();
+    insertLineFromSeed(db, seed());
+  });
+  afterEach(() => { db.close(); });
+
+  const RAW = "fake-sale-Q1w2E3==";
+  const hex = (text: string) => createHash("sha256").update(text, "utf8").digest("hex");
+  const gumroad = (externalId: string, over: Partial<Parameters<typeof recordLedgerEntry>[1]> = {}) => ({
+    lineId: "test-line", kind: "sale" as const, amountMinor: 7_900, currency: "USD", source: "gumroad", externalId, ...over,
+  });
+  const storedIds = () =>
+    (db.prepare("SELECT source, external_id AS externalId FROM revenue_ledger ORDER BY rowid").all() as { source: string; externalId: string | null }[]);
+
+  it("(a) stores sha256 of the raw id, in the stored form, and never the raw string", () => {
+    const booked = recordLedgerEntry(db, gumroad(RAW));
+    expect(booked?.externalId).toBe(`sha256:${hex(RAW)}`);
+    const [row] = storedIds();
+    expect(row).toEqual({ source: "gumroad", externalId: `sha256:${hex(RAW)}` });
+    expect(row!.externalId).toMatch(STORED_EXTERNAL_ID_RE);
+    expect(row!.externalId).not.toContain(RAW);
+    expect(JSON.stringify(db.prepare("SELECT * FROM revenue_ledger").all())).not.toContain(RAW);
+  });
+
+  it("(b) booking the same raw id again is a duplicate, also with the source's case or the id's spaces changed", () => {
+    expect(recordLedgerEntry(db, gumroad(RAW))).not.toBeNull();
+    expect(recordLedgerEntry(db, gumroad(RAW))).toBeNull();
+    expect(recordLedgerEntry(db, gumroad(`  ${RAW} `, { source: "Gumroad" }))).toBeNull();
+    expect(storedIds()).toHaveLength(1);
+    // The function trims as the ledger does, so the connector's untrimmed String(sale.id) keys the same row.
+    expect(storedExternalId("gumroad", ` ${RAW}\n`)).toBe(`sha256:${hex(RAW)}`);
+    expect(storedExternalId("Gumroad", RAW)).toBe(`sha256:${hex(RAW)}`);
+    expect(storedExternalId("gumroad", "   ")).toBeNull();
+  });
+
+  it("(c) booking the stored form directly is a duplicate of the raw id, and the other way round", () => {
+    expect(recordLedgerEntry(db, gumroad(RAW))).not.toBeNull();
+    expect(recordLedgerEntry(db, gumroad(`sha256:${hex(RAW)}`))).toBeNull();
+    expect(recordLedgerEntry(db, gumroad(`sha256:${hex("fake-sale-2")}`))).not.toBeNull();
+    expect(recordLedgerEntry(db, gumroad("fake-sale-2"))).toBeNull();
+    expect(storedIds()).toHaveLength(2);
+  });
+
+  it("(d) a sale, its refund and its fee share one digest, and each stored form is a duplicate of itself", () => {
+    const sale = recordLedgerEntry(db, gumroad(RAW));
+    const refund = recordLedgerEntry(db, gumroad(`${RAW}:refund`, { kind: "refund" }));
+    const fee = recordLedgerEntry(db, gumroad(`${RAW}:fee`, { kind: "cost", amountMinor: 790 }));
+    const x = hex(RAW);
+    expect([sale?.externalId, refund?.externalId, fee?.externalId]).toEqual([`sha256:${x}`, `sha256:${x}:refund`, `sha256:${x}:fee`]);
+    for (const [id, kind] of [[`sha256:${x}`, "sale"], [`sha256:${x}:refund`, "refund"], [`sha256:${x}:fee`, "cost"]] as const) {
+      expect(id).toMatch(STORED_EXTERNAL_ID_RE);
+      expect(isStoredForm("gumroad", id)).toBe(true);
+      expect(storedExternalId("gumroad", id)).toBe(id);
+      expect(recordLedgerEntry(db, gumroad(id, { kind }))).toBeNull();
+    }
+    expect(storedIds().map((r) => r.externalId)).toEqual([`sha256:${x}`, `sha256:${x}:refund`, `sha256:${x}:fee`]);
+    expect(isStoredForm("gumroad", RAW)).toBe(false);
+    expect(isStoredForm("gumroad", `${RAW}:refund`)).toBe(false);
+  });
+
+  it("(e) a stripe and a manual id are stored as given (the digested set is gumroad alone)", () => {
+    expect(recordLedgerEntry(db, gumroad("ch_fake1", { source: "stripe" }))?.externalId).toBe("ch_fake1");
+    expect(recordLedgerEntry(db, gumroad("m-fake-1", { source: "manual", currency: "ILS" }))?.externalId).toBe("m-fake-1");
+    expect(storedIds()).toEqual([{ source: "stripe", externalId: "ch_fake1" }, { source: "manual", externalId: "m-fake-1" }]);
+    expect(isStoredForm("stripe", "ch_fake1")).toBe(true);
+    expect(storedExternalId("stripe", " ch_fake1 ")).toBe(" ch_fake1 ");
+    expect(storedExternalId("gumroad", null)).toBeNull();
+  });
+
+  it("(f) a chain-shaped id booked under gumroad in USD is digested, not refused, and no refusal prints a raw gumroad id", () => {
+    const evm = `0x${"ab".repeat(32)}`;
+    const solana = "5".repeat(87);
+    expect(recordLedgerEntry(db, gumroad(evm))?.externalId).toBe(`sha256:${hex(evm)}`);
+    expect(recordLedgerEntry(db, gumroad(solana))?.externalId).toBe(`sha256:${hex(solana)}`);
+    // Every refusal a gumroad entry can meet after the id is read: USDC, whose id must be a chain id (a digest never is,
+    // even of a chain-shaped string), a cost in USDC, and a currency no rule books.
+    const refusals: Parameters<typeof recordLedgerEntry>[1][] = [
+      gumroad(RAW, { currency: "USDC", occurredAt: "2026-10-01T00:00:00Z" }),
+      gumroad(evm, { currency: "USDC", occurredAt: "2026-10-01T00:00:00Z" }),
+      gumroad(evm, { currency: "USDC", occurredAt: "2026-10-01T00:00:00Z", kind: "cost" }),
+      gumroad(RAW, { currency: "XYZ" }),
+    ];
+    for (const input of refusals) {
+      let message = "";
+      try {
+        recordLedgerEntry(db, input);
+      } catch (error) {
+        message = (error as Error).message;
+      }
+      expect(message, JSON.stringify(input)).not.toBe("");
+      expect(message).not.toContain(RAW);
+      expect(message).not.toContain(evm);
+    }
+    expect(storedIds()).toHaveLength(2);
   });
 });
 
