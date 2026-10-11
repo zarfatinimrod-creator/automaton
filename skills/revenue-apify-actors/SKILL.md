@@ -37,7 +37,8 @@ history starts only once something is published, which is why the line is publis
   *"stranger runs — biased low while the developer is unverified: hidden from default Store-API search"*.
   Before the Publish click, two free reads: the Store-API pair (`?search=israel&limit=1000` with and without
   `includeUnrunnableActors=true`, ZERO-TESTS row 51) to size the hidden share, and Apify's identity-verification
-  requirements from the GitHub-hosted `apify-docs` repository. **If that read shows document-only verification**
+  requirements from the GitHub-hosted `apify-docs` repository (read on 28.9.2026: documents only as written —
+  `research/measurements/apify-visibility.md` — so the first branch below holds). **If that read shows document-only verification**
   (no selfie, liveness or video), verification is asked at the Publish sitting (owner step 6, part ג) — no
   longer deferred to 50 stranger users — so the day-30 count measures demand and not visibility. **If it shows
   any camera step**, verification is never asked, the line stays a biased-low ₪0 instrument, and the "history of

@@ -25,15 +25,28 @@ import { receiptDay, setFxRateOn, toAgorotAtRate } from "../../revenue/money.js"
 import { DEFAULT_PORTFOLIO, seedDefaultPortfolio } from "../../revenue/portfolio.js";
 import {
   frozenOwnerStepsForLine,
+  hasPendingPrecondition,
   heldOwnerStepsForLine,
+  identityOnLine,
   isOwnerStepOpen,
+  LINE_PAYMENT_WAITS,
   openOwnerStepsForLine,
   openSetupItems,
+  OWNER_STEP_ORDER_REVIEW,
   ownerStepById,
   ownerStepMinutes,
+  ownerStepsForLine,
   ownerStepsInOrder,
 } from "../../revenue/owner-steps.js";
-import { buildOwnerReport, renderOwnerReport, type OwnerReport } from "../../revenue/owner-report.js";
+import {
+  buildFirstPaymentPath,
+  buildOwnerReport,
+  firstSentence,
+  renderFirstPayment,
+  renderOwnerReport,
+  type FirstPaymentPath,
+  type OwnerReport,
+} from "../../revenue/owner-report.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const SCRIPT = join(ROOT, "scripts", "owner-report.ts");
@@ -383,5 +396,222 @@ describe("the script: read-only, and no row's identifiers printed", () => {
 
   it("exits 2 on an unknown option", () => {
     expect(run(["--db", EMPTY_DB, "--write"]).status).toBe(2);
+  }, 60_000);
+});
+
+// Tick 69 (11.10.2026): "how far are we from the first shekel?" was answered twice by a fresh synthesis (7.10, 11.10), and
+// the second needed an adversarial verifier to take out 19 overstatements. The section reads it from the code instead.
+describe("the shortest path to a first payment: owner-steps.ts's steps, gates and waits, per line", () => {
+  const path = report(EMPTY_DB).firstPayment;
+  const line = (p: FirstPaymentPath, id: string) => p.lines.find((l) => l.id === id)!;
+  const text = renderOwnerReport(report(EMPTY_DB));
+  const section = text.slice(text.indexOf("## Shortest path to a first payment"), text.indexOf("## Colony health"));
+
+  it("prints the code's order beside the note that the order is under review, and picks neither", () => {
+    expect(path.codeOrder).toEqual(ownerStepsInOrder().map((s) => s.number));
+    expect(path.codeOrder).toEqual([1, 8, 2, 3, 5, 7, 4, 6]);
+    expect(path.orderReview).toBe(OWNER_STEP_ORDER_REVIEW);
+    expect(section).toContain("Steps in the code's order (owner-steps.ts `order`): 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.\n");
+    expect(section).toContain("\nThe order is under review (FABLE_QUEUE row 29): the ₪0 sequence of docs/OWNER_STEPS.he.md");
+    // Beside the ₪0 sequence, the floors ruling's row 9 that the row's brief adds (review NOTE 6).
+    expect(section).toContain(
+      "the floors ruling of 28.9 (research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3) has il-biz-tools' paid-tier steps 2, 3 and 6b join the ask batch only at its page-view PASS (the day-56 read, or the day-112 read after its one extension); and the board has not ruled which order binds.\n",
+    );
+    // Between the owner-steps list and colony health, as one section.
+    expect(text.indexOf("## Shortest path to a first payment")).toBeGreaterThan(text.indexOf("Not asked now:"));
+  });
+
+  it("lists, for each line not killed, every step that gates it in the code's order, with its state, gate, minutes, identity and unlocks", () => {
+    expect(path.lines.map((l) => l.id)).toEqual(report(EMPTY_DB).lines.map((l) => l.id));
+    for (const l of path.lines) {
+      const steps = ownerStepsForLine(l.id);
+      expect(l.steps.map((s) => s.number), l.id).toEqual(steps.map((s) => s.number));
+      for (const [i, s] of steps.entries()) {
+        const p = l.steps[i];
+        expect(p.minutes).toEqual(s.minutes);
+        expect(p.identity).toEqual(s.identity);
+        expect(p.identityHere, `${l.id} step ${s.number} identity here`).toBe(identityOnLine(s, l.id));
+        expect(s.unlocks.startsWith(p.unlocks), `${s.id} unlocks`).toBe(true);
+        expect(p.unlocks.endsWith(".")).toBe(true);
+        expect(p.unlocks.length).toBeLessThan(s.unlocks.length);
+        const state = s.doneOn ? "done" : s.frozen ? "frozen" : hasPendingPrecondition(s) ? "held" : "asked";
+        expect(p.state, `${l.id} step ${s.number}`).toBe(state);
+        if (state === "asked") expect(p.gate).toBeNull();
+        if (state === "held") expect(p.gate).toBe(s.precondition!.short);
+        if (state === "done") expect(p.gate).toBe(`done on ${s.doneOn!.date}`);
+      }
+      expect(l.waits).toEqual(LINE_PAYMENT_WAITS[l.id]);
+    }
+    const domain = line(path, "il-biz-tools").steps.find((s) => s.id === "domain")!;
+    expect(domain.state).toBe("frozen");
+    expect(domain.gate).toBe("frozen by the owner's ₪0 rule of 27.9.2026; instead: Sites deploy on *.netlify.app (Netlify's free subdomain).");
+    expect(line(path, "il-biz-tools").steps.find((s) => s.id === "tax-file")!.state).toBe("held");
+    expect(line(path, "oss-bounties").steps.find((s) => s.id === "algora-stripe")!.state).toBe("held");
+  });
+
+  it("counts a line's remaining steps, done and frozen ones aside, with ownerStepMinutes", () => {
+    const ilb = line(path, "il-biz-tools");
+    expect(ilb.toPay.steps).toEqual([8, 2, 3, 6]);
+    expect(ilb.toPay.minutes).toEqual(ownerStepMinutes(ownerStepsForLine("il-biz-tools").filter((s) => !s.doneOn && !s.frozen)));
+    expect(ilb.toPay.minutes).toEqual({ min: 108, max: 143 });
+    expect(line(path, "oss-bounties").toPay).toEqual({ steps: [2, 7, 4, 6], minutes: { min: 108, max: 148 } });
+    expect(line(path, "pcn874").toPay).toEqual({ steps: [2, 3, 7, 6], minutes: { min: 113, max: 153 } });
+    expect(line(path, "apify-actors").toPay).toEqual({ steps: [2, 6], minutes: { min: 78, max: 113 } });
+  });
+
+  it("names the smallest set: il-biz-tools' four steps, not apify-actors' cheaper two, whose payout needs an owner action outside the steps", () => {
+    expect(path.smallest).toEqual([{ line: "il-biz-tools", steps: [8, 2, 3, 6], minutes: { min: 108, max: 143 } }]);
+    const apify = line(path, "apify-actors");
+    expect(apify.notByStepsAlone).toEqual(LINE_PAYMENT_WAITS["apify-actors"]!.filter((w) => w.kind === "owner-later").map((w) => w.what));
+    expect(apify.notByStepsAlone).toHaveLength(1);
+    for (const id of ["il-biz-tools", "oss-bounties", "pcn874"]) expect(line(path, id).notByStepsAlone, id).toEqual([]);
+    // Without the owner action, apify-actors' two steps are the fewest minutes: the exclusion is what decides.
+    const noLater = Object.fromEntries(Object.entries(LINE_PAYMENT_WAITS).map(([id, ws]) => [id, ws.filter((w) => w.kind === "read")]));
+    const lines = path.lines.map((l) => ({ id: l.id, waitsOnOwner: l.waitsOnOwner }));
+    const withoutLater = buildFirstPaymentPath(lines, ownerStepsInOrder(), noLater);
+    expect(withoutLater.smallest).toEqual([{ line: "apify-actors", steps: [2, 6], minutes: { min: 78, max: 113 } }]);
+    // On apify-actors' own path step 6's identity part is asked, and the smallest set counts it.
+    expect(renderFirstPayment(withoutLater).join("\n")).toContain(
+      "after them `apify-actors` can take a payment, once its read above passes. Identity checks among them: step 2 (yes), step 6 (in one part).\n",
+    );
+  });
+
+  it("orders candidates by the fewest minutes at the low end, then at the high end, and lists ties", () => {
+    const lines = [{ id: "il-biz-tools", waitsOnOwner: true }, { id: "oss-bounties", waitsOnOwner: true }];
+    const none = { "il-biz-tools": [], "oss-bounties": [] };
+    // 108-143 against 108-148: the high end decides, and the line it beat is named close behind.
+    const close = buildFirstPaymentPath(lines, ownerStepsInOrder(), none);
+    expect(close.smallest.map((c) => c.line)).toEqual(["il-biz-tools"]);
+    expect(close.closeBehind).toEqual([{ line: "oss-bounties", steps: [2, 7, 4, 6], minutes: { min: 108, max: 148 } }]);
+    // Step 4 at 15-20 makes oss-bounties 108-143 too: a tie, both listed in the database's order.
+    const steps = ownerStepsInOrder().map((s) => (s.id === "algora-stripe" ? { ...s, minutes: [15, 10] as [number, number] } : s));
+    const tied = buildFirstPaymentPath(lines, steps, none);
+    expect(tied.smallest.map((c) => [c.line, c.minutes])).toEqual([
+      ["il-biz-tools", { min: 108, max: 143 }],
+      ["oss-bounties", { min: 108, max: 143 }],
+    ]);
+    // A tie is in the smallest set, not close behind it.
+    expect(tied.closeBehind).toEqual([]);
+    const tiedText = renderFirstPayment(tied).join("\n");
+    expect(tiedText).toContain("\nOr, at the same minutes: steps 2, 7, 4, 6 (in the code's order), 108-143 minutes in all: after them `oss-bounties` can take a payment");
+    // The low end decides before the high end: a line at 100-200 beats one at 108-143.
+    const cheap = ownerStepsInOrder().map((s) => (s.id === "github-org" ? { ...s, minutes: [7, 77] as [number, number] } : s));
+    expect(buildFirstPaymentPath(lines, cheap, none).smallest.map((c) => [c.line, c.minutes])).toEqual([["oss-bounties", { min: 100, max: 205 }]]);
+    // A higher lower bound is not close behind, whatever its upper bound.
+    expect(buildFirstPaymentPath(lines, cheap, none).closeBehind).toEqual([]);
+  });
+
+  it("names every other candidate at the smallest set's lower bound close behind it, fewest minutes first", () => {
+    // Steps 7 and 4 moved so that all three paid-by-steps lines start at 108: il-biz-tools 108-143, pcn874 108-153,
+    // oss-bounties 108-158. Listed in the database's order (oss-bounties before pcn874), printed by minutes.
+    const steps = ownerStepsInOrder().map((s) =>
+      s.id === "github-org" ? { ...s, minutes: [10, 20] as [number, number] } : s.id === "algora-stripe" ? { ...s, minutes: [20, 25] as [number, number] } : s,
+    );
+    const lines = ["il-biz-tools", "oss-bounties", "pcn874"].map((id) => ({ id, waitsOnOwner: true }));
+    const p = buildFirstPaymentPath(lines, steps, { "il-biz-tools": [], "oss-bounties": [], pcn874: [] });
+    expect(p.smallest).toEqual([{ line: "il-biz-tools", steps: [8, 2, 3, 6], minutes: { min: 108, max: 143 } }]);
+    expect(p.closeBehind).toEqual([
+      { line: "pcn874", steps: [2, 3, 7, 6], minutes: { min: 108, max: 153 } },
+      { line: "oss-bounties", steps: [2, 7, 4, 6], minutes: { min: 108, max: 158 } },
+    ]);
+    const t = renderFirstPayment(p).join("\n");
+    expect(t).toContain(
+      "\nClose behind, at the same lower bound: `pcn874`, steps 2, 3, 7, 6, 108-153 min; the upper bound alone decides between them.\n" +
+        "Close behind, at the same lower bound: `oss-bounties`, steps 2, 7, 4, 6, 108-158 min; the upper bound alone decides between them.\n",
+    );
+  });
+
+  it("says so when the smallest set's line no longer waits on the owner in the database (review NOTE 7)", () => {
+    const p = buildFirstPaymentPath([{ id: "il-biz-tools", waitsOnOwner: false }], ownerStepsInOrder(), { "il-biz-tools": [] });
+    expect(p.smallest.map((c) => c.line)).toEqual(["il-biz-tools"]);
+    expect(renderFirstPayment(p).join("\n")).toContain(
+      "after them `il-biz-tools` can take a payment. Identity checks among them: step 2 (yes), step 3 (yes). The database no longer has `il-biz-tools` waiting on the owner, so the owner-steps section above asks none of these for it.\n",
+    );
+    const waiting = buildFirstPaymentPath([{ id: "il-biz-tools", waitsOnOwner: true }], ownerStepsInOrder(), { "il-biz-tools": [] });
+    expect(renderFirstPayment(waiting).join("\n")).not.toContain("The database no longer has");
+  });
+
+  it("takes a step done since out of a line's set, and a line with no step left needs none", () => {
+    const done = ownerStepsInOrder().map((s) => (s.id === "tax-file" ? { ...s, doneOn: { date: "2026-10-20", evidence: "test" } } : s));
+    const p = buildFirstPaymentPath([{ id: "il-biz-tools", waitsOnOwner: true }], done);
+    expect(p.lines[0].toPay).toEqual({ steps: [8, 3, 6], minutes: { min: 48, max: 53 } });
+    expect(p.lines[0].steps.find((s) => s.id === "tax-file")).toMatchObject({ state: "done", gate: "done on 2026-10-20" });
+    const allDone = ownerStepsInOrder().map((s) => ({ ...s, doneOn: { date: "2026-10-20", evidence: "test" } }));
+    const q = buildFirstPaymentPath([{ id: "il-biz-tools", waitsOnOwner: true }], allDone, { "il-biz-tools": [] });
+    expect(q.smallest).toEqual([{ line: "il-biz-tools", steps: [], minutes: { min: 0, max: 0 } }]);
+    expect(renderFirstPayment(q).join("\n")).toContain("\nNo owner step is left: `il-biz-tools` can take a payment.\n");
+  });
+
+  it("counts no line owner-steps.ts does not know, and says so when no line can be paid by the steps alone", () => {
+    const p = buildFirstPaymentPath([{ id: "no-such-line", waitsOnOwner: true }]);
+    expect(p.lines[0].steps).toEqual([]);
+    expect(p.lines[0].notByStepsAlone).toEqual(["owner-steps.ts names no step for this line, so nothing here says what it needs"]);
+    expect(p.smallest).toEqual([]);
+    const t = renderFirstPayment(p).join("\n");
+    expect(t).toContain("No owner step in owner-steps.ts names this line.");
+    expect(t).toContain("No line can take a payment by the eight owner steps alone: each needs something outside them (above).");
+  });
+
+  it("follows the database: a killed line is left out, a set-up line is marked, and the smallest set moves", () => {
+    const r = report(STEPS_DB);
+    expect(r.firstPayment.lines.map((l) => l.id)).not.toContain("il-biz-tools");
+    expect(line(r.firstPayment, "pcn874").waitsOnOwner).toBe(false);
+    expect(line(r.firstPayment, "oss-bounties").waitsOnOwner).toBe(true);
+    expect(r.firstPayment.smallest).toEqual([{ line: "oss-bounties", steps: [2, 7, 4, 6], minutes: { min: 108, max: 148 } }]);
+    const t = renderOwnerReport(r);
+    expect(t).toContain("### `pcn874` (the database no longer has it waiting on the owner)\n");
+    expect(t).toContain("### `oss-bounties`\n");
+  });
+
+  it("renders each line's steps by state, its waits, and its remaining steps, and the smallest set with its identity checks", () => {
+    // One identity line per step, in the code's order, each said once.
+    const ids = section.slice(section.indexOf("Identity checks, step by step:"), section.indexOf("### `"));
+    const order = [...ids.matchAll(/^- Step (\d) \(/gm)].map((m) => Number(m[1]));
+    expect(order).toEqual([1, 8, 2, 3, 5, 7, 4, 6]);
+    expect(ids).toContain(`- Step 6 (\`ci-tokens\`): in one part — ${ownerStepById("ci-tokens")!.identity.what}\n`);
+    expect(ids).toContain(`- Step 3 (\`gumroad\`): yes — ${ownerStepById("gumroad")!.identity.what}\n`);
+    expect(ids).toContain(`- Step 7 (\`github-org\`): no — ${ownerStepById("github-org")!.identity.what}\n`);
+    const ilb = section.slice(section.indexOf("### `il-biz-tools`"), section.indexOf("### `oss-bounties`"));
+    expect(ilb).toContain("Asked now, in the code's order:\n- step 8 (`brand-mailbox`), 10 min, identity check: no. Unlocks: A Google account under the brand");
+    // Step 6's identity part is Apify's Publish sitting: on il-biz-tools' path it asks no identity (review NOTE 5).
+    expect(ilb).toContain(
+      "- step 6 (`ci-tokens`), 18-23 min, identity check: no on this line (its identity part is for `apify-actors` only). Unlocks: Converts every 'the owner must push' recurring operation into a one-time step.\n",
+    );
+    expect(ilb).toContain("Held or frozen, with the gate:\n- held: step 2 (`tax-file`), 60-90 min, identity check: yes — only when a paid product is ready, after the official cost check. Unlocks: The legal right to receive any shekel at all.\n");
+    expect(ilb).toContain("- frozen: step 5 (`domain`), 10 min, identity check: no — frozen by the owner's ₪0 rule of 27.9.2026; instead: Sites deploy on *.netlify.app (Netlify's free subdomain). Unlocks: Anonymity and search, both.\n");
+    expect(ilb).toContain("Done:\n- done: step 1 (`merge-pr`), 2 min, identity check: no — done on 2026-09-22. Unlocks:");
+    expect(ilb).toContain(`Also waits on:\n- a read the colony takes, not an owner step: ${LINE_PAYMENT_WAITS["il-biz-tools"]![0].what} (${LINE_PAYMENT_WAITS["il-biz-tools"]![0].rule})\n`);
+    expect(ilb).toContain("Owner steps still between it and a payment: steps 8, 2, 3, 6, 108-143 min (a frozen step left out: the line goes without it at ₪0).\n");
+    const oss = section.slice(section.indexOf("### `oss-bounties`"), section.indexOf("### `pcn874`"));
+    expect(oss).toContain("Owner steps still between it and a payment: steps 2, 7, 4, 6, 108-148 min.\n");
+    const apify = section.slice(section.indexOf("### `apify-actors`"), section.indexOf("### `il-biz-tools`"));
+    expect(apify).toContain(`- an owner action outside the eight steps: ${LINE_PAYMENT_WAITS["apify-actors"]![1].what}`);
+    expect(apify).toContain("Owner steps still between it and a payment: steps 2, 6, 78-113 min; the eight steps alone do not make it payable.\n");
+    expect(apify).toContain("- step 6 (`ci-tokens`), 18-23 min, identity check: in one part. Unlocks:");
+    const smallest = section.slice(section.indexOf("### The smallest set"));
+    expect(smallest).toContain(
+      "Steps 8, 2, 3, 6 (in the code's order), 108-143 minutes in all: after them `il-biz-tools` can take a payment, once its read above passes. Identity checks among them: step 2 (yes), step 3 (yes).\n",
+    );
+    // The pick is close: oss-bounties shares the lower bound, and the section says so (review NOTE 6).
+    expect(smallest).toContain(
+      "\nClose behind, at the same lower bound: `oss-bounties`, steps 2, 7, 4, 6, 108-148 min; the upper bound alone decides between them.\n",
+    );
+    expect(smallest).not.toContain("The database no longer has");
+    expect(smallest).toContain(`Not counted: \`apify-actors\` — its payment also needs ${LINE_PAYMENT_WAITS["apify-actors"]![1].what}.\n`);
+    expect(smallest).not.toContain("Or, at the same minutes");
+  });
+
+  it("takes a text's first sentence: up to the first full stop a space or the end follows", () => {
+    expect(firstSentence("Anonymity and search, both. A gTLD (.com or similar) at a registrar.")).toBe("Anonymity and search, both.");
+    expect(firstSentence("It puts colony.yml on `main`. Then more.")).toBe("It puts colony.yml on `main`.");
+    expect(firstSentence("  No full stop at all  ")).toBe("No full stop at all");
+    expect(firstSentence("Ends here.")).toBe("Ends here.");
+    expect(firstSentence("One line.\nAnother.")).toBe("One line.");
+  });
+
+  it("--json carries the same path the module builds", () => {
+    const out = run(["--db", EMPTY_DB, "--now", NOW, "--json"]);
+    expect(out.status, out.stderr).toBe(0);
+    expect((JSON.parse(out.stdout) as OwnerReport).firstPayment).toEqual(report(EMPTY_DB).firstPayment);
   }, 60_000);
 });

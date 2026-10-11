@@ -15,6 +15,17 @@
  * The repository is public, so nothing a ledger row carries beyond its amount is read out: no external (platform
  * transaction) id, no note, no source — counts and sums only. Nothing here writes: every call it makes is a SELECT, and
  * the script opens the database read-only.
+ *
+ * "Shortest path to a first payment" (tick 69, 11.10.2026: the owner asked "can you make me money now?" on 7.10 and
+ * 11.10, and each answer was a fresh synthesis): for each line the database holds and has not killed, every owner step
+ * that gates it in owner-steps.ts, in the code's `order`, with its minutes, whether it needs an identity check
+ * (`identity`; on this line's path, `identityOnLine`: step 6's identity part is apify-actors' alone), its state (asked
+ * now, held by a precondition, frozen, done) and gate, and the first sentence of what it
+ * unlocks; then what the line also waits on (owner-steps.ts LINE_PAYMENT_WAITS: the scheduled reads, and any owner action
+ * outside the eight steps). From those it names the smallest set of steps after which a line can take a payment: a
+ * line's set is every step that gates it, done and frozen steps aside (a frozen step's line goes without it at ₪0, which
+ * is what `frozen.freeInstead` says), and a line that also needs an owner action outside the eight steps is not counted.
+ * The steps print in the code's order beside OWNER_STEP_ORDER_REVIEW; the section never picks between the two orders.
  */
 
 import type { Database } from "better-sqlite3";
@@ -31,17 +42,24 @@ import { formatIls } from "./money.js";
 import {
   followUpSecretRows,
   frozenOwnerStepsForLine,
+  hasPendingPrecondition,
   heldFollowUpSecretRows,
+  identityOnLine,
   heldOwnerStepsForLine,
   heldSecretRows,
   isOwnerStepOpen,
+  LINE_PAYMENT_WAITS,
   openOwnerStepsForLine,
   openSetupItems,
+  OWNER_STEP_ORDER_REVIEW,
   ownerStepById,
   ownerStepMinutes,
+  ownerStepsForLine,
   ownerStepsInOrder,
   SECRET_ROW_GATE_SHORT,
+  type LinePaymentWait,
   type OwnerStep,
+  type OwnerStepIdentity,
   type SecretGateSite,
 } from "./owner-steps.js";
 import { checkLiveness, lastRunKey, LOOP_GAP_ALERT_MS, secretGateSite } from "./runner.js";
@@ -115,6 +133,55 @@ export interface OwnerReportLine {
   openSetupItems: number;
 }
 
+/** One owner step as it stands for a line on the path to its first payment. */
+export interface PathStep {
+  number: number;
+  id: string;
+  order: number;
+  minutes: [number, number];
+  /** In owner-steps.ts's precedence: done, then frozen, then held by a pending precondition; otherwise asked now. */
+  state: "asked" | "held" | "frozen" | "done";
+  /** What keeps a held or frozen step from being asked (and, for a frozen one, what replaces it free); the done date; null when asked. */
+  gate: string | null;
+  identity: OwnerStepIdentity;
+  /** Whether the step checks the owner's identity on this line's path (owner-steps.ts `identityOnLine`). */
+  identityHere: OwnerStepIdentity["needs"];
+  /** The first sentence of the step's `unlocks`. */
+  unlocks: string;
+}
+
+export interface PathLine {
+  id: string;
+  /** awaiting_setup with setup not done in the database, as the rest of the report reads it. */
+  waitsOnOwner: boolean;
+  /** Every owner step that gates the line (owner-steps.ts `lines`), in the code's order. */
+  steps: PathStep[];
+  /** What the line also waits on (owner-steps.ts LINE_PAYMENT_WAITS); none when the code knows of nothing. */
+  waits: LinePaymentWait[];
+  /** The steps still between the line and a payment: its steps, done and frozen ones aside, in the code's order. */
+  toPay: { steps: number[]; minutes: { min: number; max: number } };
+  /** Why the eight steps alone cannot make the line payable; empty when they can. */
+  notByStepsAlone: string[];
+}
+
+export interface PathCandidate {
+  line: string;
+  steps: number[];
+  minutes: { min: number; max: number };
+}
+
+export interface FirstPaymentPath {
+  /** Every step's number in the code's order (owner-steps.ts `order`). */
+  codeOrder: number[];
+  /** OWNER_STEP_ORDER_REVIEW: printed beside the code's order, which this section does not choose over the other. */
+  orderReview: string;
+  lines: PathLine[];
+  /** The line(s) whose remaining steps take the fewest owner minutes, ties included; empty when no line can be paid by the steps alone. */
+  smallest: PathCandidate[];
+  /** The other candidates at the smallest set's lower bound: the pick between them rests on the upper bound alone. */
+  closeBehind: PathCandidate[];
+}
+
 export interface OwnerReport {
   asOf: string;
   money: {
@@ -141,6 +208,7 @@ export interface OwnerReport {
      */
     owedRows: { step: number; row: string; askedNow: boolean; reason: string | null }[];
   };
+  firstPayment: FirstPaymentPath;
   health: {
     enabled: boolean;
     lastLedgerSyncAt: string | null;
@@ -195,6 +263,76 @@ function lineState(line: DbLine | undefined): string {
   if (!line) return "not in the database";
   if (line.status === "killed") return "killed";
   return line.humanSetupDone ? `set up (${line.status})` : line.status;
+}
+
+/** A text's first sentence: up to the first full stop that a space or the end follows, or the whole text without one. */
+export function firstSentence(text: string): string {
+  const m = /^.*?\.(?=\s|$)/s.exec(text.trim());
+  return m ? m[0] : text.trim();
+}
+
+/** A step as it stands on a line's path, in owner-steps.ts's precedence (done, frozen, held), else asked now. */
+function pathStep(step: OwnerStep, lineId: string): PathStep {
+  const base = {
+    number: step.number,
+    id: step.id,
+    order: step.order,
+    minutes: step.minutes,
+    identity: step.identity,
+    identityHere: identityOnLine(step, lineId),
+    unlocks: firstSentence(step.unlocks),
+  };
+  if (step.doneOn) return { ...base, state: "done", gate: `done on ${step.doneOn.date}` };
+  if (step.frozen) {
+    return { ...base, state: "frozen", gate: `frozen by ${step.frozen.rule}; instead: ${firstSentence(step.frozen.freeInstead)}` };
+  }
+  if (hasPendingPrecondition(step)) return { ...base, state: "held", gate: step.precondition!.short };
+  return { ...base, state: "asked", gate: null };
+}
+
+/**
+ * The path to a first payment for each line the database holds and has not killed, and the smallest set of steps that
+ * makes one of them payable. Computed from owner-steps.ts (steps, order, minutes, identity, gates, waits) alone; the
+ * database supplies which lines exist and whether each still waits on the owner.
+ */
+export function buildFirstPaymentPath(
+  dbLines: { id: string; waitsOnOwner: boolean }[],
+  steps: OwnerStep[] = ownerStepsInOrder(),
+  waits: Record<string, LinePaymentWait[]> = LINE_PAYMENT_WAITS,
+): FirstPaymentPath {
+  const lines: PathLine[] = dbLines.map(({ id, waitsOnOwner }) => {
+    const gating = ownerStepsForLine(id, steps);
+    // Done steps are behind the line; a frozen step's line goes without it at ₪0 (`frozen.freeInstead`).
+    const needed = gating.filter((s) => !s.doneOn && !s.frozen);
+    const lineWaits = waits[id] ?? [];
+    const notByStepsAlone = lineWaits.filter((w) => w.kind === "owner-later").map((w) => w.what);
+    if (gating.length === 0) notByStepsAlone.push("owner-steps.ts names no step for this line, so nothing here says what it needs");
+    return {
+      id,
+      waitsOnOwner,
+      steps: gating.map((s) => pathStep(s, id)),
+      waits: lineWaits,
+      toPay: { steps: needed.map((s) => s.number), minutes: ownerStepMinutes(needed) },
+      notByStepsAlone,
+    };
+  });
+  const candidates = lines.filter((l) => l.notByStepsAlone.length === 0);
+  const fewest = (a: PathLine, b: PathLine) =>
+    a.toPay.minutes.min - b.toPay.minutes.min || a.toPay.minutes.max - b.toPay.minutes.max || a.toPay.steps.length - b.toPay.steps.length;
+  const best = [...candidates].sort(fewest)[0];
+  const candidate = (l: PathLine): PathCandidate => ({ line: l.id, steps: l.toPay.steps, minutes: l.toPay.minutes });
+  return {
+    codeOrder: ownerStepsInOrder(steps).map((s) => s.number),
+    orderReview: OWNER_STEP_ORDER_REVIEW,
+    lines,
+    smallest: best ? candidates.filter((l) => fewest(l, best) === 0).map(candidate) : [],
+    closeBehind: best
+      ? candidates
+          .filter((l) => fewest(l, best) !== 0 && l.toPay.minutes.min === best.toPay.minutes.min)
+          .sort(fewest)
+          .map(candidate)
+      : [],
+  };
 }
 
 function getKv(db: Database, key: string): string | undefined {
@@ -319,6 +457,7 @@ export function buildOwnerReport(
         })),
       ],
     },
+    firstPayment: buildFirstPaymentPath(lines.map((l) => ({ id: l.id, waitsOnOwner: l.waitsOnOwner }))),
     health: {
       enabled: isRevenueColonyEnabled(db),
       lastLedgerSyncAt: Number.isFinite(lastSyncMs) ? new Date(lastSyncMs).toISOString() : null,
@@ -333,6 +472,101 @@ export function buildOwnerReport(
 
 function minutesText([a, b]: [number, number]): string {
   return a === b ? `${a} min` : `${a}-${b} min`;
+}
+
+const IDENTITY_WORD: Record<OwnerStepIdentity["needs"], string> = { yes: "yes", part: "in one part", no: "no" };
+
+/** A step's identity check on one line's path: the step's own word, or "no" with the lines its identity part serves. */
+function identityHereText(s: PathStep): string {
+  if (s.identityHere === s.identity.needs) return IDENTITY_WORD[s.identityHere];
+  return `no on this line (its identity part is for ${(s.identity.partLines ?? []).map((l) => `\`${l}\``).join(", ")} only)`;
+}
+
+/** "steps 8, 2, 3, 6" or "step 6": numbers in the order given (the code's). */
+function stepsText(numbers: number[]): string {
+  return `${numbers.length === 1 ? "step" : "steps"} ${numbers.join(", ")}`;
+}
+
+/** The "Shortest path to a first payment" section, as lines of the report. */
+export function renderFirstPayment(p: FirstPaymentPath): string[] {
+  const out: string[] = [];
+  out.push("## Shortest path to a first payment (owner-steps.ts, portfolio.ts)");
+  out.push("");
+  out.push(`Steps in the code's order (owner-steps.ts \`order\`): ${p.codeOrder.join(" → ")}.`);
+  out.push(`${p.orderReview.charAt(0).toUpperCase()}${p.orderReview.slice(1)}.`);
+  out.push("");
+  // Each step's identity check once, in the code's order, as the step asks it; each line's list says whether its path meets it.
+  const seen = new Map<number, PathStep>();
+  for (const l of p.lines) for (const s of l.steps) if (!seen.has(s.number)) seen.set(s.number, s);
+  const all = [...seen.values()].sort((a, b) => a.order - b.order);
+  out.push("Identity checks, step by step:");
+  out.push("");
+  for (const s of all) out.push(`- Step ${s.number} (\`${s.id}\`): ${IDENTITY_WORD[s.identity.needs]} — ${s.identity.what}`);
+  out.push("");
+  for (const l of p.lines) {
+    out.push(`### \`${l.id}\`${l.waitsOnOwner ? "" : " (the database no longer has it waiting on the owner)"}`);
+    out.push("");
+    const item = (s: PathStep) =>
+      `step ${s.number} (\`${s.id}\`), ${minutesText(s.minutes)}, identity check: ${identityHereText(s)}` +
+      (s.gate ? ` — ${s.gate.replace(/\.$/, "")}` : "") +
+      `. Unlocks: ${s.unlocks}`;
+    const block = (label: string, state: PathStep["state"][]) => {
+      const these = l.steps.filter((s) => state.includes(s.state));
+      if (!these.length) return;
+      out.push(`${label}:`);
+      for (const s of these) out.push(`- ${s.state === "asked" ? "" : `${s.state}: `}${item(s)}`);
+    };
+    if (!l.steps.length) out.push("No owner step in owner-steps.ts names this line.");
+    block("Asked now, in the code's order", ["asked"]);
+    block("Held or frozen, with the gate", ["held", "frozen"]);
+    block("Done", ["done"]);
+    if (l.waits.length) out.push("Also waits on:");
+    for (const w of l.waits) {
+      out.push(`- ${w.kind === "read" ? "a read the colony takes, not an owner step" : "an owner action outside the eight steps"}: ${w.what} (${w.rule})`);
+    }
+    out.push(
+      l.toPay.steps.length
+        ? `Owner steps still between it and a payment: ${stepsText(l.toPay.steps)}, ${l.toPay.minutes.min}-${l.toPay.minutes.max} min` +
+            (l.steps.some((s) => s.state === "frozen") ? " (a frozen step left out: the line goes without it at ₪0)" : "") +
+            (l.notByStepsAlone.length ? "; the eight steps alone do not make it payable." : ".")
+        : `No owner step is still between it and a payment${l.notByStepsAlone.length ? "; the eight steps alone do not make it payable." : "."}`,
+    );
+    out.push("");
+  }
+  out.push("### The smallest set");
+  out.push("");
+  if (!p.smallest.length) {
+    out.push("No line can take a payment by the eight owner steps alone: each needs something outside them (above).");
+  } else {
+    p.smallest.forEach((c, i) => {
+      const line = p.lines.find((l) => l.id === c.line)!;
+      const ids = line.steps.filter((s) => c.steps.includes(s.number) && s.identityHere !== "no");
+      const what = c.steps.length
+        ? `${stepsText(c.steps)} (in the code's order), ${c.minutes.min}-${c.minutes.max} minutes in all: after ${c.steps.length === 1 ? "it" : "them"}`
+        : "no owner step is left:";
+      out.push(
+        `${i ? "Or, at the same minutes: " : ""}${i ? what : what.charAt(0).toUpperCase() + what.slice(1)}` +
+          ` \`${c.line}\` can take a payment` +
+          (line.waits.length ? `, once ${line.waits.length === 1 ? "its read" : "its reads"} above ${line.waits.length === 1 ? "passes" : "pass"}` : "") +
+          "." +
+          (ids.length ? ` Identity checks among them: ${ids.map((s) => `step ${s.number} (${IDENTITY_WORD[s.identityHere]})`).join(", ")}.` : "") +
+          (line.waitsOnOwner
+            ? ""
+            : ` The database no longer has \`${c.line}\` waiting on the owner, so the owner-steps section above asks none of these for it.`),
+      );
+    });
+  }
+  for (const c of p.closeBehind) {
+    out.push(
+      `Close behind, at the same lower bound: \`${c.line}\`, ${stepsText(c.steps)}, ${c.minutes.min}-${c.minutes.max} min; ` +
+        "the upper bound alone decides between them.",
+    );
+  }
+  for (const l of p.lines.filter((x) => x.notByStepsAlone.length)) {
+    out.push(`Not counted: \`${l.id}\` — its payment also needs ${l.notByStepsAlone.join("; ")}.`);
+  }
+  out.push("");
+  return out;
 }
 
 /** The report as English prose, in the order the owner's report needs it: money, lines, owner steps, colony health. */
@@ -406,6 +640,8 @@ export function renderOwnerReport(r: OwnerReport): string {
   for (const h of s.heldSecretRows) out.push(`- Step ${h.step}'s \`${h.row}\` row ${h.reason}`);
   for (const o of owedHeld) out.push(`- Owed by done step ${o.step}: the \`${o.row}\` row ${o.reason}`);
   out.push("");
+
+  out.push(...renderFirstPayment(r.firstPayment));
 
   const h = r.health;
   out.push("## Colony health");

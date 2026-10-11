@@ -26,7 +26,8 @@ verdict on the code:
   it and nothing is expected from it. It re-opens only if Fragment renders a camera-free withdrawal to
   an Israeli resident (`docs/REJECTED.md`).
 - **`x402-il-api` is a rail on standby.** `paid-apis` and `agent-services` were killed because the
-  x402 arithmetic divides out to single-digit shekels per provider per month. The endpoint may stay
+  x402 arithmetic divides out to single-digit shekels per provider per month. The endpoint is built
+  and tested but **not deployed** (no deploy workflow, runner probe or URL for it exists in the repository); it may be
   deployed **only while it costs ₪0/month**; any USDC that arrives is not yet booked
   automatically — `src/revenue/connectors/x402-local.ts` imports only `transactions` rows tagged `[line:<id>]`, and no code writes such a row for an inbound USDC payment — and nothing is planned on it.
 - **`il-biz-tools` moved from Paddle to Gumroad.** Gumroad is the only merchant of record with rendered

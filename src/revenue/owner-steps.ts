@@ -128,8 +128,24 @@
  *     only then. The stop rules (a card, a payment, an ID, a phone; a trial or paid plan offered) are printed in the
  *     Hebrew part ד, not in `stopIf`, which the bounty ruling pins to step 4.
  *   - Step 6's estimate goes from 15-20 to 18-23 minutes; its early part from 5 to 8.
+ *
+ * Tick 69 (11.10.2026; logs/2026-10-11-owner-can-you-earn-now.md, an adversarial check of the owner-facing texts) — no
+ * step added, removed, renumbered or reordered:
+ *
+ *   - Each step carries `identity`: whether it asks the owner to prove who they are, and what. Step 6 asks it in part ג
+ *     only — Apify's identity verification at the Publish sitting, where the breadth board put it once Apify's own docs
+ *     showed it document-only (research/breadth/BOARD.md Q5 item 3; the read of 28.9, research/measurements/apify-visibility.md).
+ *     That part is apify-actors' alone (`partLines`): on another line's path step 6 asks no identity (`identityOnLine`).
+ *   - `LINE_PAYMENT_WAITS` names what each line waits on before its first payment besides these eight steps, where the
+ *     code knows it: a scheduled read the colony takes, or an owner action that is not one of the eight and is asked
+ *     only later. The owner report's "Shortest path to a first payment" reads both, with the steps.
+ *   - `OWNER_STEP_ORDER_REVIEW`: two step orders are in force (the `order` below and the ₪0 sequence of the Hebrew
+ *     document) and the board has not ruled which binds (logs/FABLE_QUEUE.md row 29). Every surface that prints the
+ *     code's order prints this line beside it, and none of them picks.
  */
 
+import { SUPPLY_THRESHOLDS } from "./bounties/supply.js";
+import { PAGE_VIEW_GATES } from "./page-views.js";
 import { DEFAULT_PORTFOLIO, humanSetupItemFor } from "./portfolio.js";
 import type { RevenueLine, RevenueLineSeed } from "./types.js";
 
@@ -192,6 +208,21 @@ export interface SecretGateSite {
   projectId: string;
 }
 
+/**
+ * Whether a step asks the owner to prove who they are — an ID document, a form in their legal identity, a bank account
+ * in their name — and what, as the step in docs/OWNER_STEPS.he.md says it.
+ *   - "yes": the step does;
+ *   - "part": one part of it does, and `what` names the part (step 6: part ג, Apify's verification at the Publish sitting);
+ *     `partLines` names the lines whose way to a payment runs through that part, so a line outside it is not told the
+ *     step checks its owner's identity (`identityOnLine`);
+ *   - "no": it does not; `what` says what it asks instead (a phone check, a card payment, a merge).
+ */
+export interface OwnerStepIdentity {
+  needs: "yes" | "part" | "no";
+  what: string;
+  partLines?: string[];
+}
+
 export interface OwnerStep {
   id: OwnerStepId;
   /**
@@ -210,8 +241,10 @@ export interface OwnerStep {
   title: string;
   /** Minutes, as a range. Both ends equal where the estimate is a point. */
   minutes: [number, number];
-  /** What this step makes possible that was impossible before it. */
+  /** What this step makes possible that was impossible before it. Its first sentence is the owner report's summary. */
   unlocks: string;
+  /** Whether the step asks for the owner's identity, and what (`OwnerStepIdentity`). */
+  identity: OwnerStepIdentity;
   /** Revenue line ids that cannot earn until this step is done. */
   lines: string[];
   /** The chief audit's owner-blocker catalogue item, or null where it is not an identity step. */
@@ -278,6 +311,10 @@ export const OWNER_STEPS: OwnerStep[] = [
     minutes: [2, 2],
     unlocks:
       "Consent, not identity: it puts colony.yml and every future workflow on `main`, and GitHub runs scheduled work only there. Nothing CI-executed — the Apify push, the Netlify deploys, the scheduled ledger sync — runs before it, so it gates the MEASUREMENTS and not only the hourly report. Since 27.9.2026 the owner's standing consent covers every later merge: the agent merges its own green pull requests and publishes under the brand without asking each time, until the owner says \"עצור\". The same message said \"תמזג\", and PR #3 was merged on it (merge commit 61fae4e, 27.9.2026 22:36 UTC).",
+    identity: {
+      needs: "no",
+      what: "a merge on GitHub, or the word \"תמזג\": consent, not identity",
+    },
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: null,
     doneOn: {
@@ -295,6 +332,10 @@ export const OWNER_STEPS: OwnerStep[] = [
     minutes: [10, 10],
     unlocks:
       "A Google account under the brand (Gmail, mehudak) — the inbox every new-account venue needs for verification mail and one-time codes, and the brand-owned accessibility contact that is il-biz-tools' last publish gate. It is a Google account rather than a mailbox elsewhere because the same account later serves Search Console; YouTube Stage A uses a dedicated brand Google account (ruling 30.9 16(c)). Google Play Books Partner Center was another use until 28.9.2026, when it was killed: Israel is not a supported country (research/measurements/google-play-books.md). If Google's sign-up asks for more than a phone number — an ID document, a video or a payment — stop and use a free Outlook.com mailbox instead (IMAP). The owner's own phone number for the sign-up check is allowed (private, no camera); it is never the owner's personal Gmail (PUBLISH-9). The agent reads it and the owner never answers anyone: a second Gmail connector for the brand account in this environment, and for CI an app password (or OAuth token) as a secret of the GitHub environment brand-mailbox, whose deployment branches are limited to main — not a repository secret, which every branch and workflow could read. Once step 8 is done, the tick's probe will report the unread count, with accessibility mail unanswered for 7 days as a blocker, and the colony will answer accessibility mail itself — neither runs yet: the probe is built but not scheduled (scripts/brand_mail.py probe via .github/workflows/brand-mail.yml, dispatch only; the report already reads its numbers from state/colony/brand-mail.json, and it joins colony.yml's schedule once this step is done), and the responder is not built. Every written question the colony sends a platform from this address discloses that it comes from the company's automated operator (as disclosure.ts does), which is what lets the colony ask the written questions that decide CrazyGames (runner-operated submission) and Spreadshirt (automated uploads); the seven are drafted in research/owner-asks/questions.json and leave through the same workflow, dry run first. The address is published only as the brand's accessibility contact. Cost ₪0; about ten minutes; no identity step (research/breadth/BOARD.md Q2, 28.9.2026). It is first among the free steps because it unblocks more than any other (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (b)): seven written questions, il-biz-tools' publish gate, the pcn874 page, npm's account (proposed step 9, not yet asked) and Displate's login (if Displate is admitted) wait on it — said once, never as a reminder.",
+    identity: {
+      needs: "no",
+      what: "a phone number for Google's sign-up check (the owner's own phone is allowed); no ID document and no camera — if Google asks for more than a phone number, the owner stops and opens a free Outlook.com mailbox instead",
+    },
     lines: ["il-biz-tools"],
     // Not an identity step and not in the chief audit's catalogue: a brand account asked for by the breadth board.
     catalogueRef: null,
@@ -307,6 +348,10 @@ export const OWNER_STEPS: OwnerStep[] = [
     minutes: [60, 90],
     unlocks:
       "The legal right to receive any shekel at all. This is the law rather than a platform's requirement: business income needs a file at the Tax Authority, and ₪10 counts. Written here ONCE — it used to be repeated in every line's humanSetup, which is how a six-item catalogue reads as eleven. After it, the company issues its own payout documents (an exempt dealer's receipt or payment demand, generated by the runner from the payer's own statement and sent from the brand mailbox to payee-billing platforms), and the owner signs nothing per payout (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (e)3, under its six conditions; the first document waits for the bookkeeping read that ruling names). As narrowed by the documents ruling of 30.9.2026 (research/channel-loop/RULING-2026-09-30-documents.md (a)): the first document goes out only after the signature question is closed. The form is delivered by hand or through an accountant, lawyer, tax adviser or bookkeeper under reg 2(א)(1) of the VAT registration regulations as read; an online route on the Tax Authority's site is unverified from here. The occupation line describes the business as it runs (digital tools and software, licence sales, platform royalties and revenue shares; operated by an automated system of AI agents on the business's behalf), the office decides the class, and if the approval says עוסק מורשה the owner writes that word with 'צעד 2 בוצע', because the documents and the reporting then change. The law attaches to the exempt status an annual turnover declaration by 31 January (reg 15), which the runner computes from the ledger and drafts (who delivers it is not stated in the text read), and a one-time registered-mail notice to the assessing officer and the VAT Director before the first computerised document (§18ב(ב); reg 2(א)(2) of the VAT bookkeeping regulations), recorded and not asked while the cost of registered mail is unchecked. The exemption from periodic reports is reg 22(2) of the general VAT regulations (a 2023 text read on GitHub), which reaches the exempt dealer by inference through §31(3).",
+    identity: {
+      needs: "yes",
+      what: "the Tax Authority's file-opening form with the owner's ID card, personal details and address, and Bituach Leumi's self-employed registration (form 6101)",
+    },
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.1",
     precondition: {
@@ -329,6 +374,10 @@ export const OWNER_STEPS: OwnerStep[] = [
     minutes: [20, 20],
     unlocks:
       "The only merchant-of-record rail with RENDERED proof of a native ILS payout to an Israeli bank (Freemius pays Israel from a USD balance, ILS only via Wise or wire) (Gumroad's own _13-getting-paid.html.erb carries a row reading `Israel | ILS`). It collects from the buyer, holds 7 days, and pays out in shekels above a $100 balance. It supplies no buyers — its Discover gate requires a sale to already exist — so it is a rail, not a storefront. The dashboard-minted token carries edit_products (Gumroad doorkeeper.rb:10, oauth_application.rb:121-122), so the agent creates the Pro product with Gumroad's own licence-key block, and Gumroad mints and emails a key per sale — there is no per-sale owner step (research/measurements/gumroad-license-decision.md, Option C). The account is opened with the brand mailbox (owner step 8), never a personal address: a buyer's reply to the Gumroad receipt, a refund request or a question goes to that address, and the colony reads only the brand mailbox — so the product job refuses to enable the Pro product until the brand-mail probe is green (products/il-biz-tools/scripts/gumroad-pro-product.js, enableProduct; research/tiktok/08-sales-marketing-lessons.md N6). Receipt replies go to the account's Support email when one is set, so the owner leaves Settings → Support → Email blank or sets it to the brand mailbox, sets no product-level support address, and names the account (name) Mehudak, which prints on receipts, invoices and the refund email (research/channel-loop/RULING-2026-09-30-documents.md (d)).",
+    identity: {
+      needs: "yes",
+      what: "an account in the owner's legal identity: a colour photo of the ID card, front and back, proof of an Israeli address and an Israeli bank account in the owner's name (from Gumroad's own sources; no source reports a selfie video)",
+    },
     lines: ["il-biz-tools", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.2",
     ownerDecision:
@@ -342,6 +391,10 @@ export const OWNER_STEPS: OwnerStep[] = [
     minutes: [10, 10],
     unlocks:
       "Anonymity and search, both. A gTLD (.com or similar) at a registrar with WHOIS privacy on by default — a registrant name in public WHOIS is a published identifier, and .co.il only if ISOC-IL privacy is confirmed first. Without it the MCP registry derives the public namespace from the GitHub account, every site URL stays *.netlify.app, and no line that depends on search exists.",
+    identity: {
+      needs: "no",
+      what: "no ID document: a card payment, with the registrant record kept private by WHOIS privacy (and the step is frozen)",
+    },
     lines: ["il-biz-tools", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.4",
     ownerDecision:
@@ -366,6 +419,10 @@ export const OWNER_STEPS: OwnerStep[] = [
     unlocks:
       "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. In the same sitting the owner creates its personal access token, BRAND_GITHUB_TOKEN, pasted in step 6 with the others (RULING-2026-09-28-bounty-rail.md §4.4). It is an ordinary User account whose login does not end in \"bot\" — Algora's contributor queries drop %bot logins, and a GitHub App (type Bot) fails its human-author check (BOARD-2 §2.1.3(c); bounties/intake.ts brandAccountProblems). " +
       "The same sitting sets the organisation's ₪0 fence for the open repo-visibility decision (logs/CHANNEL_LOOP.md §6; a private repository meters Actions minutes, the colony's own hourly workflows included): on the organisation's Billing & Licensing → Budgets and alerts, a $0 Actions product-level budget scoped to the whole organisation with \"Stop usage when budget limit is reached\" ticked, created before any private repository exists in the organisation (a budget counts only metered use from its creation onwards, gh-docs-budgets-and-alerts-2026-09-29.txt:277); the included-usage alerts opted in; and a read-only token, ORG_BUDGETS_READ_TOKEN, so a runner can read the budget back before the first metered-capable minute. The token's shape, as the ruling's amendment of 4.10 sets it (RULING-2026-10-04-mozilla-precondition.md, which withdrew shape A): a fine-grained personal access token of the owner's own account, with the organisation as resource owner, Administration: read only and the longest expiry GitHub offers; if the organisation's token policy must first allow fine-grained tokens, that switch is part of the same sitting, and the token is renewed when BRAND_GITHUB_TOKEN is, never as an action of its own. Never Administration: write, which can delete the budget or switch its stop off. The machine account is never made a billing manager: the role can add payment methods and change the plan, and an automation identity holds no power to spend, so the role, not the token, would be the exposure. The role's own list, read 4.10 from github/docs (data/reusables/billing/org-billing-manager-permissions.md, which adding-a-billing-manager-to-your-organization.md:24 includes), gives a billing manager \"Add, update, or remove payment methods.\", \"Upgrade or downgrade between\" the Free and Team plans and \"Start, modify, or cancel sponsorships.\" — three ways to spend money — beside viewing usage, budgets and receipts and inviting billing managers. Its list says only \"View organization-level budgets.\", but the budgets page addressed to the role (gh-docs-set-up-budgets-2026-09-29.txt:295) says a budget can be edited or deleted at any time (gh-docs-set-up-budgets-2026-09-29.txt:361), so the role's own session may be able to remove the $0 fence, which the read-only token cannot. The ruling chose the role before that list was read (§2 rule 3); the amendment withdrew it, and item 9 is asked with the rest of the sitting. If the page offers no Actions product-level budget, refuses $0 or shows no stop option, the owner records what it showed and no private repository is created in the organisation. Mozilla's dry-run harness (loop row 8) is one line that would use the fence; it runs only after the read passes and asks for nothing of its own (RULING-2026-10-04-mozilla-precondition.md §2).",
+    identity: {
+      needs: "no",
+      what: "no ID document: a GitHub organisation, the brand machine account (an ordinary user account) and two tokens",
+    },
     lines: ["oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.6",
     ownerDecision:
@@ -381,6 +438,10 @@ export const OWNER_STEPS: OwnerStep[] = [
     minutes: [15, 15],
     unlocks:
       "The shortest documented path to a platform transaction id — 2-5 days after a rewarded pull request. Done SIGNED IN AS THE BRAND MACHINE ACCOUNT (which is why it follows step 7); the Stripe form stays in the owner's legal identity, which is exactly what the mandate allows. What it settles is now only Algora's own behaviour: the platform-level question is rendered (standalone Stripe for an Israeli business, no; a US platform paying an Israeli individual through Global Payouts, yes — research/measurements/stripe-israel.md Q1, Q7), and Algora's code shows it creates the account with no service agreement and falls back to a country-less account on any Stripe error (payments.ex:299-303). So 4b is asked when there is money to collect and not before: Algora holds a reward as a credit until the account can be paid (payments.ex:352-353, 479-503). Verified 28.9.2026 as the ruling's §4.1 caveat asked, from algora-io/algora on GitHub: a reward records the credit without checking payouts_enabled (bounties.ex create_payment_session → create_transaction_pairs), and a /claim creates the solver's Algora user from the GitHub login if none exists (workspace.ex ensure_user → create_user_from_github) — so 4b stays after a held reward and never before the first /claim, and no separate earlier sign-in is required (the breadth board dropped the old early sign-in part on that finding, research/breadth/BOARD.md Part B(b)).",
+    identity: {
+      needs: "yes",
+      what: "Stripe Connect Express in the owner's legal identity: individual, Israel, legal name, ID number, an Israeli address and an Israeli bank account; Stripe may ask for a photo of an ID document, and a selfie, liveness check or video is a stop rule",
+    },
     lines: ["oss-bounties"],
     catalogueRef: "CHIEF-AUDIT §4A.3",
     precondition: {
@@ -404,6 +465,12 @@ export const OWNER_STEPS: OwnerStep[] = [
     minutes: [18, 23],
     unlocks:
       "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN, made in step 7's sitting and pasted here with the others, lets bounty PRs leave the brand account once the board's week-4 clock allows it — the intake is gated in code until then (RULING-2026-09-28-bounty-rail.md §4.4). ORG_BUDGETS_READ_TOKEN, also made in step 7's sitting (Administration: read on the organisation, nothing else), lets a runner read the organisation's $0 Actions budget back before the first metered-capable minute; nothing reads it yet, because the budgets read is built after step 7 (RULING-2026-10-04-mozilla-precondition.md §2), and it is the owner's own fine-grained token, never the machine account's: the machine account is never made a billing manager (the ruling's amendment of 4.10). POSTHOG_READ_KEY, a PostHog personal API key with the query-read scope only, turns on the weekly page-view reader, which is a strict no-op without it, so without it Pro's PASS gate is never read; it is asked only after the agent has created the brand's PostHog project and written its id to site.json, and only while PostHog's query API stays on the free tier (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4). The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can. Part ד (ruling 7.10, research/channel-loop/RULING-2026-10-07-posthog-organisation.md): two PostHog organisations, named for the brand and for the T1 sub-brand, inside the PostHog login the connector already reaches — the free plan allows one project per organisation and the login's only organisation holds another product's project, which the brand never shares; the organisations are free and unlimited, need no card and no identity, and the colony renames and configures each one's included project the minute after (session recording off, the GeoIP transformation off, \"Discard client IP data\" on, cookieless server-hash mode on, each read back) and writes the brand project's public key, host and id into site.json — which is what lets POSTHOG_READ_KEY be asked, and what every page deploy's D0 waits on.",
+    identity: {
+      needs: "part",
+      what: "part ג only, the Apify Publish sitting: Apify's identity verification — the legal name, a photo of the ID card or driver's licence, proof of address, a tax document and ownership information — asked there because Apify's own docs, read on 28.9.2026, describe it as documents only (research/measurements/apify-visibility.md; research/breadth/BOARD.md Q5 item 3); a selfie, liveness check or video on the live screen is a stop, and then it is never asked. The rest of the step, its early part included, asks for none",
+      // Part ג publishes the Apify Actor: only apify-actors' way to a payment runs through it.
+      partLines: ["apify-actors"],
+    },
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.5",
     secrets: [
@@ -436,6 +503,84 @@ export const OWNER_STEPS: OwnerStep[] = [
   },
 ];
 
+/**
+ * Printed beside the code's order wherever a surface prints it as the owner's sequence, until the board rules: two
+ * orders are in force — `order` above (the 7.9 board's, step 8 put second on 28.9) and the ₪0 sequence the Hebrew
+ * document and logs/CHANNEL_LOOP.md §6 lead with (the free, no-identity steps first; step 3 only when a paid product is
+ * ready) — and FABLE_QUEUE row 29 asks which binds; the row's brief adds the floors ruling of 28.9, row 9 item 3, which
+ * puts il-biz-tools' paid-tier steps after its day-56 PASS. Nothing here picks one. The row's fold clears it with the
+ * ruling.
+ */
+export const OWNER_STEP_ORDER_REVIEW =
+  "the order is under review (FABLE_QUEUE row 29): the ₪0 sequence of docs/OWNER_STEPS.he.md asks the free, no-identity steps first; " +
+  "the floors ruling of 28.9 (research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3) has il-biz-tools' paid-tier steps 2, 3 and 6b " +
+  `join the ask batch only at its page-view PASS (the day-${PAGE_VIEW_GATES.reachDay} read, or the day-${PAGE_VIEW_GATES.extensionDay} read after its one extension); ` +
+  "and the board has not ruled which order binds";
+
+/**
+ * What a line waits on before its first payment besides the eight steps above.
+ *   - "read": a scheduled reading the colony takes — a clock and a bar, never an owner action. No owner step hurries it.
+ *   - "owner-later": an owner action that is not one of the eight steps and is asked only later, so the eight steps alone
+ *     cannot make the line payable.
+ * `rule` says where it is ruled or written.
+ */
+export interface LinePaymentWait {
+  kind: "read" | "owner-later";
+  what: string;
+  rule: string;
+}
+
+const READ_WEEKS = PAGE_VIEW_GATES.reachDay / 7;
+
+/**
+ * Per live line, the waits the code knows, built from the constants that enforce them (page-views.ts PAGE_VIEW_GATES,
+ * bounties/supply.ts SUPPLY_THRESHOLDS) and, for Apify, from the line's own criteria in portfolio.ts (the test holds
+ * the numbers to them). Every live line has an entry, and every entry is a live line (owner-steps.test.ts).
+ */
+export const LINE_PAYMENT_WAITS: Record<string, LinePaymentWait[]> = {
+  "apify-actors": [
+    {
+      kind: "read",
+      what:
+        "the 30-day stranger count, from the Publish click: the Actor is listed free, so it takes no payment until strangerUsers30d reaches 200 and pricing is designed; under 10 at day 30 is TEST_MORE",
+      rule: "portfolio.ts apify-actors killCriteria and scaleCriteria; research/breadth/BOARD.md Q5",
+    },
+    {
+      kind: "owner-later",
+      what:
+        "a payout method in the owner's name, set in Apify only when pricing is designed (PayPal or Wise) — not one of the eight steps",
+      rule: "portfolio.ts apify-actors humanSetup (\"A PayPal or Wise payout waits for pricing\"); docs/OWNER_STEPS.he.md, 'מה מגיע רק אם קו מתחיל להרוויח'",
+    },
+  ],
+  "il-biz-tools": [
+    {
+      kind: "read",
+      what:
+        `the day-${PAGE_VIEW_GATES.reachDay} page-view read, counted from D0, the public *.netlify.app deploy (not yet made): ` +
+        `under ${PAGE_VIEW_GATES.reachMinTotal} page views over the ${PAGE_VIEW_GATES.reachDay} days → the line is paused at ₪0 and no owner step is asked on its account; ` +
+        `${PAGE_VIEW_GATES.passMinWeeklyAverage} a week or more averaged over weeks ${READ_WEEKS - 3}-${READ_WEEKS} → PASS, and the paid tier's owner steps (2, 3 and step 6's paid-tier part, "6b") join the ask batch as "a paid product is ready"; ` +
+        `between → one extension to day ${PAGE_VIEW_GATES.extensionDay}`,
+      rule: "the floors ruling of 28.9, row 9: research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3; src/revenue/page-views.ts PAGE_VIEW_GATES",
+    },
+  ],
+  "oss-bounties": [
+    {
+      kind: "read",
+      what:
+        `the week-${SUPPLY_THRESHOLDS.weeks} claimable-supply read: the mean of the first ${SUPPLY_THRESHOLDS.weeks} weekly readings of the corrected counter (the struck first count is not one of them); ` +
+        `under ${SUPPLY_THRESHOLDS.killBelow} → the line is killed and step 4 is never asked; ${SUPPLY_THRESHOLDS.killBelow} or more → step 4 is asked once Algora holds a reward for a merged brand-account pull request, and no bounty pull request leaves before the read`,
+      rule: "BOARD-2 §2.2; research/channel-loop/RULING-2026-09-28-bounty-rail.md §3.4, §4.1, §4.4; src/revenue/bounties/supply.ts SUPPLY_THRESHOLDS",
+    },
+  ],
+  pcn874: [
+    {
+      kind: "read",
+      what: `the validator page's day-${PAGE_VIEW_GATES.reachDay} page-view read (the page rides il-biz-tools' deploy, so the same D0): no price is set before it passes`,
+      rule: "research/channel-loop/RULING-2026-09-29-lines.md (f); portfolio.ts TARGET_BASIS.pcn874 (its pricing gate)",
+    },
+  ],
+};
+
 /** The checklist in the order the boards ruled: 1, 8, 2, 3, 5, 7, 4, 6. */
 export function ownerStepsInOrder(steps: OwnerStep[] = OWNER_STEPS): OwnerStep[] {
   return [...steps].sort((a, b) => a.order - b.order);
@@ -448,6 +593,16 @@ export function ownerStepById(id: OwnerStepId, steps: OwnerStep[] = OWNER_STEPS)
 /** Every step a given revenue line is blocked on, in execution order. */
 export function ownerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER_STEPS): OwnerStep[] {
   return ownerStepsInOrder(steps).filter((s) => s.lines.includes(lineId));
+}
+
+/**
+ * Whether the step asks for the owner's identity on this line's way to a payment: a "part" step only on the lines its
+ * identity part serves (`partLines`), and on every line it gates when it names none — never understated.
+ */
+export function identityOnLine(step: OwnerStep, lineId: string): OwnerStepIdentity["needs"] {
+  const { needs, partLines } = step.identity;
+  if (needs !== "part" || !partLines) return needs;
+  return partLines.includes(lineId) ? "part" : "no";
 }
 
 /** True while a step's precondition exists and the colony has not recorded it met. */
