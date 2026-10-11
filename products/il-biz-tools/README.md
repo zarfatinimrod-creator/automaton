@@ -54,7 +54,8 @@ search sends no one, the page-view kill rule is what answers it.
 | Figure | Value in config | Status | Source |
 |---|---|---|---|
 | VAT rate | 18% (`src/config/vat.json`) | verified | [ynet – taxes 2026](https://www.ynet.co.il/economy/article/yokra14629288), [mako](https://www.mako.co.il/finances-news/Article-f27f6c987b8fa91027.htm) |
-| Osek patur ceiling 2026 | ₪122,833 (`src/config/osek-patur.json`) | verified against secondary sources only (Kol Zchut, Bizportal, mako, CPA circulars); no gov.il page rendered from here | [Kol Zchut](https://www.kolzchut.org.il/he/עוסק_פטור), [Bizportal](https://www.bizportal.co.il/guides/news/article/20039167) |
+| Osek patur ceiling, tax years 2024 and 2025 | ₪120,000 (`src/config/osek-patur.json` `years`) | **read in a primary text** (third-party copy), 29.9.2026 | gazette p.173 (section 35: 120,000; 37(ב): first CPI step 1.1.2026), the same capture and transcription as the בעל עסק זעיר rows |
+| Osek patur ceiling 2026 | `122833` held in `src/config/osek-patur-unverified.json` and **never rendered or shipped** | **unverified — not published**: a search-summary read of 7.9.2026 and secondary sources named without a dated read; no primary text read states it (`research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md`) | the page offers 2026 as not computed |
 | Income-tax monthly brackets 2026 | 10% ≤7,010; 14% ≤10,060; 20% ≤19,000; 31% ≤25,100; 35% ≤46,690; 47% ≤60,130; 50% above (`src/config/tax-2026.json`) | **estimate (אומדן)** — widened brackets approved 30.3.2026, retroactive to 1.1.2026; verify against the Tax Authority booklet | [N12/mako](https://www.mako.co.il/news-money/calculators/Article-54d2f6451f9ff91027.htm), [Tax Authority monthly deductions booklet 2026 (PDF)](https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf), [Knesset research (PDF)](https://fs.knesset.gov.il/globaldocs/MMM/a4622f6b-9905-f111-a13e-005056aa7c52/2_a4622f6b-9905-f111-a13e-005056aa7c52_11_21431.pdf) |
 | Credit point value | ₪242/month (frozen 2025–2027) | estimate | [mako](https://www.mako.co.il/news-money/calculators/Article-54d2f6451f9ff91027.htm), [msl.org.il](https://msl.org.il/מחקר/מדרגות-מס/) |
 | Surtax (מס יסף) | 3% above ₪721,560/yr — **not modelled** | n/a | same |
@@ -65,7 +66,7 @@ search sends no one, the page-view kill rule is what answers it.
 | Registrar reduced-rate window (through 31 March; full rate from 1 April) | `deadline` in `src/config/registrar-fee.json` | unverified against a primary source, **rendered anyway, labelled** | same six circulars |
 | בעל עסק זעיר deduction rate | 30% of turnover (`src/config/osek-zair.json`) | **read in a primary text** (third-party copy), 29.9.2026 | ספר החוקים 3045 p.172, Income Tax Ordinance 87ד(א) (image; transcribed in `logs/2026-09-29-osek-zair-check.md`); Tax Authority data report, `research/rendered/tt2-capitax-21072025-1.txt:27-28` |
 | בעל עסק זעיר cap, tax years 2024 and 2025 | ₪120,000 (`src/config/osek-zair.json`) | **read in a primary text** (third-party copy), 29.9.2026 | gazette p.171 (87ב(1): the VAT עוסק פטור amount) and p.173 (section 35: 120,000; 37(ב): first CPI step 1.1.2026); report `:27-28`, `:34-35` |
-| בעל עסק זעיר cap, tax year 2026 | `122833` held in `src/config/osek-zair-unverified.json` and **never rendered or shipped** | **unverified** — CPI-linked from 1.1.2026; no primary text read states it. From 29.9 to 6.10.2026 the page computed it from a capture accepted in place of one; on 6.10.2026 that capture was marked `[robots-bar]` and left the product (`research/channel-loop/RULING-2026-10-06-robots-and-terms.md`, decision 1) | the osek patur ceiling of `osek-patur.json` (secondary). The page refuses 2026 |
+| בעל עסק זעיר cap, tax year 2026 | `122833` held in `src/config/osek-zair-unverified.json` and **never rendered or shipped** | **unverified** — CPI-linked from 1.1.2026; no primary text read states it. From 29.9 to 6.10.2026 the page computed it from a capture accepted in place of one; on 6.10.2026 that capture was marked `[robots-bar]` and left the product (`research/channel-loop/RULING-2026-10-06-robots-and-terms.md`, decision 1) | `osek-patur-unverified.json` (unverified, the same amount; ruling 11.10 row 27). The page refuses 2026 |
 
 Not modelled in net salary: surtax, pension tax credit, special credit points (children, degree,
 army), benefits in kind, study fund.
@@ -73,16 +74,17 @@ army), benefits in kind, study fund.
 **Source, and what was checked when, on the page (TikTok note N8; corrected 29.9.2026).** `osek-patur.html`,
 `vat.html` and `allocation.html` state a statutory figure, so each shows "מקור: <name> (מקור משני) · <check>" right
 after its lead, and in the answer that states the figure (the JSON-LD answer too), from `source` and `check` in the
-config (`src/lib/source-line.js`). The check says only what a record in the repository backs: "נבדק: <date>" for a
-dated read of the cited page (`check.how: "read"`, none yet), "הושווה לתוצאות חיפוש: <date>" for a comparison with
-search results (`"search"`), and "תאריך הבדיקה לא תועד" when no dated record exists. The ceiling and the VAT rate
-rest on the search read of 7.9.2026 (`research/measurements/serp/2026-09-07-hebrew-calculators.md`), which opened no
-page - so they say "compared with search results", not "checked" (review of 29.9: the earlier "נבדק: 7.9.2026"
+config (`src/lib/source-line.js`); a config that cites documents instead (`osek-patur.json` since 11.10.2026, like
+`osek-zair.json`) gets the documents line, "מקור: ספר החוקים 3045 (עותק באתר capitax.co.il) · נבדק: 29.9.2026"
+(`documentsSourceLineHe`). The check says only what a record in the repository backs: "נבדק: <date>" for a
+dated read of the cited page (`check.how: "read"`, osek-patur.html since 11.10.2026), "הושווה לתוצאות חיפוש: <date>" for a comparison with
+search results (`"search"`), and "תאריך הבדיקה לא תועד" when no dated record exists. The VAT rate
+rests on the search read of 7.9.2026 (`research/measurements/serp/2026-09-07-hebrew-calculators.md`), which opened no
+page - so it says "compared with search results", not "checked" (review of 29.9: the earlier "נבדק: 7.9.2026"
 claimed a read nobody made). The allocation threshold has no dated record at all. `tests/statutory-sources.test.js`
 opens each `check.record` and requires the date and the figure in it (and, for "read", the cited address). A dated
 read of a primary page (note §8.1 N13) is what turns a line into "נבדק". The home page says each figure's source is
-on its tool's page. The osek patur ceiling is set per calendar year, so once the year in the config is over the
-page script shows "הנתון לא עודכן עדיין לשנת <year>" beside the source line until someone checks the new figure.
+on its tool's page.
 Only verified configs get a line: `net-salary.html` renders `tax-2026.json` (`verified: false`) and claims no
 check date anywhere.
 
@@ -208,7 +210,9 @@ Authority's own "almost 80% under the tax threshold"), **tax year 2026** (the ca
 primary text read states it; its amount waits in `osek-zair-unverified.json`, which no page loads and the build never
 ships; the page offers 2026 as not computed and says so in `pendingYears.2026`: the indexation and the 87ז(ב) sentence
 are cited to the gazette, p. 173, and the one report line beside them, line 11, only names the Economic Efficiency
-Law, which the gazette's image pages do not) and any later year (`compareTracks` refuses a year not in `years`),
+Law, which the gazette's image pages do not; since 11.10.2026 `osek-patur.html` refuses 2026 the same way, its
+amount held in `osek-patur-unverified.json`, `research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md`) and
+any later year (`compareTracks` refuses a year not in `years`),
 **the conditions** (listed with section and page, not checked), and **National Insurance** (the same law amended it;
 the meaning is unread).
 
@@ -826,7 +830,7 @@ Never deny what it is: every page says in its footer that AI agents build and ke
 אתר סטטי בעברית (RTL) לעצמאים ולעסקים קטנים בישראל, בלי שרת (ה-build רק מעתיק קבצים ל-`_site/`):
 
 - **מחשבון מע"מ** – 18%, ניתן לשינוי ב-`src/config/vat.json`.
-- **מעקב תקרת עוסק פטור 2026** – 122,833 ₪, רצועת אזהרה ב-85%, תחזית שנתית, שמירה מקומית.
+- **מעקב תקרת עוסק פטור** – לשנות המס 2024 ו-2025 (120,000 ₪, מספר החוקים 3045), רצועת אזהרה ב-85%, תחזית שנתית, שמירה מקומית; לשנת 2026 הכלי לא מחשב עד שייקרא מקור ראשוני.
 - **אומדן שכר נטו** – מדרגות המס 2026 (לאחר ריווח המדרגות), נקודות זיכוי 242 ₪, ביטוח לאומי
   ומס בריאות לפי המדרגה המופחתת (7,703 ₪) והתקרה (51,910 ₪). מסומן **אומדן** עד לאימות מול
   לוח העזר של רשות המסים.

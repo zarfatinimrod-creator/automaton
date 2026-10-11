@@ -13,6 +13,14 @@
 // (and, for "read", the cited address). A figure tied to a calendar year says so
 // once that year is over, until someone checks the new year's figure and
 // updates the config. Pure; the pages print the line statically.
+//
+// A config that cites documents instead of one `source` address (`documents` and
+// `sourceLine`, as osek-zair.json and, since 11.10.2026, osek-patur.json do) gets
+// the documents line: the documents by name, a third-party copy named with the
+// site it is on ("(עותק באתר capitax.co.il)") - the site is the copy's host,
+// never the source, and is not in SOURCES - and "נבדק: <date>", which only a
+// dated read with a record may print (research/channel-loop/RULING-2026-10-11-
+// osek-patur-ceiling.md, decision 2(5)).
 
 /** Every source host a config may cite, with its Hebrew name and whether it is the authority itself. */
 const SOURCES = [
@@ -43,11 +51,40 @@ const CHECK_HE = {
 };
 
 /**
- * The line: "מקור: <name>[ (מקור משני)] · <check>". Only for a verified config;
- * a figure nobody verified gets no line at all.
+ * The documents line: "מקור: <documents> · נבדק: <date>". A document with `copyOn` is a third-party copy, and the
+ * line names the site after the run of documents copied there; a document without it names itself (its name says
+ * whose text it is). Only for a verified config with a dated read and a record.
+ */
+export function documentsSourceLineHe(config) {
+  if (config?.verified !== true) throw new Error('only a verified config gets a source line');
+  const check = config.check;
+  if (check?.how !== 'read' || typeof check.record !== 'string' || !check.record.trim()) {
+    throw new Error('a line that names documents needs a dated read with a record');
+  }
+  if (!Array.isArray(config.sourceLine) || !config.sourceLine.length) throw new Error('a documents line names at least one document');
+  const groups = [];
+  for (const id of config.sourceLine) {
+    const doc = config.documents?.[id];
+    if (!doc) throw new Error(`unknown document ${id}`);
+    const last = groups[groups.length - 1];
+    if (doc.copyOn && last?.copyOn === doc.copyOn) last.names.push(doc.he);
+    else groups.push({ copyOn: doc.copyOn, names: [doc.he] });
+  }
+  const parts = groups.map(({ copyOn, names }) => {
+    const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} ו${names[names.length - 1]}`;
+    if (!copyOn) return list;
+    return `${list} (${names.length === 1 ? 'עותק' : 'עותקים'} באתר ${copyOn})`;
+  });
+  return `מקור: ${parts.join('; ')} · ${CHECK_HE.read(dateHe(check.on))}`;
+}
+
+/**
+ * The line: "מקור: <name>[ (מקור משני)] · <check>", or the documents line for a config that cites documents. Only
+ * for a verified config; a figure nobody verified gets no line at all.
  */
 export function sourceLineHe(config) {
   if (config?.verified !== true) throw new Error('only a verified config gets a source line');
+  if (config.documents !== undefined || config.sourceLine !== undefined) return documentsSourceLineHe(config);
   const { name, primary } = sourceNameHe(config.source);
   const cited = `מקור: ${name}${primary ? '' : ' (מקור משני)'}`;
   const check = config.check;

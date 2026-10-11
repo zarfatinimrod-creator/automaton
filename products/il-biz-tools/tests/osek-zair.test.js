@@ -141,10 +141,18 @@ describe('ruling 6.10 row 21 (a): the [robots-bar] capture is no input, and 2026
   });
 
   it('the README\'s osek-zair lines name no nevo, state 122,833 only on the unverified row, and say "gazette alone" nowhere while a report line is cited', () => {
-    // Fold 4 names README.md:68; every other line about this tool is held to the same rule. The osek-patur rows keep
-    // their own 122,833 (the ruling's "not decided" item 1), and they are not osek-zair lines.
+    // Fold 4 names README.md:68; every other line about this tool is held to the same rule. Since 11.10.2026 the
+    // osek-patur rows state 122,833 only on their own unverified row; the other states 120,000, read in a primary
+    // text (research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md, decision 2(8)).
     const readme = readFileSync(join(productRoot, 'README.md'), 'utf8');
     const lines = readme.split('\n');
+    const patur = lines.filter((l) => /^\| Osek patur ceiling( 2026|, tax years) /.test(l));
+    expect(patur).toHaveLength(2);
+    expect(patur.filter((l) => /122[,_]?833/.test(l))).toEqual([patur[1]]);
+    expect(patur[1].startsWith('| Osek patur ceiling 2026 | `122833` held in `src/config/osek-patur-unverified.json` and **never rendered or shipped** | **unverified — not published**')).toBe(true);
+    expect(patur[0].startsWith('| Osek patur ceiling, tax years 2024 and 2025 | ₪120,000 (`src/config/osek-patur.json` `years`) | **read in a primary text** (third-party copy), 29.9.2026 |')).toBe(true);
+    for (const l of patur) expect(l).not.toMatch(/nevo|נבו|kolzchut|Bizportal/i);
+    expect(lines.filter((l) => /122[,_]?833/.test(l) && !l.startsWith('| '))).toEqual([]);
     const start = lines.findIndex((l) => l.startsWith('## The בעל עסק זעיר self-check'));
     const end = lines.findIndex((l, i) => i > start && l.startsWith('## '));
     expect(start).toBeGreaterThan(0);

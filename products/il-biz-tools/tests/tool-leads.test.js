@@ -24,8 +24,8 @@ describe('the leads', () => {
     expect(textOf(leadOf(read('pcn874.html')))).toMatch(/^לפני ששולחים את הדוח המפורט: בדיקת מבנה שורה-שורה, בדפדפן, בלי העלאה\./);
   });
 
-  it('osek-patur.html opens with how much is left this year and when to get ready', () => {
-    expect(textOf(leadOf(read('osek-patur.html')))).toMatch(/^כמה נשאר לכם עד התקרה השנה, ומתי כדאי להיערך\./);
+  it('osek-patur.html opens with how much is left in the chosen tax year and when to get ready', () => {
+    expect(textOf(leadOf(read('osek-patur.html')))).toMatch(/^כמה נשאר לכם עד התקרה בשנת המס שבחרתם, ומתי כדאי להיערך\./);
   });
 
   it('osek-zair.html opens with the question the reader has: does the 30% track leave less taxable income', () => {
