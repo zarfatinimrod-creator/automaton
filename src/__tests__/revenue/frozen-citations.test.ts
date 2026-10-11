@@ -64,6 +64,9 @@ const LIVE_MENTIONS: Record<string, string> = {
   "research/faceless-youtube/LICENCE-IGO-DECISION.md unesco-uis-databrowser-terms": "a urls.txt line the note proposed: the slug a render writes",
   "research/channel-loop/RULING-2026-10-06-robots-and-terms.md robots-nevo": "the weekly probe the ruling keeps running, and its live meta (what the runner saw)",
   "research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md robots-nevo": "the weekly probe that would fire the 6.10 REOPEN (section 3, the hosts and decision 3(3))",
+  // Fold 13(d) names the terms line it orders; tick 69 queued it (ZERO-TESTS row 270). Once the page is read and the line
+  // paused or retired, the slug is no active capture and this entry goes (the check below says so).
+  "research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md terms-capitax": "fold 13(d)'s order for capitax.co.il's terms line: the slug the render will write",
   // terms-kaggle and terms-israel-post were here (the ruling and the two notes named the live shells the once-only js route
   // re-rendered). Both renders ran on 6.10 (a3cb438) and both js lines are retired, so neither slug is an active capture
   // any more: kaggle.com's note cites the frozen copy of its render, and Israel Post's names the live 403 meta, which no
@@ -77,10 +80,12 @@ const LIVE_MENTIONS: Record<string, string> = {
 
 /**
  * A path under research/rendered/ that names no capture on purpose: "<file> <path>" and why. Anything else that names a
- * capture not on disk fails below.
+ * capture not on disk fails below. Also an active line's slug a note names before its first render ("<file> <slug>"):
+ * the render writes the capture, the entry then exempts nothing, and the check below fails until it is removed.
  */
 const NOT_CAPTURES: Record<string, string> = {
   "research/faceless-youtube/LICENCE-IGO-DECISION.md research/rendered/owid-co2-licence.txt": "a fixture path in a quoted test (narration-licence-gate.test.ts), turned into a snapshots/ path",
+  "research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md terms-capitax": "fold 13(d) names the terms line it orders; tick 69 queued it (ZERO-TESTS row 270), and no render has run since (GitHub Actions disabled)",
 };
 
 /**
