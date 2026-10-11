@@ -155,7 +155,7 @@ describe("capitax.co.il: the TERMS_PENDING entry (tick 69, ruling 11.10 row 27 f
     const { note } = entry();
     expect(note).toContain("The terms line's meta will carry robots.txt's answer for /legalterms only, not for /Attachments/ or /content/.");
     expect(note.endsWith(
-      "Only its terms page is queued (a terms- line, ZERO-TESTS row 270; ruling 30.9 16(d) D2(iii)-(iv)), plain and once, for the next render-watch run (GitHub Actions has been disabled on the repository since about 8.10, so no run is due); no other page of the site is fetched, and the six captures stay as they are, until the terms are read.",
+      "Only its terms page is queued (a terms- line, ZERO-TESTS row 270; ruling 30.9 16(d) D2(iii)-(iv)), plain and once, for the next render-watch run (on 11.10 GitHub Actions had been disabled on the repository since about 8.10, so no run was due then); no other page of the site is fetched, and the six captures stay as they are, until the terms are read.",
     )).toBe(true);
     // The note does not name the terms line's slug: a decision file naming an active capture is held to LIVE_MENTIONS.
     expect(note.includes(SLUG) || entry().source.includes(SLUG)).toBe(false);

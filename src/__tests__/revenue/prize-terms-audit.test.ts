@@ -853,6 +853,12 @@ const ve68Fixture = () => JSON.parse(readFileSync(VE68_FIXTURE, "utf8")) as Reco
  * src/__tests__/revenue/capitax-terms.test.ts; the "tick 69" block below holds the counts that moved.
  */
 const CX69 = { site: "capitax.co.il", row: 270, url: "https://www.capitax.co.il/legalterms", slug: "terms-capitax", base: "00d35bc" };
+/**
+ * sha256 of terms-verdicts.json at CX69.base (the fold's base), the file before the entry: the "tick 69" block rebuilds
+ * it from the live file with the entry taken out, so the claim that the fold moved no other entry holds where 00d35bc
+ * cannot be reached too (a sim-tree.sh tree, a shallow checkout).
+ */
+const CX69_BASE_SHA256 = "0f411d7f64cb6fdd03a4efaca25874225b829bbfdd93f01e8f40f6c9806e1aa6";
 /** The verdicts as they stood before capitax.co.il's entry (tick 69): that entry taken out. */
 const cx69Before = (v: Record<string, Entry>): Record<string, Entry> =>
   Object.fromEntries(Object.entries(v).filter(([site]) => site !== CX69.site));
@@ -5735,20 +5741,26 @@ describe("tick 69: capitax.co.il TERMS_PENDING (11.10), its terms page queued on
     expect(keys.slice(keys.indexOf(CX69.site) - 1, keys.indexOf(CX69.site) + 2)).toEqual(["build-arena.github.io", CX69.site, "codabench.org"]);
     expect(Object.keys(raw[CX69.site])).toEqual(["verdict", "source", "checked", "note", "copying"]);
     expect(Object.keys(cx69Before(raw))).toEqual(keys.filter((k) => k !== CX69.site));
-    // Where the base is reachable, every other entry is byte for byte what it held there, in the same order.
+    const now = JSON.parse(readFileSync(VERDICTS, "utf8")) as { _about: string; sites: Record<string, Entry> };
+    // Where the base is reachable, the comparison names any entry that moved (each side read before any --recheck rewrite).
     let base: string | null = null;
     try {
       base = execFileSync("git", ["show", `${CX69.base}:${VERDICTS}`], { stdio: ["ignore", "pipe", "ignore"], encoding: "utf8" });
     } catch {
-      base = null;
+      base = null; // a sim-tree.sh tree has one commit, and a shallow checkout may lack 00d35bc; the pin below still holds
     }
-    if (base === null) return;
-    const then = JSON.parse(base) as { _about: string; sites: Record<string, Entry> };
-    const now = JSON.parse(readFileSync(VERDICTS, "utf8")) as { _about: string; sites: Record<string, Entry> };
-    expect(then.sites[CX69.site]).toBeUndefined();
-    expect(now._about).toBe(then._about);
-    expect(Object.keys(cx69Before(now.sites))).toEqual(Object.keys(then.sites));
-    expect(cx69Before(now.sites)).toEqual(then.sites);
+    if (base !== null) {
+      expect(createHash("sha256").update(base).digest("hex")).toBe(CX69_BASE_SHA256);
+      const then = JSON.parse(base) as { _about: string; sites: Record<string, Entry> };
+      expect(then.sites[CX69.site]).toBeUndefined();
+      expect(now._about).toBe(then._about);
+      expect(Object.keys(cx69Before(now.sites))).toEqual(Object.keys(then.sites));
+      expect(cx69Before(verdictsOf(now))).toEqual(verdictsOf(then));
+    }
+    // Everywhere, base or no base: with the entry taken out, the file (read before any --recheck rewrite) is byte for byte
+    // the file at the base, every other entry and _about as they were, in the same order.
+    const rebuilt = serializeVerdicts({ ...now, sites: cx69Before(verdictsOf(now)) });
+    expect(createHash("sha256").update(rebuilt).digest("hex")).toBe(CX69_BASE_SHA256);
   });
 
   it("counts one more entry (134), one more TERMS_PENDING (4), one more unread copying field (120) and one more kindless note (23); the rest as tick 68 left them", () => {

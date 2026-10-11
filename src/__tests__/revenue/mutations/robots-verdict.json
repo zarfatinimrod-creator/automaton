@@ -1457,5 +1457,21 @@
     "replace": "",
     "test": "src/__tests__/revenue/frozen-citations.test.ts",
     "note": "tick 69: NOT_CAPTURES loses the ruling's name of the terms slug that has no capture yet"
+  },
+  {
+    "id": "T69-CX21-other-entry",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"note\": \"'השירות' is defined as the bookkeeping service",
+    "replace": "\"note\": \"'השירות' is defined as the accounting service",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 69 review: another site's entry (ypay.co.il's note) moves, which the fold must not do; where 00d35bc is not reachable (this tree) only the pinned rebuild of the base file kills it"
+  },
+  {
+    "id": "T69-CX22-about",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"_about\": \"Terms verdict for every site render-watch has a line for",
+    "replace": "\"_about\": \"Terms verdict for each site render-watch has a line for",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 69 review: the file's _about moves; where 00d35bc is not reachable (this tree) only the pinned rebuild of the base file kills it"
   }
 ]
