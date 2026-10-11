@@ -3,8 +3,8 @@
  *
  * Env: GUMROAD_ACCESS_TOKEN, GUMROAD_DEFAULT_LINE (optional).
  * Product mapping key: `gumroad:<product_id>`.
- * Cursor: YYYY-MM-DD, the newest day a booked sale was created on (Gumroad filters by day); with none, the first read
- * starts 30 days back (FIRST_READ_DAYS).
+ * Cursor: YYYY-MM-DD, the newest day a booked sale was created on (Gumroad filters by day); with none it is taken as
+ * 30 days back (FIRST_READ_DAYS), so the first read lists from 31 days back.
  *
  * `fetchSince` lists from the day before its cursor and reads through the shared pager (`listGumroadSalesSince`) to
  * the last page (tick 71; until then it read one page of ten and moved its cursor past the rest). The day before,
