@@ -19,9 +19,10 @@
  *   that `enable` has run.
  *
  * The listing is one read, from a day before the oldest Gumroad row to now, so it grows with the ledger. Past the pager's
- * cap (MAX_REFUND_RATE_PAGES pages of ten) it is "incomplete" and nothing is verified; the result then names the part
- * read (`readBeforeStop`: pages, sales, the days they were created on) and the part not read. It is not cut into date
- * chunks: no recorded source shows an upper bound the index accepts, or the order it lists sales in (tick 71).
+ * cap (MAX_REFUND_RATE_PAGES pages of ten), or at a next_page_key already asked for, it is "incomplete" and nothing is
+ * verified; the result then names the part read (`readBeforeStop`: pages, sales, the days they were created on) and the
+ * part not read. It is not cut into date chunks: no recorded source shows an upper bound the index accepts, or the order
+ * it lists sales in (tick 71).
  */
 
 import type { Database } from "better-sqlite3";
@@ -117,7 +118,9 @@ export async function verifyGumroadLedger(
     const readBeforeStop = { pages: pagesRead, sales: read.length, earliestDay: created[0] ?? null, latestDay: created.at(-1) ?? null };
     const why = listing.problem === "refused"
       ? `GET /v2/sales was refused (HTTP ${listing.status}, page ${listing.page})`
-      : `more than ${listing.pages} pages of sales since ${after}`;
+      : listing.problem === "looped"
+        ? `GET /v2/sales loops (page ${listing.pages} names as its next a page already asked for)`
+        : `more than ${listing.pages} pages of sales since ${after}`;
     const span = readBeforeStop.earliestDay ? `, created ${readBeforeStop.earliestDay} to ${readBeforeStop.latestDay}` : "";
     const unread = listing.problem === "refused" ? `page ${listing.page} and any page after it` : `every page after page ${listing.pages}`;
     const detail =

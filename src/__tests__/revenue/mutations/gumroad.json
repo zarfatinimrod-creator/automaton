@@ -218,15 +218,15 @@
   {
     "id": "T71-G6",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "      if (DAY_RE.test(day) && day > newestDay) newestDay = day;",
+    "find": "      if (isCursorDay(day, latestDay) && day > newestDay) newestDay = day;",
     "replace": "      if (day > newestDay) newestDay = day;",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
-    "note": "tick 71: a created_at that is not a day (\"not-a-date\" sorts after every year) becomes the cursor (killed by the not-a-day test)"
+    "note": "tick 71: a created_at that is not a day (\"not-a-date\" sorts after every year) becomes the cursor (killed by the not-a-day test; the find moved to isCursorDay in the tick-71 review fix, the guard that also refuses an impossible or future day)"
   },
   {
     "id": "T71-G7",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": ", problem: incompleteListing(listing, after, read.length, cursorDay) };",
+    "find": ", problem: replaced ? `${replaced}; ${stop}` : stop };",
     "replace": " };",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "tick 71: the stop is not reported: the sync says nothing of the sales it did not read (killed by every errors assertion of the stop tests)"
@@ -334,5 +334,133 @@
     "replace": "    matchedRows: 0, unexplained: [], differing: [], refundState: [], unbooked: [], findings: 0,\n",
     "test": "src/__tests__/revenue/gumroad-verify.test.ts",
     "note": "tick 71: a complete listing's result carries no readBeforeStop field at all (killed by the complete-listing test's null)"
+  },
+  {
+    "id": "T71R-G1",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    const cursorDay = cursor && isCursorDay(cursor, latestDay)\n",
+    "replace": "    const cursorDay = cursor\n",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review (its surviving mutant RV-3): a stored cursor is taken whatever it holds, so \"2026-13-45\" makes shiftDay throw at every sync and \"2099-01-01\" lists from 2098 (killed by the stored-cursor tests)"
+  },
+  {
+    "id": "T71R-G2",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "      : new Date(now - FIRST_READ_DAYS * DAY_MS).toISOString().slice(0, 10);",
+    "replace": "      : new Date(now - (FIRST_READ_DAYS - 1) * DAY_MS).toISOString().slice(0, 10);",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review (its surviving mutant RV-6): the first read's window is a day short, so its first day's sales are never listed (killed by the first-read window test's after and count)"
+  },
+  {
+    "id": "T71R-G3",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": " && new Date(t).toISOString().slice(0, 10) === day && day <= latestDay;",
+    "replace": " && day <= latestDay;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: a day Date.parse rolls over (2026-02-30 as 2026-03-02) is taken as the cursor (killed by the 2026-02-30 tests)"
+  },
+  {
+    "id": "T71R-G4",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "DAY_RE.test(day) && !Number.isNaN(t) && ",
+    "replace": "DAY_RE.test(day) && ",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: no date check before the read-back, so \"2026-13-45\" throws inside fetchSince and the sync books nothing (killed by the 2026-13-45 tests)"
+  },
+  {
+    "id": "T71R-G5",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": " === day && day <= latestDay;",
+    "replace": " === day;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review (the blocking finding, probe R13): a date in the future becomes the cursor and every later sale goes unbooked, silently (killed by the future-sale and 2099 stored-cursor tests)"
+  },
+  {
+    "id": "T71R-G6",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    const latestDay = new Date(now + DAY_MS).toISOString().slice(0, 10);",
+    "replace": "    const latestDay = new Date(now).toISOString().slice(0, 10);",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: the latest cursor day is today, so a sale written east of UTC on tomorrow's day does not move the cursor (killed by the tomorrow test)"
+  },
+  {
+    "id": "T71R-G7",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    const latestDay = new Date(now + DAY_MS).toISOString().slice(0, 10);",
+    "replace": "    const latestDay = new Date(now + 2 * DAY_MS).toISOString().slice(0, 10);",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: the latest cursor day is the day after tomorrow (killed by the tomorrow test's day-after-tomorrow sale)"
+  },
+  {
+    "id": "T71R-G8",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "unmapped: [...unmapped], ...(replaced ? { problem: replaced } : {}) };",
+    "replace": "unmapped: [...unmapped] };",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: a replaced stored cursor is not said on a complete listing (killed by the stored-cursor tests' errors)"
+  },
+  {
+    "id": "T71R-G9",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "problem: replaced ? `${replaced}; ${stop}` : stop };",
+    "replace": "problem: stop };",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: a replaced stored cursor is not said when the listing then stops (killed by the replaced-then-refused test)"
+  },
+  {
+    "id": "T71R-G10",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": ", maxPages: MAX_LEDGER_SYNC_PAGES, onPage:",
+    "replace": ", onPage:",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: the sync reads through the pager's default cap of MAX_REFUND_RATE_PAGES again (killed by the 105-page test and the past-the-cap test's request count)"
+  },
+  {
+    "id": "T71R-G11",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    if (asked.has(pageKey)) return { ok: false, problem: \"looped\", pages: page };\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: a repeated next_page_key is followed to the cap again (killed by the pager's loop tests and the sync's two-request loop test)"
+  },
+  {
+    "id": "T71R-G12",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    asked.add(pageKey);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: the pager remembers no key it asked for, so no loop is ever seen (killed by the loop tests)"
+  },
+  {
+    "id": "T71R-G13",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    : listing.problem === \"looped\"\n      ? `the sales listing since ${after} loops",
+    "replace": "    : listing.problem === \"never\"\n      ? `the sales listing since ${after} loops",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: the sync's line calls a loop a listing past the cap (killed by the sync's loop test)"
+  },
+  {
+    "id": "T71R-G14",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  const rest = listing.problem !== \"too_many_pages\"",
+    "replace": "  const rest = listing.problem === \"refused\"",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: the sync's line on a loop says the cap's \"cannot move on by itself\" instead of the next sync asking again (killed by the sync's loop test)"
+  },
+  {
+    "id": "T71R-G15",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  if (listing.problem === \"looped\") {\n    return { ok: false, detail: `GET /v2/sales for the Pro product loops",
+    "replace": "  if (listing.problem === \"never\") {\n    return { ok: false, detail: `GET /v2/sales for the Pro product loops",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71 review: the refund-rate read calls a loop more than 100 pages (killed by the refund-rate loop test)"
+  },
+  {
+    "id": "T71R-V1",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "      : listing.problem === \"looped\"\n        ? `GET /v2/sales loops",
+    "replace": "      : listing.problem === \"never\"\n        ? `GET /v2/sales loops",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 71 review: verify-gumroad calls a loop more than 100 pages of sales (killed by the verify loop test's detail)"
   }
 ]

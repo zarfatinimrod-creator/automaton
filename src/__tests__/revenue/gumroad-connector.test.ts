@@ -439,6 +439,22 @@ describe("fetchSince reads every page since its cursor, and never passes a sale 
         expect(await sync(fetchImpl)).toMatchObject({ recorded: 0, duplicates: 1, errors: [] });
       });
     }
+
+    it("a stored cursor replaced on a listing then refused part-way: both are said, in one error, and the window is kept", async () => {
+      setConnectorCursor(db, "gumroad", "2099-01-01");
+      const sales = Array.from({ length: 15 }, (_, i) => fakeSale(i, new Date(Date.parse("2026-09-20T10:00:00Z") + i * 3_600_000).toISOString()));
+      const first = await sync(gumroadIndex(sales, { refuse: (page) => (page === 2 ? 500 : null) }).fetchImpl);
+      expect(first).toMatchObject({ recorded: 10, duplicates: 0 });
+      expect(first.errors).toEqual([
+        'gumroad: the stored cursor "2099-01-01" is no real day up to tomorrow (UTC), so this sync read from 2026-09-10 as a ' +
+          "first read does; a sale created before that day and not booked yet is not read; the sales listing since " +
+          "2026-09-10 was refused at page 2 (HTTP 500): the 10 sale(s) read before it stopped are booked (one read again is " +
+          "a duplicate), and the cursor stays at 2026-09-11, so no sale it did not read is passed; the next sync asks again " +
+          "from the same day",
+      ]);
+      expect(getConnectorCursor(db, "gumroad")).toBe("2026-09-11");
+      expect(await sync(gumroadIndex(sales).fetchImpl)).toMatchObject({ recorded: 5, duplicates: 10, errors: [] });
+    });
   });
 
   // The tick-71 review (fix): a next_page_key that names a page already asked for was followed up to the cap, 100
