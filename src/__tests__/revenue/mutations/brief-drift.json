@@ -1,0 +1,442 @@
+[
+  {
+    "id": "T70-B1",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const drifted = all.some((c) => DRIFT.includes(c.status)) || unknown.length > 0;",
+    "replace": "const drifted = all.some((c) => DRIFT.includes(c.status));",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B1: an unknown path is no longer drift: a brief citing only `nope/x.ts:3` exits 0"
+  },
+  {
+    "id": "T70-B2",
+    "file": "scripts/brief-drift.mjs",
+    "find": "return report.drifted ? 3 : 0;",
+    "replace": "return report.drifted ? 0 : 0;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B2: drift exits 0 instead of 3"
+  },
+  {
+    "id": "T70-B3",
+    "file": "scripts/brief-drift.mjs",
+    "find": "export const NEIGHBOUR_WINDOW = 20;",
+    "replace": "export const NEIGHBOUR_WINDOW = 21;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B3: the neighbour window grows by one line (the test reads the constant: the far anchor comes into reach only if the code uses another number, so this pins that the window and the exported constant are the one number)"
+  },
+  {
+    "id": "T70-B4",
+    "file": "scripts/brief-drift.mjs",
+    "find": "k >= 1 && k <= old.length && steps < window;",
+    "replace": "k >= 1 && k <= old.length && steps <= window;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B4: a neighbour one line past the window places a line"
+  },
+  {
+    "id": "T70-B5",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (at === text) return { ...base, status: \"same\", newLine: n };",
+    "replace": "    if (false) return { ...base, status: \"same\", newLine: n };",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B5: a line at its own number is no longer same (it becomes moved to its own line)"
+  },
+  {
+    "id": "T70-B6",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (hits.length === 1) return { ...base, status: \"moved\", newLine: hits[0] };",
+    "replace": "    if (hits.length === 2) return { ...base, status: \"moved\", newLine: hits[0] };",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B6: a line found once at head is placed by its neighbours, not by its own text"
+  },
+  {
+    "id": "T70-B7",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (hits.length === 0) return { ...base, status: \"changed\", headText: at };\n  }",
+    "replace": "  }",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B7: a line found nowhere at head goes to the neighbours and comes out ambiguous with no candidate"
+  },
+  {
+    "id": "T70-B8",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (placed.length === 1) return { ...base, status: placed[0] === n ? \"same\" : \"moved\", newLine: placed[0], via: \"neighbours\" };",
+    "replace": "if (placed.length === 2) return { ...base, status: placed[0] === n ? \"same\" : \"moved\", newLine: placed[0], via: \"neighbours\" };",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B8: the one place the neighbours agree on is not taken: a blank or brace line is never moved"
+  },
+  {
+    "id": "T70-B9",
+    "file": "scripts/brief-drift.mjs",
+    "find": "  if (placed.length > 1) return { ...base, status: \"ambiguous\", candidates: placed, via: \"neighbours\" };\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B9: two neighbours that disagree, both on the text, give changed instead of ambiguous"
+  },
+  {
+    "id": "T70-B10",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (offsets.length > 0 || hits.length === 0) return { ...base, status: \"changed\", headText: at };",
+    "replace": "if (offsets.length > 0 && hits.length === 0) return { ...base, status: \"changed\", headText: at };",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B10: a blank line the neighbours put on another text is ambiguous when a blank exists elsewhere"
+  },
+  {
+    "id": "T70-B11",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (at === text) return { ...base, status: \"same\", newLine: n, via: \"no unique neighbour\" };",
+    "replace": "if (false) return { ...base, status: \"same\", newLine: n, via: \"no unique neighbour\" };",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B11: a punctuation line with no unique neighbour is not kept at its own number"
+  },
+  {
+    "id": "T70-B12",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const GENERIC_RE = /^[\\s\\p{P}\\p{S}]*$/u;",
+    "replace": "const GENERIC_RE = /^[\\s\\p{P}]*$/u;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B12: a symbol-only line (-->, |---|) is matched by its own text"
+  },
+  {
+    "id": "T70-B13",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (isGeneric(t) || oldIdx.get(t).length !== 1) continue;",
+    "replace": "if (isGeneric(t)) continue;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B13: a neighbour written twice in the old tree is taken as an anchor"
+  },
+  {
+    "id": "T70-B14",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (!h || h.length !== 1) continue;",
+    "replace": "if (!h) continue;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B14: a neighbour written twice at head is taken as an anchor"
+  },
+  {
+    "id": "T70-B15",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (placed && offsets.size === 1) {",
+    "replace": "if (placed && offsets.size >= 1) {",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B15: a range whose lines moved by several offsets is summarised as one offset"
+  },
+  {
+    "id": "T70-B16",
+    "file": "scripts/brief-drift.mjs",
+    "find": "return { status: d === 0 ? \"same\" : \"moved\", offset: d, newPointer: rangeText([a + d, b + d]), lines };",
+    "replace": "return { status: \"moved\", offset: d, newPointer: rangeText([a + d, b + d]), lines };",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B16: an unmoved range is reported moved"
+  },
+  {
+    "id": "T70-B17",
+    "file": "scripts/brief-drift.mjs",
+    "find": "  if (b < a) return { status: \"invalid\"",
+    "replace": "  if (b <= a) return { status: \"invalid\"",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B17: a one-line range is invalid"
+  },
+  {
+    "id": "T70-B18",
+    "file": "scripts/brief-drift.mjs",
+    "find": "newPointer: placed ? pointer(lines.map((l) => l.newLine)) : null, lines };",
+    "replace": "newPointer: null, lines };",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B18: a range moved by several offsets loses its new pointers"
+  },
+  {
+    "id": "T70-B19",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const worse = (a, b) => (SEVERITY.indexOf(a) >= SEVERITY.indexOf(b) ? a : b);",
+    "replace": "const worse = (a, b) => (SEVERITY.indexOf(a) <= SEVERITY.indexOf(b) ? a : b);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B19: a mixed range takes its best line's status, not its worst"
+  },
+  {
+    "id": "T70-B20",
+    "file": "scripts/brief-drift.mjs",
+    "find": "(quoted || !k.quoted) && (!row",
+    "replace": "(true) && (!row",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B20: a line after a quotation is given to a name inside it"
+  },
+  {
+    "id": "T70-B21",
+    "file": "scripts/brief-drift.mjs",
+    "find": "(!row || cell(k.start) === cell(r.start))",
+    "replace": "(true)",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B21: a table row's line is given to a name in another cell"
+  },
+  {
+    "id": "T70-B22",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (row && !inTable) caption = captioned(ctxOut ?? prevOut);",
+    "replace": "if (row && !inTable) caption = captioned(ctxOut);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B22: a table after a blank line has no caption: its rows' bare lines are unattributed"
+  },
+  {
+    "id": "T70-B23",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (/^['’]s/.test(rest) && !/^['’]s\\s*\\(?`?:L?\\d/.test(rest) && !sentenceStart(lines, i, m.index)) continue;",
+    "replace": "if (false) continue;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B23: a describing possessive (\"the ledger's rule (`:271`)\") owns the line after it"
+  },
+  {
+    "id": "T70-B24",
+    "file": "scripts/brief-drift.mjs",
+    "find": "  if (/[.!?:][\"')\\]*]*\\s+$/.test(before)) return true;",
+    "replace": "  if (/[.!?:][\"')\\]*]*\\s+$/.test(before)) return false;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B24: a possessive after \". \" is not a sentence's subject"
+  },
+  {
+    "id": "T70-B25",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (!free(m.index, m.index + m[0].length) || inQuote(m.index)) continue;",
+    "replace": "if (!free(m.index, m.index + m[0].length)) continue;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B25: a phrase inside a quotation owns a quoted line after it"
+  },
+  {
+    "id": "T70-B26",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const own = t.path && (t.path === m[1] || t.path.endsWith(`/${m[1]}`));",
+    "replace": "const own = false;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B26: an alias that is the file's own name is shown as a via"
+  },
+  {
+    "id": "T70-B27",
+    "file": "scripts/brief-drift.mjs",
+    "find": "*(?:-[A-Z0-9]+)*-RULING(?![A-Za-z0-9_-])/g;",
+    "replace": "*(?:-[A-Z0-9]+)*-RULINGX(?![A-Za-z0-9_-])/g;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B27: an undefined ruling's short name no longer owns the bare line after it (tick 68's ROBOTS-RULING `:152-154`)"
+  },
+  {
+    "id": "T70-B28",
+    "file": "scripts/brief-drift.mjs",
+    "find": "(?:[Tt]he note(?![A-Za-z0-9_'-])|",
+    "replace": "(?:[Tt]he notex(?![A-Za-z0-9_'-])|",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B28: \"the note (`:8`)\" no longer owns its line"
+  },
+  {
+    "id": "T70-B29",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      if (lined && SHORT_NAME_RE.test(name)) {",
+    "replace": "      if (false) {",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B29: a short name with a line and no file (OTA:5) is dropped, and its continuation :6 goes elsewhere"
+  },
+  {
+    "id": "T70-B30",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const looksLikePath = /^\\.[A-Za-z0-9]+$/.test(name)\n        ? false",
+    "replace": "const looksLikePath = /^\\.[A-Za-z0-9]+$/.test(name)\n        ? true",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B30: an extension alone (`.txt`) is listed as a file not in the tree"
+  },
+  {
+    "id": "T70-B31",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      if (cands.length > 1 || looksLikePath) {",
+    "replace": "      if (cands.length > 1) {",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B31: a path no file has (`nope/x.ts:3`) is dropped, not reported as an unknown path"
+  },
+  {
+    "id": "T70-B32",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (full.length === 1) return full;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B32: a name several files have is not resolved by the full path the document writes"
+  },
+  {
+    "id": "T70-B33",
+    "file": "scripts/brief-drift.mjs",
+    "find": "return best > 0 && under.length === 1 ? under : cands;",
+    "replace": "return cands;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B33: a name several files have is not resolved by the directory the document names"
+  },
+  {
+    "id": "T70-B34",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (t?.path) add(names, m[1], m.index, t);",
+    "replace": "    if (false) add(names, m[1], m.index, t);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B34: \"a bare `BOARD.md:n` is the 7.9 board's\" defines nothing"
+  },
+  {
+    "id": "T70-B35",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (pathLike(m[2]) && m[1] !== m[2]) add(names, m[1], m.index, target(m[2]));",
+    "replace": "if (m[1] !== m[2]) add(names, m[1], m.index, target(m[2]));",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B35: a definition whose target is no path (`copying` is `barred`) is taken"
+  },
+  {
+    "id": "T70-B36",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (/\\bdrift/i.test(lines.slice(i, j).join(\"\\n\")))",
+    "replace": "if (/\\bdriftX/i.test(lines.slice(i, j).join(\"\\n\")))",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B36: a drift note is read as citations"
+  },
+  {
+    "id": "T70-B37",
+    "file": "scripts/brief-drift.mjs",
+    "find": "return i < 0 ? null : { line: i + 1, text: lines[i] };",
+    "replace": "return i < 0 ? null : { line: i, text: lines[i] };",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B37: --row reads the line above the row"
+  },
+  {
+    "id": "T70-B38",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      error(USAGE);\n      return 1;\n    }\n    const treeSha",
+    "replace": "      error(USAGE);\n      return 0;\n    }\n    const treeSha",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B38: a missing --tree exits 0"
+  },
+  {
+    "id": "T70-B39",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (err instanceof ReadError) {\n      error(`brief-drift: ${err.message}`);\n      return 1;",
+    "replace": "    if (err instanceof ReadError) {\n      error(`brief-drift: ${err.message}`);\n      return 2;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B39: a read error (an unknown ref) exits 2 instead of 1"
+  },
+  {
+    "id": "T70-B40",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (values.row !== undefined && !/^\\d+$/.test(values.row))",
+    "replace": "if (false)",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B40: --row x is not a usage error"
+  },
+  {
+    "id": "T70-B41",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (values.tree !== undefined && !values.tree.trim()) throw new UsageError(\"--tree is empty\");",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B41: an empty --tree is read as no --tree"
+  },
+  {
+    "id": "T70-B42",
+    "file": "scripts/brief-drift.mjs",
+    "find": "head: values.head ?? \"HEAD\"",
+    "replace": "head: values.head ?? \"HEAD~1\"",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B42: --head defaults to the commit before HEAD"
+  },
+  {
+    "id": "T70-B43",
+    "file": "scripts/brief-drift.mjs",
+    "find": "wrote this file on|",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B43: \"wrote this file on <sha>\" is not a tree hint"
+  },
+  {
+    "id": "T70-B44",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      if (i > 0 && /^##\\s/.test(lines[i])) break;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B44: tree hints are read past the header"
+  },
+  {
+    "id": "T70-B45",
+    "file": "scripts/brief-drift.mjs",
+    "find": "(${c.offset > 0 ? \"+\" : \"\"}${c.offset})",
+    "replace": "(${c.offset})",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B45: a range's summary loses the sign of its offset"
+  },
+  {
+    "id": "T70-B46",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const present = head.paths.has(path);",
+    "replace": "const present = true;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B46: a file absent at head is read anyway: a read error instead of gone"
+  },
+  {
+    "id": "T70-B47",
+    "file": "scripts/brief-drift.mjs",
+    "find": "citations[\"unknown path\"] = unknown.length;",
+    "replace": "citations[\"unknown path\"] = 0;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B47: the summary counts no unknown path"
+  },
+  {
+    "id": "T70-B48",
+    "file": "scripts/brief-drift.mjs",
+    "find": "via: [k.via, `caption :${k.docLine}`]",
+    "replace": "via: [k.via, `caption :${k.docLine + 1}`]",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B48: the caption's via names the wrong line"
+  },
+  {
+    "id": "T70-B49",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    for (const m of line.matchAll(URL_RE)) taken.push([m.index, m.index + m[0].length]);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B49: a URL's path:N is read as a citation"
+  },
+  {
+    "id": "T70-B50",
+    "file": "scripts/brief-drift.mjs",
+    "find": "export const BARE_RE = /(?<![A-Za-z0-9_./-]):L?",
+    "replace": "export const BARE_RE = /:L?",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B50: a time (07:11) is read as a bare line reference"
+  },
+  {
+    "id": "T70-B51",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (ch === '\"' && !(hebrew(line[i - 1]) && hebrew(line[i + 1]))) {",
+    "replace": "if (ch === '\"') {",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B51: a gershayim (מע\"מ) opens a quotation"
+  },
+  {
+    "id": "T70-B52",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const boundary = (line) => !line.trim() || /^#{1,6}",
+    "replace": "const boundary = (line) => /^#{1,6}",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B52: a blank line no longer ends a paragraph: a bare line is carried past it"
+  },
+  {
+    "id": "T70-B53",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      if (out.length) ctxOut = out[out.length - 1];",
+    "replace": "      void out;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B53: a bare line at the start of a paragraph's next line is not given to the last name of the line before"
+  },
+  {
+    "id": "T70-B54",
+    "file": "scripts/brief-drift.mjs",
+    "find": "  refs.sort((x, y) => x.index - y.index);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B54: references are listed in the order of the scanner's passes, not of the text"
+  },
+  {
+    "id": "T70-B55",
+    "file": "scripts/brief-drift.mjs",
+    "find": "return { refs: only ? refs.filter((r) => only.has(r.docLine)) : refs, skipped };",
+    "replace": "return { refs, skipped };",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 B55: --row reads the whole document"
+  }
+]
