@@ -271,5 +271,61 @@
     "replace": "# the last ledger sync, which only a tick records:",
     "test": "src/__tests__/revenue/colony-cli.test.ts",
     "note": "tick 64 review note 3: the header names one writer of the last ledger sync; the heartbeat's revenue_ledger_sync task writes the same kv key"
+  },
+  {
+    "id": "T69-A1",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "    if (raw > 0) out.chiefFindings.push(",
+    "replace": "    if (raw > 1) out.chiefFindings.push(",
+    "test": "src/__tests__/revenue/loop.test.ts",
+    "note": "tick 69, RULING-2026-10-11-ledger-sale-ids.md C4 (fold 4): the raw-id finding pushed only when n > 1, so one raw gumroad row passes the audit (killed by the audit test)"
+  },
+  {
+    "id": "T69-A2",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "    const raw = ids.filter((r) => !isStoredForm(source, r.externalId)).length;",
+    "replace": "    const raw = ids.length;",
+    "test": "src/__tests__/revenue/loop.test.ts",
+    "note": "tick 69, C4: every gumroad row counted raw, stored-form rows included (killed by the stored-form rows' no-finding test)"
+  },
+  {
+    "id": "T69-C1",
+    "file": "scripts/colony.ts",
+    "find": "          console.log(`Already recorded: ${source}/${storedExternalId(source, values[\"external-id\"] ?? null)}. Nothing changed.`);",
+    "replace": "          console.log(`Already recorded: ${source}/${values[\"external-id\"]}. Nothing changed.`);",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 69, fold 5: colony.ts record prints the raw id on a duplicate (killed by the CLI stdout test)"
+  },
+  {
+    "id": "T69-C2",
+    "file": "scripts/colony.ts",
+    "find": "        else process.exitCode = result.findings > 0 ? 3 : 0;",
+    "replace": "        else process.exitCode = 0;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 69, fold 6: verify-gumroad exits 0 on a finding (killed by the extra-row test's exit 3)"
+  },
+  {
+    "id": "T69-C3",
+    "file": "scripts/colony.ts",
+    "find": "        if (result.status === \"not_configured\") process.exitCode = 2;",
+    "replace": "        if (result.status === \"not_configured\") process.exitCode = 0;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 69, fold 6: verify-gumroad without the token exits 0, as if the ledger were verified (killed by the no-token test's exit 2)"
+  },
+  {
+    "id": "T69-C4",
+    "file": "scripts/colony.ts",
+    "find": "  if (command === \"verify-gumroad\") return true;",
+    "replace": "  if (command === \"verify-gumroad-off\") return true;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 69, fold 6: verify-gumroad's handle no longer query-only. Killed by the source pin only: the command writes nothing on any path today, as T64-C4 for the render commands"
+  },
+  {
+    "id": "T69-T1",
+    "file": "src/revenue/tools.ts",
+    "find": "`Duplicate: ${source}/${storedExternalId(source, str(args, \"external_id\"))} was already recorded. Nothing changed.`",
+    "replace": "`Duplicate: ${source}/${str(args, \"external_id\")} was already recorded. Nothing changed.`",
+    "test": "src/__tests__/revenue/loop.test.ts",
+    "note": "tick 69, fold 5: revenue_record prints the raw id on a duplicate (killed by the tool test's exact message)"
   }
 ]

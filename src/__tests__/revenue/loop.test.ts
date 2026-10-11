@@ -10,7 +10,8 @@ import { getRevenueStatus } from "../../revenue/status.js";
 import { createRevenueTools } from "../../revenue/tools.js";
 import { REVENUE_KV } from "../../revenue/types.js";
 import type { ToolContext } from "../../types.js";
-import { receiptDay, setFxRateOn } from "../../revenue/money.js";
+import { receiptDay, setFxRateOn, STORED_EXTERNAL_ID_RE } from "../../revenue/money.js";
+import { createHash } from "node:crypto";
 
 function kv(db: BetterSqlite3.Database, key: string): string | undefined {
   return (db.prepare("SELECT value FROM kv WHERE key = ?").get(key) as { value: string } | undefined)?.value;
@@ -249,6 +250,31 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
     expect(unmappedRun.recorded).toBe(2);
     expect(unmappedRun.unmapped).toEqual(["gumroad:p1"]);
     expect(kv(db, "revenue.unmapped_products")).toContain("gumroad:p1");
+    // RULING-2026-10-11-ledger-sale-ids.md: what the sync committed holds the sale's digest, never "g1".
+    const rows = db.prepare("SELECT source, kind, external_id AS externalId FROM revenue_ledger ORDER BY rowid").all() as { source: string; kind: string; externalId: string }[];
+    const x = createHash("sha256").update("g1", "utf8").digest("hex");
+    expect(rows).toEqual([
+      { source: "gumroad", kind: "sale", externalId: `sha256:${x}` },
+      { source: "gumroad", kind: "cost", externalId: `sha256:${x}:fee` },
+    ]);
+    for (const r of rows) {
+      expect(r.externalId).toMatch(STORED_EXTERNAL_ID_RE);
+      expect(r.externalId).not.toContain("g1");
+    }
+  });
+
+  it("revenue_record books a raw gumroad id as its digest and prints the stored form, never the id, on a duplicate", async () => {
+    seedDefaultPortfolio(db);
+    const line = listLines(db)[0]!;
+    const ctx = { db: { raw: db }, identity: { name: "tester" } } as unknown as ToolContext;
+    const record = Object.fromEntries(createRevenueTools().map((t) => [t.name, t])).revenue_record;
+    const args = { line_id: line.id, kind: "sale", amount_minor: 7900, currency: "USD", source: "gumroad", external_id: "fake-sale-T1==" };
+    const stored = `sha256:${createHash("sha256").update("fake-sale-T1==", "utf8").digest("hex")}`;
+    expect(await record.execute(args, ctx)).toContain("Recorded sale");
+    const dup = await record.execute(args, ctx);
+    expect(dup).toBe(`Duplicate: gumroad/${stored} was already recorded. Nothing changed.`);
+    expect(await record.execute({ ...args, external_id: stored }, ctx)).toContain("Duplicate");
+    expect(JSON.stringify(db.prepare("SELECT * FROM revenue_ledger").all())).not.toContain("fake-sale-T1");
   });
 
   it("exposes tools that read and write the colony state", async () => {
@@ -331,5 +357,47 @@ describe("revenue_line_detail prints a labelled KPI with its label (research/bre
     const text = String(await tools.revenue_line_detail.execute({ line_id: "oss-bounties" }, ctx));
     expect(text).not.toContain(APIFY_STRANGER_KPI_LABEL);
     expect(labelLines(text)).toEqual([]);
+  });
+});
+
+// RULING-2026-10-11-ledger-sale-ids.md C4 (fold 4): the chief auditor counts the rows of a digested source whose id is
+// not in the stored form, beside the duplicate count, so a raw Gumroad id that reached the ledger by any path (SQL here)
+// is a finding at the next audit and not something found later in the public history.
+describe("the audit finds a raw Gumroad id in the ledger", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => {
+    db = createInMemoryDb();
+  });
+  afterEach(() => {
+    db.close();
+  });
+
+  const FINDING = /gumroad ledger rows carry a raw external id \(RULING-2026-10-11 row 26\)$/;
+  const insert = (id: string, source: string, externalId: string) =>
+    db.prepare(
+      `INSERT INTO revenue_ledger (id, line_id, kind, amount_minor, currency, amount_agorot, source, external_id, occurred_at, recorded_at, note)
+       VALUES (?, 'some-line', 'sale', 100, 'USD', 360, ?, ?, ?, ?, NULL)`,
+    ).run(id, source, externalId, new Date().toISOString(), new Date().toISOString());
+  const rawFindings = () => runAudit(db).chiefFindings.filter((f) => FINDING.test(f));
+
+  it("one raw gumroad row inserted by SQL: the finding, with its count", () => {
+    insert("l1", "gumroad", "fake-sale-A1==");
+    insert("l2", "gumroad", `sha256:${"0".repeat(64)}`);
+    expect(rawFindings()).toEqual(["1 gumroad ledger rows carry a raw external id (RULING-2026-10-11 row 26)"]);
+  });
+
+  it("two raw rows: the count is two, and the finding asks the board, as every chief finding does", () => {
+    insert("l1", "gumroad", "fake-sale-A1==");
+    insert("l2", "gumroad", "fake-sale-A2==:refund");
+    expect(rawFindings()).toEqual(["2 gumroad ledger rows carry a raw external id (RULING-2026-10-11 row 26)"]);
+    expect(kv(db, "revenue.board_review_requested")).toContain("raw external id");
+  });
+
+  it("stored-form rows, and a raw stripe row: no such finding", () => {
+    insert("l1", "gumroad", `sha256:${"a".repeat(64)}`);
+    insert("l2", "gumroad", `sha256:${"a".repeat(64)}:refund`);
+    insert("l3", "gumroad", `sha256:${"a".repeat(64)}:fee`);
+    insert("l4", "stripe", "ch_fake_raw");
+    expect(rawFindings()).toEqual([]);
   });
 });

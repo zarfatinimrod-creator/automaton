@@ -1,0 +1,122 @@
+[
+  {
+    "id": "T69-G1",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  const saleId = storedExternalId(\"gumroad\", String(sale.id));",
+    "replace": "  const saleId = String(sale.id);",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 69, RULING-2026-10-11-ledger-sale-ids.md fold 3: the connector books the raw sale id again (killed by the connector test's \"no g1\" and its recomputed digests)"
+  },
+  {
+    "id": "T69-G2",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "externalId: `${saleId}:refund`",
+    "replace": "externalId: saleId",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 69, fold 3: the refund entry loses its :refund suffix, so it shares the sale's key and the ledger would drop it as a duplicate (killed by the family test)"
+  },
+  {
+    "id": "T69-G3",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    if (!pageKey) return { ok: true, sales, pages: page };",
+    "replace": "    return { ok: true, sales, pages: page };",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 69, fold 6: the shared pager stops after page 1 (killed by the paging test)"
+  },
+  {
+    "id": "T69-G4",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "externalId: `${saleId}:fee`",
+    "replace": "externalId: saleId",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 69, fold 3: the fee entry loses its :fee suffix and collides with the sale's key"
+  },
+  {
+    "id": "T69-G5",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    if (productId !== undefined) q.set(\"product_id\", productId);",
+    "replace": "    if (productId === \"never\") q.set(\"product_id\", productId);",
+    "test": ["src/__tests__/revenue/gumroad-connector.test.ts", "src/__tests__/revenue/gumroad-refund-rate.test.ts"],
+    "note": "tick 69, fold 6: the pager drops the product filter, so the refund-rate read (which readProRefundCount now makes through it) would list every product's sales"
+  },
+  {
+    "id": "T69-G6",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  for (let page = 1; page <= maxPages; page += 1) {",
+    "replace": "  for (let page = 1; page <= maxPages + 1; page += 1) {",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 69, fold 6: the pager reads one page past its cap (killed by the cap test's request count)"
+  },
+  {
+    "id": "T69-G7",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "      return { ok: false, problem: \"refused\", status: res.status, page };",
+    "replace": "      return { ok: false, problem: \"refused\", status: res.status, page: 1 };",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 69, fold 6: a refused page no longer names which page (the refund-rate detail's \"page N\" came from it)"
+  },
+  {
+    "id": "T69-V1",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "      if (id.endsWith(\":refund\") && listed.has(baseOf(id))) {",
+    "replace": "      if (false) {",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69, C3 (decision 2 item 8): a refund row whose sale is not refunded is no longer a refund-state finding"
+  },
+  {
+    "id": "T69-V2",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "    if (Math.abs(row.amountMinor) !== hit.entry.amountMinor) fields.push(\"amount\");",
+    "replace": "    if (false) fields.push(\"amount\");",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69, C3: a matched row whose amount differs from its sale's price is no longer a finding"
+  },
+  {
+    "id": "T69-V3",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "    if (hit.datable && day !== dayOf(hit.entry.occurredAt!)) fields.push(\"day\");",
+    "replace": "    if (false) fields.push(\"day\");",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69, C3: a matched row on another day than its sale is no longer a finding"
+  },
+  {
+    "id": "T69-V4",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "  result.findings = result.unexplained.length + result.differing.length + result.refundState.length;",
+    "replace": "  result.findings = result.unexplained.length + result.differing.length + result.refundState.length + result.unbooked.length;",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69, decision 2 item 8: an unbooked sale counted as a finding before enable opens the sale (it measures the one-page read)"
+  },
+  {
+    "id": "T69-V5",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "  if (!token) return empty(\"not_configured\",",
+    "replace": "  if (!token && false) return empty(\"not_configured\",",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69, C3: without the token the command fetches anyway (killed by the no-request count and the status)"
+  },
+  {
+    "id": "T69-V6",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "  const after = shiftDay(days[0] ?? shiftDay(nowDay, -FIRST_READ_DAYS), -1);",
+    "replace": "  const after = shiftDay(days[0] ?? shiftDay(nowDay, -FIRST_READ_DAYS), 0);",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69, C3: the listing starts on the oldest row's own day, where Gumroad's day filter in another time zone can cut a booked sale off"
+  },
+  {
+    "id": "T69-V7",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "    const id = storedExternalId(\"gumroad\", row.externalId);",
+    "replace": "    const id = row.externalId;",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69, C3 beside C4: a raw id that reached the ledger is no longer matched by its digest, and is printed raw"
+  },
+  {
+    "id": "T69-V8",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "      if (entry.kind === \"refund\") result.refundState.push(",
+    "replace": "      if (entry.kind === \"never\") result.refundState.push(",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69, C3: a refunded sale with no refund row is reported as a missing fee row instead of a refund-state finding"
+  }
+]

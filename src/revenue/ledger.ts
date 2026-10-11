@@ -16,6 +16,7 @@ import {
   isUnconvertedCurrency,
   normalizeCurrency,
   receiptDay,
+  storedExternalId,
   toAgorot,
   toAgorotAtRate,
   toIsoInstant,
@@ -439,6 +440,16 @@ const PLATFORM_MEDIATED_KINDS: readonly LedgerKind[] = ["sale", "subscription", 
  * has nothing to key on: the same imagined sale can be booked repeatedly and
  * the portfolio would show revenue nobody ever paid. That is the one failure
  * this whole system exists to prevent.
+ *
+ * A digested source's id (DIGESTED_SOURCES in money.ts: Gumroad today) is
+ * stored as its digest, `sha256:<hex>` (RULING-2026-10-11-ledger-sale-ids.md,
+ * FABLE_QUEUE row 26): the ledger is committed to a public repository, and a
+ * sale id is an identifier of a buyer's purchase. Both purposes are kept: the
+ * key (source, digest) deduplicates exactly as (source, id) does, and whoever
+ * holds the platform's credential verifies a row by digesting the platform's
+ * own listing (`colony.ts verify-gumroad`). The digest is applied here, first,
+ * before any other check, message or lookup, so a raw id passed by hand and the
+ * connector's stored form are one key, and no message below can print a raw id.
  */
 export function recordLedgerEntry(db: Database, input: LedgerEntryInput): LedgerEntry | null {
   if (!Number.isFinite(input.amountMinor) || !Number.isInteger(input.amountMinor)) {
@@ -447,7 +458,7 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
   if (!input.lineId.trim()) throw new Error("lineId is required");
   const source = input.source.trim().toLowerCase();
   if (!source) throw new Error("source is required");
-  const externalId = input.externalId?.trim() || null;
+  const externalId = storedExternalId(source, input.externalId?.trim() || null);
 
   if (!externalId && PLATFORM_MEDIATED_KINDS.includes(input.kind)) {
     throw new Error(
@@ -495,7 +506,8 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
   }
 
   // A chain id names one transfer on a public chain, whoever books it: it is checked across every source, in its one
-  // canonical form. Any other id is a platform's own, unique within that platform.
+  // canonical form. Any other id is a platform's own, unique within that platform; for a digested source the platform's
+  // id is stored as `sha256:<hex>` (RULING-2026-10-11-ledger-sale-ids.md), which no chain-id pattern matches.
   const bookedId = chainId ?? externalId;
   if (bookedId) {
     const existing = (chainId

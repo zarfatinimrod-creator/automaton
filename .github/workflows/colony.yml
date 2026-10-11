@@ -96,7 +96,7 @@ jobs:
           git config user.name "colony-bot"
           git config user.email "colony-bot@users.noreply.github.com"
 
-          # -f because .gitignore's *.db rule would otherwise skip the database.
+          # .gitignore:8 already un-ignores the database; -f stays as a second guard.
           # Stage first, then compare the index: on the very first run these files
           # are untracked, and `git diff` alone would report no change and skip
           # the commit forever.

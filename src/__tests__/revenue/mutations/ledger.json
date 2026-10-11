@@ -141,5 +141,61 @@
     "replace": "          # pnpm exec tsx scripts/colony.ts sync-portfolio\n",
     "test": "src/__tests__/revenue/colony-cli.test.ts",
     "note": "tick 63: the sync command commented out inside its step (colony-cli.test.ts: the exact command, and the every-workflow test, which reads no comment line)"
+  },
+  {
+    "id": "T69-L1",
+    "file": "src/revenue/ledger.ts",
+    "find": "  const externalId = storedExternalId(source, input.externalId?.trim() || null);",
+    "replace": "  const externalId = input.externalId?.trim() || null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 69, RULING-2026-10-11-ledger-sale-ids.md fold 2: the ledger stores a hand-booked gumroad id raw again (killed by 7(a))"
+  },
+  {
+    "id": "T69-L2",
+    "file": "src/revenue/money.ts",
+    "find": "export const DIGESTED_SOURCES: ReadonlySet<string> = new Set([\"gumroad\"]);",
+    "replace": "export const DIGESTED_SOURCES: ReadonlySet<string> = new Set([]);",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 69, fold 1: no source is digested (killed by 7(a) and (c))"
+  },
+  {
+    "id": "T69-L3",
+    "file": "src/revenue/money.ts",
+    "find": "export const STORED_EXTERNAL_ID_RE = /^sha256:[0-9a-f]{64}(?::(?:refund|fee))?$/;",
+    "replace": "export const STORED_EXTERNAL_ID_RE = /^sha256:[0-9a-f]{64}$/;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 69, fold 1: the stored-form pattern without its suffix group, so a stored refund or fee id is digested again instead of kept (killed by 7(d))"
+  },
+  {
+    "id": "T69-L4",
+    "file": "src/revenue/money.ts",
+    "find": "  const suffix = ENTRY_SUFFIX_RE.exec(text)?.[0] ?? \"\";",
+    "replace": "  const suffix = \"\";",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 69, fold 1: the :refund / :fee split removed, so a refund's digest is not its sale's (killed by 7(d))"
+  },
+  {
+    "id": "T69-L5",
+    "file": "src/revenue/money.ts",
+    "find": "  const text = id.trim();",
+    "replace": "  const text = id;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 69, fold 1 (C1: the id trimmed as the ledger trims every id): the connector's untrimmed String(sale.id) would key another row than the hand-booked trimmed id"
+  },
+  {
+    "id": "T69-L6",
+    "file": "src/revenue/money.ts",
+    "find": "  if (STORED_EXTERNAL_ID_RE.test(text)) return text;",
+    "replace": "  if (false) return text;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 69, fold 1 (C2: idempotent on the stored form): a stored id passed by hand is digested again and books the sale twice (killed by 7(c) and (d))"
+  },
+  {
+    "id": "T69-L7",
+    "file": "src/revenue/money.ts",
+    "find": "  return !DIGESTED_SOURCES.has(source.trim().toLowerCase()) || STORED_EXTERNAL_ID_RE.test(id);",
+    "replace": "  return STORED_EXTERNAL_ID_RE.test(id);",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 69, fold 1 (C4's check): every other source's id read as raw (killed by 7(e))"
   }
 ]

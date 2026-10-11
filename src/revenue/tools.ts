@@ -28,7 +28,7 @@ import {
   setTargets,
   updateLineStatus,
 } from "./ledger.js";
-import { agorotFromIls, formatIls } from "./money.js";
+import { agorotFromIls, formatIls, storedExternalId } from "./money.js";
 import { renderOrgChart } from "./org.js";
 import { KPI_LABELS, policyForLine } from "./portfolio.js";
 import { runBoardReview, runLedgerSync, requestBoardReview } from "./heartbeat.js";
@@ -162,7 +162,7 @@ export function createRevenueTools(): AutomatonTool[] {
     {
       name: "revenue_record",
       description:
-        "Record money in the revenue ledger. Use for every sale, subscription payment, refund, payout and cost of a line. Amount is in MINOR units (cents/agorot). Always pass external_id (platform transaction id) so re-recording is a no-op. Never record projected or promised money. Money that arrives in a wallet is USDC: it needs its on-chain transaction id as external_id, occurred_at, and that day's rate recorded (colony.ts fx); it is booked unconverted and counts toward no target (RULING-2026-09-28-bounty-rail.md §6.2).",
+        "Record money in the revenue ledger. Use for every sale, subscription payment, refund, payout and cost of a line. Amount is in MINOR units (cents/agorot). Always pass external_id (platform transaction id) so re-recording is a no-op. Never record projected or promised money. Money that arrives in a wallet is USDC: it needs its on-chain transaction id as external_id, occurred_at, and that day's rate recorded (colony.ts fx); it is booked unconverted and counts toward no target (RULING-2026-09-28-bounty-rail.md §6.2). A gumroad id is stored as its sha256 digest (sha256:<hex>, RULING-2026-10-11-ledger-sale-ids.md) and may be passed raw or in that stored form: both book, and deduplicate, as one; pass the stored form where one is known.",
       category: CATEGORY,
       riskLevel: "caution" as RiskLevel,
       parameters: {
@@ -173,7 +173,7 @@ export function createRevenueTools(): AutomatonTool[] {
           amount_minor: { type: "number", description: "Integer amount in minor units (e.g. 1990 for $19.90)" },
           currency: { type: "string", description: "ILS | USD | EUR | GBP (converted) | USDC (wallet money, unconverted). Any other code is refused." },
           source: { type: "string", description: "stripe | lemonsqueezy | gumroad | paddle | x402 | superteam | conway | manual | <platform>. x402 and superteam take USDC only." },
-          external_id: { type: "string", description: "Platform transaction id (idempotency key); for USDC, the on-chain transaction id (0x hash or Solana signature)" },
+          external_id: { type: "string", description: "Platform transaction id (idempotency key); for USDC, the on-chain transaction id (0x hash or Solana signature). A gumroad id is stored as its sha256 digest and may be passed raw or stored (sha256:<hex>, with :refund or :fee)." },
           occurred_at: { type: "string", description: "ISO timestamp (default now; required for USDC, whose receipt day picks the rate)" },
           note: { type: "string", description: "Short note (product name, customer type)" },
         },
@@ -203,7 +203,7 @@ export function createRevenueTools(): AutomatonTool[] {
             occurredAt: str(args, "occurred_at") || undefined,
             note: str(args, "note") || null,
           });
-          if (!entry) return `Duplicate: ${source}/${str(args, "external_id")} was already recorded. Nothing changed.`;
+          if (!entry) return `Duplicate: ${source}/${storedExternalId(source, str(args, "external_id"))} was already recorded. Nothing changed.`;
           const flag = entry.unconverted ? " unconverted" : "";
           const note = entry.unconverted ? " Wallet money: shown apart, and counted in no target." : "";
           return `Recorded ${entry.kind} ${formatIls(entry.amountAgorot)}${flag} (${entry.amountMinor} ${entry.currency}) on ${entry.lineId} via ${entry.source} [${entry.id}].${note}`;

@@ -28,10 +28,10 @@ BOARD (parent automaton)            daily; immediately on escalation
 
 | Task | Cadence | What it does |
 |---|---|---|
-| `revenue_ledger_sync` | hourly | pulls money events from Stripe / Lemon Squeezy / Gumroad (env keys) and `[line:<id>]`-tagged x402 transfers into `revenue_ledger`; idempotent on `(source, external_id)` |
+| `revenue_ledger_sync` | hourly | pulls money events from Stripe / Lemon Squeezy / Gumroad (env keys) and `[line:<id>]`-tagged x402 transfers into `revenue_ledger`; idempotent on `(source, external_id)` (a Gumroad id is stored as its sha256 digest, `RULING-2026-10-11-ledger-sale-ids.md`) |
 | `revenue_supervisor_review` | every 6h | per line: `computeLineMetrics` → `decideLine` → review row; non-hold decisions request a board review |
 | `revenue_board_review` | daily (or when requested) | seeds the portfolio on first run; applies kill/scale/pivot/escalate; starts ready lines; retries failed goals up to 3× then pauses; caps experiments; reallocates budget; feeds the next queued goal to the orchestrator; writes the directive into the system prompt |
-| `revenue_audit` | weekly (+ monthly chief audit) | recomputes each supervisor decision from the stored metrics; flags disagreements; checks duplicate external ids and spend on killed lines |
+| `revenue_audit` | weekly (+ monthly chief audit) | recomputes each supervisor decision from the stored metrics; flags disagreements; checks duplicate external ids, Gumroad rows whose id is not in the stored digest form, and spend on killed lines |
 
 The board files **one goal at a time** (`revenue.goal_queue` in KV) because the orchestrator processes goals sequentially. A line becomes `live` only when a positive ledger entry lands on it — "live" is defined by money, not by a status a director sets.
 
