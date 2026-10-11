@@ -1270,5 +1270,192 @@
     "replace": "      (e.checked === TERMS_CHECKED &&\n        (e.verdict === \"BARRED\"",
     "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
     "note": "tick 68: the shut render group read by a checked date of 6.10, which the ruled site no longer has (it would fall in the graded group)"
+  },
+  {
+    "id": "T69-CX1-verdict-word",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"capitax.co.il\": {\n   \"verdict\": \"TERMS_PENDING\",",
+    "replace": "\"capitax.co.il\": {\n   \"verdict\": \"NO_TERMS\",",
+    "test": [
+      "src/__tests__/revenue/capitax-terms.test.ts",
+      "src/__tests__/revenue/prize-terms-audit.test.ts"
+    ],
+    "note": "tick 69: capitax.co.il's verdict is not TERMS_PENDING, so its terms line is refused and the counts move"
+  },
+  {
+    "id": "T69-CX2-copying",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"copying\": \"unread\"\n  },\n  \"codabench.org\": {",
+    "replace": "\"copying\": \"allowed\"\n  },\n  \"codabench.org\": {",
+    "test": [
+      "src/__tests__/revenue/capitax-terms.test.ts",
+      "src/__tests__/revenue/prize-terms-audit.test.ts"
+    ],
+    "note": "tick 69: capitax.co.il's copying field says allowed, though no terms were read"
+  },
+  {
+    "id": "T69-CX3-checked",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "\"checked\": \"2026-10-11\",\n   \"note\": \"terms unread: the host had no terms verdict",
+    "replace": "\"checked\": \"2026-10-05\",\n   \"note\": \"terms unread: the host had no terms verdict",
+    "test": "src/__tests__/revenue/capitax-terms.test.ts",
+    "note": "tick 69: the entry's checked date is not the day of the fold"
+  },
+  {
+    "id": "T69-CX4-footer-line",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "tt-src-capitax-co-il-content-2-3311.html:580, and again",
+    "replace": "tt-src-capitax-co-il-content-2-3311.html:581, and again",
+    "test": "src/__tests__/revenue/capitax-terms.test.ts",
+    "note": "tick 69: the source cites the footer link at a line that does not hold it"
+  },
+  {
+    "id": "T69-CX5-capture-dropped",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "tt2-capitax-11122024, tt2-capitax-26112024-2 and tt2-capitax-28052025-1",
+    "replace": "tt2-capitax-11122024 and tt2-capitax-28052025-1",
+    "test": "src/__tests__/revenue/capitax-terms.test.ts",
+    "note": "tick 69: the note leaves out one of the six captures fetched before any terms read"
+  },
+  {
+    "id": "T69-CX6-reopen-robots",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "fires if a robots read of capitax.co.il, a terms read of the host or fold 10(ii)",
+    "replace": "fires if a terms read of the host or fold 10(ii)",
+    "test": "src/__tests__/revenue/capitax-terms.test.ts",
+    "note": "tick 69: the note drops the robots read from what fires ruling 11.10 row 27's REOPEN (a)"
+  },
+  {
+    "id": "T69-CX7-gazette-copy",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "for 2024 and 2025 on the tt2-capitax-265-2023 copy of the gazette, section 35",
+    "replace": "for 2024 and 2025 on the gazette, section 35",
+    "test": "src/__tests__/revenue/capitax-terms.test.ts",
+    "note": "tick 69: the note does not name the tt2-capitax copy the two pages' ₪120,000 rest on"
+  },
+  {
+    "id": "T69-CX8-robots-key",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": " and before render-watch read robots.txt (none of their metas has a robots key): ",
+    "replace": ": ",
+    "test": "src/__tests__/revenue/capitax-terms.test.ts",
+    "note": "tick 69: the note does not say the captures predate render-watch's robots read"
+  },
+  {
+    "id": "T69-CX9-slug-named",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "(a terms- line, ZERO-TESTS row 270; ruling 30.9",
+    "replace": "(the terms-capitax line, ZERO-TESTS row 270; ruling 30.9",
+    "test": [
+      "src/__tests__/revenue/capitax-terms.test.ts",
+      "src/__tests__/revenue/frozen-citations.test.ts"
+    ],
+    "note": "tick 69: the note names the active terms line's slug, which frozen-citations' LIVE_MENTIONS does not allow"
+  },
+  {
+    "id": "T69-CX10-fffd-count",
+    "file": "research/channel-loop/terms-verdicts.json",
+    "find": "holds 6,866 replacement characters",
+    "replace": "holds 6,868 replacement characters",
+    "test": "src/__tests__/revenue/capitax-terms.test.ts",
+    "note": "tick 69: the note's count of replacement characters in the .txt is not the capture's"
+  },
+  {
+    "id": "T69-CX11-js-flag",
+    "file": "research/rendered/urls.txt",
+    "find": "https://www.capitax.co.il/legalterms\tterms-capitax",
+    "replace": "https://www.capitax.co.il/legalterms\tterms-capitax\tjs",
+    "test": [
+      "src/__tests__/revenue/capitax-terms.test.ts",
+      "src/__tests__/revenue/prize-terms-audit.test.ts"
+    ],
+    "note": "tick 69: the terms line carries the js flag; the fold queues it plain"
+  },
+  {
+    "id": "T69-CX12-paused",
+    "file": "research/rendered/urls.txt",
+    "find": "https://www.capitax.co.il/legalterms\tterms-capitax",
+    "replace": "# paused (terms unread): capitax.co.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.capitax.co.il/legalterms\tterms-capitax",
+    "test": [
+      "src/__tests__/revenue/capitax-terms.test.ts",
+      "src/__tests__/revenue/prize-terms-audit.test.ts"
+    ],
+    "note": "tick 69: the terms line is commented out, so nothing queues the terms read"
+  },
+  {
+    "id": "T69-CX13-second-line",
+    "file": "research/rendered/urls.txt",
+    "find": "https://www.capitax.co.il/legalterms\tterms-capitax",
+    "replace": "https://www.capitax.co.il/legalterms\tterms-capitax\nhttps://www.capitax.co.il/Attachments/265-2023.pdf\tcapitax-gazette-265-2023",
+    "test": [
+      "src/__tests__/revenue/capitax-terms.test.ts",
+      "src/__tests__/revenue/prize-terms-audit.test.ts"
+    ],
+    "note": "tick 69: a second capitax.co.il page is queued while its terms are unread (D2(iv))"
+  },
+  {
+    "id": "T69-CX14-comment-row",
+    "file": "research/rendered/urls.txt",
+    "find": "# research/channel-loop/ZERO-TESTS.md row 270 — capitax.co.il",
+    "replace": "# research/channel-loop/ZERO-TESTS.md row 271 — capitax.co.il",
+    "test": [
+      "src/__tests__/revenue/capitax-terms.test.ts",
+      "src/__tests__/revenue/prize-terms-audit.test.ts"
+    ],
+    "note": "tick 69: the line's comment cites a ZERO-TESTS row that is not its own"
+  },
+  {
+    "id": "T69-CX15-row-number",
+    "file": "research/channel-loop/ZERO-TESTS.md",
+    "find": "| 270 | terms audit (tick 69)",
+    "replace": "| 271 | terms audit (tick 69)",
+    "test": [
+      "src/__tests__/revenue/capitax-terms.test.ts",
+      "src/__tests__/revenue/prize-terms-audit.test.ts"
+    ],
+    "note": "tick 69: the ZERO-TESTS row is not the next number after row 269"
+  },
+  {
+    "id": "T69-CX16-row-url",
+    "file": "research/channel-loop/ZERO-TESTS.md",
+    "find": "| https://www.capitax.co.il/legalterms | whether capitax.co.il's",
+    "replace": "| https://www.capitax.co.il/terms | whether capitax.co.il's",
+    "test": [
+      "src/__tests__/revenue/capitax-terms.test.ts",
+      "src/__tests__/revenue/prize-terms-audit.test.ts"
+    ],
+    "note": "tick 69: the ZERO-TESTS row names a URL other than the footer's terms address"
+  },
+  {
+    "id": "T69-CX17-before-keeps-entry",
+    "file": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "find": "  Object.fromEntries(Object.entries(v).filter(([site]) => site !== CX69.site));",
+    "replace": "  ({ ...v });",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 69: cx69Before() keeps the new entry, so the earlier blocks count it as theirs"
+  },
+  {
+    "id": "T69-CX18-ve68-not-through",
+    "file": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "find": "({ ...cx69Before(v), ...ve68Fixture() });",
+    "replace": "({ ...v, ...ve68Fixture() });",
+    "test": "src/__tests__/revenue/prize-terms-audit.test.ts",
+    "note": "tick 69: ve68Before() does not read through cx69Before(), so every reconstruction of an earlier tick holds the new entry"
+  },
+  {
+    "id": "T69-CX19-live-mention",
+    "file": "src/__tests__/revenue/frozen-citations.test.ts",
+    "find": "  \"research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md terms-capitax\": \"fold 13(d)'s order for capitax.co.il's terms line: the slug the render will write\",\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/frozen-citations.test.ts",
+    "note": "tick 69: LIVE_MENTIONS loses the ruling's mention of the active terms slug"
+  },
+  {
+    "id": "T69-CX20-not-capture",
+    "file": "src/__tests__/revenue/frozen-citations.test.ts",
+    "find": "  \"research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md terms-capitax\": \"fold 13(d) names the terms line it orders; tick 69 queued it (ZERO-TESTS row 270), and no render has run since (GitHub Actions disabled)\",\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/frozen-citations.test.ts",
+    "note": "tick 69: NOT_CAPTURES loses the ruling's name of the terms slug that has no capture yet"
   }
 ]
