@@ -28,4 +28,4 @@ scripts/sim-tree.sh -- bash -c 'ln -s "$0/products/il-biz-tools/node_modules" pr
 
 | Plan | Entries | Full run (s) |
 | --- | --- | --- |
-| `osek-patur-2026.json` | 29 | see `logs/2026-10-11-channel-loop-tick-68-osek-patur-fold.md` (22 entries: all killed, baselines 10.9 s and 10.8 s, tick 68 builder) |
+| `osek-patur-2026.json` | 29 | 448 (tick 68 fixer, in sim-tree.sh with the product's `node_modules` linked, beside the full `scripts/verify.sh` and then the `owner-steps.json` and `freeze-capture.json` plans, the tree's setup included; all 29 killed; baselines 18.3 and 13.5); about 270 for the first 22 (tick 68 builder: all killed, baselines 10.9 and 10.8) |
