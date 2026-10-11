@@ -1,11 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { createHash } from "node:crypto";
 import { createInMemoryDb } from "../orchestration/test-db.js";
 import { getConnectorCursor, insertLineFromSeed, recordLedgerEntry, setConnectorCursor } from "../../revenue/ledger.js";
 import { runLedgerSync } from "../../revenue/heartbeat.js";
 import { tick } from "../../revenue/runner.js";
 import { agorotFromIls, isStoredForm, storedExternalId, STORED_EXTERNAL_ID_RE } from "../../revenue/money.js";
-import { gumroadConnector, gumroadSaleEntries, listGumroadSalesSince, MAX_REFUND_RATE_PAGES } from "../../revenue/connectors/gumroad.js";
+import {
+  gumroadConnector, gumroadSaleEntries, listGumroadSalesSince, MAX_LEDGER_SYNC_PAGES, MAX_REFUND_RATE_PAGES, readProRefundCount,
+} from "../../revenue/connectors/gumroad.js";
 
 // RULING-2026-10-11-ledger-sale-ids.md (FABLE_QUEUE row 26), folds 3, 6 and 7: the connector books a sale, its refund and
 // its fee as sha256:X, sha256:X:refund and sha256:X:fee, X the unkeyed SHA-256 of the sale's own id, so the raw id leaves
@@ -193,21 +195,31 @@ describe("fetchSince reads every page since its cursor, and never passes a sale 
   /**
    * A fake index over `sales` (read at each request, so a test can add a sale between syncs): pages of ten with
    * next_page_key, `success` on every answer (base_controller.rb:42-44), in either order since the recorded sources do
-   * not say which the index uses. `refuse(page)` returning a status refuses that page.
+   * not say which the index uses. `refuse(page)` returning a status refuses that page. The listing is worked out once
+   * per `after` and number of sales (a test adds sales, never changes one), so a listing of thousands is not re-sorted
+   * at every page.
    */
   function gumroadIndex(sales: FakeSale[], opts: { reading?: Reading; order?: "asc" | "desc"; refuse?: (page: number) => number | null } = {}) {
     const { reading = "inclusive", order = "asc", refuse = () => null } = opts;
     const urls: URL[] = [];
+    let memo: { key: string; listed: FakeSale[] } | null = null;
     const fetchImpl = (async (url: string | URL) => {
       const u = new URL(String(url));
       urls.push(u);
       const start = Number(u.searchParams.get("page_key") ?? 0);
       const status = refuse(start / 10 + 1);
       if (status !== null) return new Response(JSON.stringify({ success: false, message: "fake refusal" }), { status });
-      const from = listedFrom(u.searchParams.get("after") ?? "", reading);
-      const listed = sales
-        .filter((s) => { const t = Date.parse(s.created_at); return Number.isNaN(t) || t >= from; })
-        .sort((a, b) => (order === "asc" ? 1 : -1) * ((Date.parse(a.created_at) || 0) - (Date.parse(b.created_at) || 0)));
+      const after = u.searchParams.get("after") ?? "";
+      if (memo?.key !== `${after}|${sales.length}`) {
+        const from = listedFrom(after, reading);
+        memo = {
+          key: `${after}|${sales.length}`,
+          listed: sales
+            .filter((s) => { const t = Date.parse(s.created_at); return Number.isNaN(t) || t >= from; })
+            .sort((a, b) => (order === "asc" ? 1 : -1) * ((Date.parse(a.created_at) || 0) - (Date.parse(b.created_at) || 0))),
+        };
+      }
+      const listed = memo.listed;
       const body: Record<string, unknown> = { success: true, sales: listed.slice(start, start + 10) };
       if (start + 10 < listed.length) body.next_page_key = String(start + 10);
       return new Response(JSON.stringify(body), { status: 200 });
@@ -286,24 +298,38 @@ describe("fetchSince reads every page since its cursor, and never passes a sale 
     });
   }
 
-  it(`a listing longer than ${MAX_REFUND_RATE_PAGES} pages: the pages read booked, the cursor kept, said at every sync, and nothing booked twice`, async () => {
+  // The tick-71 review (fix): the sync has its own page cap, well above the refund-rate read's, so a listing of more than
+  // MAX_REFUND_RATE_PAGES pages since the day before the cursor is read to its end and the cursor moves on; past
+  // MAX_LEDGER_SYNC_PAGES it still holds, as the next test pins (the cap's pin moved from MAX_REFUND_RATE_PAGES with it).
+  it(`a listing of ${MAX_REFUND_RATE_PAGES + 5} pages is read to its end: the sync's own cap is ${MAX_LEDGER_SYNC_PAGES} pages`, async () => {
+    expect(MAX_LEDGER_SYNC_PAGES).toBe(500);
     setConnectorCursor(db, "gumroad", "2026-10-01");
-    const sales = spread(MAX_REFUND_RATE_PAGES * 10 + 5);
+    const sales = spread((MAX_REFUND_RATE_PAGES + 5) * 10);
+    const { fetchImpl, urls } = gumroadIndex(sales, { order: "desc" });
+    expect(await sync(fetchImpl)).toMatchObject({ recorded: (MAX_REFUND_RATE_PAGES + 5) * 10, duplicates: 0, errors: [] });
+    expect(urls).toHaveLength(MAX_REFUND_RATE_PAGES + 5);
+    expect(new Set(gumroadIds()).size).toBe((MAX_REFUND_RATE_PAGES + 5) * 10);
+    expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-09");
+  });
+
+  it(`a listing longer than ${MAX_LEDGER_SYNC_PAGES} pages: the pages read booked, the cursor kept, said at every sync, and nothing booked twice`, async () => {
+    setConnectorCursor(db, "gumroad", "2026-10-01");
+    const sales = spread(MAX_LEDGER_SYNC_PAGES * 10 + 5);
     const { fetchImpl, urls } = gumroadIndex(sales, { order: "desc" });
     const first = await sync(fetchImpl);
-    expect(urls).toHaveLength(MAX_REFUND_RATE_PAGES);
-    expect(first).toMatchObject({ recorded: MAX_REFUND_RATE_PAGES * 10, duplicates: 0 });
+    expect(urls).toHaveLength(MAX_LEDGER_SYNC_PAGES);
+    expect(first).toMatchObject({ recorded: MAX_LEDGER_SYNC_PAGES * 10, duplicates: 0 });
     expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-01");
     expect(first.errors).toHaveLength(1);
     expect(first.errors[0]).toMatch(
-      new RegExp(`^gumroad: the sales listing since 2026-09-30 runs past ${MAX_REFUND_RATE_PAGES} pages: the ${MAX_REFUND_RATE_PAGES * 10} sale\\(s\\) read before it stopped are booked .* the cursor stays at 2026-10-01`),
+      new RegExp(`^gumroad: the sales listing since 2026-09-30 runs past ${MAX_LEDGER_SYNC_PAGES} pages: the ${MAX_LEDGER_SYNC_PAGES * 10} sale\\(s\\) read before it stopped are booked .* the cursor stays at 2026-10-01`),
     );
     expect(first.errors[0]).not.toContain(TOKEN);
     const second = await sync(fetchImpl);
-    expect(second).toMatchObject({ recorded: 0, duplicates: MAX_REFUND_RATE_PAGES * 10 });
+    expect(second).toMatchObject({ recorded: 0, duplicates: MAX_LEDGER_SYNC_PAGES * 10 });
     expect(second.errors).toEqual(first.errors);
-    expect(gumroadIds()).toHaveLength(MAX_REFUND_RATE_PAGES * 10);
-    expect(new Set(gumroadIds()).size).toBe(MAX_REFUND_RATE_PAGES * 10);
+    expect(gumroadIds()).toHaveLength(MAX_LEDGER_SYNC_PAGES * 10);
+    expect(new Set(gumroadIds()).size).toBe(MAX_LEDGER_SYNC_PAGES * 10);
     expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-01");
   });
 
@@ -333,12 +359,159 @@ describe("fetchSince reads every page since its cursor, and never passes a sale 
     expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-05");
   });
 
+  // The tick-71 review (blocking): a created_at shaped like a day was enough to become the cursor. A date in the future
+  // (2099-01-01) started every later listing past every real sale, silently and for good; "2026-13-45" made shiftDay
+  // throw at every later sync, so nothing was booked again. A day becomes, or stays, the cursor only when it is a real
+  // date no later than tomorrow in UTC (a created_at written east of UTC can be a day ahead). The clock (Date alone) is
+  // pinned here so "tomorrow" is one fixed day.
+  describe("a day becomes the cursor only when it is a real date no later than tomorrow (UTC)", () => {
+    const NOW = "2026-10-11T12:00:00.000Z"; // tomorrow is 2026-10-12; the first read's cursor is 2026-09-11, its after 2026-09-10
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date(NOW));
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("a sale created in the future is booked and does not move the cursor, and a later real sale is still booked", async () => {
+      setConnectorCursor(db, "gumroad", "2026-10-01");
+      const sales = [fakeSale(1, "2099-01-01T10:00:00Z")];
+      const { fetchImpl, urls } = gumroadIndex(sales);
+      expect(await sync(fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
+      expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-01");
+      sales.push(fakeSale(2, "2026-10-06T10:00:00Z"));
+      expect(await sync(fetchImpl)).toMatchObject({ recorded: 1, duplicates: 1, errors: [] });
+      expect(urls.at(-1)!.searchParams.get("after")).toBe("2026-09-30");
+      expect(gumroadIds()).toEqual(sales.map(digestOf));
+      expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-06");
+    });
+
+    it("tomorrow's day (a created_at written east of UTC) moves the cursor; the day after tomorrow does not", async () => {
+      setConnectorCursor(db, "gumroad", "2026-10-01");
+      expect(await sync(gumroadIndex([fakeSale(1, "2026-10-13T00:30:00Z")]).fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
+      expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-01");
+      expect(await sync(gumroadIndex([fakeSale(2, "2026-10-12T09:00:00+14:00")]).fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
+      expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-12");
+    });
+
+    // "2026-13-45" is no date at all; "2026-02-30" is one Date.parse accepts and rolls over to 2026-03-02.
+    for (const odd of ["2026-13-45T10:00:00Z", "2026-02-30T10:00:00Z"]) {
+      it(`a created_at shaped like a day that is no such date (${odd.slice(0, 10)}) is booked, never becomes the cursor, and the next sync runs`, async () => {
+        setConnectorCursor(db, "gumroad", "2026-02-01");
+        const sales = [fakeSale(1, odd)];
+        const { fetchImpl } = gumroadIndex(sales);
+        expect(await sync(fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
+        expect(getConnectorCursor(db, "gumroad")).toBe("2026-02-01");
+        sales.push(fakeSale(2, "2026-10-06T10:00:00Z"));
+        expect(await sync(fetchImpl)).toMatchObject({ recorded: 1, duplicates: 1, errors: [] });
+        expect(gumroadIds()).toEqual(sales.map(digestOf));
+        expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-06");
+      });
+    }
+
+    it("a first read, with no cursor, lists from 31 days back (its cursor 30 days back, less a day) and books every page", async () => {
+      const before = fakeSale(0, "2026-09-09T23:59:00Z"); // the day before the window: the index does not list it
+      const inside = Array.from({ length: 24 }, (_, i) => fakeSale(i + 1, new Date(Date.parse("2026-09-10T00:30:00Z") + i * DAY_MS).toISOString()));
+      const { fetchImpl, urls } = gumroadIndex([before, ...inside], { order: "desc" });
+      const result = await sync(fetchImpl);
+      expect(urls.map((u) => u.searchParams.get("after"))).toEqual(["2026-09-10", "2026-09-10", "2026-09-10"]);
+      expect(result).toMatchObject({ recorded: 24, duplicates: 0, errors: [] });
+      expect(gumroadIds().sort()).toEqual(inside.map(digestOf).sort());
+      expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-03");
+    });
+
+    // A cursor stored by the code before this fix (or set by hand) that is no real day up to tomorrow: the sync reads
+    // from the first read's window, moves the cursor to a real day, and says once what it did and what it cannot see.
+    for (const stored of ["2026-13-45", "2099-01-01", "2026-02-30", "not-a-day"]) {
+      it(`a stored cursor that is no real day up to tomorrow (${stored}) falls back to the first read's window, and the sync says so once`, async () => {
+        setConnectorCursor(db, "gumroad", stored);
+        const sales = [fakeSale(1, "2026-09-10T01:00:00Z"), fakeSale(2, "2026-10-06T10:00:00Z")];
+        const { fetchImpl, urls } = gumroadIndex(sales);
+        const first = await sync(fetchImpl);
+        expect(urls.map((u) => u.searchParams.get("after"))).toEqual(["2026-09-10"]);
+        expect(first).toMatchObject({ recorded: 2, duplicates: 0 });
+        expect(first.errors).toEqual([
+          `gumroad: the stored cursor "${stored}" is no real day up to tomorrow (UTC), so this sync read from 2026-09-10 as a ` +
+            "first read does; a sale created before that day and not booked yet is not read",
+        ]);
+        expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-06");
+        expect(await sync(fetchImpl)).toMatchObject({ recorded: 0, duplicates: 1, errors: [] });
+      });
+    }
+  });
+
+  // The tick-71 review (fix): a next_page_key that names a page already asked for was followed up to the cap, 100
+  // requests a sync, the cursor held for good. The pager now stops at the repeat; the sync books what it read, keeps its
+  // cursor and says so, after two requests.
+  it("a listing whose next_page_key repeats: the pages read booked once, the cursor kept, the sync says so, in two requests", async () => {
+    setConnectorCursor(db, "gumroad", "2026-10-01");
+    const sales = spread(20);
+    const urls: URL[] = [];
+    const fetchImpl = (async (url: string | URL) => {
+      const u = new URL(String(url));
+      urls.push(u);
+      const start = u.searchParams.has("page_key") ? 10 : 0;
+      return new Response(JSON.stringify({ success: true, sales: sales.slice(start, start + 10), next_page_key: "fake-key-10" }), { status: 200 });
+    }) as typeof fetch;
+    const result = await sync(fetchImpl);
+    expect(urls.map((u) => u.searchParams.get("page_key"))).toEqual([null, "fake-key-10"]);
+    expect(result).toMatchObject({ recorded: 20, duplicates: 0 });
+    expect(result.errors).toEqual([
+      "gumroad: the sales listing since 2026-09-30 loops (page 2 names as its next a page already asked for): the 20 " +
+        "sale(s) read before it stopped are booked (one read again is a duplicate), and the cursor stays at 2026-10-01, " +
+        "so no sale it did not read is passed; the next sync asks again from the same day",
+    ]);
+    expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-01");
+    expect(new Set(gumroadIds()).size).toBe(20);
+  });
+
   it("the incomplete listing reaches the tick's blockers as a ledger-sync error, as any connector's error does", async () => {
     setConnectorCursor(db, "gumroad", "2026-10-01");
     const { fetchImpl } = gumroadIndex(spread(25), { refuse: (page) => (page === 3 ? 500 : null) });
     const result = await tick(db, { nowIso: "2026-10-11T12:00:00.000Z", env: ENV, fetchImpl, ...NO_PRO, feedGoals: false });
     expect(result.ledgerSync?.recorded).toBe(20);
     expect(result.blockers.filter((b) => b.startsWith("ledger sync: gumroad: the sales listing since 2026-09-30 was refused at page 3 (HTTP 500)"))).toHaveLength(1);
+  });
+});
+
+// The tick-71 review (fix): a next_page_key already asked for names a page already read, so following it would read the
+// same pages again up to the cap. The pager stops there and says which page named it; the refund-rate read says so too.
+describe("listGumroadSalesSince stops at a next_page_key it has already asked for (tick 71 review)", () => {
+  /** Answers page `n` (1-based) with one sale and the n-th of `keys` as its next_page_key. */
+  function keyed(keys: string[]) {
+    const urls: URL[] = [];
+    const fetchImpl = (async (url: string | URL) => {
+      const u = new URL(String(url));
+      urls.push(u);
+      const n = urls.length;
+      return new Response(JSON.stringify({ success: true, sales: [{ id: `fake-loop-${n}` }], next_page_key: keys[n - 1] }), { status: 200 });
+    }) as typeof fetch;
+    return { fetchImpl, urls };
+  }
+
+  it("a page that names its own key as the next: two requests, every answered page handed on, and no listing", async () => {
+    const { fetchImpl, urls } = keyed(["fake-key-a", "fake-key-a", "fake-key-a"]);
+    const seen: number[] = [];
+    const listing = await listGumroadSalesSince({ token: "fake-token", after: "2026-09-01", fetchImpl, onPage: (_, page) => seen.push(page) });
+    expect(listing).toEqual({ ok: false, problem: "looped", pages: 2 });
+    expect(urls.map((u) => u.searchParams.get("page_key"))).toEqual([null, "fake-key-a"]);
+    expect(seen).toEqual([1, 2]);
+  });
+
+  it("a key asked for two pages back (a, b, a) is a loop too", async () => {
+    const { fetchImpl, urls } = keyed(["fake-key-a", "fake-key-b", "fake-key-a", "fake-key-b"]);
+    expect(await listGumroadSalesSince({ token: "fake-token", after: "2026-09-01", fetchImpl })).toEqual({ ok: false, problem: "looped", pages: 3 });
+    expect(urls.map((u) => u.searchParams.get("page_key"))).toEqual([null, "fake-key-a", "fake-key-b"]);
+  });
+
+  it("the refund-rate read on a looping listing writes no count, and says the listing loops", async () => {
+    const { fetchImpl, urls } = keyed(["fake-key-a", "fake-key-a"]);
+    expect(await readProRefundCount({ token: "fake-token", productId: "fake-pro", nowIso: "2026-10-11T12:00:00.000Z", fetchImpl })).toEqual({
+      ok: false,
+      detail: "GET /v2/sales for the Pro product loops (page 2 names as its next a page already asked for), so the count would not be complete",
+    });
+    expect(urls).toHaveLength(2);
   });
 });
 

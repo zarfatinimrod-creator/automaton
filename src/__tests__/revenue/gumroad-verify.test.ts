@@ -289,6 +289,27 @@ describe("verifyGumroadLedger on a listing it could not read to the end: what wa
     expect(r.detail).toContain("GET /v2/sales was refused (HTTP 500, page 1). Read: 0 page(s), 0 sale(s); not read: page 1 and any page after it.");
   });
 
+  // The tick-71 review (fix): the shared pager stops at a next_page_key it has already asked for.
+  it("a listing whose next_page_key repeats: incomplete, the two pages read named, the rest not", async () => {
+    const { sales } = index(25);
+    const urls: URL[] = [];
+    const fetchImpl = (async (url: string | URL) => {
+      const u = new URL(String(url));
+      urls.push(u);
+      const start = u.searchParams.has("page_key") ? 10 : 0;
+      return new Response(JSON.stringify({ success: true, sales: sales.slice(start, start + 10), next_page_key: "fake-key-10" }), { status: 200 });
+    }) as typeof fetch;
+    const r = await verify(fetchImpl);
+    expect(urls).toHaveLength(2);
+    expect(r).toMatchObject({ status: "incomplete", pages: 0, listedSales: 0, matchedRows: 0, findings: 0 });
+    expect(r.readBeforeStop).toEqual({ pages: 2, sales: 20, earliestDay: "2026-09-01", latestDay: "2026-09-01" });
+    expect(r.detail).toBe(
+      "GET /v2/sales loops (page 2 names as its next a page already asked for). Read: 2 page(s), 20 sale(s), created " +
+        "2026-09-01 to 2026-09-01; not read: every page after page 2. Which days the unread pages' sales fall on is not " +
+        "known (the order the index lists sales in is not recorded), so nothing was verified",
+    );
+  });
+
   it("a complete listing names no part read before a stop", async () => {
     const r = await verify(index(25).fetchImpl);
     expect(r).toMatchObject({ status: "clean", pages: 3, listedSales: 25, readBeforeStop: null });
