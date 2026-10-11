@@ -78,5 +78,117 @@
     "replace": "תקרה ₪122,833 לשנת 2026",
     "test": "src/__tests__/revenue/owner-steps.test.ts",
     "note": "tick 68 fold fixer: the income plan states the amount flat again, without its grade (decision 4(2))"
+  },
+  {
+    "id": "T69-S1",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "      needs: \"part\",",
+    "replace": "      needs: \"no\",",
+    "note": "tick 69: step 6 asks identity in part ג (Apify's verification at the Publish sitting, Q5)",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/owner-report.test.ts"
+    ]
+  },
+  {
+    "id": "T69-S2",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "\"the order is under review (FABLE_QUEUE row 29): the",
+    "replace": "\"the order is under review: the",
+    "note": "tick 69: the order note names the row it waits on",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/owner-report.test.ts"
+    ]
+  },
+  {
+    "id": "T69-S3",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "**זמן: 18–23 דקות** (מהן",
+    "replace": "**זמן: 18 דקות** (מהן",
+    "note": "tick 69: step 6's own time line carries the code's 18-23 (it said 18)",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts"
+    ]
+  },
+  {
+    "id": "T69-S4",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "(חלק ד, עכשיו) | 18–23 |",
+    "replace": "(חלק ד, עכשיו) | 18 |",
+    "note": "tick 69: the summary table carries step 6's 18-23",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts"
+    ]
+  },
+  {
+    "id": "T69-S5",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "לוקחים יחד 35–40",
+    "replace": "לוקחים יחד כ-38",
+    "note": "tick 69: the free steps' total is the code's sum (step 8, the network setting, step 6's early part, step 7)",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts"
+    ]
+  },
+  {
+    "id": "T69-S6",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "**סך הכול: 150–190 דקות",
+    "replace": "**סך הכול: כ-2.5 עד 3 שעות",
+    "note": "tick 69: the total is ownerStepMinutes()",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts"
+    ]
+  },
+  {
+    "id": "T69-S7",
+    "file": "docs/INCOME_PLAN.he.md",
+    "find": "| 15–20 | מוריד את שמך",
+    "replace": "| 10–15 | מוריד את שמך",
+    "note": "tick 69: INCOME_PLAN's step 7 row carries the code's 15-20 (it said 10-15)",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts"
+    ]
+  },
+  {
+    "id": "T69-S8",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "**עצור אם** המסך מבקש",
+    "replace": "המסך מבקש",
+    "note": "tick 69: part ג carries the camera stop rule for Apify's verification",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts"
+    ]
+  },
+  {
+    "id": "T69-S9",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "- **Apify — אמצעי תשלום**",
+    "replace": "- **Apify — אימות זהות**",
+    "note": "tick 69: the 'only if a line earns' list names Apify's payout method, not its verification",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts"
+    ]
+  },
+  {
+    "id": "T69-S10",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "(למשל אמצעי תשלום ב-Apify כשמתמחרים שם משהו,",
+    "replace": "(למשל אימות זהות ב-Apify לפני שמתמחרים שם משהו,",
+    "note": "tick 69: the intro no longer says Apify's verification waits for pricing",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts"
+    ]
+  },
+  {
+    "id": "T69-S11",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "4. **לא להדביק כלום ולא לשלם כלום.**",
+    "replace": "4. **לא להדביק כלום, לא לשלם כלום ולא לשלוח תעודת זהות.**",
+    "note": "tick 69: step 6 names an ID card in part ג only",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts"
+    ]
   }
 ]

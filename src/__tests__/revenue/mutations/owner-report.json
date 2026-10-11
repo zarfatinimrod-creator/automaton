@@ -286,5 +286,245 @@
     "replace": "const nowIso = opts.nowIso ?? new Date(nowMs).toISOString();",
     "note": "tick 64 review: --now is reported as one ISO instant, as every window bound compares it",
     "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR1",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const needed = gating.filter((s) => !s.doneOn && !s.frozen);",
+    "replace": "const needed = gating.filter((s) => !s.doneOn);",
+    "note": "tick 69: a frozen step's line goes without it at ₪0, so it is not in the line's set or its minutes",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR2",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const needed = gating.filter((s) => !s.doneOn && !s.frozen);",
+    "replace": "const needed = gating.filter((s) => !s.frozen);",
+    "note": "tick 69: a done step is behind the line, not in its set",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR3",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const candidates = lines.filter((l) => l.notByStepsAlone.length === 0);",
+    "replace": "const candidates = lines;",
+    "note": "tick 69: a line whose payment needs an owner action outside the eight steps (apify-actors) is not counted",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR4",
+    "file": "src/revenue/owner-report.ts",
+    "find": "a.toPay.minutes.min - b.toPay.minutes.min ||",
+    "replace": "b.toPay.minutes.min - a.toPay.minutes.min ||",
+    "note": "tick 69: the smallest set is the fewest minutes at the low end, not the most",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR5",
+    "file": "src/revenue/owner-report.ts",
+    "find": "|| a.toPay.minutes.max - b.toPay.minutes.max ||",
+    "replace": "||",
+    "note": "tick 69: at the same low end the high end decides (il-biz-tools 108-143 before oss-bounties 108-148)",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR6",
+    "file": "src/revenue/owner-report.ts",
+    "find": "? candidates.filter((l) => fewest(l, best) === 0).map(",
+    "replace": "? [best].map(",
+    "note": "tick 69: a tie lists every tied line, not the first",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR7",
+    "file": "src/revenue/owner-report.ts",
+    "find": "  if (step.frozen) {\n    return { ...base, state: \"frozen\"",
+    "replace": "  if (step.frozen && false) {\n    return { ...base, state: \"frozen\"",
+    "note": "tick 69: a frozen step is shown frozen, with its rule and its free replacement, not as held or asked",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR8",
+    "file": "src/revenue/owner-report.ts",
+    "find": "if (hasPendingPrecondition(step)) return { ...base, state: \"held\"",
+    "replace": "if (false) return { ...base, state: \"held\"",
+    "note": "tick 69: a step held by a pending precondition is shown held, with its short gate",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR9",
+    "file": "src/revenue/owner-report.ts",
+    "find": "    unlocks: firstSentence(step.unlocks),",
+    "replace": "    unlocks: step.unlocks,",
+    "note": "tick 69: a step's unlocks print as its first sentence, not the whole paragraph",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR10",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const m = /^.*?\\.(?=\\s|$)/s.exec(text.trim());",
+    "replace": "const m = /^.*\\.(?=\\s|$)/s.exec(text.trim());",
+    "note": "tick 69: the first sentence ends at the first full stop, not the last",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR11",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const m = /^.*?\\.(?=\\s|$)/s.exec(text.trim());",
+    "replace": "const m = /^.*?\\./s.exec(text.trim());",
+    "note": "tick 69: a full stop inside a word (colony.yml) does not end the sentence",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR12",
+    "file": "src/revenue/owner-report.ts",
+    "find": "if (gating.length === 0) notByStepsAlone.push(",
+    "replace": "if (gating.length < 0) notByStepsAlone.push(",
+    "note": "tick 69: a line owner-steps.ts names no step for is not counted as payable with no steps",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR13",
+    "file": "src/revenue/owner-report.ts",
+    "find": "    orderReview: OWNER_STEP_ORDER_REVIEW,",
+    "replace": "    orderReview: \"\",",
+    "note": "tick 69: the path carries the order-review note (FABLE_QUEUE row 29)",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR14",
+    "file": "src/revenue/owner-report.ts",
+    "find": "    codeOrder: ownerStepsInOrder(steps).map((s) => s.number),",
+    "replace": "    codeOrder: steps.map((s) => s.number).sort((a, b) => a - b),",
+    "note": "tick 69: the code's order is owner-steps.ts `order` (1, 8, 2, 3, 5, 7, 4, 6), not the step numbers",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR15",
+    "file": "src/revenue/owner-report.ts",
+    "find": "  out.push(`${p.orderReview.charAt(0).toUpperCase()}${p.orderReview.slice(1)}.`);",
+    "replace": "  out.push(\"\");",
+    "note": "tick 69: the section prints the order-review line beside the code's order",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR16",
+    "file": "src/revenue/owner-report.ts",
+    "find": "part: \"in one part\"",
+    "replace": "part: \"yes\"",
+    "note": "tick 69: a step that asks identity in one part only (step 6, part ג) is not printed as a whole-step identity check",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR17",
+    "file": "src/revenue/owner-report.ts",
+    "find": "\" (a frozen step left out: the line goes without it at ₪0)\"",
+    "replace": "\"\"",
+    "note": "tick 69: a line's remaining steps say a frozen step was left out",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR18",
+    "file": "src/revenue/owner-report.ts",
+    "find": "(l.notByStepsAlone.length ? \"; the eight steps alone do not make it payable.\" : \".\")",
+    "replace": "(\".\")",
+    "note": "tick 69: a line the eight steps cannot make payable says so beside its steps",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR19",
+    "file": "src/revenue/owner-report.ts",
+    "find": "— its payment also needs ${l.notByStepsAlone.join(\"; \")}.",
+    "replace": "— ${l.id}.",
+    "note": "tick 69: a line not counted is named with what its payment also needs",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR20",
+    "file": "src/revenue/owner-report.ts",
+    "find": "${i ? \"Or, at the same minutes: \" : \"\"}",
+    "replace": "${\"\"}",
+    "note": "tick 69: a tied line is introduced as another set at the same minutes",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR21",
+    "file": "src/revenue/owner-report.ts",
+    "find": "firstPayment: buildFirstPaymentPath(lines.map((l) => ({ id: l.id, waitsOnOwner: l.waitsOnOwner }))),",
+    "replace": "firstPayment: buildFirstPaymentPath(all.map((l) => ({ id: l.id, waitsOnOwner: waitsOnOwner(l) }))),",
+    "note": "tick 69: the path covers the lines the database has not killed",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR22",
+    "file": "src/revenue/owner-report.ts",
+    "find": "firstPayment: buildFirstPaymentPath(lines.map((l) => ({ id: l.id, waitsOnOwner: l.waitsOnOwner }))),",
+    "replace": "firstPayment: buildFirstPaymentPath(lines.map((l) => ({ id: l.id, waitsOnOwner: true }))),",
+    "note": "tick 69: a line the database no longer has waiting on the owner is marked so",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR23",
+    "file": "src/revenue/owner-report.ts",
+    "find": "const all = [...seen.values()].sort((a, b) => a.order - b.order);",
+    "replace": "const all = [...seen.values()].sort((a, b) => a.number - b.number);",
+    "note": "tick 69: the identity checks print in the code's order, not by step number",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR24",
+    "file": "src/revenue/owner-report.ts",
+    "find": "c.steps.includes(s.number) && s.identity.needs !== \"no\"",
+    "replace": "c.steps.includes(s.number) && s.identity.needs === \"yes\"",
+    "note": "tick 69: the smallest set's identity checks include a step that asks it in one part",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR25",
+    "file": "src/revenue/owner-report.ts",
+    "find": "once ${line.waits.length === 1 ? \"its read\" : \"its reads\"}",
+    "replace": "once its reads",
+    "note": "tick 69: one read is said in the singular",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR26",
+    "file": "src/revenue/owner-report.ts",
+    "find": "if (l.waits.length) out.push(\"Also waits on:\");",
+    "replace": "if (false) out.push(\"Also waits on:\");",
+    "note": "tick 69: a line's waits print under their own heading, not under its done steps",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR27",
+    "file": "src/revenue/owner-report.ts",
+    "find": "w.kind === \"read\" ? \"a read the colony takes, not an owner step\"",
+    "replace": "w.kind !== \"read\" ? \"a read the colony takes, not an owner step\"",
+    "note": "tick 69: a read is labelled a read and an owner action outside the steps as one",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR28",
+    "file": "src/revenue/owner-report.ts",
+    "find": "out.push(`- ${s.state === \"asked\" ? \"\" : `${s.state}: `}${item(s)}`);",
+    "replace": "out.push(`- ${item(s)}`);",
+    "note": "tick 69: a held, frozen or done step is labelled with its state",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR29",
+    "file": "src/revenue/owner-report.ts",
+    "find": "(s.gate ? ` — ${s.gate.replace(/\\.$/, \"\")}` : \"\")",
+    "replace": "(s.gate ? ` — ${s.gate}` : \"\")",
+    "note": "tick 69: a gate that ends a sentence does not print a second full stop before \"Unlocks\"",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69-OR30",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "      kind: \"owner-later\",",
+    "replace": "      kind: \"read\",",
+    "note": "tick 69: Apify's payout method is an owner action outside the eight steps, which keeps apify-actors out of the smallest set",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
   }
 ]
