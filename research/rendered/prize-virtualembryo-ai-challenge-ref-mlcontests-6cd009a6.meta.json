@@ -16,5 +16,29 @@
   "changed": true,
   "firstFetch": true,
   "previousSha256": null,
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "trimmed": {
+    "on": "2026-10-11",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "virtualembryo.ai",
+    "copying": "barred",
+    "keptLines": [],
+    "context": 2,
+    "fullSha256": "39761d44f3c5abde96d9cd976bf36482aeb2a2e43bcdd8a3c804d11e744a00f5",
+    "fullByteLength": 9372,
+    "lineCount": 165,
+    "body": {
+      "path": "research/rendered/prize-virtualembryo-ai-challenge-ref-mlcontests-6cd009a6.html",
+      "sha256": "bdf1cfc515de44682f6930e1a17b33378e57781ad2e4bd18154fa28b70279a93",
+      "byteLength": 153191,
+      "lineCount": 45,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [],
+    "wide": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 7d2efd96dbc707e3a4733fc7c700c1d6eaefc85a (git show 7d2efd96dbc707e3a4733fc7c700c1d6eaefc85a:research/rendered/prize-virtualembryo-ai-challenge-ref-mlcontests-6cd009a6.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
+  }
 }
