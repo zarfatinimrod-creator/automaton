@@ -20,47 +20,63 @@
  * of its own; here every repository file owns its lines. What it took from there: a ruling's short name (ROBOTS-RULING)
  * owns the bare :N after it (tick 68), and so does "the note".
  *   - `path:N`, `path:N-M` (or N–M), with path repo-relative or a unique tail of one (`ledger.ts`, `channel-loop/X.md`);
- *   - a bare `:N` or `:N-M` (continuation: "`MISSION.md:435-439`, heading `:431`") belongs to the last name before it on
- *     its line, else to the last name in its paragraph (a blank line, a heading, a table row, a fence or a rule ends one;
- *     list items do not: "(`MISSION.md:349-350`)" then, on the next item, "(`:354`)"). Outside double quotes it takes
- *     only a name outside them (after "into `x.json`, the page and its tests" (`:51`) the :51 is the quoting file's).
- *     In a table row it takes a name in its own cell, else the table's caption: the last name of the paragraph right
- *     before the table. Nothing carries further: past its paragraph a bare line is "unattributed", never guessed;
+ *   - a bare `:N` or `:N-M` (continuation: "`MISSION.md:435-439`, heading `:431`", "OTA:576/:578") belongs to the last
+ *     name before it on its line, else to the last name in its paragraph (a blank line, a heading, a table row, a fence
+ *     or a rule ends one; list items do not: "(`MISSION.md:349-350`)" then, on the next item, "(`:354`)"). One taken
+ *     from an earlier line of the paragraph says so in its `via` ("carried from :268"): prose moves on to another file
+ *     without naming it ("**The tests.** … (`:46-55`)" after `owner-steps.ts`), so a carried line is a judgement to
+ *     check, not a pointer. Outside double quotes it takes only a name outside them (after "into `x.json`, the page and
+ *     its tests" (`:51`) the :51 is the quoting file's). In a table row it takes a name in its own cell, else the
+ *     table's caption: the last name of the paragraph right before the table. Nothing carries further: past its
+ *     paragraph a bare line is "unattributed", never guessed. Right after a possessive that is no name of a file ("the
+ *     script's `:18`", "`:279`'s `:93-99`", "`CHANNEL_LOOP.md:395`'s `:15`": a line of the citing text) it is
+ *     "unattributed" too: the possessive says whose line it is, and that is not the last name's;
  *   - a short name the document defines: `EX` is `research/…/x.md`; "the read-back" is `scripts/…`; `scripts/x.ts`
  *     ("the x script"); `a.ts`, `b.ts` ("the b") are under `src/revenue/`; "a bare `BOARD.md:n` is the 7.9 board's".
  *     A definition counts only when its target looks like a path. A phrase owns lines only outside double quotes (a
  *     quotation's words are the source's: "when it arrives in the ledger with a transaction id" (`:269-270`) is
- *     MISSION's line, not the ledger's), and in the possessive only right after it ("the read-back's `:99-103`") or
- *     starting a sentence ("The status report's appendix opens at `:38`"), never describing ("the config's rule
- *     (`:210`)"); its first letter's case is free, and "the" may be dropped when two words or a digit are left ("loop
- *     ruling `:88`");
- *   - a backticked or bare path that exists in --tree, without a line: a whole-file citation (present or gone at head).
+ *     MISSION's line, not the ledger's), and in the possessive only right after it ("the read-back's `:99-103`", "the
+ *     document's own `:26`") or starting a sentence ("The status report's appendix opens at `:38`"), never describing
+ *     ("the config's rule (`:210`)"); its first letter's case is free, "the" may be dropped when two words or a digit
+ *     are left ("loop ruling `:88`"), and its words may break across two lines of a paragraph ("the⏎read-back");
+ *   - a backticked or bare path that exists in --tree, without a line: a whole-file citation ("present" or "gone" at
+ *     head: the file's lines are not compared).
  *   - a name several files have is the one the document writes in full elsewhere, else the one under the deepest
  *     directory it names (`loop.test.ts` with `src/__tests__/revenue/` named), when that leaves one.
- * A name with a line that is in no file of --tree is reported, never dropped: "unknown path" when it looks like a path
- * (a slash or a file extension) or matches several files (`BOARD.md`: candidates listed); "not checked" when it is a
- * short name with no file (OTA:596, an undefined X-RULING, "the note"). A bare :N after no name is "unattributed".
- * URLs are skipped. A blockquote that speaks of drift (a main-thread drift note, written against another tree) is
- * skipped and its lines are listed. `via` names the short name, phrase or caption a citation came through, so a reader
- * can see the attribution where it is a judgement and not a path: the scanner reads prose, and prose can mean another
- * file than the last one it names; an "invalid" or "changed" under a `via` is the place to look first.
+ * Headings are read too, and end their paragraph: their names own no line after them. A name with a line that is in no
+ * file of --tree is reported, never dropped: "unknown path" when it looks like a path (a slash or a file extension) or
+ * matches several files (`BOARD.md`: candidates listed); "not checked" when it is a short name with no file (OTA:596,
+ * an undefined X-RULING, "the note"), or a line of a file that is binary at --tree (a NUL byte in its first 8000, as
+ * git judges it: `colony.db` has no lines to compare). A bare :N after no name is "unattributed". URLs are skipped.
+ * Skipped, and listed with their lines, as written against other trees than the brief's: a blockquote that speaks of
+ * drift (a main-thread drift note), and a pointer-housekeeping section, from an emphasised lead at the start of a line
+ * that says "pointer drift" or "correction(s)"/"corrected" ("*Row 28's pointer drift*", "*Corrections the checker made
+ * to the clerks*", "*Pointers this brief corrected or added*") to the next such lead, heading or rule: its pointers are
+ * old ones, the trees they were checked at and their corrections side by side. `via` names the short name, phrase,
+ * caption or carry a citation came through, so a reader can see the attribution where it is a judgement and not a
+ * path: the scanner reads prose, and prose can mean another file than the last one it names; an "invalid" or
+ * "changed" under a `via` is the place to look first.
  *
  * FOR EACH CITED LINE N, the text at --tree against --head:
- *   same        the same line number holds the same text;
+ *   same        the same line number holds the same text, and no other line of --head does (else, below);
  *   moved N→K   the exact text is at one line K of --head;
  *   ambiguous   it is at several (the candidates are listed);
  *   changed     it is at none (the old text, and what --head has at N, are shown);
  *   gone        the file is not in --head;
- *   invalid     N is past the end of the file at --tree (or a range ends before it starts).
+ *   invalid     N is past the end of the file at --tree (or a range ends before it starts): the pointer was wrong
+ *               when written, or the scanner gave it to the wrong file. Listed; it is no drift.
  * A blank or punctuation-only line (`}`, `*\/`, empty), or a line written more than once at --head, is placed by its
  * nearest unique neighbours above and below (unique at both trees, within 20 lines): one place they agree on gives
- * same or moved; several, ambiguous; none, changed. With no unique neighbour at all, the same text at N is "same".
+ * same or moved; several, ambiguous; none, changed. With no unique neighbour at all, the same text at N is "same". A
+ * repeated line at its own number is not "same" by that alone: `"checked": "2026-09-29",` at :259 of a JSON file
+ * whose entries all moved +7 is the next entry's line, and its neighbours say :266.
  * A range gets each line, and one summary when every line moved by the same offset ("moved 414-430→426-442").
  *
- * OUTPUT: a table per cited file (citation, cited at, status, new pointer; a range's lines as runs of one status and
- * offset, every line in --json), then the unknown, unchecked and unattributed references, then counts by status. Exit 0
- * when nothing drifted, 3 when anything did (moved, ambiguous, changed, gone, invalid, unknown path; "not checked" and
- * "unattributed" are listed but are not drift), 1 on a usage or read error. It writes no file.
+ * OUTPUT: a table per cited file (citation, cited at, status, new pointer; a range's lines as runs of one status,
+ * offset and placing, every line in --json), then the unknown, unchecked and unattributed references, then counts by
+ * status. Exit 0 when nothing drifted, 3 when anything did (a citation or one of its lines moved, ambiguous, changed or
+ * gone, or an unknown path; "invalid", "not checked" and "unattributed" are listed but are not drift), 1 on a usage or
+ * read error (a repeated --tree, --head or --row too: the last one would win unseen). It writes no file.
  */
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -70,8 +86,8 @@ import { parseArgs } from "node:util";
 
 export const USAGE = "usage: node scripts/brief-drift.mjs <file.md> --tree <ref> [--head <ref>] [--row <n>] [--json]";
 
-/** The statuses that are drift: any of them makes the exit 3. */
-export const DRIFT = ["moved", "ambiguous", "changed", "gone", "invalid", "unknown path"];
+/** The statuses that are drift: any of them, on a citation or one of its lines, makes the exit 3. */
+export const DRIFT = ["moved", "ambiguous", "changed", "gone", "unknown path"];
 /** Worst last: a range's status is its worst line's. */
 const SEVERITY = ["same", "moved", "ambiguous", "changed", "invalid", "gone"];
 const worse = (a, b) => (SEVERITY.indexOf(a) >= SEVERITY.indexOf(b) ? a : b);
@@ -88,14 +104,20 @@ export const KNOWN_EXT_RE = new RegExp(`\\.(?:${EXTS})$`, "i");
 const URL_RE = /\bhttps?:\/\/[^\s<>`"')\]]+/g;
 /** A name, then its own lines: :N, :N-M, :N–M (an optional L before each number). */
 const NAME_RE = /(?<![A-Za-z0-9_./-])((?:\.{1,2}\/)*[A-Za-z0-9_.](?:[A-Za-z0-9_./-]*[A-Za-z0-9_/])?)(?::L?(\d+)(?:[-–]L?(\d+))?(?!\d))?/g;
-/** A bare line reference: `:97`, :366-380, :12–14 — not a time (07:11) and not part of a name. */
-export const BARE_RE = /(?<![A-Za-z0-9_./-]):L?(\d+)(?:[-–]L?(\d+))?(?!\d)/g;
+/** A bare line reference: `:97`, :366-380, :12–14, the :578 of OTA:576/:578 — not a time (07:11), not part of a name. */
+export const BARE_RE = /(?:(?<![A-Za-z0-9_./-])|(?<=\d\/)):L?(\d+)(?:[-–]L?(\d+))?(?!\d)/g;
 /** A short name that may own lines although no file has it: OTA, EX, PAT, html, T1-RULING. Not a time or a number. */
 const SHORT_NAME_RE = /^(?:[A-Za-z]|[A-Za-z_][A-Za-z0-9_-]*[A-Za-z_])$/;
 /** A ruling's short name (ROBOTS-RULING, VIDEO-RULING, T1-RULING): owns the bare lines after it (freeze-capture, tick 68). */
 const RULING_NAME_RE = /(?<![A-Za-z0-9_./-])[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-RULING(?![A-Za-z0-9_-])/g;
 /** "the note" a brief summarises, "the note's": owns the bare lines after it, as in freeze-capture's NOTE_RE. */
 const NOTE_RE = /(?<![A-Za-z0-9_-])(?:[Tt]he note(?![A-Za-z0-9_'-])|[Nn]ote's(?![A-Za-z0-9_-]))/g;
+/** An emphasised lead at the start of a line ("*Row 28's pointer drift* (repo)", "**Housekeeping …**"): [, marks, text]. */
+const LEAD_RE = /^(\*\*?)(?![\s*])(.+?)(?<!\s)\1(?!\*)/;
+/** A lead that opens a pointer-housekeeping section, skipped like a drift note. */
+export const HOUSEKEEPING_RE = /pointer drift|\bcorrect(?:ions?|ed)\b/i;
+/** A possessive right before a bare line ("script's `", "`:279`'s (`", "document's own `"): [, the possessor]. */
+const POSSESSIVE_RE = /(\S+?)['’]s(?:\s+own)?\s*\(?`?$/;
 /** A line that is only punctuation, symbols or space: placed by its neighbours, never by its own text. */
 const GENERIC_RE = /^[\s\p{P}\p{S}]*$/u;
 export const isGeneric = (text) => GENERIC_RE.test(text);
@@ -130,11 +152,22 @@ export class Tree {
     this.sha = sha;
     this.paths = new Set(git(root, ["ls-tree", "-r", "-z", "--name-only", sha]).toString("utf8").split("\0").filter(Boolean));
     this.cache = new Map();
+    this.blobs = new Map();
+  }
+
+  blob(path) {
+    if (!this.blobs.has(path)) this.blobs.set(path, git(this.root, ["cat-file", "blob", `${this.sha}:${path}`]));
+    return this.blobs.get(path);
+  }
+
+  /** Binary as git judges it: a NUL byte in the first 8000. Such a file has no lines to cite. */
+  isBinary(path) {
+    return this.blob(path).subarray(0, 8000).includes(0);
   }
 
   lines(path) {
     if (!this.cache.has(path)) {
-      const text = git(this.root, ["cat-file", "blob", `${this.sha}:${path}`]).toString("utf8");
+      const text = this.blob(path).toString("utf8");
       const lines = text.split("\n").map((l) => (l.endsWith("\r") ? l.slice(0, -1) : l));
       if (lines.length && lines[lines.length - 1] === "") lines.pop();
       this.cache.set(path, lines);
@@ -212,11 +245,14 @@ export function lastWriter(root, rel, line) {
 }
 
 /**
- * The lines skipped as drift notes: each run of blockquote lines (">") whose text says "drift" — a note the main thread
- * wrote against another tree than the brief's.
+ * The lines skipped as written against another tree than the brief's: each run of blockquote lines (">") whose text
+ * says "drift" (a note the main thread wrote later), and each pointer-housekeeping section — from a lead at the start
+ * of a line that says "pointer drift" or "correction(s)"/"corrected" to the next lead, heading or rule (another such
+ * lead opens a new one). { lines: Set, parts: [{ line, kind: "note" | "section", lead? }] }
  */
-export function driftNoteLines(lines) {
+export function skippedParts(lines) {
   const skip = new Set();
+  const parts = [];
   for (let i = 0; i < lines.length; ) {
     if (!/^\s*>/.test(lines[i])) {
       i += 1;
@@ -224,10 +260,32 @@ export function driftNoteLines(lines) {
     }
     let j = i;
     while (j < lines.length && /^\s*>/.test(lines[j])) j += 1;
-    if (/\bdrift/i.test(lines.slice(i, j).join("\n"))) for (let k = i; k < j; k += 1) skip.add(k + 1);
+    if (/\bdrift/i.test(lines.slice(i, j).join("\n"))) {
+      parts.push({ line: i + 1, kind: "note" });
+      for (let k = i; k < j; k += 1) skip.add(k + 1);
+    }
     i = j;
   }
-  return skip;
+  let inSection = false;
+  lines.forEach((line, i) => {
+    if (/^#{1,6}\s/.test(line) || /^\s*([-*_])(\s*\1){2,}\s*$/.test(line)) {
+      inSection = false;
+      return;
+    }
+    const lead = LEAD_RE.exec(line);
+    if (lead) {
+      inSection = HOUSEKEEPING_RE.test(lead[2]);
+      if (inSection) parts.push({ line: i + 1, kind: "section", lead: lead[0] });
+    }
+    if (inSection) skip.add(i + 1);
+  });
+  parts.sort((a, b) => a.line - b.line);
+  return { lines: skip, parts };
+}
+
+/** The drift-note and housekeeping lines skippedParts() leaves out, as a Set of line numbers. */
+export function driftNoteLines(lines) {
+  return skippedParts(lines).lines;
 }
 
 /**
@@ -279,9 +337,13 @@ function defined(list, index) {
   return (list.filter((d) => d.index <= index).pop() ?? list[0]).target;
 }
 
-/** A phrase's regex source: its first letter's case free; without "the" too when two words or a digit are left. */
+/**
+ * A phrase's regex source: its first letter's case free; without "the" too when two words or a digit are left; any
+ * white space between its words, a line break too ("the⏎read-back").
+ */
 function phraseSource(phrase) {
-  const free = (p) => (/^[A-Za-z]/.test(p) ? `[${p[0].toUpperCase()}${p[0].toLowerCase()}]${escapeRe(p.slice(1))}` : escapeRe(p));
+  const spaced = (s) => escapeRe(s).replace(/\s+/g, "\\s+");
+  const free = (p) => (/^[A-Za-z]/.test(p) ? `[${p[0].toUpperCase()}${p[0].toLowerCase()}]${spaced(p.slice(1))}` : spaced(p));
   const forms = [free(phrase)];
   const bare = /^the\s+(.+)$/i.exec(phrase)?.[1];
   if (bare && (/\s/.test(bare) || /\d/.test(bare))) forms.push(free(bare));
@@ -345,8 +407,10 @@ export function scanCitations(text, resolver, { only = null } = {}) {
     starts.push(at);
     at += line.length + 1;
   }
-  const skipped = [...driftNoteLines(lines)].filter((n) => !only || only.has(n));
-  const skip = new Set(skipped);
+  const parts = skippedParts(lines);
+  const skipped = [...parts.lines].filter((n) => !only || only.has(n)).sort((a, b) => a - b);
+  const skippedLeads = parts.parts.filter((p) => !only || only.has(p.line));
+  const skip = parts.lines;
   const { names, phrases } = findDefinitions(text, resolver);
   // A name several files have is the one the document writes in full elsewhere, when it writes one of them so; else
   // the one under the deepest directory the document names, when one file is.
@@ -390,6 +454,8 @@ export function scanCitations(text, resolver, { only = null } = {}) {
   lines.forEach((line, i) => {
     const docLine = i + 1;
     const row = isRow(line);
+    // A heading is read for its own names and lines, and ends its paragraph: nothing after it takes its names.
+    const heading = /^#{1,6}\s/.test(line);
     if (row && !inTable) caption = captioned(ctxOut ?? prevOut);
     if (!row) caption = null;
     inTable = row;
@@ -401,14 +467,14 @@ export function scanCitations(text, resolver, { only = null } = {}) {
     }
     const quotes = quoteSpans(line, open);
     open = quotes.open;
-    if (boundary(line) || skip.has(docLine)) return;
+    if ((boundary(line) && !heading) || skip.has(docLine)) return;
     const taken = [];
     const free = (s, e) => !taken.some(([a, b]) => s < b && a < e);
     const inQuote = (s) => quotes.spans.some(([a, b]) => s >= a && s < b);
     const marks = [];
-    const mark = (s, e, owner) => {
+    const mark = (s, e, owner, lined = false) => {
       taken.push([s, e]);
-      marks.push({ start: s, end: e, quoted: inQuote(s), docLine, ...owner });
+      marks.push({ start: s, end: e, quoted: inQuote(s), docLine, lined, ...owner });
     };
     const fromTarget = (t, written) => (t.path ? { kind: "file", path: t.path, written } : { kind: "unknown", name: t.unresolved, candidates: t.candidates, written });
     const cite = (owner, rng, written, via, at) => {
@@ -425,8 +491,10 @@ export function scanCitations(text, resolver, { only = null } = {}) {
         if (!free(m.index, m.index + m[0].length)) continue;
         const t = defined(names.get(m[1]), starts[i] + m.index);
         const own = t.path && (t.path === m[1] || t.path.endsWith(`/${m[1]}`));
-        const owner = { ...fromTarget(t, m[0]), via: own ? null : m[1] };
-        mark(m.index, m.index + m[0].length, owner);
+        // A short name for a file the tree does not have (a run's output) owns no bare line after it: prose names
+        // such a file to say what code writes it, and the line beside it is the code's. Its own `EX:5` is reported.
+        const owner = { ...fromTarget(t, m[0]), via: own ? null : m[1], ownsLines: Boolean(t.path) };
+        mark(m.index, m.index + m[0].length, owner, m[2] !== undefined);
         if (m[2] !== undefined) cite(owner, range(m[2], m[3]), m[0], owner.via, m.index);
       }
     }
@@ -434,7 +502,7 @@ export function scanCitations(text, resolver, { only = null } = {}) {
       if (!free(m.index, m.index + m[0].length)) continue;
       const after = /^:L?(\d+)(?:[-–]L?(\d+))?(?!\d)/.exec(line.slice(m.index + m[0].length));
       const owner = { kind: "unchecked", name: m[0], via: m[0] };
-      mark(m.index, m.index + m[0].length + (after ? after[0].length : 0), owner);
+      mark(m.index, m.index + m[0].length + (after ? after[0].length : 0), owner, Boolean(after));
       if (after) cite(owner, range(after[1], after[2]), m[0] + after[0], m[0], m.index);
     }
     for (const m of line.matchAll(NAME_RE)) {
@@ -447,7 +515,7 @@ export function scanCitations(text, resolver, { only = null } = {}) {
       if (cands.length === 1) {
         if (!lined && !/[./]/.test(name)) continue;
         const owner = { kind: "file", path: cands[0], via: null };
-        mark(...span, owner);
+        mark(...span, owner, lined);
         if (lined) cite(owner, range(a, b), whole, null, m.index);
         else refs.push({ kind: "file", path: cands[0], range: null, docLine, written: whole, via: null, index: starts[i] + m.index });
         continue;
@@ -461,26 +529,40 @@ export function scanCitations(text, resolver, { only = null } = {}) {
       if (cands.length > 1 || looksLikePath) {
         if (!lined && cands.length === 0 && !looksLikePath) continue;
         const owner = { kind: "unknown", name, candidates: cands, via: null };
-        mark(...span, owner);
+        mark(...span, owner, lined);
         if (lined) cite(owner, range(a, b), whole, name, m.index);
         else refs.push({ kind: "unlisted", name, candidates: cands, docLine, written: whole, index: starts[i] + m.index });
         continue;
       }
       if (lined && SHORT_NAME_RE.test(name)) {
         const owner = { kind: "unchecked", name, via: name };
-        mark(...span, owner);
+        mark(...span, owner, true);
         cite(owner, range(a, b), whole, name, m.index);
       }
     }
     // A phrase is the brief's own word only outside quotes. In the possessive inside a sentence it describes ("the
     // config's rule (`:210`)", "the page's line (`:115-137`)") and owns a line only right after it ("the read-back's
-    // `:99-103`"); starting a sentence it is the subject ("The status report's appendix opens at `:38`").
+    // `:99-103`", "the document's own `:26`"); starting a sentence it is the subject ("The status report's appendix
+    // opens at `:38`"). Its words may break across the paragraph's previous line and this one ("at the⏎ read-back
+    // `:126-130`"): the mark is then this line's part of it.
+    const describes = (rest, li, at) => /^['’]s/.test(rest) && !/^['’]s(?:\s+own)?\s*\(?`?:L?\d/.test(rest) && !sentenceStart(lines, li, at);
+    const joinable = i > 0 && !row && !heading && !boundary(lines[i - 1]) && !isRow(lines[i - 1]) && !skip.has(i);
     for (const { phrase, re } of PHRASES) {
       for (const m of line.matchAll(re)) {
         if (!free(m.index, m.index + m[0].length) || inQuote(m.index)) continue;
-        const rest = line.slice(m.index + m[0].length);
-        if (/^['’]s/.test(rest) && !/^['’]s\s*\(?`?:L?\d/.test(rest) && !sentenceStart(lines, i, m.index)) continue;
-        mark(m.index, m.index + m[0].length, { ...fromTarget(defined(phrases.get(phrase), starts[i] + m.index), m[0]), via: m[0] });
+        if (describes(line.slice(m.index + m[0].length), i, m.index)) continue;
+        const t = defined(phrases.get(phrase), starts[i] + m.index);
+        mark(m.index, m.index + m[0].length, { ...fromTarget(t, m[0]), via: m[0], ownsLines: Boolean(t.path) });
+      }
+      if (!joinable) continue;
+      const prev = lines[i - 1];
+      for (const m of `${prev}\n${line}`.matchAll(re)) {
+        const end = m.index + m[0].length - prev.length - 1;
+        if (m.index >= prev.length || end <= 0 || !free(0, end) || inQuote(0)) continue;
+        if (describes(line.slice(end), i - 1, m.index)) continue;
+        const words = m[0].replace(/\s+/g, " ");
+        const t = defined(phrases.get(phrase), starts[i - 1] + m.index);
+        mark(0, end, { ...fromTarget(t, words), via: words, ownsLines: Boolean(t.path) });
       }
     }
     for (const m of line.matchAll(NOTE_RE)) {
@@ -492,6 +574,7 @@ export function scanCitations(text, resolver, { only = null } = {}) {
       if (free(m.index, m.index + m[0].length)) bare.push({ start: m.index, written: m[0], range: range(m[1], m[2]) });
     }
     marks.sort((x, y) => x.start - y.start);
+    const owners = marks.filter((k) => k.ownsLines !== false);
     // In a table row a line belongs to a name in its own cell, else to the table's caption.
     const pipes = [];
     if (row) {
@@ -503,26 +586,44 @@ export function scanCitations(text, resolver, { only = null } = {}) {
     }
     const cell = (pos) => pipes.filter((k) => k < pos).length;
     // A line reference outside quotes belongs to the last name outside quotes: after "… `x.json`, the page" (`:51`)
-    // the :51 is the quoting file's line, not the quoted path's.
+    // the :51 is the quoting file's line, not the quoted path's. Right after a possessive it is the possessor's line,
+    // and unattributed when the possessor is no name of a file, or a name with a line of its own ("the script's
+    // `:18`", "`CHANNEL_LOOP.md:395`'s `:15`"). Taken from an earlier line of the paragraph, it says so.
     for (const r of bare) {
       const quoted = inQuote(r.start);
-      const owner =
-        marks.filter((k) => k.end <= r.start && (quoted || !k.quoted) && (!row || cell(k.start) === cell(r.start))).pop() ??
-        (row ? caption : quoted ? ctx : ctxOut);
-      if (!owner) refs.push({ kind: "unattributed", docLine, written: r.written, range: r.range, index: starts[i] + r.start });
-      else cite(owner, r.range, r.written, owner.via ?? null, r.start);
+      const index = starts[i] + r.start;
+      const here = owners.filter((k) => k.end <= r.start && (quoted || !k.quoted) && (!row || cell(k.start) === cell(r.start))).pop();
+      const poss = POSSESSIVE_RE.exec(line.slice(0, r.start));
+      if (poss) {
+        const apostrophe = poss.index + poss[1].length;
+        // The possessor is the last name when that name ends at the apostrophe (a closing backtick between), or holds
+        // it ("the note's", one mark).
+        const named = here && !here.lined && (here.end > apostrophe ? here.start < apostrophe : /^[`)\]]*$/.test(line.slice(here.end, apostrophe)));
+        if (!named) {
+          refs.push({ kind: "unattributed", docLine, written: r.written, range: r.range, via: `after ${poss[1]}'s`, index });
+          continue;
+        }
+      }
+      let owner = here;
+      let via = here?.via ?? null;
+      if (!owner) {
+        owner = row ? caption : quoted ? ctx : ctxOut;
+        if (owner) via = row ? (owner.via ?? null) : [owner.via, `carried from :${owner.docLine}`].filter(Boolean).join(", ");
+      }
+      if (!owner) refs.push({ kind: "unattributed", docLine, written: r.written, range: r.range, via: null, index });
+      else cite(owner, r.range, r.written, via, r.start);
     }
-    if (row) {
+    if (row || heading) {
       ctx = null;
       ctxOut = null;
     } else {
-      if (marks.length) ctx = marks[marks.length - 1];
-      const out = marks.filter((k) => !k.quoted);
+      if (owners.length) ctx = owners[owners.length - 1];
+      const out = owners.filter((k) => !k.quoted);
       if (out.length) ctxOut = out[out.length - 1];
     }
   });
   refs.sort((x, y) => x.index - y.index);
-  return { refs: only ? refs.filter((r) => only.has(r.docLine)) : refs, skipped };
+  return { refs: only ? refs.filter((r) => only.has(r.docLine)) : refs, skipped, skippedParts: skippedLeads };
 }
 
 // --------------------------------------------------------------------------------------------------------- comparison
@@ -566,7 +667,9 @@ export function lineFate(old, head, n, oldIdx = lineIndex(old), headIdx = lineIn
   const base = { line: n, oldText: text };
   const generic = isGeneric(text);
   if (!generic) {
-    if (at === text) return { ...base, status: "same", newLine: n };
+    // The same text at N is "same" only when no other line of head has it: a repeated line at its own number may be
+    // another copy that moved there (a JSON entry's `"checked": …` line when every entry moved +7).
+    if (at === text && hits.length === 1) return { ...base, status: "same", newLine: n };
     if (hits.length === 1) return { ...base, status: "moved", newLine: hits[0] };
     if (hits.length === 0) return { ...base, status: "changed", headText: at };
   }
@@ -575,6 +678,7 @@ export function lineFate(old, head, n, oldIdx = lineIndex(old), headIdx = lineIn
   const placed = [...new Set(offsets.map((d) => n + d))].filter((k) => k >= 1 && k <= head.length && head[k - 1] === text);
   if (placed.length === 1) return { ...base, status: placed[0] === n ? "same" : "moved", newLine: placed[0], via: "neighbours" };
   if (placed.length > 1) return { ...base, status: "ambiguous", candidates: placed, via: "neighbours" };
+  if (!generic && at === text && offsets.length === 0) return { ...base, status: "same", newLine: n, via: "no unique neighbour" };
   if (!generic) return { ...base, status: "ambiguous", candidates: hits };
   if (offsets.length > 0 || hits.length === 0) return { ...base, status: "changed", headText: at };
   if (at === text) return { ...base, status: "same", newLine: n, via: "no unique neighbour" };
@@ -614,11 +718,17 @@ export function rangeFate(old, head, [a, b], oldIdx = lineIndex(old), headIdx = 
 const rangeKey = (r) => (r ? `${r[0]}-${r[1]}` : "file");
 const rangeText = (r) => (r ? (r[0] === r[1] ? `:${r[0]}` : `:${r[0]}-${r[1]}`) : "(file)");
 
-/** The report: { file, row, tree, head, skipped, files: [{ path, citations }], unknown, unchecked, unattributed, unlisted, summary, drifted }. */
+/**
+ * The report: { file, row, tree, head, skipped, skippedParts, files: [{ path, citations }], unknown, unchecked,
+ * unattributed, unlisted, summary, drifted }.
+ */
 export function buildReport({ root, file, text, row = null, tree, head }) {
   const resolver = makeResolver(tree.paths);
   const only = row ? new Set([row.line]) : null;
-  const { refs, skipped } = scanCitations(text, resolver, { only });
+  const scanned = scanCitations(text, resolver, { only });
+  const { skipped, skippedParts: parts } = scanned;
+  // A binary file (colony.db) has no lines: its cited lines are listed as not checked, never compared as text.
+  const refs = scanned.refs.map((r) => (r.kind === "file" && r.range && tree.isBinary(r.path) ? { ...r, kind: "unchecked", name: r.path, via: "binary at --tree" } : r));
 
   const group = (list, keyOf, make) => {
     const map = new Map();
@@ -648,7 +758,7 @@ export function buildReport({ root, file, text, row = null, tree, head }) {
     const headIdx = lineIndex(now);
     for (const c of citations) {
       if (!present) Object.assign(c, { status: "gone", offset: null, newPointer: null, lines: c.range ? rangeLines(c.range).map((n) => ({ line: n, status: "gone", oldText: old[n - 1] ?? null })) : [] });
-      else if (!c.range) Object.assign(c, { status: "same", offset: 0, newPointer: path, lines: [] });
+      else if (!c.range) Object.assign(c, { status: "present", offset: 0, newPointer: path, lines: [] });
       else Object.assign(c, rangeFate(old, now, c.range, oldIdx, headIdx));
     }
     citations.sort((x, y) => (x.range?.[0] ?? 0) - (y.range?.[0] ?? 0) || (x.range?.[1] ?? 0) - (y.range?.[1] ?? 0));
@@ -658,18 +768,20 @@ export function buildReport({ root, file, text, row = null, tree, head }) {
 
   const unknown = group(refs.filter((r) => r.kind === "unknown"), (r) => `${r.name}\0${rangeKey(r.range)}`, (r) => ({ name: r.name, candidates: r.candidates, status: "unknown path", ...fresh(r) }));
   const unchecked = group(refs.filter((r) => r.kind === "unchecked"), (r) => `${r.name}\0${rangeKey(r.range)}`, (r) => ({ name: r.name, status: "not checked", ...fresh(r) }));
-  const unattributed = group(refs.filter((r) => r.kind === "unattributed"), (r) => rangeKey(r.range), (r) => ({ status: "unattributed", ...fresh(r) }));
+  const unattributed = group(refs.filter((r) => r.kind === "unattributed"), (r) => `${rangeKey(r.range)}\0${r.via ?? ""}`, (r) => ({ status: "unattributed", ...fresh(r) }));
   const unlisted = group(refs.filter((r) => r.kind === "unlisted"), (r) => r.name, (r) => ({ name: r.name, candidates: r.candidates, ...fresh(r) }));
 
   const all = fileGroups.flatMap((g) => g.citations);
-  const citations = Object.fromEntries([...SEVERITY, "unknown path"].map((s) => [s, 0]));
+  const citations = Object.fromEntries(["same", "present", ...SEVERITY.slice(1), "unknown path"].map((s) => [s, 0]));
   const lineCounts = Object.fromEntries(SEVERITY.map((s) => [s, 0]));
   for (const c of all) {
     citations[c.status] += 1;
     for (const l of c.lines) lineCounts[l.status] += 1;
   }
   citations["unknown path"] = unknown.length;
-  const drifted = all.some((c) => DRIFT.includes(c.status)) || unknown.length > 0;
+  // A citation drifted when it, or one of its lines, did: a range that runs past the file's end is "invalid" as a
+  // whole, yet the lines it does have may have moved.
+  const drifted = all.some((c) => DRIFT.includes(c.status) || c.lines.some((l) => DRIFT.includes(l.status))) || unknown.length > 0;
   const plain = (g) => ({ ...g, citedAt: [...g.citedAt].sort((a, b) => a - b), written: [...g.written], via: [...g.via] });
   return {
     file,
@@ -677,6 +789,7 @@ export function buildReport({ root, file, text, row = null, tree, head }) {
     tree: { ref: tree.ref, sha: tree.sha },
     head: { ref: head.ref, sha: head.sha },
     skipped,
+    skippedParts: parts,
     files: fileGroups.map((g) => ({ path: g.path, citations: g.citations.map(plain) })),
     unknown: unknown.map(plain),
     unchecked: unchecked.map(plain),
@@ -715,15 +828,20 @@ function statusText(c) {
   return c.status;
 }
 
-/** A range's lines as runs of one status and offset; each changed, ambiguous or invalid line alone. */
+/**
+ * A range's lines as runs of one status and offset, each counting the lines in it that its neighbours placed, and
+ * the ones placed the same for want of any (`placedBy`); each changed, ambiguous or invalid line alone.
+ */
 function lineRuns(lines) {
   const runs = [];
   for (const l of lines) {
     const off = l.newLine === undefined ? null : l.newLine - l.line;
     const last = runs[runs.length - 1];
     const joinable = ["same", "moved", "invalid"].includes(l.status) && last && last.status === l.status && last.offset === off && last.to === l.line - 1;
+    const run = joinable ? last : { from: l.line, to: l.line, status: l.status, offset: off, line: l, placedBy: {} };
     if (joinable) last.to = l.line;
-    else runs.push({ from: l.line, to: l.line, status: l.status, offset: off, line: l });
+    else runs.push(run);
+    if (l.via) run.placedBy[l.via] = (run.placedBy[l.via] ?? 0) + 1;
   }
   return runs;
 }
@@ -733,7 +851,11 @@ function detail(run) {
   const span = run.from === run.to ? `:${run.from}` : `:${run.from}-${run.to}`;
   if (run.status === "same" || run.status === "moved") {
     const to = rangeText([run.from + run.offset, run.to + run.offset]);
-    return [`↳ ${span}`, "", run.status === "same" ? "same" : `moved ${run.offset > 0 ? "+" : ""}${run.offset}`, `${to}${l.via ? ` (by its neighbours)` : ""}`];
+    const size = run.to - run.from + 1;
+    const how = Object.entries(run.placedBy)
+      .map(([by, n]) => (by === "neighbours" ? (size === 1 ? "by its neighbours" : `${n} of ${size} by their neighbours`) : size === 1 ? by : `${n} of ${size}: ${by}`))
+      .join("; ");
+    return [`↳ ${span}`, "", run.status === "same" ? "same" : `moved ${run.offset > 0 ? "+" : ""}${run.offset}`, `${to}${how ? ` (${how})` : ""}`];
   }
   if (run.status === "changed") return [`↳ ${span}`, "", "changed", `was ${quote(l.oldText)}; now :${l.line} is ${quote(l.headText)}`];
   if (run.status === "ambiguous") {
@@ -753,12 +875,15 @@ export function formatText(report) {
   out.push(
     `brief-drift: ${report.file}${report.row ? ` row ${report.row.n} (line ${report.row.line})` : ""} — tree ${report.tree.ref} (${short(report.tree.sha)}) → head ${report.head.ref} (${short(report.head.sha)})`,
   );
-  if (report.skipped.length) out.push(`Skipped ${report.skipped.length} drift-note line(s): ${pointer(report.skipped)}.`);
+  if (report.skipped.length) {
+    const what = (p) => (p.kind === "note" ? `a drift note at :${p.line}` : `${p.lead} at :${p.line}`);
+    out.push(`Skipped ${report.skipped.length} line(s) written against other trees (drift notes, pointer-housekeeping sections): ${pointer(report.skipped)}${report.skippedParts.length ? ` — ${report.skippedParts.map(what).join("; ")}` : ""}.`);
+  }
   for (const g of report.files) {
     out.push("", `### ${g.path}`, "");
     const rows = [];
     for (const c of g.citations) {
-      const via = c.via.length ? ` (via ${c.via.join(", ")})` : "";
+      const via = c.via.length ? ` (via ${c.via.join("; ")})` : "";
       rows.push([`${rangeText(c.range)}${via}`, citedAt(report.file, c.citedAt), statusText(c), c.newPointer ?? "—"]);
       // A range that did not move as one, and a line that is not placed, get their lines.
       if (c.offset === null && c.status !== "gone") for (const run of lineRuns(c.lines)) rows.push(detail(run));
@@ -774,12 +899,12 @@ export function formatText(report) {
     );
   }
   if (report.unchecked.length) {
-    out.push("", "### not checked (a short name with no file in the tree)", "");
-    out.push(...table(report.unchecked.map((u) => [`${u.name}${rangeText(u.range)}`, citedAt(report.file, u.citedAt), "not checked", "—"])));
+    out.push("", "### not checked (a short name with no file in the tree, or a line of a binary file)", "");
+    out.push(...table(report.unchecked.map((u) => [`${u.name}${rangeText(u.range)}`, citedAt(report.file, u.citedAt), u.via.includes("binary at --tree") ? "not checked (binary at --tree)" : "not checked", "—"])));
   }
   if (report.unattributed.length) {
-    out.push("", "### unattributed (a line reference after no name in its paragraph)", "");
-    out.push(...table(report.unattributed.map((u) => [rangeText(u.range), citedAt(report.file, u.citedAt), "unattributed", "—"])));
+    out.push("", "### unattributed (a line reference after no name in its paragraph, or after a possessive that is no file's)", "");
+    out.push(...table(report.unattributed.map((u) => [`${rangeText(u.range)}${u.via.length ? ` (${u.via.join("; ")})` : ""}`, citedAt(report.file, u.citedAt), "unattributed", "—"])));
   }
   if (report.unlisted.length) {
     out.push("", `Named without a line and not one file of the tree (not checked): ${report.unlisted.map((u) => `${u.name} (${citedAt(report.file, u.citedAt, 3)})`).join("; ")}.`);
@@ -805,11 +930,17 @@ export function parseCli(argv) {
       allowPositionals: true,
       strict: true,
       options: { tree: { type: "string" }, head: { type: "string" }, row: { type: "string" }, json: { type: "boolean" }, help: { type: "boolean", short: "h" } },
+      tokens: true,
     });
   } catch (err) {
     throw new UsageError(err.message);
   }
-  const { values, positionals } = parsed;
+  const { values, positionals, tokens } = parsed;
+  // parseArgs keeps the last of a repeated option: `--row 28 --row 29` would read row 29 and say nothing.
+  for (const name of ["tree", "head", "row"]) {
+    const n = tokens.filter((t) => t.kind === "option" && t.name === name).length;
+    if (n > 1) throw new UsageError(`--${name} is given ${n} times; give it once`);
+  }
   if (values.help) return { help: true };
   if (positionals.length !== 1) throw new UsageError(positionals.length ? `one citing file, not ${positionals.length}` : "no citing file");
   if (values.row !== undefined && !/^\d+$/.test(values.row)) throw new UsageError(`--row is a row number: ${values.row}`);

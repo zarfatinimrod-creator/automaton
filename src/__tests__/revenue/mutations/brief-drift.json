@@ -2,8 +2,8 @@
   {
     "id": "T70-B1",
     "file": "scripts/brief-drift.mjs",
-    "find": "const drifted = all.some((c) => DRIFT.includes(c.status)) || unknown.length > 0;",
-    "replace": "const drifted = all.some((c) => DRIFT.includes(c.status));",
+    "find": "const drifted = all.some((c) => DRIFT.includes(c.status) || c.lines.some((l) => DRIFT.includes(l.status))) || unknown.length > 0;",
+    "replace": "const drifted = all.some((c) => DRIFT.includes(c.status) || c.lines.some((l) => DRIFT.includes(l.status)));",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
     "note": "tick 70 B1: an unknown path is no longer drift: a brief citing only `nope/x.ts:3` exits 0"
   },
@@ -34,7 +34,7 @@
   {
     "id": "T70-B5",
     "file": "scripts/brief-drift.mjs",
-    "find": "    if (at === text) return { ...base, status: \"same\", newLine: n };",
+    "find": "    if (at === text && hits.length === 1) return { ...base, status: \"same\", newLine: n };",
     "replace": "    if (false) return { ...base, status: \"same\", newLine: n };",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
     "note": "tick 70 B5: a line at its own number is no longer same (it becomes moved to its own line)"
@@ -178,8 +178,8 @@
   {
     "id": "T70-B23",
     "file": "scripts/brief-drift.mjs",
-    "find": "if (/^['’]s/.test(rest) && !/^['’]s\\s*\\(?`?:L?\\d/.test(rest) && !sentenceStart(lines, i, m.index)) continue;",
-    "replace": "if (false) continue;",
+    "find": "const describes = (rest, li, at) => /^['’]s/.test(rest) && !/^['’]s(?:\\s+own)?\\s*\\(?`?:L?\\d/.test(rest) && !sentenceStart(lines, li, at);",
+    "replace": "const describes = () => false;",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
     "note": "tick 70 B23: a describing possessive (\"the ledger's rule (`:271`)\") owns the line after it"
   },
@@ -394,8 +394,8 @@
   {
     "id": "T70-B50",
     "file": "scripts/brief-drift.mjs",
-    "find": "export const BARE_RE = /(?<![A-Za-z0-9_./-]):L?",
-    "replace": "export const BARE_RE = /:L?",
+    "find": "export const BARE_RE = /(?:(?<![A-Za-z0-9_./-])|(?<=\\d\\/)):L?",
+    "replace": "export const BARE_RE = /(?:|(?<=\\d\\/)):L?",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
     "note": "tick 70 B50: a time (07:11) is read as a bare line reference"
   },
@@ -434,9 +434,417 @@
   {
     "id": "T70-B55",
     "file": "scripts/brief-drift.mjs",
-    "find": "return { refs: only ? refs.filter((r) => only.has(r.docLine)) : refs, skipped };",
-    "replace": "return { refs, skipped };",
+    "find": "return { refs: only ? refs.filter((r) => only.has(r.docLine)) : refs, skipped, skippedParts: skippedLeads };",
+    "replace": "return { refs, skipped, skippedParts: skippedLeads };",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
     "note": "tick 70 B55: --row reads the whole document"
+  },
+  {
+    "id": "T70F-1",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (at === text && hits.length === 1) return",
+    "replace": "if (at === text) return",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, BLOCKING-1: a repeated line at its own number is 'same' again (data/rep.json:7 stays :7, not :11)"
+  },
+  {
+    "id": "T70F-2",
+    "file": "scripts/brief-drift.mjs",
+    "find": "  if (!generic && at === text && offsets.length === 0) return { ...base, status: \"same\", newLine: n, via: \"no unique neighbour\" };\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: a repeated line with no unique neighbour anywhere is ambiguous, not same at its own number"
+  },
+  {
+    "id": "T70F-3",
+    "file": "scripts/brief-drift.mjs",
+    "find": "export const DRIFT = [\"moved\", \"ambiguous\", \"changed\", \"gone\", \"unknown path\"];",
+    "replace": "export const DRIFT = [\"moved\", \"ambiguous\", \"changed\", \"gone\", \"invalid\", \"unknown path\"];",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, note 4: invalid is drift again (a brief citing only `b.md:40` exits 3)"
+  },
+  {
+    "id": "T70F-4",
+    "file": "scripts/brief-drift.mjs",
+    "find": " || c.lines.some((l) => DRIFT.includes(l.status))",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: a range invalid as a whole whose other lines moved or changed is no drift"
+  },
+  {
+    "id": "T70F-5",
+    "file": "scripts/brief-drift.mjs",
+    "find": "status: \"present\", offset: 0",
+    "replace": "status: \"same\", offset: 0",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, note 5: a whole-file citation says 'same' again"
+  },
+  {
+    "id": "T70F-6",
+    "file": "scripts/brief-drift.mjs",
+    "find": "r.range && tree.isBinary(r.path) ?",
+    "replace": "r.range && false ?",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, note 7: a binary file's lines are compared as text"
+  },
+  {
+    "id": "T70F-7",
+    "file": "scripts/brief-drift.mjs",
+    "find": "subarray(0, 8000).includes(0)",
+    "replace": "subarray(0, 8).includes(0)",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: only the first 8 bytes are looked at for a NUL (the fixture's is at byte 15)"
+  },
+  {
+    "id": "T70F-8",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (n > 1) throw new UsageError",
+    "replace": "if (n > 2) throw new UsageError",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, note 8: --row 7 --row 8 reads row 8 silently"
+  },
+  {
+    "id": "T70F-9",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if ((boundary(line) && !heading) || skip.has(docLine)) return;",
+    "replace": "if (boundary(line) || skip.has(docLine)) return;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, note 1: headings are not read"
+  },
+  {
+    "id": "T70F-10",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (row || heading) {\n      ctx = null;",
+    "replace": "    if (row) {\n      ctx = null;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: a heading's name carries to the line under it"
+  },
+  {
+    "id": "T70F-11",
+    "file": "scripts/brief-drift.mjs",
+    "find": "(?:(?<![A-Za-z0-9_./-])|(?<=\\d\\/))",
+    "replace": "(?:(?<![A-Za-z0-9_./-]))",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, note 2: the :578 of OTA:576/:578 is missed"
+  },
+  {
+    "id": "T70F-12",
+    "file": "scripts/brief-drift.mjs",
+    "find": "via = row ? (owner.via ?? null) : [owner.via, `carried from :${owner.docLine}`].filter(Boolean).join(\", \");",
+    "replace": "via = owner.via ?? null;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, BLOCKING-2: a bare line carried from an earlier line says nothing of it"
+  },
+  {
+    "id": "T70F-13",
+    "file": "scripts/brief-drift.mjs",
+    "find": "        if (!named) {\n",
+    "replace": "        if (false) {\n",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, BLOCKING-2: a line after 'the script's' goes to the last name"
+  },
+  {
+    "id": "T70F-14",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const named = here && !here.lined && (",
+    "replace": "const named = here && (",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: a line after `CHANNEL_LOOP.md:395`'s is given to CHANNEL_LOOP.md"
+  },
+  {
+    "id": "T70F-15",
+    "file": "scripts/brief-drift.mjs",
+    "find": "(here.end > apostrophe ? here.start < apostrophe :",
+    "replace": "(here.end > apostrophe ? false :",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: 'the note's (`:7`)' is unattributed"
+  },
+  {
+    "id": "T70F-16",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const POSSESSIVE_RE = /(\\S+?)['’]s(?:\\s+own)?\\s*\\(?`?$/;",
+    "replace": "const POSSESSIVE_RE = /(\\S+?)['’]s\\s*\\(?`?$/;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: 'the page's own `:7`' goes to the last name"
+  },
+  {
+    "id": "T70F-17",
+    "file": "scripts/brief-drift.mjs",
+    "find": "!/^['’]s(?:\\s+own)?\\s*\\(?`?:L?\\d/.test(rest)",
+    "replace": "!/^['’]s\\s*\\(?`?:L?\\d/.test(rest)",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, BLOCKING-2: 'the document's own `:26`' is not the document's"
+  },
+  {
+    "id": "T70F-18",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      if (!joinable) continue;\n",
+    "replace": "      continue;\n",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, BLOCKING-2: a phrase broken over two lines ('the⏎read-back') is missed"
+  },
+  {
+    "id": "T70F-19",
+    "file": "scripts/brief-drift.mjs",
+    "find": "!row && !heading && !boundary(lines[i - 1]) &&",
+    "replace": "!row && !heading &&",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: a phrase is joined across a heading"
+  },
+  {
+    "id": "T70F-20",
+    "file": "scripts/brief-drift.mjs",
+    "find": "export const HOUSEKEEPING_RE = /pointer drift|\\bcorrect(?:ions?|ed)\\b/i;",
+    "replace": "export const HOUSEKEEPING_RE = /\\bcorrect(?:ions?|ed)\\b/i;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer, BLOCKING-2: a '*…pointer drift*' section is read"
+  },
+  {
+    "id": "T70F-21",
+    "file": "scripts/brief-drift.mjs",
+    "find": "\\bcorrect(?:ions?|ed)\\b/i;",
+    "replace": "\\bcorrect(?:ions?)\\b/i;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: a '*Pointers this brief corrected*' section is read"
+  },
+  {
+    "id": "T70F-22",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      inSection = false;\n      return;\n",
+    "replace": "      return;\n",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: a heading does not end a housekeeping section"
+  },
+  {
+    "id": "T70F-23",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      inSection = HOUSEKEEPING_RE.test(lead[2]);",
+    "replace": "      inSection = inSection || HOUSEKEEPING_RE.test(lead[2]);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: another lead does not end a housekeeping section"
+  },
+  {
+    "id": "T70F-24",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const LEAD_RE = /^(\\*\\*?)",
+    "replace": "const LEAD_RE = /^(\\*\\*)",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: an italic lead opens no section"
+  },
+  {
+    "id": "T70F-25",
+    "file": "scripts/brief-drift.mjs",
+    "find": "via: m[0], ownsLines: Boolean(t.path) });",
+    "replace": "via: m[0], ownsLines: true });",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: a phrase for a file the tree lacks ('the analytics output') owns the line beside it"
+  },
+  {
+    "id": "T70F-26",
+    "file": "scripts/brief-drift.mjs",
+    "find": "via: words, ownsLines: Boolean(t.path) });",
+    "replace": "via: words, ownsLines: true });",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: the same for a phrase broken over two lines"
+  },
+  {
+    "id": "T70F-27",
+    "file": "scripts/brief-drift.mjs",
+    "find": "via: own ? null : m[1], ownsLines: Boolean(t.path) };",
+    "replace": "via: own ? null : m[1], ownsLines: true };",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: the same for a short name ('OUT (`:6`)')"
+  },
+  {
+    "id": "T70F-28",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const owners = marks.filter((k) => k.ownsLines !== false);",
+    "replace": "const owners = marks;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: names that own no line are owners after all"
+  },
+  {
+    "id": "T70F-29",
+    "file": "scripts/brief-drift.mjs",
+    "find": "${report.skippedParts.length ? ` — ${report.skippedParts.map(what).join(\"; \")}` : \"\"}",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: the skipped line does not say which notes and sections"
+  },
+  {
+    "id": "T70F-30",
+    "file": "scripts/brief-drift.mjs",
+    "find": "u.via.includes(\"binary at --tree\") ? \"not checked (binary at --tree)\" : \"not checked\"",
+    "replace": "\"not checked\"",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: a binary file's line is not marked as such"
+  },
+  {
+    "id": "T70F-31",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (l.via) run.placedBy[l.via] = (run.placedBy[l.via] ?? 0) + 1;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer (the review's R16): a run does not say how many of its lines its neighbours placed"
+  },
+  {
+    "id": "T70F-32",
+    "file": "scripts/brief-drift.mjs",
+    "find": "`${n} of ${size} by their neighbours`",
+    "replace": "`by their neighbours`",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 fixer: the count of neighbour-placed lines in a run is dropped"
+  },
+  {
+    "id": "T70F-R1",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (w) error(",
+    "replace": "if (false) error(",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R1 (survived the build's tests): no --tree with --row: the last-writer line never printed"
+  },
+  {
+    "id": "T70F-R2",
+    "file": "scripts/brief-drift.mjs",
+    "find": "for (const h of treeHints(header)) error(",
+    "replace": "for (const h of []) error(",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R2 (survived the build's tests): no --tree with --row: the row's brief's header hints never printed"
+  },
+  {
+    "id": "T70F-R3",
+    "file": "scripts/brief-drift.mjs",
+    "find": "map((l) => (l.endsWith(\"\\r\") ? l.slice(0, -1) : l))",
+    "replace": "map((l) => l)",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R3 (survived the build's tests): CRLF lines keep their \\r"
+  },
+  {
+    "id": "T70F-R4",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (lines.length && lines[lines.length - 1] === \"\") lines.pop();",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R4 (survived the build's tests): the final newline makes one more (empty) line"
+  },
+  {
+    "id": "T70F-R5",
+    "file": "scripts/brief-drift.mjs",
+    "find": "else if (ch === \"“\" && start < 0) start = i;",
+    "replace": "else if (false) start = i;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R5 (survived the build's tests): curly quotes open no quotation"
+  },
+  {
+    "id": "T70F-R6",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const skipped = [...parts.lines].filter((n) => !only || only.has(n)).sort((a, b) => a - b);",
+    "replace": "const skipped = [...parts.lines].sort((a, b) => a - b);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R6 (survived the build's tests): --row lists drift-note lines outside the row"
+  },
+  {
+    "id": "T70F-R7",
+    "file": "scripts/brief-drift.mjs",
+    "find": "else refs.push({ kind: \"unlisted\"",
+    "replace": "else void ({ kind: \"unlisted\"",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R7 (survived the build's tests): path-like names without a line not in the tree are dropped"
+  },
+  {
+    "id": "T70F-R8",
+    "file": "scripts/brief-drift.mjs",
+    "find": "return (list.filter((d) => d.index <= index).pop() ?? list[0]).target;",
+    "replace": "return list[0].target;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R8 (survived the build's tests): a redefined short name keeps its first definition"
+  },
+  {
+    "id": "T70F-R9",
+    "file": "scripts/brief-drift.mjs",
+    "find": "tree at|read at|",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R9 (survived the build's tests): the two real briefs' header phrases (tree at, read at) are no hint"
+  },
+  {
+    "id": "T70F-R10",
+    "file": "scripts/brief-drift.mjs",
+    "find": "last.offset === off && ",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R10 (survived the build's tests): a range's detail runs join lines of different offsets"
+  },
+  {
+    "id": "T70F-R11",
+    "file": "scripts/brief-drift.mjs",
+    "find": "function citedAt(file, lines, max = 12)",
+    "replace": "function citedAt(file, lines, max = 1)",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R11 (survived the build's tests): cited-at list truncated after one"
+  },
+  {
+    "id": "T70F-R12",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (name.endsWith(\"/\") || resolver.isDir(name)) continue;",
+    "replace": "if (name.endsWith(\"/\")) continue;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R12 (survived the build's tests): a directory named without a slash becomes an unknown path"
+  },
+  {
+    "id": "T70F-R13",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (!resolver.has(full)) continue;",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R13 (survived the build's tests): 'are under' defines names for files the tree lacks"
+  },
+  {
+    "id": "T70F-R14",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (row) look(row.line - 1);",
+    "replace": "if (row) look(0);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R14 (survived the build's tests): --row hints read line 1, not the row"
+  },
+  {
+    "id": "T70F-R15",
+    "file": "scripts/brief-drift.mjs",
+    "find": "${c.status === \"moved\" ? \", several offsets\" : \"\"}",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R15 (survived the build's tests): the several-offsets words dropped"
+  },
+  {
+    "id": "T70F-R17",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (!row) prevOut = !line.trim() && !skip.has(docLine) ? ctxOut : null;",
+    "replace": "if (!row) prevOut = ctxOut;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R17 (survived the build's tests): a heading between a paragraph and a table no longer stops the caption"
+  },
+  {
+    "id": "T70F-R18",
+    "file": "scripts/brief-drift.mjs",
+    "find": "|| i === 0) return true;",
+    "replace": ") return true;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R18 (survived the build's tests): line 1 of a document starts no sentence"
+  },
+  {
+    "id": "T70F-R19",
+    "file": "scripts/brief-drift.mjs",
+    "find": "lines: c.range ? rangeLines(c.range).map((n) => ({ line: n, status: \"gone\", oldText: old[n - 1] ?? null })) : []",
+    "replace": "lines: []",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R19 (survived the build's tests): a gone file's cited lines are not counted"
+  },
+  {
+    "id": "T70F-R20",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (!lined && !/[./]/.test(name)) continue;",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 70 review's R20 (survived the build's tests): a bare word that is a file name (no dot, no slash) becomes a whole-file citation"
   }
 ]
