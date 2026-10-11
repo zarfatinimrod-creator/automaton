@@ -150,3 +150,34 @@
 - הרצת כל 176 רשומות התוכנית כדי לבדוק 20 חדשות (ראו 7).
 - פלט `--check` של 176 שורות שהודפס פעמיים.
 - שלוש פקודות שהרתמה סירבה להן ונכתבו מחדש.
+
+## תיקונים אחרי הסקירה
+
+הסוקר לא מצא ממצא BLOCKING, ומצא חמש הערות. התיקונים בקומיט `62514ab`.
+
+- **הערה 1 (תוקנה).** הבדיקה "adds capitax.co.il alone… moves no other entry" חזרה מוקדם (`if (base === null) return;`) בכל
+  מקום ש-`00d35bc` לא נגיש, כולל בתוך `sim-tree.sh`, ולכן בריצת התוכנית לא בדקה דבר. עכשיו היא בונה מחדש את קובץ הבסיס
+  מהקובץ החי: הרשומה מוצאת (`cx69Before`), הקובץ נקרא לפני כל `--recheck` (`verdictsOf`) ונכתב ב-`serializeVerdicts`. את
+  התוצאה היא משווה ל-sha256 נעוץ, `CX69_BASE_SHA256`, שהוא ה-sha256 של הקובץ ב-`00d35bc`. כשהבסיס נגיש היא גם בודקת את
+  הנעיצה מולו ומשווה רשומה מול רשומה, כדי שכשל יציין איזו רשומה זזה.
+  - נוספו שתי מוטציות: `T69-CX21-other-entry` (משנה את ההערה של ypay.co.il) ו-`T69-CX22-about` (משנה את `_about`).
+  - על `5e01d1d`, בתוך sim-tree, שתיהן שרדו. זו הייתה ריצת בדיקה מתוכנית זמנית ב-scratch, רק כדי להראות את הפער; התיעוד
+    הוא התוכנית שבקומיט. אחרי התיקון שתיהן נהרגו.
+  - הבדיקה של טיק 68 חוזרת מוקדם באותה צורה. לא נגעתי בה: היא ירושה ומחוץ ל-13(d), ולכן היא פריט לחוט הראשי.
+- **הערה 4 (תוקנה בחלקה).** המשפט על GitHub Actions בהערת הרשומה קיבל תאריך: "(on 11.10 GitHub Actions had been disabled on
+  the repository since about 8.10, so no run was due then)". כך הוא יישאר נכון גם כש-Actions יחזור. הבדיקה ב-
+  `capitax-terms.test.ts` עודכנה איתו. המשפט "the reading goes to the main thread" נשאר: הוא לא שגוי, והסוקר כתב שאינו מזיק.
+- **הערה 2 (נדחתה).** תיקון פענוח ה-charset ב-render-watch הוא פריט נפרד, ו-13(d) לא מבקש אותו. ההערה ברשומה מזהירה, ו-
+  `capitax-terms.test.ts` ייכשל כש-render-watch יתחיל לפענח charset אחר (`not.toMatch(/TextDecoder|windows-1255|iconv/)`),
+  כך שההזהרה והקוד נשארים קשורים.
+- **הערה 3 (של החוט הראשי).** `mutations/README.md` לא נערך. זמן הריצה לטבלה:
+  - `robots-verdict.json`: 178 רשומות, טיק 69.
+  - ריצה מלאה בתוך sim-tree.sh, כולל הקמת העץ: 14:52:22 עד 15:13:19 UTC, כלומר כ-1,257 שניות.
+  - בזמן הריצה לא רצה עבודה אחרת בסשן הזה.
+  - 18 קווי הבסיס (9 לפני ו-9 אחרי) יצאו כולם exit 0.
+- **הערה 5 (לחוט הראשי).** את שתי הרשומות של `terms-capitax`, ב-`LIVE_MENTIONS` וב-`NOT_CAPTURES` של
+  `frozen-citations.test.ts`, מסירים בקיפול שקורא את ה-render, כמתוכנן.
+- **ולידציה, לפי קודי יציאה:**
+  - `node scripts/mutate.mjs --check --plan src/__tests__/revenue/mutations/robots-verdict.json` → exit 0, 178 מתוך 178.
+  - התוכנית המלאה ב-`scripts/sim-tree.sh` → exit 0: "178 applied: 178 killed, 0 survived, 0 killed?, 0 timeout".
+  - `scripts/verify.sh` → exit 0: typecheck 0, 82 קבצים, 2969 עברו ו-2 דולגו.
