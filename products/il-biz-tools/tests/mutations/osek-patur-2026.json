@@ -42,5 +42,19 @@
   { "id": "T68-OP21", "file": "products/il-biz-tools/src/config/osek-patur-unverified.json", "find": "\"verified\": false,", "replace": "\"verified\": true,",
     "note": "decision 2(7): the file holding the 2026 amount says it is not verified (osek-patur-page.test.js)" },
   { "id": "T68-OP22", "file": "products/il-biz-tools/osek-patur.html", "find": "</a> (עותק באתר capitax.co.il) · נבדק: 29.9.2026</p>", "replace": "</a> · נבדק: 29.9.2026</p>",
-    "note": "decision 2(5): the visible source line names the copy's host, exactly as the builder writes it (statutory-sources.test.js; the gate's #ceiling-source check in ai-declaration.test.js)" }
+    "note": "decision 2(5): the visible source line names the copy's host, exactly as the builder writes it (statutory-sources.test.js; the gate's #ceiling-source check in ai-declaration.test.js)" },
+  { "id": "T68R-X1", "file": "products/il-biz-tools/src/config/osek-patur.json", "find": " את הסכום המעודכן יש לבדוק באתר רשות המסים.\",", "replace": "\",",
+    "note": "review X1: the pending sentence loses decision 2(2)'s pointer to the Tax Authority; the page and the FAQ still contain the shorter text (osek-patur-page.test.js, the sentence pinned to the ruling's words)" },
+  { "id": "T68R-X2", "file": "products/il-biz-tools/src/config/osek-patur-unverified.json", "find": "Wikisource may corroborate beside such a text, never replace it", "replace": "Wikisource may replace such a text",
+    "note": "review X2: toVerify is no longer osek-zair-unverified.json's verbatim (decision 2(7); osek-patur-page.test.js)" },
+  { "id": "T68R-X3", "file": "products/il-biz-tools/osek-patur.html", "find": "<meta property=\"og:title\" content=\"מעקב תקרת עוסק פטור\">", "replace": "<meta property=\"og:title\" content=\"מעקב תקרת עוסק פטור 2026\">",
+    "note": "review X3: the social title advertises the year the tracker refuses (osek-patur-page.test.js, the head)" },
+  { "id": "T68R-X4", "file": "products/il-biz-tools/src/config/osek-patur-unverified.json", "find": "; the one capture in the store that states it is nevo [robots-bar] (ruling 6.10 row 21, decision 1)", "replace": "",
+    "note": "review X4: a clause of decision 2(7)'s grade dropped (osek-patur-page.test.js, the grade pinned to the ruling's words)" },
+  { "id": "T68R-X5", "file": "products/il-biz-tools/osek-patur.html", "find": "<h1>מעקב תקרת עוסק פטור <span id=\"year\">2025</span></h1>", "replace": "<h1>מעקב תקרת עוסק פטור <span id=\"year\">2026</span></h1>",
+    "note": "review X5: the heading opens on the pending year before the script runs (osek-patur-page.test.js, the heading's default year)" },
+  { "id": "T68R-X6", "file": "products/il-biz-tools/index.html", "find": "מעקב תקרת עוסק פטור, אומדן שכר נטו", "replace": "מעקב תקרת עוסק פטור 2026, אומדן שכר נטו",
+    "note": "review note 1: the home page's description advertises a 2026 tracker again (statutory-sources.test.js, index.html)" },
+  { "id": "T68R-X7", "file": "products/il-biz-tools/README.md", "find": "| Surtax (מס יסף) | 3% above ₪721,560/yr — **not modelled** | n/a | same |", "replace": "| Surtax (מס יסף) | 3% above ₪721,560/yr — **not modelled** | n/a | same (122,833) |",
+    "note": "review note 7: the amount on a README table row other than the two unverified rows (decision 2(9); osek-zair.test.js, the README lines)" }
 ]

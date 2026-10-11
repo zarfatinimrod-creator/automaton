@@ -248,5 +248,29 @@
     "replace": "(true",
     "test": "src/__tests__/revenue/trim-capture.test.ts",
     "note": "tick 56 review fixer: freeze-capture tells a route capture to be frozen from a commit that does not exist (review finding 3)"
+  },
+  {
+    "id": "T68F-1",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "[NAMED_RE, OTHER_FILE_RE, NOTE_RE, RULING_NAME_RE]",
+    "replace": "[NAMED_RE, OTHER_FILE_RE, NOTE_RE]",
+    "test": "src/__tests__/revenue/frozen-citations.test.ts",
+    "note": "tick 68 fold fixer: a ruling's short name owns no line, so ruling 11.10 row 27's \"(ROBOTS-RULING `:152-154`)\" cites the live robots-nevo capture by line again (the real-file test and the unit test)"
+  },
+  {
+    "id": "T68F-2",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "-RULING(?![A-Za-z0-9_-])/g;",
+    "replace": "-RULING/g;",
+    "test": "src/__tests__/revenue/frozen-citations.test.ts",
+    "note": "tick 68 fold fixer: ROBOTS-RULINGS, a longer word, is taken for the ruling's short name and keeps a capture's line"
+  },
+  {
+    "id": "T68F-3",
+    "file": "scripts/freeze-capture.mjs",
+    "find": "-RULING(?![A-Za-z0-9_-])/g;",
+    "replace": "-RULING(?![A-Za-z0-9_-])/gi;",
+    "test": "src/__tests__/revenue/frozen-citations.test.ts",
+    "note": "tick 68 fold fixer: a lower-case robots-ruling is taken for the ruling's short name and keeps a capture's line"
   }
 ]

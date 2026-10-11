@@ -1282,3 +1282,49 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     expect(found).toEqual([]);
   });
 });
+
+describe("the osek patur ceiling in the owner's documents keeps its grade (ruling 11.10 row 27, decision 4)", () => {
+  // research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md decision 4(2)-(3): the owner's documents keep the 2026
+  // figure with "לפי מקורות משניים" in the same sentence, and "verified", "מאומת" or "נבדק" never stands beside it until
+  // a primary text is read (decision 3(1)). INCOME_PLAN.he.md:380 is a list of sources and stays as it is.
+  const income = fs.readFileSync(path.join(repoRoot, "docs/INCOME_PLAN.he.md"), "utf-8");
+  const AMOUNT = /122[,_\s]?833/;
+  /** The sentences that state the amount: a paragraph's (or list item's) lines joined, then split after ". " (not "11.10"). */
+  const sentencesWithAmount = (text: string) =>
+    text
+      .split(/\n\s*\n|\n(?=\s*(?:[-*]|\d+\.)\s)/)
+      .map((p) => p.trim().replace(/\s*\n\s*/g, " "))
+      .flatMap((p) => p.split(/(?<=\.)\s+/))
+      .filter((s) => AMOUNT.test(s));
+  /** A grade word as a word: "נבדקה" (the registered-mail cost) and "unverified" are other words. */
+  const GRADE_WORD = /(?<![א-ת])(?:נבדק|מאומת)(?![א-ת])|\bverified\b/i;
+  const SOURCES_LINE = "- עוסק פטור 2026 — kolzchut.org.il/he/עוסק_פטור, mako.co.il (תקרה 122,833 ₪), icount.co.il/blog/osek-patur";
+
+  it("OWNER_STEPS.he.md carries decision 4(2)'s two texts word for word", () => {
+    const flat = doc.replace(/\s*\n\s*/g, " ");
+    expect(flat).toContain(
+      "מותר עד **₪122,833 בשנה** (הנתון ל-2026 לפי מקורות משניים בלבד; אף עמוד ממשלתי ולא טקסט ראשוני אחר נקרא מכאן, ולכן האתר שלנו כבר לא מדפיס אותו — פסיקת 11.10 — אז תאמת אותו במסך של רשות המסים).",
+    );
+    expect(flat).toContain("**לדעת מראש, לא לעשות עכשיו:** ₪122,833 בשנה (לפי מקורות משניים) ≈ ₪10,000 בחודש.");
+  });
+
+  it("INCOME_PLAN.he.md:115 carries decision 4(2)'s text, and the sources list keeps its line", () => {
+    expect(income).toContain("עוסק פטור — תקרה ₪122,833 לשנת 2026 (לפי מקורות משניים; טקסט ראשוני לא נקרא), רישום עצמאי");
+    expect(income.split("\n").filter((l) => l === SOURCES_LINE)).toHaveLength(1);
+  });
+
+  it("every sentence that states the amount says 'לפי מקורות משניים', and none says נבדק, מאומת or verified", () => {
+    const owner = sentencesWithAmount(doc);
+    const plan = sentencesWithAmount(income).filter((s) => s !== SOURCES_LINE);
+    expect(owner).toHaveLength(2);
+    expect(plan).toHaveLength(1);
+    for (const s of [...owner, ...plan]) {
+      expect(s).toContain("לפי מקורות משניים");
+      expect(s).not.toMatch(GRADE_WORD);
+    }
+    // The word check reads words, not substrings: the paragraph's "נבדקה" is not one, a bare "(נבדק)" is.
+    expect(GRADE_WORD.test("עוד לא נבדקה")).toBe(false);
+    expect(GRADE_WORD.test("₪122,833 (נבדק)")).toBe(true);
+    expect(GRADE_WORD.test("unverified")).toBe(false);
+  });
+});

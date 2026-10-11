@@ -226,6 +226,10 @@ describe('the pages', () => {
     const html = read('index.html');
     for (const figure of ['18%', '5,000']) expect(html).toContain(figure);
     expect(html).not.toMatch(/122[,_]?833/);
+    // The head does not advertise a 2026 tracker the page refuses to compute.
+    const description = /<meta name="description" content="([^"]*)"/.exec(html)[1];
+    expect(description).toContain('מעקב תקרת עוסק פטור,');
+    expect(description).not.toMatch(/פטור 2026/);
     const card = textOf(/<a class="card tool-card" href="osek-patur\.html"><h2>[^<]*<\/h2>([\s\S]*?)<\/a>/.exec(html)[1]);
     expect(card).toBe('הזינו הכנסות חודשיות וראו כמה נשאר עד תקרת עוסק פטור, עם התרעה מוקדמת. מחשב לשנות המס 2024 ו-2025; לשנת 2026 הדף אומר למה עוד לא.');
     for (const y of ['2024', '2025']) expect(card).toContain(y);
@@ -236,7 +240,10 @@ describe('the pages', () => {
     expect(textOf(note)).toBe('המקור של כל נתון, ומה נבדק בו ומתי, מופיע בדף הכלי שלו.');
   });
 
-  it('no other figure page, and not the home page, says "נבדק" beside a figure: no other config holds a read of its cited page', () => {
+  it('vat.html, allocation.html and the home page say no "נבדק" beside a figure: their configs hold no dated read of a page they cite', () => {
+    // Not "no other page": osek-zair.html has carried its own "נבדק: 29.9.2026" (the gazette read) since 29.9.2026, the
+    // read osek-patur.html's line now cites too.
+    expect(read('osek-zair.html')).toMatch(/נבדק: 29\.9\.2026/);
     for (const p of ['vat.html', 'allocation.html', 'index.html']) expect(read(p), p).not.toMatch(/נבדק: \d/);
   });
 

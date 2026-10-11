@@ -152,7 +152,11 @@ describe('ruling 6.10 row 21 (a): the [robots-bar] capture is no input, and 2026
     expect(patur[1].startsWith('| Osek patur ceiling 2026 | `122833` held in `src/config/osek-patur-unverified.json` and **never rendered or shipped** | **unverified — not published**')).toBe(true);
     expect(patur[0].startsWith('| Osek patur ceiling, tax years 2024 and 2025 | ₪120,000 (`src/config/osek-patur.json` `years`) | **read in a primary text** (third-party copy), 29.9.2026 |')).toBe(true);
     for (const l of patur) expect(l).not.toMatch(/nevo|נבו|kolzchut|Bizportal/i);
-    expect(lines.filter((l) => /122[,_]?833/.test(l) && !l.startsWith('| '))).toEqual([]);
+    // Decision 2(9): the amount stands on the two unverified rows and on no other line of the README.
+    expect(lines.filter((l) => /122[,_\s]?833/.test(l))).toEqual([
+      patur[1],
+      lines.find((l) => l.startsWith('| בעל עסק זעיר cap, tax year 2026 |')),
+    ]);
     const start = lines.findIndex((l) => l.startsWith('## The בעל עסק זעיר self-check'));
     const end = lines.findIndex((l, i) => i > start && l.startsWith('## '));
     expect(start).toBeGreaterThan(0);

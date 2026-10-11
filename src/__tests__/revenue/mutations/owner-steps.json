@@ -54,5 +54,29 @@
     "replace": ">   2. **צעד 6 — רק החלק של Apify**",
     "test": "src/__tests__/revenue/owner-steps.test.ts",
     "note": "tick 61, ruling 7.10 row 25 §2 edit 9: the ₪0 box's item 2 names the Apify part alone again (the ₪0-box order test's needle, moved with edit 9)"
+  },
+  {
+    "id": "T68R-Y1",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "**לדעת מראש, לא לעשות עכשיו:** ₪122,833 בשנה (לפי מקורות משניים) ≈",
+    "replace": "**לדעת מראש, לא לעשות עכשיו:** ₪122,833 בשנה (לפי מקורות משניים) (נבדק) ≈",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 68 fold review Y1: \"נבדק\" beside the 2026 amount in the owner's steps (ruling 11.10 row 27 decision 4(3))"
+  },
+  {
+    "id": "T68R-Y2",
+    "file": "docs/INCOME_PLAN.he.md",
+    "find": "תקרה ₪122,833 לשנת 2026 (לפי מקורות משניים; טקסט ראשוני לא נקרא)",
+    "replace": "תקרה ₪122,833 לשנת 2026 (מאומת)",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 68 fold review Y2: \"מאומת\" replaces the grade beside the 2026 amount in the income plan (decision 4(2)-(3))"
+  },
+  {
+    "id": "T68R-Y3",
+    "file": "docs/INCOME_PLAN.he.md",
+    "find": "תקרה ₪122,833 לשנת 2026 (לפי מקורות משניים; טקסט ראשוני לא נקרא)",
+    "replace": "תקרה ₪122,833 לשנת 2026",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 68 fold fixer: the income plan states the amount flat again, without its grade (decision 4(2))"
   }
 ]

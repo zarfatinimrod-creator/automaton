@@ -20,6 +20,10 @@ const html = read('osek-patur.html');
 const config = JSON.parse(read('src/config/osek-patur.json'));
 const unverified = JSON.parse(read('src/config/osek-patur-unverified.json'));
 const PENDING = config.pendingYears['2026'].he;
+/** Decision 2(2) of the ruling, word for word: the one text the page states for 2026. */
+const RULING_PENDING = 'לשנת 2026 הכלי לא מחשב. הסכום שבהגדרת "עוסק פטור" בחוק מס ערך מוסף מותאם למדד לראשונה ב-1 בינואר 2026, והכלי יחשב לשנת 2026 אחרי שנקרא מקור ראשוני שמציין את הסכום המעודכן. את הסכום המעודכן יש לבדוק באתר רשות המסים.';
+/** Decision 2(7)'s grade for the held-back amount, word for word. */
+const RULING_GRADE = "search-summary read of 7.9.2026 (research/measurements/serp/2026-09-07-hebrew-calculators.md:24-27: a model's paraphrase, not to be cited) and secondary sources named in README.md without a dated read; the one capture in the store that states it is nevo [robots-bar] (ruling 6.10 row 21, decision 1); not a product input (ruling 11.10 row 27)";
 const AMOUNTS = ['#total', '#percent', '#remaining', '#avg', '#projection', '#safe'];
 
 /** Every way a page or a file could write the held-back amount. */
@@ -143,6 +147,19 @@ describe('osek-patur.html, the year select and the texts the ruling gives', () =
     expect(html).toContain('<label for="tax-year">שנת המס</label>');
   });
 
+  it('the pending sentence is decision 2(2) of the ruling, word for word', () => {
+    expect(PENDING).toBe(RULING_PENDING);
+  });
+
+  it('the heading opens on the default year, and nothing in the head offers 2026', () => {
+    // Before the script runs (or without it) the heading's year is the select's default, never the pending year.
+    expect(textOf(elementById(html, 'year'))).toBe(config.defaultYear);
+    expect(/<meta property="og:title" content="([^"]*)">/.exec(html)[1]).toBe('מעקב תקרת עוסק פטור');
+    const head = /<head>[\s\S]*?<script/.exec(html)[0];
+    expect(head.match(/2026/g)).toHaveLength(1);
+    expect(head).toContain('לשנת 2026 הכלי לא מחשב עד שייקרא מקור ראשוני.');
+  });
+
   it('the head states no 2026 amount and names the years it computes', () => {
     expect(/<title>([^<]*)<\/title>/.exec(html)[1]).toBe('מעקב תקרת עוסק פטור – כמה נשאר עד התקרה?');
     expect(html).toContain('<meta name="description" content="הזינו את ההכנסות החודשיות שלכם וראו כמה נותר עד תקרת עוסק פטור בשנת המס שבחרתם (2024 או 2025), מה התחזית השנתית ומתי כדאי להיערך למעבר לעוסק מורשה. לשנת 2026 הכלי לא מחשב עד שייקרא מקור ראשוני.">');
@@ -169,8 +186,11 @@ describe('122,833 is held back: no page, script, module or shipped config states
     expect(unverified.verified).toBe(false);
     expect(Object.keys(unverified.years)).toEqual(Object.keys(config.pendingYears));
     expect(held).toBe(122833);
-    expect(unverified.years['2026'].grade).toContain('not a product input (ruling 11.10 row 27)');
-    expect(unverified.years['2026'].grade).toContain('search-summary read of 7.9.2026');
+    expect(unverified.years['2026'].grade).toBe(RULING_GRADE);
+    // Decision 2(7): the toVerify of osek-zair-unverified.json, verbatim (the same amount, the same route back).
+    const sibling = JSON.parse(read('src/config/osek-zair-unverified.json'));
+    expect(unverified.years['2026'].toVerify).toBe(sibling.years['2026'].toVerify);
+    expect(Object.keys(unverified.years['2026'])).toEqual(['ceiling', 'grade', 'toVerify']);
     expect(config.pendingYears['2026'].unverifiedValueIn).toBe('src/config/osek-patur-unverified.json');
     for (const y of Object.keys(config.pendingYears)) expect(config.years[y], y).toBeUndefined();
   });
