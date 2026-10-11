@@ -320,6 +320,9 @@ export async function runLedgerSync(
         resolveLine,
         fetchImpl,
       });
+      // A listing the connector could not read to its end: what it read is booked below and its cursor passes no sale
+      // it did not read; the stop is a sync error, as a connector's thrown error is (tick 71).
+      if (fetched.problem) result.errors.push(`${connector.source}: ${fetched.problem}`);
       for (const entry of fetched.entries) {
         const rec = recordLedgerEntry(db, entry);
         if (rec) result.recorded += 1; else result.duplicates += 1;

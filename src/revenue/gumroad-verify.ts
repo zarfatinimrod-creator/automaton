@@ -12,19 +12,22 @@
  *   whose fee row is missing (a finding);
  * - a refund row whose sale Gumroad does not report refunded, and a refunded sale whose refund row is missing (a
  *   finding);
- * - a listed sale no row books ("unbooked"): a count, not a finding. Before `enable` opens the Pro sale it measures
- *   the connector's one-page read (`fetchSince` reads one page of ten; the ruling's "What this does not decide" 6),
- *   and no state in the repository records that `enable` has run.
+ * - a listed sale no row books ("unbooked"): a count, not a finding. Since tick 71 `fetchSince` reads every page (until
+ *   then it read one page of ten, the ruling's "What this does not decide" 6), so it counts the sales the connector has
+ *   not booked yet: made since the last sync, older than its first read, or past a listing the sync reported stopped.
+ *   Whether it becomes a finding once `enable` opens the Pro sale is a ruling's, and no state in the repository records
+ *   that `enable` has run.
+ *
+ * The listing is one read, from a day before the oldest Gumroad row to now, so it grows with the ledger. Past the pager's
+ * cap (MAX_REFUND_RATE_PAGES pages of ten) it is "incomplete" and nothing is verified; the result then names the part
+ * read (`readBeforeStop`: pages, sales, the days they were created on) and the part not read. It is not cut into date
+ * chunks: no recorded source shows an upper bound the index accepts, or the order it lists sales in (tick 71).
  */
 
 import type { Database } from "better-sqlite3";
-import { gumroadSaleEntries, listGumroadSalesSince } from "./connectors/gumroad.js";
+import { FIRST_READ_DAYS, gumroadSaleEntries, listGumroadSalesSince, shiftDay } from "./connectors/gumroad.js";
 import { storedExternalId } from "./money.js";
 import type { LedgerEntryInput } from "./types.js";
-
-const DAY_MS = 86_400_000;
-/** With no Gumroad row in the ledger the listing starts where the connector's first read does: 30 days back, plus one. */
-const FIRST_READ_DAYS = 30;
 
 export type GumroadVerifyStatus = "not_configured" | "incomplete" | "clean" | "findings";
 
@@ -53,6 +56,12 @@ export interface GumroadVerifyResult {
   /** Listed sales no row books. A count, not a finding (see the header). */
   unbooked: GumroadVerifyItem[];
   findings: number;
+  /**
+   * On an incomplete listing, what the pager read before it stopped: its pages, their sales and the first and last day
+   * those were created on (null when none has a readable `created_at`). Every page after them is the part not read, and
+   * which days its sales fall on is not known. Null on every other status.
+   */
+  readBeforeStop: { pages: number; sales: number; earliestDay: string | null; latestDay: string | null } | null;
 }
 
 interface LedgerRow {
@@ -71,11 +80,10 @@ const dayOf = (iso: string): string => {
   const t = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(iso) ? Date.parse(iso) : Number.NaN;
   return Number.isNaN(t) ? iso.slice(0, 10) : new Date(t).toISOString().slice(0, 10);
 };
-const shiftDay = (day: string, days: number): string => new Date(Date.parse(`${day}T00:00:00.000Z`) + days * DAY_MS).toISOString().slice(0, 10);
 const baseOf = (id: string): string => id.replace(/:(?:refund|fee)$/, "");
 
 function empty(status: GumroadVerifyStatus, detail: string, after: string | null, ledgerRows: number): GumroadVerifyResult {
-  return { status, detail, after, pages: 0, ledgerRows, listedSales: 0, matchedRows: 0, unexplained: [], differing: [], refundState: [], unbooked: [], findings: 0 };
+  return { status, detail, after, pages: 0, ledgerRows, listedSales: 0, matchedRows: 0, unexplained: [], differing: [], refundState: [], unbooked: [], findings: 0, readBeforeStop: null };
 }
 
 /** Compare the ledger's Gumroad rows with every sale the account lists from one day before the oldest of them. */
@@ -90,17 +98,32 @@ export async function verifyGumroadLedger(
   const token = params.token?.trim();
   if (!token) return empty("not_configured", "GUMROAD_ACCESS_TOKEN is not set: nothing fetched, nothing verified", null, rows.length);
 
-  // One day before the oldest row, as the refund-rate read does, so Gumroad's day filter never cuts off a booked sale.
+  // One day before the oldest row, as the refund-rate read does, so Gumroad's day filter never cuts off a booked sale;
+  // with no Gumroad row, where the connector's first read starts: FIRST_READ_DAYS back, plus one.
   const nowDay = dayOf(new Date(params.nowIso ? Date.parse(params.nowIso) : Date.now()).toISOString());
   const days = rows.map((r) => dayOf(r.occurredAt)).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
   const after = shiftDay(days[0] ?? shiftDay(nowDay, -FIRST_READ_DAYS), -1);
 
-  const listing = await listGumroadSalesSince({ token, after, fetchImpl: params.fetchImpl });
+  const read: unknown[] = [];
+  const listing = await listGumroadSalesSince({ token, after, fetchImpl: params.fetchImpl, onPage: (sales) => { read.push(...sales); } });
   if (!listing.ok) {
+    // One listing, cut nowhere (the header): name exactly the pages read and their days, and the pages not read.
+    const pagesRead = listing.problem === "refused" ? listing.page - 1 : listing.pages;
+    const created = read
+      .map((s) => Date.parse(String((s as { created_at?: unknown } | null)?.created_at ?? "")))
+      .filter((t) => !Number.isNaN(t))
+      .map((t) => new Date(t).toISOString().slice(0, 10))
+      .sort();
+    const readBeforeStop = { pages: pagesRead, sales: read.length, earliestDay: created[0] ?? null, latestDay: created.at(-1) ?? null };
     const why = listing.problem === "refused"
       ? `GET /v2/sales was refused (HTTP ${listing.status}, page ${listing.page})`
       : `more than ${listing.pages} pages of sales since ${after}`;
-    return empty("incomplete", `${why}: the listing is not complete, so nothing was verified`, after, rows.length);
+    const span = readBeforeStop.earliestDay ? `, created ${readBeforeStop.earliestDay} to ${readBeforeStop.latestDay}` : "";
+    const unread = listing.problem === "refused" ? `page ${listing.page} and any page after it` : `every page after page ${listing.pages}`;
+    const detail =
+      `${why}. Read: ${pagesRead} page(s), ${read.length} sale(s)${span}; not read: ${unread}. Which days the unread ` +
+      "pages' sales fall on is not known (the order the index lists sales in is not recorded), so nothing was verified";
+    return { ...empty("incomplete", detail, after, rows.length), readBeforeStop };
   }
 
   // What the connector books for each listed sale, keyed on the stored id (lineId plays no part in the comparison).
@@ -117,7 +140,7 @@ export async function verifyGumroadLedger(
 
   const result: GumroadVerifyResult = {
     status: "clean", detail: "", after, pages: listing.pages, ledgerRows: rows.length, listedSales: listed.size,
-    matchedRows: 0, unexplained: [], differing: [], refundState: [], unbooked: [], findings: 0,
+    matchedRows: 0, unexplained: [], differing: [], refundState: [], unbooked: [], findings: 0, readBeforeStop: null,
   };
   const booked = new Set<string>();
   for (const row of rows) {

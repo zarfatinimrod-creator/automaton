@@ -244,6 +244,10 @@ describe("verifyGumroadLedger on a listing it could not read to the end: what wa
     return { sales, fetchImpl, urls };
   }
   const verify = (fetchImpl: typeof fetch) => verifyGumroadLedger(db, { token: TOKEN, fetchImpl, nowIso: "2026-10-11T12:00:00Z" });
+  /** Nothing the command prints names a raw id, an email or the token (as the first describe's `clean`). */
+  const clean = (text: string, ...raw: string[]) => {
+    for (const r of [...raw, TOKEN, "fake-buyer-email-field"]) expect(text).not.toContain(r);
+  };
   const dayOfSale = (s: FakeSale) => s.created_at.slice(0, 10);
 
   it("a window longer than the page cap: incomplete, nothing verified, the 100 pages read and their days named, the rest not", async () => {

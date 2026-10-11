@@ -5,6 +5,12 @@ export interface ConnectorFetchResult {
   nextCursor?: string;
   /** Product identifiers seen that had no line mapping (for the board to map). */
   unmapped: string[];
+  /**
+   * Set when the platform's listing could not be read to its end (a page refused, more pages than the cap): `entries`
+   * holds what was read and `nextCursor` passes no sale that was not. The sync reports it in its errors as
+   * `<source>: <problem>`, beside a connector's thrown error (tick 71, the Gumroad connector).
+   */
+  problem?: string;
 }
 
 export interface RevenueConnector {
@@ -14,7 +20,8 @@ export interface RevenueConnector {
   /**
    * Fetch ledger entries newer than `cursor`. Implementations must be
    * read-only, idempotent (external ids), and must never throw on HTTP
-   * errors — return an empty result and let the caller log.
+   * errors — return what was read (with `problem` when the listing stopped
+   * short, or an empty result) and let the caller log.
    */
   fetchSince(params: {
     cursor: string | undefined;

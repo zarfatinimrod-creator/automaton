@@ -174,5 +174,165 @@
     "replace": "  const t = Number.NaN;",
     "test": "src/__tests__/revenue/gumroad-verify.test.ts",
     "note": "tick 69 review fixer (the review's note on gumroad-verify.ts:137): the day is sliced from the stored text, so a row booked with +03:00 reads as a day difference from its own sale (killed by the offset test)"
+  },
+  {
+    "id": "T71-G1",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    const after = shiftDay(cursorDay, -1);",
+    "replace": "    const after = cursorDay;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: fetchSince asks from its cursor's own day again, so a later sale that day is lost when `after` excludes its day or starts it west of UTC (killed by the cursor-day tests under the exclusive and west readings, and the after pins)"
+  },
+  {
+    "id": "T71-G2",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    return { entries, nextCursor: cursorDay, unmapped: [...unmapped], problem:",
+    "replace": "    return { entries, nextCursor: newestDay, unmapped: [...unmapped], problem:",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: a listing refused part-way or past the cap moves the cursor to the newest day it read, past the sales it did not (killed by the page-2 test in newest-first order and the past-the-cap test)"
+  },
+  {
+    "id": "T71-G3",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    return { entries, nextCursor: cursorDay, unmapped: [...unmapped], problem:",
+    "replace": "    return { entries, unmapped: [...unmapped], problem:",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: an incomplete first read stores no cursor, so the next sync's 30-day window slides past an unread day (killed by the first-read refused test)"
+  },
+  {
+    "id": "T71-G4",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    for (const sale of read as any[]) {",
+    "replace": "    for (const sale of (listing.ok ? read : []) as any[]) {",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: the pages read before a stop are not booked (killed by the page-2 test's recorded 10, the past-the-cap test and the tick test)"
+  },
+  {
+    "id": "T71-G5",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    let newestDay = cursorDay;",
+    "replace": "    let newestDay = after;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: with no sale since the cursor it steps back a day, to the day it asked from, at every sync (killed by the no-sale test)"
+  },
+  {
+    "id": "T71-G6",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "      if (DAY_RE.test(day) && day > newestDay) newestDay = day;",
+    "replace": "      if (day > newestDay) newestDay = day;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: a created_at that is not a day (\"not-a-date\" sorts after every year) becomes the cursor (killed by the not-a-day test)"
+  },
+  {
+    "id": "T71-G7",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": ", problem: incompleteListing(listing, after, read.length, cursorDay) };",
+    "replace": " };",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: the stop is not reported: the sync says nothing of the sales it did not read (killed by every errors assertion of the stop tests)"
+  },
+  {
+    "id": "T71-G8",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    onPage?.(res.body.sales, page);\n",
+    "replace": "",
+    "test": ["src/__tests__/revenue/gumroad-connector.test.ts", "src/__tests__/revenue/gumroad-verify.test.ts"],
+    "note": "tick 71: the shared pager hands no page to onPage (killed by the onPage test, every fetchSince test that books, and verify's readBeforeStop tests)"
+  },
+  {
+    "id": "T71-G9",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "onPage: (sales) => { read.push(...sales); } });",
+    "replace": "onPage: () => {} });",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: fetchSince keeps none of the pages it reads (killed by the 25-sale tests and every booking test)"
+  },
+  {
+    "id": "T71-G10",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "was refused at page ${listing.page} (HTTP ${listing.status})`",
+    "replace": "was refused at page ${listing.page}`",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: the sync's line on a refused page drops the HTTP status (killed by the page-2 and first-read tests' patterns)"
+  },
+  {
+    "id": "T71-G11",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "the ${read} sale(s) read before it stopped",
+    "replace": "the sale(s) read before it stopped",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: the sync's line on a stop no longer says how many sales were booked (killed by the page-2 and past-the-cap patterns)"
+  },
+  {
+    "id": "T71-H1",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "      if (fetched.problem) result.errors.push(`${connector.source}: ${fetched.problem}`);",
+    "replace": "      if (fetched.problem === \"never\") result.errors.push(`${connector.source}: ${fetched.problem}`);",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 71: runLedgerSync drops a connector's `problem`, so a stopped listing is no sync error and no blocker (killed by the stop tests' errors and the tick test's blocker)"
+  },
+  {
+    "id": "T71-V1",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "    const pagesRead = listing.problem === \"refused\" ? listing.page - 1 : listing.pages;",
+    "replace": "    const pagesRead = listing.problem === \"refused\" ? listing.page : listing.pages;",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 71: a refused page is counted among the pages read (killed by the page-1 and page-2 refused tests)"
+  },
+  {
+    "id": "T71-V2",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "earliestDay: created[0] ?? null, latestDay: created.at(-1) ?? null",
+    "replace": "earliestDay: created.at(-1) ?? null, latestDay: created[0] ?? null",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 71: the read span's first and last day swapped (killed by the past-the-cap test)"
+  },
+  {
+    "id": "T71-V3",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "      .map((t) => new Date(t).toISOString().slice(0, 10))\n      .sort();",
+    "replace": "      .map((t) => new Date(t).toISOString().slice(0, 10));",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 71: the span is taken in listing order, not by day, so a newest-first listing names its newest day as the first (killed by the past-the-cap test)"
+  },
+  {
+    "id": "T71-V4",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "onPage: (sales) => { read.push(...sales); } });",
+    "replace": "onPage: () => {} });",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 71: verify keeps none of the pages it read, so an incomplete listing names 0 sales read (killed by the past-the-cap and page-2 tests)"
+  },
+  {
+    "id": "T71-V5",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "    const span = readBeforeStop.earliestDay ? `, created ${readBeforeStop.earliestDay} to ${readBeforeStop.latestDay}` : \"\";",
+    "replace": "    const span = \"\";",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 71: the detail no longer names the days the read sales were created on (killed by the past-the-cap and page-2 details)"
+  },
+  {
+    "id": "T71-V6",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "`page ${listing.page} and any page after it`",
+    "replace": "`every page after page ${listing.page}`",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 71: a refused page is named as read, its successors alone as not (killed by the page-1 and page-2 details)"
+  },
+  {
+    "id": "T71-V7",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "    return { ...empty(\"incomplete\", detail, after, rows.length), readBeforeStop };",
+    "replace": "    return empty(\"incomplete\", detail, after, rows.length);",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 71: the --json result loses the part read (killed by every readBeforeStop assertion of an incomplete listing)"
+  },
+  {
+    "id": "T71-V8",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "    matchedRows: 0, unexplained: [], differing: [], refundState: [], unbooked: [], findings: 0, readBeforeStop: null,\n",
+    "replace": "    matchedRows: 0, unexplained: [], differing: [], refundState: [], unbooked: [], findings: 0,\n",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 71: a complete listing's result carries no readBeforeStop field at all (killed by the complete-listing test's null)"
   }
 ]
