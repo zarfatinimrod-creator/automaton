@@ -659,8 +659,8 @@ export function runAudit(
   ).get() as { c: number };
   if (dupRow.c > 0) out.chiefFindings.push(`${dupRow.c} duplicate external ids in the ledger`);
 
-  // RULING-2026-10-11-ledger-sale-ids.md C4: a digested source's id is stored as its digest, so a raw one that reached
-  // the ledger by any path is seen at the next audit, before the public history is where it is found.
+  // RULING-2026-10-11-ledger-sale-ids.md C4: a digested source's id is stored as its digest (`sha256:<hex>`), so a raw
+  // one that reached the ledger by any path is seen at the next audit, before the public history is where it is found.
   for (const source of DIGESTED_SOURCES) {
     const ids = db.prepare(
       "SELECT external_id AS externalId FROM revenue_ledger WHERE source = ? AND external_id IS NOT NULL",
