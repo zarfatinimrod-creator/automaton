@@ -681,7 +681,7 @@ export const KILLED_LINES: KilledLine[] = [
       "A rendered per-provider median at or above ₪100/month on x402scan or the Bazaar series, OR BILS opening beyond the institutional pilot. Any USDC that arrives before then is booked, not planned.",
     skillRemoved: "revenue-paid-apis",
     standby:
-      "products/x402-il-api is built and tested but NOT deployed: the repository holds no deploy workflow, no runner probe and no URL for it (.github/workflows/products-ci.yml only runs its tests), and its README says so. It is a RAIL ON STANDBY rather than a line, allowed to be deployed only while it costs ₪0/month: any USDC that arrives is booked through src/revenue/connectors/x402-local.ts, and nothing is planned on it.",
+      "products/x402-il-api is built and tested but NOT deployed: the repository holds no deploy workflow, no runner probe and no URL for it (.github/workflows/products-ci.yml only runs its tests), and its README says so. It is a RAIL ON STANDBY rather than a line, allowed to be deployed only while it costs ₪0/month, and nothing is planned on it. Any USDC that arrives is to be booked (research/colony-sweep/BOARD.md, paid-apis), but nothing books it automatically yet: src/revenue/connectors/x402-local.ts imports only transactions rows of type transfer_in tagged [line:<id>], and no code writes such a row for an inbound USDC payment (products/README.md says so).",
   },
   {
     id: "agent-services",

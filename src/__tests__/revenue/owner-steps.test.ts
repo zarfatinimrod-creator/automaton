@@ -10,6 +10,7 @@ import {
   heldFollowUpSecretRows,
   heldOwnerStepsForLine,
   heldSecretRows,
+  identityOnLine,
   isOwnerStepOpen,
   isSecretRowAsked,
   LINE_PAYMENT_WAITS,
@@ -1401,6 +1402,10 @@ describe("the owner's documents state each step's minutes as the code does (tick
   it("the totals are the code's: all eight steps, and the free steps asked now", () => {
     const total = ownerStepMinutes();
     expect(flat(doc)).toContain(`**סך הכול: ${total.min}–${total.max} דקות`);
+    // The opening paragraph states the same total, not the old "about two and a half hours" (review NOTE 7).
+    const opening = flat(doc.slice(0, doc.indexOf("**מה הצעדים האלה כן ולא:**")));
+    expect(opening).toContain(`שמונה צעדים, פעם אחת כל אחד, ${total.min}–${total.max} דקות בסך הכול`);
+    expect(opening).not.toContain("שעתיים וחצי");
     expect(flat(income)).toContain(`הרשימה המינימלית בסעיף 6 — ${total.min}–${total.max} דקות`);
     // The free steps' sentence: step 8, the network setting (no number on the list), step 6's early part and step 7.
     const sentence = flat(doc.slice(doc.indexOf("ארבעת הצעדים החינמיים שמבוקשים עכשיו")));
@@ -1441,6 +1446,35 @@ describe("each step says whether it needs an identity check, and the Hebrew docu
       if (s.identity.needs === "no") expect(text, `step ${s.number}`).not.toMatch(ID_DOCUMENT);
       else expect(text, `step ${s.number}`).toMatch(ID_DOCUMENT);
     }
+  });
+
+  it("a step that asks it in one part names the lines that part serves; step 6's part ג serves apify-actors alone", () => {
+    for (const s of OWNER_STEPS) {
+      if (s.identity.needs !== "part") {
+        expect(s.identity.partLines, s.id).toBeUndefined();
+        continue;
+      }
+      expect(s.identity.partLines?.length, `${s.id} names no partLines`).toBeGreaterThan(0);
+      for (const id of s.identity.partLines!) expect(s.lines, `${s.id} partLines`).toContain(id);
+    }
+    expect(ownerStepById("ci-tokens")!.identity.partLines).toEqual(["apify-actors"]);
+    // Part ג publishes the Apify Actor, which is the apify-actors line's product.
+    const six = section(6);
+    const partC = six.slice(six.indexOf("### חלק ג"), six.indexOf("### חלק ד"));
+    expect(partC).toContain("`apify-il-open-data`");
+    expect(DEFAULT_PORTFOLIO.find((l) => l.id === "apify-actors")!.humanSetup.join(" ")).toMatch(/Apify/);
+  });
+
+  it("identityOnLine: a part step asks identity only on its part's lines, any other step as it says, and a part step naming no lines on every line", () => {
+    const six = ownerStepById("ci-tokens")!;
+    expect(identityOnLine(six, "apify-actors")).toBe("part");
+    for (const id of ["il-biz-tools", "oss-bounties", "pcn874"]) expect(identityOnLine(six, id), id).toBe("no");
+    for (const s of OWNER_STEPS.filter((x) => x.identity.needs !== "part")) {
+      for (const id of s.lines) expect(identityOnLine(s, id), `${s.id} ${id}`).toBe(s.identity.needs);
+    }
+    // Never understated: a part step that names no lines counts on every line it gates.
+    const unnamed = { ...six, identity: { needs: "part" as const, what: six.identity.what } };
+    for (const id of six.lines) expect(identityOnLine(unnamed, id), id).toBe("part");
   });
 
   it("step 6 asks it in part ג only: Apify's verification at the Publish sitting, with its stop rule (Q5)", () => {
@@ -1521,6 +1555,16 @@ describe("what each line waits on besides the steps, and the order note (tick 69
 
   it("names the row the order waits on, while the Hebrew document still says the code's order awaits the board", () => {
     expect(OWNER_STEP_ORDER_REVIEW).toMatch(/^the order is under review \(FABLE_QUEUE row 29\)/);
+    // The row's brief adds the floors ruling of 28.9, row 9 item 3: the note names it, with page-views.ts's own days.
+    expect(OWNER_STEP_ORDER_REVIEW).toContain(
+      "the floors ruling of 28.9 (research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3) has il-biz-tools' paid-tier steps 2, 3 and 6b join the ask batch only at its page-view PASS",
+    );
+    expect(OWNER_STEP_ORDER_REVIEW).toContain(
+      `(the day-${PAGE_VIEW_GATES.reachDay} read, or the day-${PAGE_VIEW_GATES.extensionDay} read after its one extension)`,
+    );
+    expect(OWNER_STEP_ORDER_REVIEW).toMatch(/; and the board has not ruled which order binds$/);
+    const floors = fs.readFileSync(path.join(repoRoot, "research/channel-loop/RULING-2026-09-28-floors.md"), "utf-8").replace(/\s+/g, " ");
+    expect(floors).toContain("the paid tier's owner steps (2, 3, 6b) join the ask batch");
     expect(doc).toContain("**הוא ממתין לפסיקה");
   });
 });

@@ -1474,8 +1474,8 @@ measured those.
 **What survives is a rail on standby, not a line.** `products/x402-il-api` may stay deployed **only
 while it costs ₪0/month**. (Note, 11.10.2026: it was never deployed. The repository holds no deploy workflow, no runner
 probe and no URL for it, and its README says it is not deployed; "may stay deployed" is the board's permission, not a
-record of a deployment.) Any USDC that arrives is booked through `src/revenue/connectors/x402-local.ts`
-like any other money; nothing is planned on it, no target rests on it, and no build hour is spent on
+record of a deployment.) Any USDC that arrives is to be booked like any other money, though nothing books it automatically
+yet (`src/revenue/connectors/x402-local.ts` imports only tagged `transactions` rows, and no code writes one for it); nothing is planned on it, no target rests on it, and no build hour is spent on
 it. A free endpoint that might one day catch a payment is worth keeping; a line that forecasts one is
 not.
 

@@ -474,8 +474,8 @@
   {
     "id": "T69-OR24",
     "file": "src/revenue/owner-report.ts",
-    "find": "c.steps.includes(s.number) && s.identity.needs !== \"no\"",
-    "replace": "c.steps.includes(s.number) && s.identity.needs === \"yes\"",
+    "find": "c.steps.includes(s.number) && s.identityHere !== \"no\"",
+    "replace": "c.steps.includes(s.number) && s.identityHere === \"yes\"",
     "note": "tick 69: the smallest set's identity checks include a step that asks it in one part",
     "test": "src/__tests__/revenue/owner-report.test.ts"
   },
@@ -525,6 +525,94 @@
     "find": "      kind: \"owner-later\",",
     "replace": "      kind: \"read\",",
     "note": "tick 69: Apify's payout method is an owner action outside the eight steps, which keeps apify-actors out of the smallest set",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR1",
+    "file": "src/revenue/owner-report.ts",
+    "find": "    identityHere: identityOnLine(step, lineId),",
+    "replace": "    identityHere: step.identity.needs,",
+    "note": "review NOTE 5: a step's identity check on a line's path is identityOnLine's, so step 6 asks none on il-biz-tools' path",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR2",
+    "file": "src/revenue/owner-report.ts",
+    "find": "      steps: gating.map((s) => pathStep(s, id)),",
+    "replace": "      steps: gating.map((s) => pathStep(s, \"apify-actors\")),",
+    "note": "review NOTE 5: each line's steps are read for that line, not for apify-actors",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR3",
+    "file": "src/revenue/owner-report.ts",
+    "find": "  if (s.identityHere === s.identity.needs) return IDENTITY_WORD[s.identityHere];",
+    "replace": "  if (true) return IDENTITY_WORD[s.identityHere];",
+    "note": "review NOTE 5: a part step that asks nothing on this line says whose its identity part is",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR4",
+    "file": "src/revenue/owner-report.ts",
+    "find": "(s.identity.partLines ?? []).map",
+    "replace": "([] as string[]).map",
+    "note": "review NOTE 5: the line a part step's identity part serves is named",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR5",
+    "file": "src/revenue/owner-report.ts",
+    "find": "      const ids = line.steps.filter((s) => c.steps.includes(s.number) && s.identityHere !== \"no\");",
+    "replace": "      const ids = line.steps.filter((s) => c.steps.includes(s.number) && s.identity.needs !== \"no\");",
+    "note": "review NOTE 5: the smallest set's identity checks are the ones on its line's path (step 6 is not one for il-biz-tools)",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR6",
+    "file": "src/revenue/owner-report.ts",
+    "find": "          .filter((l) => fewest(l, best) !== 0 && l.toPay.minutes.min === best.toPay.minutes.min)",
+    "replace": "          .filter((l) => l.toPay.minutes.min === best.toPay.minutes.min)",
+    "note": "review NOTE 6: a line tied with the smallest set is in it, not close behind it",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR7",
+    "file": "src/revenue/owner-report.ts",
+    "find": "          .filter((l) => fewest(l, best) !== 0 && l.toPay.minutes.min === best.toPay.minutes.min)",
+    "replace": "          .filter((l) => fewest(l, best) !== 0)",
+    "note": "review NOTE 6: only a line at the smallest set's lower bound is close behind it",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR8",
+    "file": "src/revenue/owner-report.ts",
+    "find": "          .sort(fewest)\n          .map(candidate)",
+    "replace": "          .map(candidate)",
+    "note": "review NOTE 6: the lines close behind are printed fewest minutes first, not in the database's order",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR9",
+    "file": "src/revenue/owner-report.ts",
+    "find": "  for (const c of p.closeBehind) {",
+    "replace": "  for (const c of p.closeBehind.slice(1)) {",
+    "note": "review NOTE 6: every line close behind is printed",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR10",
+    "file": "src/revenue/owner-report.ts",
+    "find": "          (line.waitsOnOwner",
+    "replace": "          (true",
+    "note": "review NOTE 7: a smallest set whose line the database no longer has waiting on the owner says so",
+    "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T69R-OR11",
+    "file": "src/revenue/owner-report.ts",
+    "find": "    closeBehind: best\n",
+    "replace": "    closeBehind: false\n",
+    "note": "review NOTE 6: the path carries the lines close behind the smallest set",
     "test": "src/__tests__/revenue/owner-report.test.ts"
   }
 ]

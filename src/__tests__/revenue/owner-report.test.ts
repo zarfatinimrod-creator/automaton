@@ -27,6 +27,7 @@ import {
   frozenOwnerStepsForLine,
   hasPendingPrecondition,
   heldOwnerStepsForLine,
+  identityOnLine,
   isOwnerStepOpen,
   LINE_PAYMENT_WAITS,
   openOwnerStepsForLine,
@@ -412,6 +413,10 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
     expect(path.orderReview).toBe(OWNER_STEP_ORDER_REVIEW);
     expect(section).toContain("Steps in the code's order (owner-steps.ts `order`): 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.\n");
     expect(section).toContain("\nThe order is under review (FABLE_QUEUE row 29): the ₪0 sequence of docs/OWNER_STEPS.he.md");
+    // Beside the ₪0 sequence, the floors ruling's row 9 that the row's brief adds (review NOTE 6).
+    expect(section).toContain(
+      "the floors ruling of 28.9 (research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3) has il-biz-tools' paid-tier steps 2, 3 and 6b join the ask batch only at its page-view PASS (the day-56 read, or the day-112 read after its one extension); and the board has not ruled which order binds.\n",
+    );
     // Between the owner-steps list and colony health, as one section.
     expect(text.indexOf("## Shortest path to a first payment")).toBeGreaterThan(text.indexOf("Not asked now:"));
   });
@@ -425,6 +430,7 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
         const p = l.steps[i];
         expect(p.minutes).toEqual(s.minutes);
         expect(p.identity).toEqual(s.identity);
+        expect(p.identityHere, `${l.id} step ${s.number} identity here`).toBe(identityOnLine(s, l.id));
         expect(s.unlocks.startsWith(p.unlocks), `${s.id} unlocks`).toBe(true);
         expect(p.unlocks.endsWith(".")).toBe(true);
         expect(p.unlocks.length).toBeLessThan(s.unlocks.length);
@@ -462,16 +468,21 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
     // Without the owner action, apify-actors' two steps are the fewest minutes: the exclusion is what decides.
     const noLater = Object.fromEntries(Object.entries(LINE_PAYMENT_WAITS).map(([id, ws]) => [id, ws.filter((w) => w.kind === "read")]));
     const lines = path.lines.map((l) => ({ id: l.id, waitsOnOwner: l.waitsOnOwner }));
-    expect(buildFirstPaymentPath(lines, ownerStepsInOrder(), noLater).smallest).toEqual([
-      { line: "apify-actors", steps: [2, 6], minutes: { min: 78, max: 113 } },
-    ]);
+    const withoutLater = buildFirstPaymentPath(lines, ownerStepsInOrder(), noLater);
+    expect(withoutLater.smallest).toEqual([{ line: "apify-actors", steps: [2, 6], minutes: { min: 78, max: 113 } }]);
+    // On apify-actors' own path step 6's identity part is asked, and the smallest set counts it.
+    expect(renderFirstPayment(withoutLater).join("\n")).toContain(
+      "after them `apify-actors` can take a payment, once its read above passes. Identity checks among them: step 2 (yes), step 6 (in one part).\n",
+    );
   });
 
   it("orders candidates by the fewest minutes at the low end, then at the high end, and lists ties", () => {
     const lines = [{ id: "il-biz-tools", waitsOnOwner: true }, { id: "oss-bounties", waitsOnOwner: true }];
     const none = { "il-biz-tools": [], "oss-bounties": [] };
-    // 108-143 against 108-148: the high end decides.
-    expect(buildFirstPaymentPath(lines, ownerStepsInOrder(), none).smallest.map((c) => c.line)).toEqual(["il-biz-tools"]);
+    // 108-143 against 108-148: the high end decides, and the line it beat is named close behind.
+    const close = buildFirstPaymentPath(lines, ownerStepsInOrder(), none);
+    expect(close.smallest.map((c) => c.line)).toEqual(["il-biz-tools"]);
+    expect(close.closeBehind).toEqual([{ line: "oss-bounties", steps: [2, 7, 4, 6], minutes: { min: 108, max: 148 } }]);
     // Step 4 at 15-20 makes oss-bounties 108-143 too: a tie, both listed in the database's order.
     const steps = ownerStepsInOrder().map((s) => (s.id === "algora-stripe" ? { ...s, minutes: [15, 10] as [number, number] } : s));
     const tied = buildFirstPaymentPath(lines, steps, none);
@@ -479,11 +490,45 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
       ["il-biz-tools", { min: 108, max: 143 }],
       ["oss-bounties", { min: 108, max: 143 }],
     ]);
+    // A tie is in the smallest set, not close behind it.
+    expect(tied.closeBehind).toEqual([]);
     const tiedText = renderFirstPayment(tied).join("\n");
     expect(tiedText).toContain("\nOr, at the same minutes: steps 2, 7, 4, 6 (in the code's order), 108-143 minutes in all: after them `oss-bounties` can take a payment");
     // The low end decides before the high end: a line at 100-200 beats one at 108-143.
     const cheap = ownerStepsInOrder().map((s) => (s.id === "github-org" ? { ...s, minutes: [7, 77] as [number, number] } : s));
     expect(buildFirstPaymentPath(lines, cheap, none).smallest.map((c) => [c.line, c.minutes])).toEqual([["oss-bounties", { min: 100, max: 205 }]]);
+    // A higher lower bound is not close behind, whatever its upper bound.
+    expect(buildFirstPaymentPath(lines, cheap, none).closeBehind).toEqual([]);
+  });
+
+  it("names every other candidate at the smallest set's lower bound close behind it, fewest minutes first", () => {
+    // Steps 7 and 4 moved so that all three paid-by-steps lines start at 108: il-biz-tools 108-143, pcn874 108-153,
+    // oss-bounties 108-158. Listed in the database's order (oss-bounties before pcn874), printed by minutes.
+    const steps = ownerStepsInOrder().map((s) =>
+      s.id === "github-org" ? { ...s, minutes: [10, 20] as [number, number] } : s.id === "algora-stripe" ? { ...s, minutes: [20, 25] as [number, number] } : s,
+    );
+    const lines = ["il-biz-tools", "oss-bounties", "pcn874"].map((id) => ({ id, waitsOnOwner: true }));
+    const p = buildFirstPaymentPath(lines, steps, { "il-biz-tools": [], "oss-bounties": [], pcn874: [] });
+    expect(p.smallest).toEqual([{ line: "il-biz-tools", steps: [8, 2, 3, 6], minutes: { min: 108, max: 143 } }]);
+    expect(p.closeBehind).toEqual([
+      { line: "pcn874", steps: [2, 3, 7, 6], minutes: { min: 108, max: 153 } },
+      { line: "oss-bounties", steps: [2, 7, 4, 6], minutes: { min: 108, max: 158 } },
+    ]);
+    const t = renderFirstPayment(p).join("\n");
+    expect(t).toContain(
+      "\nClose behind, at the same lower bound: `pcn874`, steps 2, 3, 7, 6, 108-153 min; the upper bound alone decides between them.\n" +
+        "Close behind, at the same lower bound: `oss-bounties`, steps 2, 7, 4, 6, 108-158 min; the upper bound alone decides between them.\n",
+    );
+  });
+
+  it("says so when the smallest set's line no longer waits on the owner in the database (review NOTE 7)", () => {
+    const p = buildFirstPaymentPath([{ id: "il-biz-tools", waitsOnOwner: false }], ownerStepsInOrder(), { "il-biz-tools": [] });
+    expect(p.smallest.map((c) => c.line)).toEqual(["il-biz-tools"]);
+    expect(renderFirstPayment(p).join("\n")).toContain(
+      "after them `il-biz-tools` can take a payment. Identity checks among them: step 2 (yes), step 3 (yes). The database no longer has `il-biz-tools` waiting on the owner, so the owner-steps section above asks none of these for it.\n",
+    );
+    const waiting = buildFirstPaymentPath([{ id: "il-biz-tools", waitsOnOwner: true }], ownerStepsInOrder(), { "il-biz-tools": [] });
+    expect(renderFirstPayment(waiting).join("\n")).not.toContain("The database no longer has");
   });
 
   it("takes a step done since out of a line's set, and a line with no step left needs none", () => {
@@ -528,7 +573,10 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
     expect(ids).toContain(`- Step 7 (\`github-org\`): no — ${ownerStepById("github-org")!.identity.what}\n`);
     const ilb = section.slice(section.indexOf("### `il-biz-tools`"), section.indexOf("### `oss-bounties`"));
     expect(ilb).toContain("Asked now, in the code's order:\n- step 8 (`brand-mailbox`), 10 min, identity check: no. Unlocks: A Google account under the brand");
-    expect(ilb).toContain("- step 6 (`ci-tokens`), 18-23 min, identity check: in one part. Unlocks: Converts every 'the owner must push' recurring operation into a one-time step.\n");
+    // Step 6's identity part is Apify's Publish sitting: on il-biz-tools' path it asks no identity (review NOTE 5).
+    expect(ilb).toContain(
+      "- step 6 (`ci-tokens`), 18-23 min, identity check: no on this line (its identity part is for `apify-actors` only). Unlocks: Converts every 'the owner must push' recurring operation into a one-time step.\n",
+    );
     expect(ilb).toContain("Held or frozen, with the gate:\n- held: step 2 (`tax-file`), 60-90 min, identity check: yes — only when a paid product is ready, after the official cost check. Unlocks: The legal right to receive any shekel at all.\n");
     expect(ilb).toContain("- frozen: step 5 (`domain`), 10 min, identity check: no — frozen by the owner's ₪0 rule of 27.9.2026; instead: Sites deploy on *.netlify.app (Netlify's free subdomain). Unlocks: Anonymity and search, both.\n");
     expect(ilb).toContain("Done:\n- done: step 1 (`merge-pr`), 2 min, identity check: no — done on 2026-09-22. Unlocks:");
@@ -539,10 +587,16 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
     const apify = section.slice(section.indexOf("### `apify-actors`"), section.indexOf("### `il-biz-tools`"));
     expect(apify).toContain(`- an owner action outside the eight steps: ${LINE_PAYMENT_WAITS["apify-actors"]![1].what}`);
     expect(apify).toContain("Owner steps still between it and a payment: steps 2, 6, 78-113 min; the eight steps alone do not make it payable.\n");
+    expect(apify).toContain("- step 6 (`ci-tokens`), 18-23 min, identity check: in one part. Unlocks:");
     const smallest = section.slice(section.indexOf("### The smallest set"));
     expect(smallest).toContain(
-      "Steps 8, 2, 3, 6 (in the code's order), 108-143 minutes in all: after them `il-biz-tools` can take a payment, once its read above passes. Identity checks among them: step 2 (yes), step 3 (yes), step 6 (in one part).\n",
+      "Steps 8, 2, 3, 6 (in the code's order), 108-143 minutes in all: after them `il-biz-tools` can take a payment, once its read above passes. Identity checks among them: step 2 (yes), step 3 (yes).\n",
     );
+    // The pick is close: oss-bounties shares the lower bound, and the section says so (review NOTE 6).
+    expect(smallest).toContain(
+      "\nClose behind, at the same lower bound: `oss-bounties`, steps 2, 7, 4, 6, 108-148 min; the upper bound alone decides between them.\n",
+    );
+    expect(smallest).not.toContain("The database no longer has");
     expect(smallest).toContain(`Not counted: \`apify-actors\` — its payment also needs ${LINE_PAYMENT_WAITS["apify-actors"]![1].what}.\n`);
     expect(smallest).not.toContain("Or, at the same minutes");
   });

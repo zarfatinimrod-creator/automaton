@@ -135,6 +135,7 @@
  *   - Each step carries `identity`: whether it asks the owner to prove who they are, and what. Step 6 asks it in part ג
  *     only — Apify's identity verification at the Publish sitting, where the breadth board put it once Apify's own docs
  *     showed it document-only (research/breadth/BOARD.md Q5 item 3; the read of 28.9, research/measurements/apify-visibility.md).
+ *     That part is apify-actors' alone (`partLines`): on another line's path step 6 asks no identity (`identityOnLine`).
  *   - `LINE_PAYMENT_WAITS` names what each line waits on before its first payment besides these eight steps, where the
  *     code knows it: a scheduled read the colony takes, or an owner action that is not one of the eight and is asked
  *     only later. The owner report's "Shortest path to a first payment" reads both, with the steps.
@@ -212,11 +213,14 @@ export interface SecretGateSite {
  * in their name — and what, as the step in docs/OWNER_STEPS.he.md says it.
  *   - "yes": the step does;
  *   - "part": one part of it does, and `what` names the part (step 6: part ג, Apify's verification at the Publish sitting);
+ *     `partLines` names the lines whose way to a payment runs through that part, so a line outside it is not told the
+ *     step checks its owner's identity (`identityOnLine`);
  *   - "no": it does not; `what` says what it asks instead (a phone check, a card payment, a merge).
  */
 export interface OwnerStepIdentity {
   needs: "yes" | "part" | "no";
   what: string;
+  partLines?: string[];
 }
 
 export interface OwnerStep {
@@ -464,6 +468,8 @@ export const OWNER_STEPS: OwnerStep[] = [
     identity: {
       needs: "part",
       what: "part ג only, the Apify Publish sitting: Apify's identity verification — the legal name, a photo of the ID card or driver's licence, proof of address, a tax document and ownership information — asked there because Apify's own docs, read on 28.9.2026, describe it as documents only (research/measurements/apify-visibility.md; research/breadth/BOARD.md Q5 item 3); a selfie, liveness check or video on the live screen is a stop, and then it is never asked. The rest of the step, its early part included, asks for none",
+      // Part ג publishes the Apify Actor: only apify-actors' way to a payment runs through it.
+      partLines: ["apify-actors"],
     },
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.5",
@@ -501,10 +507,15 @@ export const OWNER_STEPS: OwnerStep[] = [
  * Printed beside the code's order wherever a surface prints it as the owner's sequence, until the board rules: two
  * orders are in force — `order` above (the 7.9 board's, step 8 put second on 28.9) and the ₪0 sequence the Hebrew
  * document and logs/CHANNEL_LOOP.md §6 lead with (the free, no-identity steps first; step 3 only when a paid product is
- * ready) — and FABLE_QUEUE row 29 asks which binds. Nothing here picks one. The row's fold clears it with the ruling.
+ * ready) — and FABLE_QUEUE row 29 asks which binds; the row's brief adds the floors ruling of 28.9, row 9 item 3, which
+ * puts il-biz-tools' paid-tier steps after its day-56 PASS. Nothing here picks one. The row's fold clears it with the
+ * ruling.
  */
 export const OWNER_STEP_ORDER_REVIEW =
-  "the order is under review (FABLE_QUEUE row 29): the ₪0 sequence of docs/OWNER_STEPS.he.md asks the free, no-identity steps first, and the board has not ruled which order binds";
+  "the order is under review (FABLE_QUEUE row 29): the ₪0 sequence of docs/OWNER_STEPS.he.md asks the free, no-identity steps first; " +
+  "the floors ruling of 28.9 (research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3) has il-biz-tools' paid-tier steps 2, 3 and 6b " +
+  `join the ask batch only at its page-view PASS (the day-${PAGE_VIEW_GATES.reachDay} read, or the day-${PAGE_VIEW_GATES.extensionDay} read after its one extension); ` +
+  "and the board has not ruled which order binds";
 
 /**
  * What a line waits on before its first payment besides the eight steps above.
@@ -582,6 +593,16 @@ export function ownerStepById(id: OwnerStepId, steps: OwnerStep[] = OWNER_STEPS)
 /** Every step a given revenue line is blocked on, in execution order. */
 export function ownerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER_STEPS): OwnerStep[] {
   return ownerStepsInOrder(steps).filter((s) => s.lines.includes(lineId));
+}
+
+/**
+ * Whether the step asks for the owner's identity on this line's way to a payment: a "part" step only on the lines its
+ * identity part serves (`partLines`), and on every line it gates when it names none — never understated.
+ */
+export function identityOnLine(step: OwnerStep, lineId: string): OwnerStepIdentity["needs"] {
+  const { needs, partLines } = step.identity;
+  if (needs !== "part" || !partLines) return needs;
+  return partLines.includes(lineId) ? "part" : "no";
 }
 
 /** True while a step's precondition exists and the colony has not recorded it met. */

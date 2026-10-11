@@ -19,7 +19,8 @@
  * "Shortest path to a first payment" (tick 69, 11.10.2026: the owner asked "can you make me money now?" on 7.10 and
  * 11.10, and each answer was a fresh synthesis): for each line the database holds and has not killed, every owner step
  * that gates it in owner-steps.ts, in the code's `order`, with its minutes, whether it needs an identity check
- * (`identity`), its state (asked now, held by a precondition, frozen, done) and gate, and the first sentence of what it
+ * (`identity`; on this line's path, `identityOnLine`: step 6's identity part is apify-actors' alone), its state (asked
+ * now, held by a precondition, frozen, done) and gate, and the first sentence of what it
  * unlocks; then what the line also waits on (owner-steps.ts LINE_PAYMENT_WAITS: the scheduled reads, and any owner action
  * outside the eight steps). From those it names the smallest set of steps after which a line can take a payment: a
  * line's set is every step that gates it, done and frozen steps aside (a frozen step's line goes without it at ₪0, which
@@ -43,6 +44,7 @@ import {
   frozenOwnerStepsForLine,
   hasPendingPrecondition,
   heldFollowUpSecretRows,
+  identityOnLine,
   heldOwnerStepsForLine,
   heldSecretRows,
   isOwnerStepOpen,
@@ -142,6 +144,8 @@ export interface PathStep {
   /** What keeps a held or frozen step from being asked (and, for a frozen one, what replaces it free); the done date; null when asked. */
   gate: string | null;
   identity: OwnerStepIdentity;
+  /** Whether the step checks the owner's identity on this line's path (owner-steps.ts `identityOnLine`). */
+  identityHere: OwnerStepIdentity["needs"];
   /** The first sentence of the step's `unlocks`. */
   unlocks: string;
 }
@@ -174,6 +178,8 @@ export interface FirstPaymentPath {
   lines: PathLine[];
   /** The line(s) whose remaining steps take the fewest owner minutes, ties included; empty when no line can be paid by the steps alone. */
   smallest: PathCandidate[];
+  /** The other candidates at the smallest set's lower bound: the pick between them rests on the upper bound alone. */
+  closeBehind: PathCandidate[];
 }
 
 export interface OwnerReport {
@@ -266,13 +272,14 @@ export function firstSentence(text: string): string {
 }
 
 /** A step as it stands on a line's path, in owner-steps.ts's precedence (done, frozen, held), else asked now. */
-function pathStep(step: OwnerStep): PathStep {
+function pathStep(step: OwnerStep, lineId: string): PathStep {
   const base = {
     number: step.number,
     id: step.id,
     order: step.order,
     minutes: step.minutes,
     identity: step.identity,
+    identityHere: identityOnLine(step, lineId),
     unlocks: firstSentence(step.unlocks),
   };
   if (step.doneOn) return { ...base, state: "done", gate: `done on ${step.doneOn.date}` };
@@ -303,7 +310,7 @@ export function buildFirstPaymentPath(
     return {
       id,
       waitsOnOwner,
-      steps: gating.map(pathStep),
+      steps: gating.map((s) => pathStep(s, id)),
       waits: lineWaits,
       toPay: { steps: needed.map((s) => s.number), minutes: ownerStepMinutes(needed) },
       notByStepsAlone,
@@ -313,12 +320,17 @@ export function buildFirstPaymentPath(
   const fewest = (a: PathLine, b: PathLine) =>
     a.toPay.minutes.min - b.toPay.minutes.min || a.toPay.minutes.max - b.toPay.minutes.max || a.toPay.steps.length - b.toPay.steps.length;
   const best = [...candidates].sort(fewest)[0];
+  const candidate = (l: PathLine): PathCandidate => ({ line: l.id, steps: l.toPay.steps, minutes: l.toPay.minutes });
   return {
     codeOrder: ownerStepsInOrder(steps).map((s) => s.number),
     orderReview: OWNER_STEP_ORDER_REVIEW,
     lines,
-    smallest: best
-      ? candidates.filter((l) => fewest(l, best) === 0).map((l) => ({ line: l.id, steps: l.toPay.steps, minutes: l.toPay.minutes }))
+    smallest: best ? candidates.filter((l) => fewest(l, best) === 0).map(candidate) : [],
+    closeBehind: best
+      ? candidates
+          .filter((l) => fewest(l, best) !== 0 && l.toPay.minutes.min === best.toPay.minutes.min)
+          .sort(fewest)
+          .map(candidate)
       : [],
   };
 }
@@ -464,6 +476,12 @@ function minutesText([a, b]: [number, number]): string {
 
 const IDENTITY_WORD: Record<OwnerStepIdentity["needs"], string> = { yes: "yes", part: "in one part", no: "no" };
 
+/** A step's identity check on one line's path: the step's own word, or "no" with the lines its identity part serves. */
+function identityHereText(s: PathStep): string {
+  if (s.identityHere === s.identity.needs) return IDENTITY_WORD[s.identityHere];
+  return `no on this line (its identity part is for ${(s.identity.partLines ?? []).map((l) => `\`${l}\``).join(", ")} only)`;
+}
+
 /** "steps 8, 2, 3, 6" or "step 6": numbers in the order given (the code's). */
 function stepsText(numbers: number[]): string {
   return `${numbers.length === 1 ? "step" : "steps"} ${numbers.join(", ")}`;
@@ -477,7 +495,7 @@ export function renderFirstPayment(p: FirstPaymentPath): string[] {
   out.push(`Steps in the code's order (owner-steps.ts \`order\`): ${p.codeOrder.join(" → ")}.`);
   out.push(`${p.orderReview.charAt(0).toUpperCase()}${p.orderReview.slice(1)}.`);
   out.push("");
-  // Each step's identity check once, in the code's order: what it asks is the same on every line it gates.
+  // Each step's identity check once, in the code's order, as the step asks it; each line's list says whether its path meets it.
   const seen = new Map<number, PathStep>();
   for (const l of p.lines) for (const s of l.steps) if (!seen.has(s.number)) seen.set(s.number, s);
   const all = [...seen.values()].sort((a, b) => a.order - b.order);
@@ -489,7 +507,7 @@ export function renderFirstPayment(p: FirstPaymentPath): string[] {
     out.push(`### \`${l.id}\`${l.waitsOnOwner ? "" : " (the database no longer has it waiting on the owner)"}`);
     out.push("");
     const item = (s: PathStep) =>
-      `step ${s.number} (\`${s.id}\`), ${minutesText(s.minutes)}, identity check: ${IDENTITY_WORD[s.identity.needs]}` +
+      `step ${s.number} (\`${s.id}\`), ${minutesText(s.minutes)}, identity check: ${identityHereText(s)}` +
       (s.gate ? ` — ${s.gate.replace(/\.$/, "")}` : "") +
       `. Unlocks: ${s.unlocks}`;
     const block = (label: string, state: PathStep["state"][]) => {
@@ -522,7 +540,7 @@ export function renderFirstPayment(p: FirstPaymentPath): string[] {
   } else {
     p.smallest.forEach((c, i) => {
       const line = p.lines.find((l) => l.id === c.line)!;
-      const ids = line.steps.filter((s) => c.steps.includes(s.number) && s.identity.needs !== "no");
+      const ids = line.steps.filter((s) => c.steps.includes(s.number) && s.identityHere !== "no");
       const what = c.steps.length
         ? `${stepsText(c.steps)} (in the code's order), ${c.minutes.min}-${c.minutes.max} minutes in all: after ${c.steps.length === 1 ? "it" : "them"}`
         : "no owner step is left:";
@@ -531,9 +549,18 @@ export function renderFirstPayment(p: FirstPaymentPath): string[] {
           ` \`${c.line}\` can take a payment` +
           (line.waits.length ? `, once ${line.waits.length === 1 ? "its read" : "its reads"} above ${line.waits.length === 1 ? "passes" : "pass"}` : "") +
           "." +
-          (ids.length ? ` Identity checks among them: ${ids.map((s) => `step ${s.number} (${IDENTITY_WORD[s.identity.needs]})`).join(", ")}.` : ""),
+          (ids.length ? ` Identity checks among them: ${ids.map((s) => `step ${s.number} (${IDENTITY_WORD[s.identityHere]})`).join(", ")}.` : "") +
+          (line.waitsOnOwner
+            ? ""
+            : ` The database no longer has \`${c.line}\` waiting on the owner, so the owner-steps section above asks none of these for it.`),
       );
     });
+  }
+  for (const c of p.closeBehind) {
+    out.push(
+      `Close behind, at the same lower bound: \`${c.line}\`, ${stepsText(c.steps)}, ${c.minutes.min}-${c.minutes.max} min; ` +
+        "the upper bound alone decides between them.",
+    );
   }
   for (const l of p.lines.filter((x) => x.notByStepsAlone.length)) {
     out.push(`Not counted: \`${l.id}\` — its payment also needs ${l.notByStepsAlone.join("; ")}.`);
