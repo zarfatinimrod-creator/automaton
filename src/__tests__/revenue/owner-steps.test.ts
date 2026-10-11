@@ -911,7 +911,10 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
     expect(step6.minutes).toEqual([18, 23]);
     expect(step6.unlocks).toMatch(/two PostHog organisations/);
     expect(step6Doc).toContain("### חלק ד");
-    expect(step6Doc).toContain("עצור אם");
+    // In part ד itself: since tick 69 part ג carries its own "עצור אם" (Apify's verification), so step 6 as a whole
+    // would keep the words if part ד lost its stop rule (T61-OS6 survived on that until this read part ד alone).
+    const partD = step6Doc.slice(step6Doc.indexOf("### חלק ד"), step6Doc.indexOf("### מה זה עושה"));
+    expect(partD).toContain("**עצור אם:** PostHog מבקש");
   });
 
   // Tick 62 (7.10.2026): the hourly report prints the lines' setup items, and none named PostHog, so part ד was asked
