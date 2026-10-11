@@ -3,7 +3,19 @@
  *
  * Env: GUMROAD_ACCESS_TOKEN, GUMROAD_DEFAULT_LINE (optional).
  * Product mapping key: `gumroad:<product_id>`.
- * Cursor: YYYY-MM-DD of the newest sale seen (Gumroad filters by day).
+ * Cursor: YYYY-MM-DD, the newest day a booked sale was created on (Gumroad filters by day); with none it is taken as
+ * 30 days back (FIRST_READ_DAYS), so the first read lists from 31 days back. Only a real date no later than tomorrow in
+ * UTC becomes or stays the cursor (`isCursorDay`, the tick-71 review): a stored cursor that is not one is replaced by the
+ * first read's, and the sync says so.
+ *
+ * `fetchSince` lists from the day before its cursor and reads through the shared pager (`listGumroadSalesSince`) to
+ * the last page (tick 71; until then it read one page of ten and moved its cursor past the rest). The day before,
+ * because the recorded source says `created_at >= after` but not in which zone the day starts: a sale made later on the
+ * cursor's own day is listed however the day is read, and a sale listed again is a duplicate the ledger drops on its
+ * stored id (`recordLedgerEntry`, `(source, external_id)`). A listing refused part-way, or longer than the page cap,
+ * books the pages it read, keeps its cursor, so no sale it did not read is passed, and says so in `problem`, which the
+ * sync reports as a `gumroad:` error. The index's order is not recorded, so nothing here depends on it. The sync's page
+ * cap is its own, MAX_LEDGER_SYNC_PAGES, and a next_page_key the pager has already asked for ends the listing as a loop.
  *
  * The same sync also reads the Pro product's refund rate over the trailing 90 days (`gumroadRefundRate90d`,
  * RULING-2026-09-30-documents (d) and fold action 6): refunded / sales, a number for the board and never a reason to
@@ -55,31 +67,89 @@ export function gumroadSaleEntries(sale: any, lineId: string): LedgerEntryInput[
   return entries;
 }
 
+const DAY_MS = 86_400_000;
+/**
+ * With no cursor, the first read's window: the trailing 30 days (the day the cursor would be), from the day before;
+ * `verify-gumroad` starts there too while the ledger has no Gumroad row.
+ */
+export const FIRST_READ_DAYS = 30;
+const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** A YYYY-MM-DD day moved by whole days, in UTC. */
+export const shiftDay = (day: string, days: number): string =>
+  new Date(Date.parse(`${day}T00:00:00.000Z`) + days * DAY_MS).toISOString().slice(0, 10);
+
+/**
+ * Whether `day` may be the cursor: a real YYYY-MM-DD date (Date.parse accepts "2026-02-30" as 2026-03-02, so it must
+ * read back as itself) no later than `latestDay`, tomorrow in UTC (a created_at written east of UTC is up to a day
+ * ahead). A shape alone let "2026-13-45" in, which makes `shiftDay` throw at every later sync, and a date in the future,
+ * which starts every later listing past every real sale (the tick-71 review).
+ */
+function isCursorDay(day: string, latestDay: string): boolean {
+  const t = Date.parse(`${day}T00:00:00.000Z`);
+  return DAY_RE.test(day) && !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === day && day <= latestDay;
+}
+
+/**
+ * The ledger sync's page cap: 5,000 sales since the day before its cursor, a window normally a day or two long. Well
+ * above MAX_REFUND_RATE_PAGES, so a long stop is read through and the cursor moves on; still a cap, because Gumroad's rate
+ * limits are not recorded (research/measurements/gumroad-license-decision.md:25) and a stuck sync asks again every hour.
+ */
+export const MAX_LEDGER_SYNC_PAGES = 500;
+
+/** The sync's line for a listing `fetchSince` could not read to its end. No token, no sale id, no word for refunds. */
+function incompleteListing(listing: Exclude<GumroadSalesListing, { ok: true }>, after: string, read: number, cursorDay: string): string {
+  const why = listing.problem === "refused"
+    ? `the sales listing since ${after} was refused at page ${listing.page} (HTTP ${listing.status})`
+    : listing.problem === "looped"
+      ? `the sales listing since ${after} loops (page ${listing.pages} names as its next a page already asked for)`
+      : `the sales listing since ${after} runs past ${listing.pages} pages`;
+  const rest = listing.problem !== "too_many_pages"
+    ? "the next sync asks again from the same day"
+    : `the sales after page ${listing.pages} are not read, and no later sync reads them while the cursor is kept: past ` +
+      "the cap the sync cannot move on by itself";
+  return `${why}: the ${read} sale(s) read before it stopped are booked (one read again is a duplicate), and the cursor ` +
+    `stays at ${cursorDay}, so no sale it did not read is passed; ${rest}`;
+}
+
 export const gumroadConnector: RevenueConnector = {
   source: "gumroad",
   isConfigured: (env) => Boolean(env.GUMROAD_ACCESS_TOKEN),
   async fetchSince({ cursor, env, resolveLine, fetchImpl = fetch }) {
     const token = env.GUMROAD_ACCESS_TOKEN;
     if (!token) return { entries: [], unmapped: [] };
-    const after = cursor && /^\d{4}-\d{2}-\d{2}$/.test(cursor)
+    const now = Date.now();
+    const latestDay = new Date(now + DAY_MS).toISOString().slice(0, 10);
+    const cursorDay = cursor && isCursorDay(cursor, latestDay)
       ? cursor
-      : new Date(Date.now() - 30 * 86_400_000).toISOString().slice(0, 10);
-    const url = `https://api.gumroad.com/v2/sales?access_token=${encodeURIComponent(token)}&after=${after}`;
-    const res = await fetchJson(fetchImpl, url);
-    if (!res.ok || !Array.isArray(res.body?.sales)) return { entries: [], unmapped: [] };
+      : new Date(now - FIRST_READ_DAYS * DAY_MS).toISOString().slice(0, 10);
+    // From the day before the cursor's, whatever day or zone the index takes `after` in (the header).
+    const after = shiftDay(cursorDay, -1);
+    // A stored cursor that is no day to read from is replaced, and said: the sales before the first read's window that
+    // it may have passed are not read again.
+    const replaced = cursor && cursorDay !== cursor
+      ? `the stored cursor "${cursor.slice(0, 32)}" is no real day up to tomorrow (UTC), so this sync read from ${after} as ` +
+        "a first read does; a sale created before that day and not booked yet is not read"
+      : null;
+    const read: unknown[] = [];
+    const listing = await listGumroadSalesSince({ token, after, fetchImpl, maxPages: MAX_LEDGER_SYNC_PAGES, onPage: (sales) => { read.push(...sales); } });
 
     const entries: LedgerEntryInput[] = [];
     const unmapped = new Set<string>();
-    let newestDay = after;
-    for (const sale of res.body.sales as any[]) {
+    let newestDay = cursorDay;
+    for (const sale of read as any[]) {
       const productId = String(sale.product_id ?? "");
       const lineId = resolveLine(`gumroad:${productId}`) ?? env.GUMROAD_DEFAULT_LINE ?? UNASSIGNED_LINE_ID;
       if (lineId === UNASSIGNED_LINE_ID && productId) unmapped.add(`gumroad:${productId}`);
       const day = String(sale.created_at ?? "").slice(0, 10);
-      if (day > newestDay) newestDay = day;
+      if (isCursorDay(day, latestDay) && day > newestDay) newestDay = day;
       entries.push(...gumroadSaleEntries(sale, lineId));
     }
-    return { entries, nextCursor: newestDay, unmapped: [...unmapped] };
+    if (listing.ok) return { entries, nextCursor: newestDay, unmapped: [...unmapped], ...(replaced ? { problem: replaced } : {}) };
+    // The pages read are booked; the cursor stays (and a first read keeps the window it asked for), because the sales
+    // not read may lie on any day of it.
+    const stop = incompleteListing(listing, after, read.length, cursorDay);
+    return { entries, nextCursor: cursorDay, unmapped: [...unmapped], problem: replaced ? `${replaced}; ${stop}` : stop };
   },
 };
 
@@ -90,10 +160,11 @@ export const REFUND_RATE_WINDOW_DAYS = 90;
 /** The line the Pro product belongs to when the product map does not name one: site.json is il-biz-tools' own. */
 export const PRO_LINE_ID = "il-biz-tools";
 export const DEFAULT_PRO_SITE_DIR = join("products", "il-biz-tools");
-/** Ten sales a page (sales_controller.rb:14): 100 pages is 1,000 sales in 90 days. Past it the count is not complete. */
+/**
+ * Ten sales a page (sales_controller.rb:14): 100 pages is 1,000 sales in 90 days. Past it the count is not complete.
+ * The shared pager's default cap, so also `verify-gumroad`'s; the ledger sync has its own (MAX_LEDGER_SYNC_PAGES).
+ */
 export const MAX_REFUND_RATE_PAGES = 100;
-
-const DAY_MS = 86_400_000;
 
 export interface RefundRateCount {
   /** Sales of the Pro product created inside the window. */
@@ -236,8 +307,8 @@ export function readProProductId(siteDir: string = DEFAULT_PRO_SITE_DIR): { prod
 
 /**
  * Read every Pro sale Gumroad lists from one day before the window (so the day filter's time zone never cuts off a sale
- * inside it), then count exactly on each sale's own time. A refused page, or more pages than MAX_REFUND_RATE_PAGES, is
- * an error: a partial count is never passed off as a rate.
+ * inside it), then count exactly on each sale's own time. A refused page, more pages than MAX_REFUND_RATE_PAGES, or a
+ * repeated next_page_key is an error: a partial count is never passed off as a rate.
  */
 export async function readProRefundCount(params: {
   token: string;
@@ -252,20 +323,27 @@ export async function readProRefundCount(params: {
   if (listing.problem === "refused") {
     return { ok: false, detail: `GET /v2/sales for the Pro product was refused (HTTP ${listing.status}, page ${listing.page})` };
   }
+  if (listing.problem === "looped") {
+    return { ok: false, detail: `GET /v2/sales for the Pro product loops (page ${listing.pages} names as its next a page already asked for), so the count would not be complete` };
+  }
   return { ok: false, detail: `more than ${MAX_REFUND_RATE_PAGES} pages of Pro sales since ${after}, so the count would not be complete` };
 }
 
 export type GumroadSalesListing =
   | { ok: true; sales: unknown[]; pages: number }
   | { ok: false; problem: "refused"; status: number; page: number }
-  | { ok: false; problem: "too_many_pages"; pages: number };
+  | { ok: false; problem: "too_many_pages"; pages: number }
+  /** Page `pages` named as its next a page_key already asked for: the pages from it on would repeat (the tick-71 review). */
+  | { ok: false; problem: "looped"; pages: number };
 
 /**
  * Every sale `GET /v2/sales` lists from `after` (a day; Gumroad keeps `created_at >= after`), of one product when
- * `productId` is given, following `next_page_key` to the last page. A refused page, or more than `maxPages` pages, is
- * not a listing: the caller gets which, never a partial list passed off as the whole. The token goes in the query, as
- * the index asks, and nowhere else. Shared by the refund-rate read and `colony.ts verify-gumroad`
- * (RULING-2026-10-11-ledger-sale-ids.md, fold 6).
+ * `productId` is given, following `next_page_key` to the last page. A refused page, more than `maxPages` pages, or a
+ * next_page_key already asked for (a loop) is not a listing: the caller gets which, never a partial list passed off as
+ * the whole (what was read before the stop
+ * reaches only an `onPage` caller). The token goes in the query, as the index asks, and nowhere else. Shared by the
+ * refund-rate read, `colony.ts verify-gumroad` (RULING-2026-10-11-ledger-sale-ids.md, fold 6) and, since tick 71, the
+ * ledger sync's `fetchSince`.
  */
 export async function listGumroadSalesSince(params: {
   token: string;
@@ -273,9 +351,15 @@ export async function listGumroadSalesSince(params: {
   productId?: string;
   fetchImpl?: typeof fetch;
   maxPages?: number;
+  /**
+   * Called with each answered page's sales, in order, before the next page is asked for: what a caller read, also when
+   * the listing is then refused or runs past the cap (tick 71: `fetchSince` books it, `verify-gumroad` names it).
+   */
+  onPage?: (sales: unknown[], page: number) => void;
 }): Promise<GumroadSalesListing> {
-  const { token, after, productId, fetchImpl = fetch, maxPages = MAX_REFUND_RATE_PAGES } = params;
+  const { token, after, productId, fetchImpl = fetch, maxPages = MAX_REFUND_RATE_PAGES, onPage } = params;
   const sales: unknown[] = [];
+  const asked = new Set<string>();
   let pageKey: string | null = null;
   for (let page = 1; page <= maxPages; page += 1) {
     const q = new URLSearchParams({ access_token: token });
@@ -287,8 +371,11 @@ export async function listGumroadSalesSince(params: {
       return { ok: false, problem: "refused", status: res.status, page };
     }
     sales.push(...res.body.sales);
+    onPage?.(res.body.sales, page);
     pageKey = typeof res.body.next_page_key === "string" && res.body.next_page_key ? res.body.next_page_key : null;
     if (!pageKey) return { ok: true, sales, pages: page };
+    if (asked.has(pageKey)) return { ok: false, problem: "looped", pages: page };
+    asked.add(pageKey);
   }
   return { ok: false, problem: "too_many_pages", pages: maxPages };
 }

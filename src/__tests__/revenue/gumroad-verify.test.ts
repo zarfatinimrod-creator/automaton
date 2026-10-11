@@ -208,3 +208,110 @@ describe("verifyGumroadLedger: the ledger's Gumroad rows against the account's o
     clean(renderGumroadVerify(r) + JSON.stringify(r), "fake-s1");
   });
 });
+
+// Tick 71 (CHANNEL_LOOP §9 tick-69 item 2): the listing runs from a day before the oldest Gumroad row, so it only grows,
+// and past the pager's cap (MAX_REFUND_RATE_PAGES pages of ten) the command says "incomplete". No recorded source shows
+// an upper bound the index accepts, or the order it lists sales in, so the window is not cut into chunks: the result
+// names exactly the part read (pages, sales, the days they were created on) and the part not read, and verifies nothing.
+describe("verifyGumroadLedger on a listing it could not read to the end: what was read and what was not, exactly", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => {
+    db = createInMemoryDb();
+    insertLineFromSeed(db, {
+      id: "il-biz-tools", name: "T", category: "digital_product", tier: "growth", directorRole: "d", operatingLoop: "x",
+      kpis: [], killCriteria: [], scaleCriteria: [], targetMonthlyAgorot: agorotFromIls(100), budgetMonthlyCents: 0, humanSetup: [], skillName: null,
+    });
+    // The ledger's oldest Gumroad row is on 2026-09-01, so the listing starts on 2026-08-31.
+    recordLedgerEntry(db, { lineId: "il-biz-tools", kind: "sale", amountMinor: 7900, currency: "USD", source: "gumroad", externalId: "fake-v-0", occurredAt: "2026-09-01T10:00:00Z" });
+  });
+  afterEach(() => {
+    db.close();
+  });
+
+  /** `n` sales, one every half hour from 2026-09-01T10:00Z on, listed NEWEST first; page `refusePage` (if any) refused with 500. */
+  function index(n: number, refusePage?: number) {
+    const sales = Array.from({ length: n }, (_, i) => sale(`fake-v-${i}`, { created_at: new Date(Date.parse("2026-09-01T10:00:00Z") + i * 1_800_000).toISOString() })).reverse();
+    const urls: URL[] = [];
+    const fetchImpl = (async (url: string | URL) => {
+      const u = new URL(String(url));
+      urls.push(u);
+      const start = Number(u.searchParams.get("page_key") ?? 0);
+      if (refusePage !== undefined && start / 10 + 1 === refusePage) return new Response(JSON.stringify({ success: false }), { status: 500 });
+      const body: Record<string, unknown> = { success: true, sales: sales.slice(start, start + 10) };
+      if (start + 10 < sales.length) body.next_page_key = String(start + 10);
+      return new Response(JSON.stringify(body), { status: 200 });
+    }) as typeof fetch;
+    return { sales, fetchImpl, urls };
+  }
+  const verify = (fetchImpl: typeof fetch) => verifyGumroadLedger(db, { token: TOKEN, fetchImpl, nowIso: "2026-10-11T12:00:00Z" });
+  /** Nothing the command prints names a raw id, an email or the token (as the first describe's `clean`). */
+  const clean = (text: string, ...raw: string[]) => {
+    for (const r of [...raw, TOKEN, "fake-buyer-email-field"]) expect(text).not.toContain(r);
+  };
+  const dayOfSale = (s: FakeSale) => s.created_at.slice(0, 10);
+
+  it("a window longer than the page cap: incomplete, nothing verified, the 100 pages read and their days named, the rest not", async () => {
+    const { sales, fetchImpl, urls } = index(1005);
+    const r = await verify(fetchImpl);
+    expect(urls).toHaveLength(100);
+    expect(urls[0]!.searchParams.get("after")).toBe("2026-08-31");
+    // Read: the first 1,000 the index listed, newest first here, so the sixth to the 1,005th sale, and not the five oldest.
+    const readDays = sales.slice(0, 1000).map(dayOfSale).sort();
+    expect(readDays[0]).toBe("2026-09-01");
+    expect(readDays.at(-1)).toBe("2026-09-22");
+    expect(r).toMatchObject({ status: "incomplete", after: "2026-08-31", pages: 0, listedSales: 0, matchedRows: 0, findings: 0, unbooked: [], unexplained: [] });
+    expect(r.readBeforeStop).toEqual({ pages: 100, sales: 1000, earliestDay: "2026-09-01", latestDay: "2026-09-22" });
+    expect(r.detail).toBe(
+      "more than 100 pages of sales since 2026-08-31. Read: 100 page(s), 1000 sale(s), created 2026-09-01 to 2026-09-22; " +
+        "not read: every page after page 100. Which days the unread pages' sales fall on is not known (the order the index " +
+        "lists sales in is not recorded), so nothing was verified",
+    );
+    const text = renderGumroadVerify(r);
+    expect(text).toContain(`incomplete — ${r.detail}.`);
+    clean(text + JSON.stringify(r), "fake-v-0", "fake-v-5");
+  });
+
+  it("page 2 refused: page 1 named as read, page 2 and after as not read", async () => {
+    const { fetchImpl } = index(25, 2);
+    const r = await verify(fetchImpl);
+    expect(r).toMatchObject({ status: "incomplete", findings: 0, matchedRows: 0 });
+    expect(r.readBeforeStop).toEqual({ pages: 1, sales: 10, earliestDay: "2026-09-01", latestDay: "2026-09-01" });
+    expect(r.detail).toBe(
+      "GET /v2/sales was refused (HTTP 500, page 2). Read: 1 page(s), 10 sale(s), created 2026-09-01 to 2026-09-01; " +
+        "not read: page 2 and any page after it. Which days the unread pages' sales fall on is not known (the order the " +
+        "index lists sales in is not recorded), so nothing was verified",
+    );
+  });
+
+  it("page 1 refused: nothing read, and it says so", async () => {
+    const r = await verify(index(25, 1).fetchImpl);
+    expect(r.readBeforeStop).toEqual({ pages: 0, sales: 0, earliestDay: null, latestDay: null });
+    expect(r.detail).toContain("GET /v2/sales was refused (HTTP 500, page 1). Read: 0 page(s), 0 sale(s); not read: page 1 and any page after it.");
+  });
+
+  // The tick-71 review (fix): the shared pager stops at a next_page_key it has already asked for.
+  it("a listing whose next_page_key repeats: incomplete, the two pages read named, the rest not", async () => {
+    const { sales } = index(25);
+    const urls: URL[] = [];
+    const fetchImpl = (async (url: string | URL) => {
+      const u = new URL(String(url));
+      urls.push(u);
+      const start = u.searchParams.has("page_key") ? 10 : 0;
+      return new Response(JSON.stringify({ success: true, sales: sales.slice(start, start + 10), next_page_key: "fake-key-10" }), { status: 200 });
+    }) as typeof fetch;
+    const r = await verify(fetchImpl);
+    expect(urls).toHaveLength(2);
+    expect(r).toMatchObject({ status: "incomplete", pages: 0, listedSales: 0, matchedRows: 0, findings: 0 });
+    expect(r.readBeforeStop).toEqual({ pages: 2, sales: 20, earliestDay: "2026-09-01", latestDay: "2026-09-01" });
+    expect(r.detail).toBe(
+      "GET /v2/sales loops (page 2 names as its next a page already asked for). Read: 2 page(s), 20 sale(s), created " +
+        "2026-09-01 to 2026-09-01; not read: every page after page 2. Which days the unread pages' sales fall on is not " +
+        "known (the order the index lists sales in is not recorded), so nothing was verified",
+    );
+  });
+
+  it("a complete listing names no part read before a stop", async () => {
+    const r = await verify(index(25).fetchImpl);
+    expect(r).toMatchObject({ status: "clean", pages: 3, listedSales: 25, readBeforeStop: null });
+  });
+});

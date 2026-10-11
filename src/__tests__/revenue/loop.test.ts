@@ -242,9 +242,11 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
       id: "templates", name: "T", category: "digital_product", tier: "growth", directorRole: "d",
       operatingLoop: "x", kpis: [], killCriteria: [], scaleCriteria: [], targetMonthlyAgorot: 1, budgetMonthlyCents: 0, humanSetup: [], skillName: null,
     });
+    // Every answer of Gumroad's API carries `success` (base_controller.rb:42-44, the connector's header); since tick 71
+    // the connector reads through the shared pager, which takes an answer without it as a refusal.
     const fetchImpl = vi.fn(async () => ({
       ok: true,
-      json: async () => ({ sales: [{ id: "g1", product_id: "p1", price: 1200, currency: "usd", created_at: new Date().toISOString(), gumroad_fee: 120, refunded: false, product_name: "Planner" }] }),
+      json: async () => ({ success: true, sales: [{ id: "g1", product_id: "p1", price: 1200, currency: "usd", created_at: new Date().toISOString(), gumroad_fee: 120, refunded: false, product_name: "Planner" }] }),
     })) as unknown as typeof fetch;
     const unmappedRun = await runLedgerSync(db, { GUMROAD_ACCESS_TOKEN: "t" }, fetchImpl);
     expect(unmappedRun.recorded).toBe(2);
