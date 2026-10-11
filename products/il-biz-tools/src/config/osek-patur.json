@@ -1,13 +1,61 @@
 {
-  "year": 2026,
-  "ceiling": 122833,
-  "warnBand": 0.85,
   "verified": true,
-  "source": "https://www.kolzchut.org.il/he/עוסק_פטור",
+  "about": "The osek patur turnover ceiling, for osek-patur.html: the amount of the \"עוסק פטור\" definition in section 1 of the VAT law, for the tax years a primary text states it, each with the gazette page it was read on (the gazette is an image-only PDF; its quote is transcribed in the dated read named in `check`, which carries it verbatim). Only tax years whose ceiling a primary text states are in `years`: 2024 and 2025, ₪120,000, from section 35 of the Economic Efficiency Law (ספר החוקים 3045, page 173). 2026 is in `pendingYears`: the page offers it as not computed and says, from the gazette (page 173, section 37(ב)), that the amount is indexed for the first time on 1 January 2026; its unverified amount lives in osek-patur-unverified.json, which no page loads and the build never ships. Until 11.10.2026 this file held one 2026 ceiling on a comparison with search results, never a read (`check.earlier`); a public product figure may not rest on a search summary, so 2026 moved to pending in the shape osek-zair.json already had (research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md, decisions 1 and 2). The same statutory amount is osek-zair.json's cap (Income Tax Ordinance 87ב(1)); the two configs give one answer for every year. A year in neither map (2027 on) is refused as unknown. `warnBand` is the product's own warning parameter, not a statutory figure.",
+  "documents": {
+    "gazette": {
+      "he": "ספר החוקים 3045",
+      "url": "https://www.capitax.co.il/Attachments/265-2023.pdf",
+      "copyOn": "capitax.co.il",
+      "capture": "research/rendered/tt2-capitax-265-2023.pdf",
+      "meta": "research/rendered/tt2-capitax-265-2023.meta.json",
+      "sha256": "a4d75011e1461562bde4801e3469617dfbbc6ddef8bc51fe41e9887f75335126",
+      "textLayer": false,
+      "idText": "research/rendered/tt2-capitax-265-2023.txt",
+      "idLines": [1, 3],
+      "grade": "primary text (Knesset gazette, pages 171-173), third-party copy on capitax.co.il; image only, so quotes are transcribed from the page image",
+      "recordPages": {
+        "171": { "from": "**עמ' 171**", "to": "יבוטל כאמור בסעיף קטן (ב)." },
+        "172": { "from": "(ב) רשם פקיד השומה", "to": "התקבלו מאחד מאלה:" },
+        "173": { "from": "(א) מקרובו;", "to": "בעד שנת המס 2024 ואילך." }
+      }
+    }
+  },
+  "sourceLine": ["gazette"],
   "check": {
-    "on": "2026-09-07",
-    "how": "search",
-    "record": "research/measurements/serp/2026-09-07-hebrew-calculators.md",
-    "note": "The only dated record is the search read of 7.9.2026: the search tool's summary stated 122,833 and Kol Zchut was a result, but no result page was opened (the record says so), so this is a comparison with search results, not a read of the source. The README's 'Verified figures and sources (September 2026)' lists the secondary sources (Kol Zchut, Bizportal, mako, CPA circulars) without a dated record. No gov.il page has been read, and Kol Zchut answers the runners with 403 (render of 28.9.2026). A dated read of a primary page (note §8.1 N13) turns this into how: \"read\"."
+    "on": "2026-09-29",
+    "how": "read",
+    "record": "logs/2026-09-29-osek-zair-check.md",
+    "note": "On 29.9.2026 the gazette's pages 171-173 were rendered from the stored PDF to images and read; the record transcribes them, section 35 (the \"עוסק פטור\" amount: 120,000) and section 37(ב) (in force 1.1.2024; first indexed 1.1.2026) among them. The read was made for osek-zair.json, from the same capture; this file cites the same transcription since 11.10.2026 (research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md, decision 2(1)).",
+    "earlier": {
+      "on": "2026-09-07",
+      "how": "search",
+      "record": "research/measurements/serp/2026-09-07-hebrew-calculators.md",
+      "note": "Compared with search results on 7.9.2026; never a read: the search tool's summary stated a 2026 figure and Kol Zchut was a result, but no result page was opened (the record says so), and no gov.il page has been read. The figure it compared moved to src/config/osek-patur-unverified.json on 11.10.2026 (research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md, decision 1)."
+    }
+  },
+  "warnBand": 0.85,
+  "years": {
+    "2024": {
+      "ceiling": 120000,
+      "cite": [
+        { "doc": "gazette", "page": 173, "label": "חוק ההתייעלות הכלכלית, סעיף 35", "quote": "35. בחוק מס ערך מוסף, התשל\"ו–1975, בסעיף 1, בהגדרה \"עוסק פטור\", במקום הסכום הנקוב בה יבוא \"120,000 שקלים חדשים\"." }
+      ]
+    },
+    "2025": {
+      "ceiling": 120000,
+      "cite": [
+        { "doc": "gazette", "page": 173, "label": "חוק ההתייעלות הכלכלית, סעיף 35", "quote": "35. בחוק מס ערך מוסף, התשל\"ו–1975, בסעיף 1, בהגדרה \"עוסק פטור\", במקום הסכום הנקוב בה יבוא \"120,000 שקלים חדשים\"." }
+      ]
+    }
+  },
+  "defaultYear": "2025",
+  "pendingYears": {
+    "2026": {
+      "he": "לשנת 2026 הכלי לא מחשב. הסכום שבהגדרת \"עוסק פטור\" בחוק מס ערך מוסף מותאם למדד לראשונה ב-1 בינואר 2026, והכלי יחשב לשנת 2026 אחרי שנקרא מקור ראשוני שמציין את הסכום המעודכן. את הסכום המעודכן יש לבדוק באתר רשות המסים.",
+      "unverifiedValueIn": "src/config/osek-patur-unverified.json",
+      "cite": [
+        { "doc": "gazette", "page": 173, "label": "חוק ההתייעלות הכלכלית, סעיף 37(ב)", "quote": "37. … (ב) … על אף האמור בסעיף 126 לחוק מס ערך מוסף, הסכום שנקבע בסעיף 1 בהגדרה \"עוסק פטור\" כנוסחו בסימן זה, יותאם לראשונה ביום י\"ב בטבת התשפ\"ו (1 בינואר 2026) לעומת המדד שפורסם לאחרונה לפני יום א' בטבת התשפ\"ה (1 בינואר 2025)" }
+      ]
+    }
   }
 }

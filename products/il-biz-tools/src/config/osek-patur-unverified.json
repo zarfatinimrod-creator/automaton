@@ -1,0 +1,11 @@
+{
+  "verified": false,
+  "about": "Figures for osek-patur.html that no primary text read in this repository states. osek-patur.html renders none of them and no page or module loads this file; CONFIG_PUBLISH_RULES gives it the 'verified' rule, so a shipped page that loaded it would stop the build. A value leaves this file only when a rendered primary text states it: then it moves into osek-patur.json `years` with that capture's line (or printed page and transcription) as its cite, and is deleted here; the same commit moves the same amount in osek-zair.json and osek-zair-unverified.json, because the VAT-law \"עוסק פטור\" amount is osek-zair's cap too (research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md, decisions 1(4) and 3(1)). A read of a secondary source, or a publisher's consolidation, never moves it (decisions 3(3) and 3(4)). From 7.9 to 11.10.2026 osek-patur.html printed the 2026 ceiling on a comparison with search results, never a read; on 11.10.2026 a public product figure was ruled not to rest on a search summary (decision 1), and the ceiling moved here (years.2026). The rule is the one osek-zair-unverified.json states.",
+  "years": {
+    "2026": {
+      "ceiling": 122833,
+      "grade": "search-summary read of 7.9.2026 (research/measurements/serp/2026-09-07-hebrew-calculators.md:24-27: a model's paraphrase, not to be cited) and secondary sources named in README.md without a dated read; the one capture in the store that states it is nevo [robots-bar] (ruling 6.10 row 21, decision 1); not a product input (ruling 11.10 row 27)",
+      "toVerify": "Render a primary text that states the 2026 עוסק פטור amount - the notice in Reshumot of the 1.1.2026 CPI adjustment under VAT law section 126(א), a gov.il page of the Tax Authority, or a Tax Authority circular - cite its capture line, move the amount it states into osek-zair.json `years` with that cite (facts.cap), and remove 2026 from `pendingYears` there and from this file. Wikisource may corroborate beside such a text, never replace it (ruling 6.10 row 21 (a), decision 1(4))."
+    }
+  }
+}
