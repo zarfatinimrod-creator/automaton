@@ -266,7 +266,8 @@ describe("colony.yml's header says what is true", () => {
 // RULING-2026-10-11-ledger-sale-ids.md (FABLE_QUEUE row 26), folds 5, 6 and 7: `record` books a gumroad id as its digest
 // and prints the stored form on a duplicate; `verify-gumroad` lists the account's sales with the token (a fake index
 // here, preloaded over globalThis.fetch), digests each id and matches the ledger. Exit 2 without the token (nothing
-// fetched), 0 clean, 3 with findings; its output names rows by their stored form only, never the id or the token.
+// fetched), 0 clean, 3 with findings, 1 when the listing is refused; its output names rows by their stored form only,
+// never the id or the token.
 describe("record and verify-gumroad keep the raw Gumroad id and the token out of their output", () => {
   const FAKE_FETCH = path.join(repoRoot, "src/__tests__/revenue/fixtures/fake-gumroad-fetch.mjs");
   const TOKEN = "fake-token-Q7rT";
@@ -279,8 +280,8 @@ describe("record and verify-gumroad keep the raw Gumroad id and the token out of
   let salesFile: string;
   let logFile: string;
 
-  const run = (args: string[], token: string | null) => {
-    const env: NodeJS.ProcessEnv = { ...process.env, FAKE_GUMROAD_SALES: salesFile, FAKE_GUMROAD_LOG: logFile };
+  const run = (args: string[], token: string | null, extra: NodeJS.ProcessEnv = {}) => {
+    const env: NodeJS.ProcessEnv = { ...process.env, FAKE_GUMROAD_SALES: salesFile, FAKE_GUMROAD_LOG: logFile, ...extra };
     for (const k of ["LEMONSQUEEZY_API_KEY", "GUMROAD_ACCESS_TOKEN", "STRIPE_SECRET_KEY", "POSTHOG_READ_KEY", "POSTHOG_PROJECT_ID"]) delete env[k];
     if (token) env.GUMROAD_ACCESS_TOKEN = token;
     const out = spawnSync(process.execPath, ["--import", "tsx", "--import", FAKE_FETCH, "scripts/colony.ts", ...args, "--db", db], {
@@ -353,6 +354,14 @@ describe("record and verify-gumroad keep the raw Gumroad id and the token out of
     expect(JSON.parse(json.stdout)).toMatchObject({ status: "findings", findings: 1, unexplained: [{ externalId: stored(EXTRA), day: "2026-10-05" }] });
     free(out.stdout + out.stderr + json.stdout + json.stderr);
     expect(out.stdout + json.stdout).not.toContain("fake-buyer-email-field");
+  }, 60_000);
+
+  it("verify-gumroad when the listing is refused: exit 1, incomplete, nothing verified, the token in no line", () => {
+    const out = run(["verify-gumroad"], TOKEN, { FAKE_GUMROAD_STATUS: "401" });
+    expect(out.status, out.stderr).toBe(1);
+    expect(out.stdout).toContain("incomplete — GET /v2/sales was refused (HTTP 401, page 1)");
+    expect(out.stdout).not.toContain("Findings:");
+    free(out.stdout + out.stderr);
   }, 60_000);
 
   it("is read-only: its handle is query-only, as report's is, and its help names the exit codes", () => {

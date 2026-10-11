@@ -92,7 +92,7 @@ Commands:
                        (a row no sale explains, a row that differs from its sale, a refund row out of
                        step), 2 when the token is not set (nothing fetched), 1 when the listing is
                        refused or incomplete. --json for the result as JSON.
-  fx                 Record one day's rate: --currency USDC --date YYYY-MM-DD --rate <ILS per unit>
+  fx                   Record one day's rate: --currency USDC --date YYYY-MM-DD --rate <ILS per unit>
                        (the Israeli calendar day of the receipt, not later than today). A held USDC
                        receipt names it.
   setup-done <lineId>  Mark a line's one-time owner setup as done and queue its build goal.

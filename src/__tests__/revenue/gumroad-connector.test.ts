@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { createInMemoryDb } from "../orchestration/test-db.js";
 import { insertLineFromSeed, recordLedgerEntry } from "../../revenue/ledger.js";
 import { agorotFromIls, isStoredForm, storedExternalId, STORED_EXTERNAL_ID_RE } from "../../revenue/money.js";
-import { gumroadConnector, listGumroadSalesSince, MAX_REFUND_RATE_PAGES } from "../../revenue/connectors/gumroad.js";
+import { gumroadConnector, gumroadSaleEntries, listGumroadSalesSince, MAX_REFUND_RATE_PAGES } from "../../revenue/connectors/gumroad.js";
 
 // RULING-2026-10-11-ledger-sale-ids.md (FABLE_QUEUE row 26), folds 3, 6 and 7: the connector books a sale, its refund and
 // its fee as sha256:X, sha256:X:refund and sha256:X:fee, X the unkeyed SHA-256 of the sale's own id, so the raw id leaves
@@ -74,6 +74,25 @@ describe("the Gumroad connector books the digest of a sale id, never the id", ()
       expect(recordLedgerEntry(db, { lineId: "test-line", kind: "refund", amountMinor: 1200, currency: "USD", source: "gumroad", externalId: "g1:refund" })).toBeNull();
       expect(recordLedgerEntry(db, { lineId: "test-line", kind: "cost", amountMinor: 120, currency: "USD", source: "gumroad", externalId: "g1:fee" })).toBeNull();
       expect(JSON.stringify(db.prepare("SELECT * FROM revenue_ledger").all())).not.toContain("g1");
+    } finally {
+      db.close();
+    }
+  });
+
+  it("a sale with no id books no id of its own making: one sale entry with none, which the ledger refuses (rule 2)", () => {
+    const db = createInMemoryDb();
+    try {
+      insertLineFromSeed(db, {
+        id: "test-line", name: "T", category: "digital_product", tier: "growth", directorRole: "d", operatingLoop: "x",
+        kpis: [], killCriteria: [], scaleCriteria: [], targetMonthlyAgorot: agorotFromIls(100), budgetMonthlyCents: 0, humanSetup: [], skillName: null,
+      });
+      // Missing, null, empty or blank: neither the digest of "undefined" or "null" nor a refund and fee family under it.
+      for (const id of [undefined, null, "", "  "]) {
+        const entries = gumroadSaleEntries(oneSale({ id }), "test-line");
+        expect(entries.map((e) => [e.kind, e.externalId]), String(id)).toEqual([["sale", null]]);
+        expect(() => recordLedgerEntry(db, entries[0]!)).toThrow(/externalId is required for a sale/);
+      }
+      expect(db.prepare("SELECT COUNT(*) AS n FROM revenue_ledger").get()).toEqual({ n: 0 });
     } finally {
       db.close();
     }

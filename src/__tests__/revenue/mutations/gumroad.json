@@ -2,8 +2,8 @@
   {
     "id": "T69-G1",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "  const saleId = storedExternalId(\"gumroad\", String(sale.id));",
-    "replace": "  const saleId = String(sale.id);",
+    "find": ": storedExternalId(\"gumroad\", String(sale.id));",
+    "replace": ": String(sale.id);",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "tick 69, RULING-2026-10-11-ledger-sale-ids.md fold 3: the connector books the raw sale id again (killed by the connector test's \"no g1\" and its recomputed digests)"
   },
@@ -118,5 +118,61 @@
     "replace": "      if (entry.kind === \"never\") result.refundState.push(",
     "test": "src/__tests__/revenue/gumroad-verify.test.ts",
     "note": "tick 69, C3: a refunded sale with no refund row is reported as a missing fee row instead of a refund-state finding"
+  },
+  {
+    "id": "T69-G8",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  if (saleId === null) return entries;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 69 review fixer: a sale with an empty id books a refund and a fee under the digest of \"null\" (the review's note on gumroad.ts:41-49; killed by the id-less sale test)"
+  },
+  {
+    "id": "T69-G9",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "sale.id === undefined || sale.id === null ? null : ",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 69 review fixer: a sale with no id field is booked under the digest of \"undefined\", an id Gumroad never gave (killed by the id-less sale test)"
+  },
+  {
+    "id": "T69-V9",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "  const after = shiftDay(days[0] ?? ",
+    "replace": "  const after = shiftDay(days[days.length - 1] ?? ",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69 review (R-9, BLOCKING): the listing starts a day before the newest row, so every older sale drops out of it and its row reads unexplained (killed by the two-day test, whose fake index filters on after)"
+  },
+  {
+    "id": "T69-V10",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "FROM revenue_ledger WHERE source = 'gumroad' ORDER BY occurred_at, rowid",
+    "replace": "FROM revenue_ledger ORDER BY occurred_at, rowid",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69 review (R-2, BLOCKING): stripe and manual rows are compared with Gumroad's listing and each becomes an unexplained finding (killed by the clean test's ledgerRows and after)"
+  },
+  {
+    "id": "T69-V11",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "      if (id.endsWith(\":refund\") && listed.has(baseOf(id))) {",
+    "replace": "      if (id.endsWith(\":refund\")) {",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69 review (R-3): a refund row whose sale is not listed at all is reported as refund state instead of unexplained (killed by the unlisted-refund test)"
+  },
+  {
+    "id": "T69-V12",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "    const datable = !Number.isNaN(Date.parse(String(sale.created_at ?? \"\")));",
+    "replace": "    const datable = true;",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69 review (R-13): a sale with no readable created_at is compared on the day the connector stamps it with (the sync's own time), a false day difference (killed by the undatable-sale test)"
+  },
+  {
+    "id": "T69-V13",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "  const t = /(?:Z|[+-]\\d{2}:?\\d{2})$/i.test(iso) ? Date.parse(iso) : Number.NaN;",
+    "replace": "  const t = Number.NaN;",
+    "test": "src/__tests__/revenue/gumroad-verify.test.ts",
+    "note": "tick 69 review fixer (the review's note on gumroad-verify.ts:137): the day is sliced from the stored text, so a row booked with +03:00 reads as a day difference from its own sale (killed by the offset test)"
   }
 ]

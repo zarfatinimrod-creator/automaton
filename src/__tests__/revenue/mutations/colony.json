@@ -327,5 +327,13 @@
     "replace": "`Duplicate: ${source}/${str(args, \"external_id\")} was already recorded. Nothing changed.`",
     "test": "src/__tests__/revenue/loop.test.ts",
     "note": "tick 69, fold 5: revenue_record prints the raw id on a duplicate (killed by the tool test's exact message)"
+  },
+  {
+    "id": "T69-C5",
+    "file": "scripts/colony.ts",
+    "find": "        else if (result.status === \"incomplete\") process.exitCode = 1;",
+    "replace": "        else if (result.status === \"incomplete\") process.exitCode = 0;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 69 review (R-4): verify-gumroad exits 0 when the listing is refused, as if the ledger were verified (killed by the refused-listing test's exit 1)"
   }
 ]

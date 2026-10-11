@@ -20,14 +20,19 @@ const sale = (id: string, over: Partial<FakeSale> = {}): FakeSale => ({
   id, price: 7900, currency: "usd", created_at: AT, refunded: false, gumroad_fee: 0, email: "fake-buyer-email-field", ...over,
 });
 
+/** The index as the connector's header reads it: `created_at >= after` (sales_controller.rb:282), ten a page, page_key. */
 function fakeIndex(sales: FakeSale[]): { fetchImpl: typeof fetch; urls: URL[] } {
   const urls: URL[] = [];
   const fetchImpl = (async (url: string | URL) => {
     const u = new URL(String(url));
     urls.push(u);
+    // A listing that starts too late drops the older sales, as the real index does. A sale with no readable created_at
+    // is listed whatever the filter, so the test that gives one can reach the comparison.
+    const after = u.searchParams.get("after") ?? "";
+    const since = sales.filter((s) => Number.isNaN(Date.parse(s.created_at)) || new Date(s.created_at).toISOString().slice(0, 10) >= after);
     const start = Number(u.searchParams.get("page_key") ?? 0);
-    const body: Record<string, unknown> = { success: true, sales: sales.slice(start, start + 10) };
-    if (start + 10 < sales.length) body.next_page_key = String(start + 10);
+    const body: Record<string, unknown> = { success: true, sales: since.slice(start, start + 10) };
+    if (start + 10 < since.length) body.next_page_key = String(start + 10);
     return new Response(JSON.stringify(body), { status: 200 });
   }) as typeof fetch;
   return { fetchImpl, urls };
@@ -69,12 +74,36 @@ describe("verifyGumroadLedger: the ledger's Gumroad rows against the account's o
     book("fake-s1");
     book("fake-s1:refund", { kind: "refund" });
     book("fake-s1:fee", { kind: "cost", amountMinor: 790 });
+    // Rows of other sources, older than every Gumroad row, are neither compared nor where the listing starts.
+    book("fake-stripe-1", { source: "stripe", occurredAt: "2026-09-20T10:00:00Z" });
+    book("fake-manual-1", { source: "manual", occurredAt: "2026-09-21T10:00:00Z" });
     const { fake, result } = run([sale("fake-s1", { refunded: true, gumroad_fee: 790 })]);
     const r = await result;
     expect(r).toMatchObject({ status: "clean", ledgerRows: 3, listedSales: 1, matchedRows: 3, findings: 0, after: "2026-10-04", pages: 1 });
     expect([...r.unexplained, ...r.differing, ...r.refundState, ...r.unbooked]).toEqual([]);
     expect(fake.urls[0]!.searchParams.get("after")).toBe("2026-10-04");
     clean(renderGumroadVerify(r) + JSON.stringify(r), "fake-s1");
+  });
+
+  it("rows on two days: the listing starts a day before the older one, so both sales are listed and match", async () => {
+    book("fake-new");
+    book("fake-old", { occurredAt: "2026-10-02T08:00:00Z" });
+    const { fake, result } = run([sale("fake-old", { created_at: "2026-10-02T08:00:00Z" }), sale("fake-new")]);
+    expect(await result).toMatchObject({ status: "clean", after: "2026-10-01", ledgerRows: 2, listedSales: 2, matchedRows: 2, findings: 0 });
+    expect(fake.urls[0]!.searchParams.get("after")).toBe("2026-10-01");
+  });
+
+  it("a row booked with a zone offset is compared on its UTC day, and the listing starts a day before that", async () => {
+    book("fake-s1", { occurredAt: "2026-10-05T01:00:00+03:00" });
+    const { fake, result } = run([sale("fake-s1", { created_at: "2026-10-04T22:00:00Z" })]);
+    expect(await result).toMatchObject({ status: "clean", after: "2026-10-03", matchedRows: 1, differing: [], findings: 0 });
+    expect(fake.urls[0]!.searchParams.get("after")).toBe("2026-10-03");
+  });
+
+  it("a sale whose created_at cannot be read is matched on amount and currency, with no day to compare", async () => {
+    book("fake-s1");
+    const r = await run([sale("fake-s1", { created_at: "not-a-date" })]).result;
+    expect(r).toMatchObject({ status: "clean", matchedRows: 1, differing: [], findings: 0 });
   });
 
   it("a row no listed sale explains is a finding, named by its stored form only", async () => {
@@ -125,6 +154,15 @@ describe("verifyGumroadLedger: the ledger's Gumroad rows against the account's o
     ]);
     expect(r.unexplained).toEqual([]);
     expect(r).toMatchObject({ findings: 2, status: "findings" });
+  });
+
+  it("a refund row whose sale is not listed at all is unexplained, not a refund-state finding", async () => {
+    book("fake-s1");
+    book("fake-gone:refund", { kind: "refund" });
+    const r = await run([sale("fake-s1")]).result;
+    expect(r.unexplained).toEqual([{ externalId: `${sha("fake-gone")}:refund`, day: DAY }]);
+    expect(r.refundState).toEqual([]);
+    expect(r).toMatchObject({ findings: 1, status: "findings" });
   });
 
   it("a listed sale no row books is counted, not a finding, and its refund and fee are not counted twice", async () => {

@@ -62,7 +62,15 @@ interface LedgerRow {
   occurredAt: string;
 }
 
-const dayOf = (iso: string): string => iso.slice(0, 10);
+/**
+ * The UTC day of a stored time. `recordLedgerEntry` keeps `occurred_at` as it was given, so a row booked by hand with an
+ * offset (`2026-10-05T01:00:00+03:00`) is read as the instant it names, the day the connector books for the same sale;
+ * a time without a zone is read as written.
+ */
+const dayOf = (iso: string): string => {
+  const t = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(iso) ? Date.parse(iso) : Number.NaN;
+  return Number.isNaN(t) ? iso.slice(0, 10) : new Date(t).toISOString().slice(0, 10);
+};
 const shiftDay = (day: string, days: number): string => new Date(Date.parse(`${day}T00:00:00.000Z`) + days * DAY_MS).toISOString().slice(0, 10);
 const baseOf = (id: string): string => id.replace(/:(?:refund|fee)$/, "");
 

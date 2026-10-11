@@ -38,10 +38,13 @@ export function gumroadSaleEntries(sale: any, lineId: string): LedgerEntryInput[
   const price = Math.abs(Number(sale.price ?? 0)); // cents
   const currency = String(sale.currency ?? "usd").toUpperCase();
   const occurredAt = Number.isNaN(Date.parse(createdAt)) ? new Date().toISOString() : new Date(createdAt).toISOString();
-  const saleId = storedExternalId("gumroad", String(sale.id));
+  const saleId = sale.id === undefined || sale.id === null ? null : storedExternalId("gumroad", String(sale.id));
   const entries: LedgerEntryInput[] = [
     { lineId, kind: "sale", amountMinor: price, currency, source: "gumroad", externalId: saleId, occurredAt, note: sale.product_name ?? null },
   ];
+  // A sale with no id has no family: the ledger refuses the sale itself (MISSION rule 2), and a refund or fee keyed on
+  // the digest of "undefined" or "null" would be an id the platform never gave.
+  if (saleId === null) return entries;
   if (sale.refunded === true) {
     entries.push({ lineId, kind: "refund", amountMinor: price, currency, source: "gumroad", externalId: `${saleId}:refund`, occurredAt, note: "refunded" });
   }
