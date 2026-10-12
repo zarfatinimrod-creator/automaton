@@ -390,9 +390,14 @@ describe("fetchSince reads every page since its cursor, and never passes a sale 
 
     it("tomorrow's day (a created_at written east of UTC) moves the cursor; the day after tomorrow does not", async () => {
       setConnectorCursor(db, "gumroad", "2026-10-01");
-      expect(await sync(gumroadIndex([fakeSale(1, "2026-10-13T00:30:00Z")]).fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
+      // One index across both syncs, as Gumroad keeps listing a sale it listed (since the tick-74 review a booked sale a
+      // complete listing reaches and does not return is a sync error; an index holding only sale 2 lost sale 1).
+      const sales = [fakeSale(1, "2026-10-13T00:30:00Z")];
+      const { fetchImpl } = gumroadIndex(sales);
+      expect(await sync(fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
       expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-01");
-      expect(await sync(gumroadIndex([fakeSale(2, "2026-10-12T09:00:00+14:00")]).fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
+      sales.push(fakeSale(2, "2026-10-12T09:00:00+14:00"));
+      expect(await sync(fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
       expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-12");
     });
 
@@ -784,7 +789,9 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
     expect(result.errors).toEqual([
       `gumroad: the late-refund re-read since 2026-09-30 runs past ${MAX_LEDGER_SYNC_PAGES} pages: the refunds among ` +
         "the 2 sale(s) it read are booked (one booked already is a duplicate), and the cursor is not moved by it; a " +
-        `refund on a sale after page ${MAX_LEDGER_SYNC_PAGES} is not booked while the re-read runs past the cap`,
+        `refund on a sale after page ${MAX_LEDGER_SYNC_PAGES} is not booked, and no later sync reads past that page ` +
+        "while the oldest open sale holds the re-read's day: past the cap the re-read cannot move on by itself, and " +
+        "this is said at every sync",
     ]);
     expect(result.errors[0]).not.toContain(TOKEN);
     for (const s of sales) expect(result.errors[0]).not.toContain(s.id);
@@ -897,5 +904,96 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
     expect(result).toMatchObject({ recorded: 0, duplicates: 0 });
     expect(result.errors).toEqual([unlistedLine(hand, "2026-10-04", "2026-10-03")]);
     expect(refundsOf(hand)).toEqual([]);
+  });
+
+  it("the sync's own listing refused and no re-read asked: an open sale that listing would reach is not called unlisted, because it was not read to its end", async () => {
+    setConnectorCursor(db, "gumroad", "2026-10-04");
+    const s2 = sale(2, "2026-10-05T09:00:00Z");
+    const sales = [s2];
+    at("2026-10-05T12:00:00Z");
+    expect(await sync(index(sales).fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
+    expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-05");
+    at("2026-10-10T12:00:00Z");
+    const { fetchImpl, urls } = index(sales, { refuse: "2026-10-04" });
+    const result = await sync(fetchImpl);
+    expect(afters(urls, 0)).toEqual(["2026-10-04"]);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]).toMatch(/^gumroad: the sales listing since 2026-10-04 was refused at page 1 \(HTTP 500\)/);
+  });
+
+  it("a sale on the sync's own `after` day, an index that excludes that day, and the re-read refused: not called unlisted, since no listing read to its end reaches that day", async () => {
+    setConnectorCursor(db, "gumroad", "2026-10-03");
+    const s1 = sale(1, "2026-10-04T10:00:00Z");
+    const sales = [s1];
+    const whole = index(sales, { reading: "exclusive" });
+    at("2026-10-04T12:00:00Z");
+    expect(await sync(whole.fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
+    at("2026-10-05T12:00:00Z");
+    sales.push(sale(2, "2026-10-05T09:00:00Z"));
+    expect(await sync(whole.fetchImpl)).toMatchObject({ recorded: 1, errors: [] });
+    expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-05");
+    at("2026-10-10T12:00:00Z");
+    const { fetchImpl, urls } = index(sales, { reading: "exclusive", refuse: "2026-10-03" });
+    const result = await sync(fetchImpl);
+    // The sync's own listing (from 2026-10-04, this index reading from 2026-10-05) returns sale 2 alone; the re-read
+    // from 2026-10-03 is refused. Sale 1's day, 2026-10-04, is the own listing's `after` day, which it may not list.
+    expect(afters(urls, 0)).toEqual(["2026-10-04", "2026-10-03"]);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]).toMatch(/^gumroad: the late-refund re-read since 2026-10-03 was refused at page 1 \(HTTP 500\)/);
+  });
+
+  // The tick-74 review's surviving mutations on money branches (R-M3, R-M4, R-M6), pinned: the open set keys a sale and a
+  // refund booked before the digest ruling by their digests, and the re-read books a refund and nothing else.
+  /** A row in the form the ledger held before RULING-2026-10-11-ledger-sale-ids.md: the raw id, put in by SQL. */
+  const insertRaw = (rowId: string, kind: "sale" | "refund", externalId: string, occurredAt: string) =>
+    db.prepare(
+      `INSERT INTO revenue_ledger (id, line_id, kind, amount_minor, currency, amount_agorot, source, external_id, occurred_at, recorded_at, note)
+       VALUES (?, 'fake-line-a', ?, ?, 'USD', ?, 'gumroad', ?, ?, ?, NULL)`,
+    ).run(rowId, kind, kind === "refund" ? -7900 : 7900, kind === "refund" ? -28440 : 28440, externalId, occurredAt, occurredAt);
+
+  it("a sale booked before the digest ruling, its raw id in the row: its late refund is booked once, in the digest form, on its line", async () => {
+    setConnectorCursor(db, "gumroad", "2026-10-05");
+    const old = { ...sale(9, "2026-10-01T10:00:00Z"), refunded: true };
+    insertRaw("fake-row-t74-9", "sale", old.id, "2026-10-01T10:00:00.000Z");
+    const { fetchImpl, urls } = index([old]);
+    at("2026-10-10T12:00:00Z");
+    expect(await sync(fetchImpl)).toMatchObject({ recorded: 1, duplicates: 0, errors: [] });
+    expect(afters(urls, 0)).toEqual(["2026-10-04", "2026-09-30"]);
+    expect(refundsOf(old)).toEqual([
+      { kind: "refund", lineId: "fake-line-a", amountMinor: -7900, externalId: `sha256:${sha(old.id)}:refund`, occurredAt: "2026-10-01T10:00:00.000Z" },
+    ]);
+    // The raw sale and its digest-form refund are one family: the sale is closed, and nothing more is asked or booked.
+    const m = urls.length;
+    expect(await sync(fetchImpl)).toMatchObject({ recorded: 0, duplicates: 0, errors: [] });
+    expect(afters(urls, m)).toEqual(["2026-10-04"]);
+    expect(rows()).toHaveLength(2);
+  });
+
+  it("a sale and its refund both booked before the digest ruling, raw ids in both rows: the sale is not open, so no second refund is booked", async () => {
+    setConnectorCursor(db, "gumroad", "2026-10-05");
+    const old = { ...sale(10, "2026-10-01T10:00:00Z"), refunded: true };
+    insertRaw("fake-row-t74-10", "sale", old.id, "2026-10-01T10:00:00.000Z");
+    insertRaw("fake-row-t74-10r", "refund", `${old.id}:refund`, "2026-10-01T10:00:00.000Z");
+    const { fetchImpl, urls } = index([old]);
+    at("2026-10-10T12:00:00Z");
+    expect(await sync(fetchImpl)).toMatchObject({ recorded: 0, duplicates: 0, errors: [] });
+    expect(afters(urls, 0)).toEqual(["2026-10-04"]); // no open sale: only the sync's own listing is asked
+    expect(refundsOf(old)).toEqual([]);
+    expect(rows().filter((r) => r.kind === "refund")).toHaveLength(1);
+    expect(rows()).toHaveLength(2);
+  });
+
+  it("a sale booked by hand without its fee row, then refunded: the re-read books its refund and nothing else, no fee row", async () => {
+    setConnectorCursor(db, "gumroad", "2026-10-05");
+    const hand = { ...sale(11, "2026-10-01T10:00:00Z"), gumroad_fee: 790, refunded: true };
+    bookByHand(hand, "2026-10-01T10:00:00.000Z");
+    const { fetchImpl, urls } = index([hand]);
+    at("2026-10-10T12:00:00Z");
+    expect(await sync(fetchImpl)).toMatchObject({ recorded: 1, duplicates: 0, errors: [] });
+    expect(afters(urls, 0)).toEqual(["2026-10-04", "2026-09-30"]);
+    expect(rows().map((r) => [r.kind, r.externalId])).toEqual([
+      ["sale", `sha256:${sha(hand.id)}`],
+      ["refund", `sha256:${sha(hand.id)}:refund`],
+    ]);
   });
 });

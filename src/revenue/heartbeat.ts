@@ -354,12 +354,17 @@ export async function runLedgerSync(
       result.sources.push(connector.source);
       // Gumroad's late refunds (tick 74): a refund made after the sync's own listing stopped reaching its sale, read again
       // from the day before the oldest sale the ledger holds unrefunded. It never moves the cursor; a re-read it could not
-      // read to its end is a sync error, as the listing's own is. Last in the block, so a throw in it costs nothing above.
+      // read to its end is a sync error, as the listing's own is, and so is an open sale no listing could read (the tick-74
+      // review: a sale booked by hand days after Gumroad made it). Last in the block, so a throw in it costs nothing above.
       if (openGumroad && fetched.listedFrom) {
+        // The stored ids of the sales the sync's own listing returned: their refund state was just read.
+        const listed = new Set(fetched.entries.flatMap((e) => (e.kind === "sale" && e.externalId ? [e.externalId] : [])));
         const late = await readLateGumroadRefunds({
           token: String(env.GUMROAD_ACCESS_TOKEN), open: openGumroad, listedFrom: fetched.listedFrom, fetchImpl,
+          listed, listedToEnd: fetched.listedToEnd === true,
         });
         if (late.problem) result.errors.push(`${connector.source}: ${late.problem}`);
+        for (const line of late.unlisted) result.errors.push(`${connector.source}: ${line}`);
         for (const entry of late.entries) {
           const rec = recordLedgerEntry(db, entry);
           if (rec) result.recorded += 1; else result.duplicates += 1;

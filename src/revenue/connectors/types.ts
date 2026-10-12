@@ -16,6 +16,11 @@ export interface ConnectorFetchResult {
    * asks only for sales its own listing may not have reached: those created before the day after it (tick 74).
    */
   listedFrom?: string;
+  /**
+   * True when that listing was read to its last page: then every sale dated from the day after `listedFrom` that it did
+   * not return is one whose state it could not read (the tick-74 review).
+   */
+  listedToEnd?: boolean;
 }
 
 export interface RevenueConnector {
