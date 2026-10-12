@@ -841,6 +841,9 @@ describe("the scanner", () => {
     expect(at(list, 302)).toMatchObject({ path: "MISSION.md", lastPathNamed: true });
     expect(at(list, 5)).toMatchObject({ path: "MISSION.md", via: "carried from :3", lastPathNamed: true });
     expect(at(list, 30)).toMatchObject({ kind: "unattributed" });
+    // At an item's start the word stands bare, whatever ended the line before.
+    const item = scan("\"The test\" is `src/__tests__/loop.test.ts`.\n\n- `MISSION.md:2` holds it\n- Test `:7` too.");
+    expect(at(item, 7)).toMatchObject({ path: "src/__tests__/loop.test.ts", via: 'role "The test" (as Test)' });
   });
 
   it("reads a phrase that holds a clock time as a definition: no line reference is in it (tick 72 review)", () => {
@@ -854,13 +857,13 @@ describe("the scanner", () => {
 
   it("reports a name's own line that no file has, a directory's, one inside another mark and a fence line's (tick 72 review)", () => {
     const text = [
-      "`MISSION.md:1`; T1:5, R6:3 and v2:7, `v1.2:3`; the dir `src/revenue:12`, `src/revenue/:13`, `:14`; ALPHA-RULING.md:6.",
+      "`MISSION.md:1`; T1:5, R6:3 and v2:7, `v1.2:3`; the dir `src/revenue:12`, `src/revenue/:13`, `:14`; ALPHA-RULING.md:6 and ROBOTS-RULING:152.",
       "",
-      "```ts `b.md:9` and :10",
+      "```ts `b.md:9` and :10 https://example.org/view?file=x.md:5 https://example.org/v1/:7",
       "`b.md:2`",
       "```",
       "",
-      "At 07:11 on 2026-10-07T20:33:58Z, sha256:12ab and https://example.org/x.md:5 nothing.",
+      "At 07:11 on 2026-10-07T20:33:58Z or 2026-10-07T20:33 UTC, sha256:12ab and https://example.org/x.md:5 nothing.",
     ].join("\n");
     const out = scanCitations(text, resolver);
     const seen = out.refs.map((r: { kind: string; name?: string; path?: string; range: number[]; via?: string | null }) => `${r.kind}:${r.name ?? r.path ?? ""}:${r.range[0]}:${r.via ?? ""}`);
@@ -874,12 +877,13 @@ describe("the scanner", () => {
       "unchecked:src/revenue:13:a directory",
       "unchecked:src/revenue:14:a directory",
       'dropped::6:inside "ALPHA-RULING"',
+      "unchecked:ROBOTS-RULING:152:ROBOTS-RULING",
       "dropped::9:on a fence line",
       "dropped::10:on a fence line",
       "file:b.md:2:",
     ]);
     // Every one is counted: found is what the report holds, and a time, a hash or a URL is none.
-    expect(out.pointers).toBe(12);
+    expect(out.pointers).toBe(13);
     // A --row reads the fence line's count only when it is the row's line.
     expect(scanCitations(text, resolver, { only: new Set([3]) }).pointers).toBe(2);
     expect(scanCitations(text, resolver, { only: new Set([4]) }).pointers).toBe(1);

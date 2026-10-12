@@ -43,7 +43,8 @@
  *     ("the x script"); `a.ts`, `b.ts` ("the b") are under `src/revenue/`; "a bare `BOARD.md:n` is the 7.9 board's".
  *     A definition counts only when its target looks like a path, and its name holds no line reference ("`:913-917`
  *     is `owner-steps.test.ts`" says whose line a pointer is; read as a definition it swallowed every later
- *     `:913-917`). A phrase owns lines only outside double quotes (a quotation's words are the source's: "when it
+ *     `:913-917`; a colon between digits alone is a time, so "The 05:23 schedule" is a phrase). A phrase owns lines
+ *     only outside double quotes (a quotation's words are the source's: "when it
  *     arrives in the ledger with a transaction id" (`:269-270`) is MISSION's line, not the ledger's), and in the
  *     possessive only right after it ("the read-back's `:99-103`", "the
  *     document's own `:26`") or starting a sentence ("The status report's appendix opens at `:38`"), never describing
@@ -52,7 +53,12 @@
  *     role defined as "the X" also owns a line as its one word X right before that line, the possessive between or
  *     not ("pinned at test `:913-917`" with "The test" defined; `via` 'role "The test" (as test)'), when every
  *     definition of X names one file of the tree: two that disagree, or one that names no file, make no role, and the
- *     one word anywhere else is prose ("a test passes (`:6`)");
+ *     one word anywhere else is prose ("a test passes (`:6`)"). The word must stand bare: after a line's or an item's
+ *     start, a bracket, a pipe, a dash, a clause's punctuation, "the", or a preposition or conjunction ("at", "and",
+ *     "of", …); after a modifier ("the tool's page (`:167-169`)", "the portfolio test"), another article ("a test")
+ *     or a name it is prose (tick 72 review). A role owns that line and the lines listed right after it ("test `:149`,
+ *     `:400`"), and nothing else: not a line with a word between ("test `:979-988`, comment `:302-306`"), no later
+ *     line by a carry and no table's caption — the paragraph's last name stays the last one that is no role;
  *   - a backticked or bare path that exists in --tree, without a line: a whole-file citation ("present" or "gone" at
  *     head: the file's lines are not compared).
  *   - a name several files have is the one the document writes in full elsewhere, else the one under the deepest
@@ -60,12 +66,18 @@
  * Headings are read too, and end their paragraph: their names own no line after them. A name with a line that is in no
  * file of --tree is reported, never dropped: "unknown path" when it looks like a path (a slash or a file extension) or
  * matches several files (`BOARD.md`: candidates listed); "not checked" when it is a short name with no file (OTA:596,
- * an undefined X-RULING, "the note"), or a line of a file that is binary at --tree (a NUL byte in its first 8000, as
- * git judges it: `colony.db` has no lines to compare). A bare :N after no name is "unattributed". URLs are skipped.
+ * an undefined X-RULING, "the note"; since the tick-72 review also one that ends in a digit or holds a dot, `T1:5`,
+ * `v1.2:3`, `purchases_controller.rb:20-22` — a name that holds a letter and is no time or hash: "07:11",
+ * "2026-10-07T20:33:58Z" and "sha256:12ab" are none), a directory's line (`src/revenue:12`, via "a directory"), or a
+ * line of a file that is binary at --tree (a NUL byte in its first 8000, as git judges it: `colony.db` has no lines to
+ * compare). A bare :N after no name is "unattributed". URLs are skipped.
  * Every line reference found (each bare one outside a URL, each name's own) is in the report once: a cited line, an
  * unknown, unchecked or unattributed one, or "dropped" — one a name or phrase swallowed, listed with what swallowed it
- * (no definition the scanner finds can now; the category is the backstop). The summary's `pointers` holds the two
- * numbers, found and reported, which are one; each citation counts its `occurrences`.
+ * (no definition the scanner finds can now; `ALPHA-RULING.md:6` is one a ruling's name holds), or one on a fence line,
+ * which is not read ("on a fence line"). Before the tick-72 review the found count skipped what the scanner gave to
+ * nothing, so "N found, N in this report" could hold while a name's line vanished (the 5.10 brief's six
+ * `purchases_controller.rb`, `sales_controller.rb` and `refundable.rb` lines did). The summary's `pointers` holds the
+ * two numbers, found and reported, which are one; each citation counts its `occurrences`.
  * Skipped, and listed with their lines, as written against other trees than the brief's: a blockquote that speaks of
  * drift (a main-thread drift note), and a pointer-housekeeping section, from an emphasised lead at the start of a line
  * that says "pointer drift" or "correction(s)"/"corrected" ("*Row 28's pointer drift*", "*Corrections the checker made
@@ -318,8 +330,16 @@ export function driftNoteLines(lines) {
   return skippedParts(lines).lines;
 }
 
-/** A line reference inside a would-be name: `:913-917`, `MISSION.md:4`, "the pin at :5". No short name holds one. */
-const HOLDS_LINE_RE = /:L?\d/;
+/**
+ * Whether a would-be name holds a line reference: `:913-917`, `MISSION.md:4`, "the pin at :5", `T1:5`. No short name
+ * holds one. A colon between digits alone is a time or a ratio, no line ("The 05:23 schedule", "1:2"): what stands
+ * right before the colon must be nothing, or hold a letter (tick 72 review: /:L?\d/ took the clock time for a line).
+ */
+export const holdsLine = (name) =>
+  [...name.matchAll(/:L?\d/g)].some((m) => {
+    const run = /[A-Za-z0-9_.\/-]*$/.exec(name.slice(0, m.index))[0];
+    return !run || /[A-Za-z_]/.test(run);
+  });
 
 /**
  * The short names a document defines, each to { path } (a file of the tree), { unresolved, candidates } (a path-like
@@ -333,7 +353,7 @@ export function findDefinitions(text, resolver) {
   const names = new Map();
   const phrases = new Map();
   const add = (map, name, index, target) => {
-    if (!HOLDS_LINE_RE.test(name)) map.set(name, [...(map.get(name) ?? []), { index, target }]);
+    if (!holdsLine(name)) map.set(name, [...(map.get(name) ?? []), { index, target }]);
   };
   const target = (t) => {
     const raw = t.trim();
@@ -416,6 +436,24 @@ function quoteSpans(line, open) {
 const range = (a, b) => [Number(a), b === undefined ? Number(a) : Number(b)];
 
 /**
+ * Whether a name's own `:N` is a line reference (`after` is the text after it): the name holds a letter, and is no
+ * time ("2026-10-07T20:33:58Z", "T20:33:58", "07:11") and no hash ("sha256:12ab").
+ */
+export const lineOwnerLike = (name, after) => /[A-Za-z]/.test(name) && !/\dT\d{1,2}$/.test(name) && !/^(?::\d|[A-Za-z_])/.test(after);
+
+/** The line references on a line the scanner does not read (a fence line): each bare one, and each name's own. */
+function strayRefs(line) {
+  const urls = [...line.matchAll(URL_RE)].map((m) => [m.index, m.index + m[0].length]);
+  const inUrl = (s) => urls.some(([a, b]) => s >= a && s < b);
+  const out = [];
+  for (const m of line.matchAll(NAME_RE)) {
+    if (m[2] !== undefined && !inUrl(m.index) && lineOwnerLike(m[1], line.slice(m.index + m[0].length))) out.push({ at: m.index, written: m[0], range: range(m[2], m[3]) });
+  }
+  for (const m of line.matchAll(BARE_RE)) if (!inUrl(m.index)) out.push({ at: m.index, written: m[0], range: range(m[1], m[2]) });
+  return out.sort((x, y) => x.at - y.at);
+}
+
+/**
  * Whether position `at` of line i starts a sentence: after ". ", or at the start of an item or of a sentence's line.
  * p is the line read before it (-1 for none): a drift note between them is not there.
  */
@@ -441,12 +479,27 @@ function gapText(lines, notes, k, li, at) {
  * Whether a gap joins a bare line to the name before it as one phrase: only spaces, brackets, commas, slashes and
  * dashes, the name's possessive ("'s", "'s own"), other line references, and "and", "or", "at", "to", "also",
  * "heading", "line(s)" ("`ledger.ts:421-442`, `:445` and (`:487`)", "`MISSION.md:435-439`, heading `:431`", "the
- * read-back's `:99-103`"). Anything else — a word, a sentence's or a clause's end, a quotation — means the line was
- * given to the last name only for being the last.
+ * read-back's `:99-103`", "`src/revenue/ledger.ts`'s `:5`": the possessive after the name's closing backtick or bracket).
+ * Anything else — a word, a sentence's or a clause's end, a quotation — means the line was given to the last name only
+ * for being the last.
  */
-const ATTACHED_RE = /^(?:['’]s(?:\s+own)?)?(?:[\s`()[\],/&+–—-]|\b(?:and|or|at|to|also|heading|lines?)\b)*$/i;
+const ATTACHED_RE = /^[`)\]]*(?:['’]s(?:\s+own)?)?(?:[\s`()[\],/&+–—-]|\b(?:and|or|at|to|also|heading|lines?)\b)*$/i;
 const LINE_TOKEN_RE = /:L?\d+(?:[-–]L?\d+)?/g;
 export const attached = (gap) => ATTACHED_RE.test(gap.replace(LINE_TOKEN_RE, " "));
+
+/** What may stand between a role's one word and the line it owns: its possessive, a bracket, a backtick. */
+const ROLE_GAP = "(?:['’]s(?:\\s+own)?)?\\s*\\(?`?";
+/**
+ * What may stand right before a role's one word, so that the word is the role and not prose: the start of a line or an
+ * item, a bracket, a pipe, a dash or a clause's punctuation, "the", or a preposition or conjunction ("pinned at test
+ * `:913-917`", "and Test's `:5`", "(note `:195`", "| test `:4`"). A modifier ("the tool's page (`:167-169`)", "the
+ * portfolio test `:7`"), another article ("a test (`:8`)"), a name ("`x.test.ts:3` test `:10`") or any other word
+ * before it makes the word prose (tick 72 review: "the tool's page" gave a test file's `:167-169` to a page of 95 lines).
+ */
+const ROLE_AFTER_RE = /(?:[([{|,;:.!?—–-]|(?:^|[^\p{L}\p{N}_'’`-])(?:the|at|in|on|of|by|from|to|per|see|and|or|also|with|under|via))\s*$/iu;
+/** A line's start before its first word: indent and list markers only. */
+const LINE_START_RE = /^\s*(?:(?:[-*+>]|\d+[.)])\s+)*$/;
+const ITEM_RE = /^\s*(?:[-*+>]|\d+[.)])\s/;
 
 /**
  * Every reference in a document.
@@ -454,11 +507,12 @@ export const attached = (gap) => ATTACHED_RE.test(gap.replace(LINE_TOKEN_RE, " "
  * refs: { kind, docLine, written, via, range?, path?, name?, candidates? }
  *   kind "file"       a line (range) or the whole (range null) of a file of the tree;
  *        "unknown"    a path-like name with a line that no file of the tree has, or that several do (candidates);
- *        "unchecked"  a short name's line with no file behind it (OTA:596, an undefined X-RULING, "the note");
+ *        "unchecked"  a short name's line with no file behind it (OTA:596, an undefined X-RULING, "the note", `T1:5`,
+ *                     `v1.2:3`), or a directory's (`src/revenue:12`, via "a directory");
  *        "unlisted"   a path-like name without a line that the tree does not have (listed, not drift);
  *        "unattributed" a bare :N after no name in its paragraph;
- *        "dropped"    a line reference the scanner found and gave to nothing (via says what swallowed it): never
- *                     silent, though no definition the scanner finds can swallow one now.
+ *        "dropped"    a line reference the scanner found and gave to nothing (via says what swallowed it, or "on a
+ *                     fence line"): never silent, though no definition the scanner finds can swallow one now.
  *   written: the reference as written; via: the name that owns a bare :N (or a short name's own), when it is not the path;
  *   lastPathNamed: a bare :N given to the last name before it although its own phrase names no file (see attached).
  * only: the line numbers to read (a --row); skipped: the drift-note lines left out; pointers: the line references found
@@ -517,7 +571,8 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
   // as its one word X right before that line ("pinned at test `:913-917`", "Test's `:5`"), when every definition of
   // "the X" (any case) names one file of the tree. Anywhere else the one word is prose ("a test passes"); two
   // definitions that disagree, or one that names no file, make no role: never a guess. (A one-word phrase is matched
-  // as a phrase already, and takes the span first.)
+  // as a phrase already, and takes the span first.) The word must stand bare (ROLE_AFTER_RE), and it owns that one line
+  // only: see the per-line loop.
   const roleWord = (p) => /^the\s+(\S+)$/i.exec(p)?.[1] ?? null;
   const targetsOf = new Map();
   for (const [p, list] of phrases) {
@@ -532,7 +587,7 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
     const [path] = paths;
     if (paths.size !== 1 || !path) continue;
     const first = /^[A-Za-z]/.test(w) ? `[${w[0].toUpperCase()}${w[0].toLowerCase()}]${escapeRe(w.slice(1))}` : escapeRe(w);
-    ROLES.push({ phrase: p, path, re: new RegExp(`(?<![A-Za-z0-9_./-])${first}(?=(?:['’]s(?:\\s+own)?)?\\s*\\(?\`?:L?\\d)`, "g") });
+    ROLES.push({ phrase: p, path, re: new RegExp(`(?<![A-Za-z0-9_./-])${first}(?=${ROLE_GAP}:L?\\d)`, "g") });
   }
 
   const refs = [];
@@ -576,7 +631,15 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
     lastBlank = blank;
     const quotes = quoteSpans(line, open);
     open = quotes.open;
-    if ((boundary(line) && !heading) || skip.has(docLine)) return;
+    if (boundary(line) && !heading && !skip.has(docLine)) {
+      // A fence line ("```ts `b.md:5`") is no prose and is not read: a line reference on it is listed as dropped, never
+      // left out (tick 72 review: such a pointer vanished, uncounted).
+      const stray = strayRefs(line);
+      for (const s of stray) refs.push({ kind: "dropped", docLine, written: s.written, range: s.range, via: "on a fence line", index: starts[i] + s.at });
+      if (!only || only.has(docLine)) pointers += stray.length;
+      return;
+    }
+    if (skip.has(docLine)) return;
     const taken = [];
     const free = (s, e) => !taken.some(([a, b]) => s < b && a < e);
     const inQuote = (s) => quotes.spans.some(([a, b]) => s >= a && s < b);
@@ -592,12 +655,14 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
       else if (owner.kind === "unknown") refs.push({ kind: "unknown", name: owner.name, candidates: owner.candidates ?? [], range: rng, docLine, written, via, index, lastPathNamed });
       else refs.push({ kind: "unchecked", name: owner.name, range: rng, docLine, written, via, index, lastPathNamed });
     };
-    // A name with its own line (`ledger.ts:12`, EX:4, ROBOTS-RULING:152, OTA:596) is one line reference found.
+    // A name with its own line (`ledger.ts:12`, EX:4, ROBOTS-RULING:152, OTA:596) is one line reference found. The
+    // places of the colons a defined name or a ruling's name cited, so the path scan below does not count them again.
     let named = 0;
     const citeOwn = (...args) => {
       named += 1;
       cite(...args);
     };
+    const ownColons = new Set();
 
     const urls = [...line.matchAll(URL_RE)].map((m) => [m.index, m.index + m[0].length]);
     taken.push(...urls);
@@ -611,7 +676,10 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
         // such a file to say what code writes it, and the line beside it is the code's. Its own `EX:5` is reported.
         const owner = { ...fromTarget(t, m[0]), via: own ? null : m[1], ownsLines: Boolean(t.path) };
         mark(m.index, m.index + m[0].length, owner, m[2] !== undefined);
-        if (m[2] !== undefined) citeOwn(owner, range(m[2], m[3]), m[0], owner.via, m.index);
+        if (m[2] !== undefined) {
+          citeOwn(owner, range(m[2], m[3]), m[0], owner.via, m.index);
+          ownColons.add(m.index + m[1].length);
+        }
       }
     }
     for (const m of line.matchAll(RULING_NAME_RE)) {
@@ -619,13 +687,35 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
       const after = /^:L?(\d+)(?:[-–]L?(\d+))?(?!\d)/.exec(line.slice(m.index + m[0].length));
       const owner = { kind: "unchecked", name: m[0], via: m[0] };
       mark(m.index, m.index + m[0].length + (after ? after[0].length : 0), owner, Boolean(after));
-      if (after) citeOwn(owner, range(after[1], after[2]), m[0] + after[0], m[0], m.index);
+      if (after) {
+        citeOwn(owner, range(after[1], after[2]), m[0] + after[0], m[0], m.index);
+        ownColons.add(m.index + m[0].length);
+      }
     }
+    // A name's own line the scanner gives to no file is reported all the same (tick 72 review: `T1:5`, `src/revenue:12`
+    // and a name's line inside another mark vanished, uncounted, while the summary said every one was in the report).
     for (const m of line.matchAll(NAME_RE)) {
       const [whole, name, a, b] = m;
-      if (!free(m.index, m.index + whole.length)) continue;
       const lined = a !== undefined;
-      if (name.endsWith("/") || resolver.isDir(name)) continue;
+      const refLike = lined && lineOwnerLike(name, line.slice(m.index + whole.length));
+      if (!free(m.index, m.index + whole.length)) {
+        const colon = m.index + name.length;
+        if (refLike && !urls.some(([s, e]) => colon >= s && colon < e) && !ownColons.has(colon)) {
+          const k = marks.find((x) => m.index < x.end && x.start < m.index + whole.length);
+          named += 1;
+          refs.push({ kind: "dropped", docLine, written: whole, range: range(a, b), via: k ? `inside "${line.slice(k.start, k.end)}"` : "inside another reference", index: starts[i] + m.index });
+        }
+        continue;
+      }
+      if (name.endsWith("/") || resolver.isDir(name)) {
+        // A directory has no lines to compare: its own `:N` is not checked, and the bare lines after it are its.
+        if (refLike) {
+          const owner = { kind: "unchecked", name: name.replace(/\/+$/, ""), via: "a directory" };
+          mark(m.index, m.index + whole.length, owner, true);
+          citeOwn(owner, range(a, b), whole, owner.via, m.index);
+        }
+        continue;
+      }
       const cands = candidatesOf(name);
       const span = [m.index, m.index + whole.length];
       if (cands.length === 1) {
@@ -650,7 +740,9 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
         else refs.push({ kind: "unlisted", name, candidates: cands, docLine, written: whole, index: starts[i] + m.index });
         continue;
       }
-      if (lined && SHORT_NAME_RE.test(name)) {
+      // A short name with no file (OTA:596), and since the tick-72 review one SHORT_NAME_RE does not take but that still
+      // holds a letter and is no time (`T1:5`, `R6:3`, `v2:7`, `v1.2:3`): not checked, owning the bare lines after it.
+      if ((lined && SHORT_NAME_RE.test(name)) || refLike) {
         const owner = { kind: "unchecked", name, via: name };
         mark(...span, owner, true);
         citeOwn(owner, range(a, b), whole, name, m.index);
@@ -682,9 +774,20 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
         mark(0, end, { ...fromTarget(t, words), via: words, ownsLines: Boolean(t.path) });
       }
     }
+    // A role's one word stands bare (ROLE_AFTER_RE): at a line's start that goes on its paragraph, the previous line's
+    // end is what stands before it ("the tool's⏎page `:5`" is prose). It owns the line right after it and the lines
+    // listed after that one, and nothing else: no line with a word between, no carry and no table's caption takes it
+    // (tick 72 review: a role mark carried "note" to the next line's `:227`, the capture's line).
+    const bareRole = (at) => {
+      const before = line.slice(0, at);
+      if (!LINE_START_RE.test(before)) return ROLE_AFTER_RE.test(before);
+      return ITEM_RE.test(line) || !joinable || ROLE_AFTER_RE.test(`${lines[p]} `);
+    };
     for (const { phrase, path, re } of ROLES) {
       for (const m of line.matchAll(re)) {
-        if (free(m.index, m.index + m[0].length) && !inQuote(m.index)) mark(m.index, m.index + m[0].length, { kind: "file", path, via: `role "${phrase}" (as ${m[0]})` });
+        const end = m.index + m[0].length;
+        if (!free(m.index, end) || inQuote(m.index) || !bareRole(m.index)) continue;
+        mark(m.index, end, { kind: "file", path, via: `role "${phrase}" (as ${m[0]})`, role: true });
       }
     }
     for (const m of line.matchAll(NOTE_RE)) {
@@ -726,7 +829,10 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
     for (const r of bare) {
       const quoted = inQuote(r.start);
       const index = starts[i] + r.start;
-      const here = owners.filter((k) => k.end <= r.start && (quoted || !k.quoted) && (!row || cell(k.start) === cell(r.start))).pop();
+      // A role's mark owns the line right after it (its possessive, a bracket or a backtick between: the role's own
+      // pattern) and the lines listed after that one ("test `:149`, `:400`"): the gap is attached. Never a line with a
+      // word between ("test `:979-988`, comment `:302-306`").
+      const here = owners.filter((k) => k.end <= r.start && (quoted || !k.quoted) && (!row || cell(k.start) === cell(r.start)) && (!k.role || attached(line.slice(k.end, r.start)))).pop();
       const poss = POSSESSIVE_RE.exec(line.slice(0, r.start));
       if (poss) {
         const apostrophe = poss.index + poss[1].length;
@@ -754,8 +860,10 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
       ctx = null;
       ctxOut = null;
     } else {
-      if (owners.length) ctx = owners[owners.length - 1];
-      const out = owners.filter((k) => !k.quoted);
+      // A role's mark owns its one line only: the paragraph's last name stays the last one that is not a role.
+      const carried = owners.filter((k) => !k.role);
+      if (carried.length) ctx = carried[carried.length - 1];
+      const out = carried.filter((k) => !k.quoted);
       if (out.length) ctxOut = out[out.length - 1];
     }
   });
