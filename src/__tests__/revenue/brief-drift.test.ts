@@ -757,6 +757,10 @@ describe("the scanner", () => {
     // A table's caption is the last path named too; a name in its own cell is not.
     const table = scan("**The steps** (`b.md`).\n\n| step | where |\n|---|---|\n| one | (`:3`) |\n| two | `MISSION.md:5`, `:6` |");
     expect(flagged(table)).toEqual(["b.md:3"]);
+    // A backticked name's possessive ties its line too, the closing backtick or bracket before it (tick 72 review).
+    const possessive = "`src/revenue/ledger.ts`'s `:5` and `b.md`'s own `:6`; (`MISSION.md`)'s (`:7`).";
+    expect(files(possessive).filter((f: string) => /:/.test(f))).toEqual(["src/revenue/ledger.ts:5-5", "b.md:6-6", "MISSION.md:7-7"]);
+    expect(flagged(scan(possessive))).toEqual([]);
   });
 
   it("resolves a role the brief defines when it stands right before the line (\"test `:913-917`\") (tick 72)", () => {
@@ -774,14 +778,111 @@ describe("the scanner", () => {
     expect(at(6)).toMatchObject({ path: "b.md", lastPathNamed: true });
     expect(at(7)).toMatchObject({ path: "src/__tests__/loop.test.ts", via: "the test" });
     expect(at(8)).toMatchObject({ path: "src/revenue/ledger.ts", via: 'role "The ledger" (as ledger)' });
-    // Inside a quotation the word is the source's.
-    expect(at(9)).toMatchObject({ path: "src/revenue/ledger.ts" });
+    // Inside a quotation the word is the source's: no role. Since the tick-72 review a role's mark owns only its own
+    // line, so the quoted :9 is no longer "ledger"'s either; it rests on the last name before it that is no role.
+    expect(at(9)).toMatchObject({ path: "src/__tests__/loop.test.ts", via: "the test", lastPathNamed: true });
+    expect(scan("\"The test\" is `src/__tests__/loop.test.ts`.\n\n`MISSION.md:1` says \"at test `:9`\".").find((r: { range: number[] | null }) => r.range?.[0] === 9)).toMatchObject({ path: "MISSION.md" });
     // Two definitions that disagree are no role: never a guess.
     const two = scan("\"The test\" is `src/__tests__/loop.test.ts`.\n\nLater \"the test\" is `src/__tests__/revenue/loop.test.ts`.\n\n`MISSION.md:1`, test `:9`.");
     expect(two.find((r: { range: number[] | null }) => r.range?.[0] === 9)).toMatchObject({ path: "MISSION.md", lastPathNamed: true });
     // A role for a file the tree does not have resolves nothing.
     const none = scan("\"The output\" is `out/none.json`.\n\n`MISSION.md:1`, output `:9`.");
     expect(none.find((r: { range: number[] | null }) => r.range?.[0] === 9)).toMatchObject({ path: "MISSION.md" });
+  });
+
+  // Tick 72 review, blocking: the role rule took any defined "the X"'s one word X wherever it stood right before a line,
+  // whatever qualified it, and the mark then carried to later lines.
+  it("lets a role's word own a line only where it stands bare, and only that line and its list (tick 72 review)", () => {
+    const at = (refs: { range: number[] | null }[], n: number) => refs.find((r) => r.range?.[0] === n);
+    // SITTING-2026-10-08-BRIEF.md:664: "the tool's page" is a page of a tool, no role "the page": the line stays the
+    // test file's (it was given to a page of 95 lines, "invalid", unmarked).
+    const page = scan("\"The page\" is `scripts/r.ts`.\n\n(`src/revenue/ledger.ts:166`); the figures note points to the tool's page (`:167-169`).");
+    expect(at(page, 167)).toMatchObject({ path: "src/revenue/ledger.ts", lastPathNamed: true });
+    // The same with the modifier at the end of the line before.
+    const broken = scan("\"The page\" is `scripts/r.ts`.\n\n(`src/revenue/ledger.ts:166`); it points to the tool's\npage (`:167-169`).");
+    expect(at(broken, 167)).toMatchObject({ path: "src/revenue/ledger.ts", lastPathNamed: true });
+    // Another article, a modifier, or a name before the word: prose.
+    const test = scan("\"The test\" is `src/__tests__/loop.test.ts`.\n\n`MISSION.md:1`; a test (`:8`); the portfolio test `:7`.\n\n`src/revenue/ledger.ts:3` test `:10`.");
+    expect(at(test, 8)).toMatchObject({ path: "MISSION.md", lastPathNamed: true });
+    expect(at(test, 7)).toMatchObject({ path: "MISSION.md", lastPathNamed: true });
+    expect(at(test, 10)).toMatchObject({ path: "src/revenue/ledger.ts", lastPathNamed: true });
+    // SITTING-2026-10-01-BRIEF.md:695-697: the role owns its `:547-548` and the next item's `:550`; the next item's
+    // `:227` is the capture's, carried from :3 — never from the role's mark on :4.
+    const note = scan([
+      "\"The note\" is `MISSION.md`.",
+      "",
+      "- The checkbox sits in the organisation section (`logs/CHANNEL_LOOP.md:335`, `:265`,",
+      "  under the heading at `:259`; note `:547-548`).",
+      "- Their product example is Codespaces (`:227`; note `:550`).",
+    ].join("\n"));
+    expect(at(note, 547)).toMatchObject({ path: "MISSION.md", via: 'role "The note" (as note)' });
+    expect(at(note, 550)).toMatchObject({ path: "MISSION.md", via: 'role "The note" (as note)' });
+    expect(at(note, 227)).toMatchObject({ path: "logs/CHANNEL_LOOP.md", via: "carried from :3", lastPathNamed: true });
+    // Where it stands bare it owns its line and the lines listed right after it; a line with a word between is not its,
+    // nor is the next line's, nor a table's caption.
+    const list = scan([
+      "\"The test\" is `src/__tests__/loop.test.ts`.",
+      "",
+      "- `MISSION.md:1` holds it (test `:149`, `:400`); `heldRows` (test `:979-988`, comment `:302-306`).",
+      "- Pinned at test `:913-917`.",
+      "  Then (`:5`).",
+      "",
+      "| step | test |",
+      "|---|---|",
+      "| one | test `:479-487`, `:517-542` |",
+      "",
+      "Para, test `:20`.",
+      "",
+      "| a |",
+      "|---|",
+      "| (`:30`) |",
+    ].join("\n"));
+    for (const n of [149, 400, 979, 913, 479, 517, 20]) expect(at(list, n), `:${n}`).toMatchObject({ path: "src/__tests__/loop.test.ts", lastPathNamed: false });
+    expect(at(list, 302)).toMatchObject({ path: "MISSION.md", lastPathNamed: true });
+    expect(at(list, 5)).toMatchObject({ path: "MISSION.md", via: "carried from :3", lastPathNamed: true });
+    expect(at(list, 30)).toMatchObject({ kind: "unattributed" });
+  });
+
+  it("reads a phrase that holds a clock time as a definition: no line reference is in it (tick 72 review)", () => {
+    const { names, phrases } = findDefinitions("\"The 05:23 schedule\" is `scripts/r.ts`. \"the 1:2 split\" is `b.md`. `T1:5` is `b.md`. \"the pin at :5\" is `b.md`.", resolver);
+    expect([...phrases.keys()]).toEqual(["The 05:23 schedule", "the 1:2 split"]);
+    // `T1:5` holds a line, as the scanner reads it: no name.
+    expect([...names.keys()]).toEqual([]);
+    const ref = scan("\"The 05:23 schedule\" is `scripts/r.ts`.\n\n`MISSION.md:1`; the 05:23 schedule (`:40`).").find((r: { range: number[] | null }) => r.range?.[0] === 40);
+    expect(ref).toMatchObject({ path: "scripts/r.ts", via: "the 05:23 schedule", lastPathNamed: false });
+  });
+
+  it("reports a name's own line that no file has, a directory's, one inside another mark and a fence line's (tick 72 review)", () => {
+    const text = [
+      "`MISSION.md:1`; T1:5, R6:3 and v2:7, `v1.2:3`; the dir `src/revenue:12`, `src/revenue/:13`, `:14`; ALPHA-RULING.md:6.",
+      "",
+      "```ts `b.md:9` and :10",
+      "`b.md:2`",
+      "```",
+      "",
+      "At 07:11 on 2026-10-07T20:33:58Z, sha256:12ab and https://example.org/x.md:5 nothing.",
+    ].join("\n");
+    const out = scanCitations(text, resolver);
+    const seen = out.refs.map((r: { kind: string; name?: string; path?: string; range: number[]; via?: string | null }) => `${r.kind}:${r.name ?? r.path ?? ""}:${r.range[0]}:${r.via ?? ""}`);
+    expect(seen).toEqual([
+      "file:MISSION.md:1:",
+      "unchecked:T1:5:T1",
+      "unchecked:R6:3:R6",
+      "unchecked:v2:7:v2",
+      "unchecked:v1.2:3:v1.2",
+      "unchecked:src/revenue:12:a directory",
+      "unchecked:src/revenue:13:a directory",
+      "unchecked:src/revenue:14:a directory",
+      'dropped::6:inside "ALPHA-RULING"',
+      "dropped::9:on a fence line",
+      "dropped::10:on a fence line",
+      "file:b.md:2:",
+    ]);
+    // Every one is counted: found is what the report holds, and a time, a hash or a URL is none.
+    expect(out.pointers).toBe(12);
+    // A --row reads the fence line's count only when it is the row's line.
+    expect(scanCitations(text, resolver, { only: new Set([3]) }).pointers).toBe(2);
+    expect(scanCitations(text, resolver, { only: new Set([4]) }).pointers).toBe(1);
   });
 });
 
