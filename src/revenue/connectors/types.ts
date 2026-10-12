@@ -11,6 +11,11 @@ export interface ConnectorFetchResult {
    * `<source>: <problem>`, beside a connector's thrown error (tick 71, the Gumroad connector).
    */
   problem?: string;
+  /**
+   * The day the listing asked from, for a connector that lists by day (Gumroad's `after`). The sync's late-refund re-read
+   * asks only for sales its own listing may not have reached: those created before the day after it (tick 74).
+   */
+  listedFrom?: string;
 }
 
 export interface RevenueConnector {

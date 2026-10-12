@@ -654,6 +654,11 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
     expect(late).toMatchObject({ recorded: 1, duplicates: 1, errors: [] });
     // The sync's own listing from the day before its cursor, then the re-read from the day before sale 1.
     expect(afters(urls, n)).toEqual(["2026-10-04", "2026-09-30"]);
+    // Every product, the token in the query, as the sync's own listing asks.
+    for (const u of urls.slice(n)) {
+      expect(u.searchParams.get("access_token")).toBe(TOKEN);
+      expect(u.searchParams.has("product_id")).toBe(false);
+    }
     // What gumroadSaleEntries books for a refunded sale, on the line the sale was booked on (not today's default line).
     expect(refundsOf(s1)).toEqual([
       { kind: "refund", lineId: "fake-line-a", amountMinor: -7900, externalId: `sha256:${sha(s1.id)}:refund`, occurredAt: "2026-10-01T10:00:00.000Z" },
@@ -785,6 +790,37 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
     for (const s of sales) expect(result.errors[0]).not.toContain(s.id);
     expect(refundsOf(s1)).toHaveLength(1);
     expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-05");
+  });
+
+  it("the sync's own listing refused: the re-read runs all the same and books the late refund", async () => {
+    const { s1, sales } = await twoSalesBooked();
+    at("2026-10-10T12:00:00Z");
+    s1.refunded = true;
+    const { fetchImpl, urls } = index(sales, { refuse: "2026-10-04" });
+    const result = await sync(fetchImpl, ENV_B);
+    expect(afters(urls, 0)).toEqual(["2026-10-04", "2026-09-30"]);
+    expect(result).toMatchObject({ recorded: 1, duplicates: 0 });
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]).toMatch(/^gumroad: the sales listing since 2026-10-04 was refused at page 1 \(HTTP 500\)/);
+    expect(refundsOf(s1)).toHaveLength(1);
+    expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-05");
+  });
+
+  it("a Gumroad sale booked by hand at a time Date.parse cannot read is left out of the reach, and the sync runs", async () => {
+    insertLineFromSeed(db, {
+      id: "fake-line-a", name: "T", category: "digital_product", tier: "growth", directorRole: "d", operatingLoop: "x",
+      kpis: [], killCriteria: [], scaleCriteria: [], targetMonthlyAgorot: agorotFromIls(100), budgetMonthlyCents: 0, humanSetup: [], skillName: null,
+    });
+    expect(recordLedgerEntry(db, {
+      lineId: "fake-line-a", kind: "sale", amountMinor: 7900, currency: "USD", source: "gumroad", externalId: "fake-hand-t74-1", occurredAt: "not-a-time",
+    })).not.toBeNull();
+    const { s1, fetchImpl, urls } = await twoSalesBooked();
+    at("2026-10-10T12:00:00Z");
+    s1.refunded = true;
+    const n = urls.length;
+    expect(await sync(fetchImpl, ENV_B)).toMatchObject({ recorded: 1, duplicates: 1, errors: [] });
+    expect(afters(urls, n)).toEqual(["2026-10-04", "2026-09-30"]);
+    expect(refundsOf(s1)).toHaveLength(1);
   });
 
   it("a re-read whose next_page_key repeats books what it read and says it loops", async () => {
