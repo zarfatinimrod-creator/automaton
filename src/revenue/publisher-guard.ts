@@ -43,7 +43,19 @@
 import { evaluateExperiment, type ExperimentReadings, type ExperimentVerdict } from "./experiments.js";
 import { EXPERIMENT_BY_LINE, checkPublication, type ChannelState, type VideoManifest, type YoutubeLine } from "./publication-gate.js";
 
-/** What a publisher stores for a line and reads back before each upload: the readings and the verdict they gave. */
+/**
+ * What a publisher stores for a line and reads back before each upload: the readings and the verdict they gave.
+ *
+ * As typed it may not be committed to the public repository (ruling 12.10 row 28 §3 decision 3,
+ * research/channel-loop/RULING-2026-10-12-youtube-derived-metrics.md): `readings` holds the analytics reader's readings
+ * (medianStrangerViews, strangerWatchHours28d, averageViewPercentage), figures computed from Authorized Data, beside the
+ * made-for-kids read-back, and a record that merges the two readers' values inherits the Authorized Data regime, which
+ * bars showing that data to anyone but the authorizing user (that a figure computed from it inherits the bar is the
+ * ruling's marked inference). The publisher build therefore keeps it out of the public tree, or splits it so that the
+ * committed part holds only the made-for-kids facts and the verdict with its gate ids, and the analytics-derived readings
+ * and any figure in a note stay with the analytics output. Until the analytics row rules, the build assumes the
+ * stricter: nothing computed from the Analytics API in a public file.
+ */
 export interface ExperimentState {
   line: YoutubeLine;
   readings: ExperimentReadings;

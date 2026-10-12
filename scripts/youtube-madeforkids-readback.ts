@@ -13,11 +13,19 @@
  *                          kids-explainers reads state/colony/measurements/kids-explainers-videos.json. No file = nothing
  *                          uploaded = nothing to read (exit 0).
  * WRITES state/colony/measurements/<line>-madeforkids.json: one entry per upload. EVERY listed upload is asked about on
- * every run (an override YouTube sets after the first read must be seen; corrected 4.10): the entry keeps the first read
- * for that id, designated or not (firstRead: readAt, returned, privacyStatus; written once, ruling 7.10 row 24
- * amendment 1), the first read that carried a designation, the latest read (returned, madeForKids "true"/"false"/null,
- * privacyStatus, readAt), and the times a read first contradicted the line's declaration or found a public upload no
- * longer public. readbackOf(<that file>, <the uploads>) is ExperimentReadings.madeForKidsReadback.
+ * every run (an override YouTube sets after the first read must be seen; corrected 4.10). The file holds
+ * no value the API returned — no madeForKids, no privacyStatus, in any field, for any time
+ * (research/channel-loop/RULING-2026-10-12-youtube-derived-metrics.md §2): the API's answer lives in this process from
+ * the fetch to the merge and dies with it. Per upload the entry keeps only the colony's own facts: when the first read
+ * was taken, designated or not, whether it returned the video and P1's API half judged at it (firstReadAt,
+ * firstReadReturned, p1Api; written once, ruling 7.10 row 24 amendment 1); when the first read that carried a designation
+ * was taken (firstDesignationAt) and P2's clock start (p2ClockAt: that time when that read found the upload public); when
+ * a read last found it public (lastPublicAt); and when a read first found a public upload no longer public (leftPublicAt)
+ * or first contradicted the line's declaration (contradictedAt). assertColonyFactsOnly runs on the new state before the
+ * write: a state that fails it is refused (exit 1) and nothing is written. The file is committed like the other colony
+ * state, because it holds nothing of YouTube's (§2 decision 5). It prints, per upload, one word —
+ * as-declared, contrary or unread — never a designation or a privacy status (§2 decision 4).
+ * readbackOf(<that file>, <the uploads>) is ExperimentReadings.madeForKidsReadback.
  *
  * NO LIVE CALL BEFORE STAGE A, AND NONE BEFORE THE API'S TERMS ARE READ. Two gates, each a refusal (exit 2) with
  * nothing asked and nothing written, checked in this order: (1) research/channel-loop/terms-verdicts.json must hold a
@@ -42,6 +50,7 @@ import { parseArgs } from "node:util";
 import {
   MAX_IDS_PER_CALL,
   READ_HOST,
+  assertColonyFactsOnly,
   emptyState,
   isReadbackLine,
   mergeReadings,
@@ -181,12 +190,22 @@ export async function runReadback(run: ReadbackRun): Promise<number> {
   }
 
   const next = mergeReadings(state, uploads, fresh, run.now);
+  try {
+    // Ruling 12.10 row 28 §2 decision 4: the state is colony facts only, or it is not written (its message names paths only).
+    assertColonyFactsOnly(next);
+  } catch (error) {
+    run.log(redact(`youtube-madeforkids: ${error instanceof Error ? error.message : String(error)} — nothing written.`));
+    return 1;
+  }
   mkdirSync(dirname(run.statePath), { recursive: true });
   writeFileSync(run.statePath, JSON.stringify(next, null, 2) + "\n");
-  const rb = readbackOf(next, uploads);
+  // One word per upload, never a designation or a privacy status (§2 decision 4): the line's own declaration, the
+  // contrary one recorded, or no designation read yet.
+  const declared = String(next.declaresMadeForKids);
+  const words = readbackOf(next, uploads).map((v) => (v === null ? "unread" : v === declared ? "as-declared" : "contrary"));
   run.log(
     `youtube-madeforkids: ${run.experiment} (declares made for kids: ${next.declaresMadeForKids}): asked ${ids.length}, ` +
-      `read-back ${rb.map((v) => v ?? "unread").join(", ")}; wrote ${run.statePath}`,
+      `read-back ${words.join(", ")}; wrote ${run.statePath}`,
   );
   return 0;
 }
