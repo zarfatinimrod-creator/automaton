@@ -17,13 +17,17 @@ import { DEFAULT_PORTFOLIO, labelledKpis, summarizeTargetBasis, TARGET_BASIS } f
 import {
   followUpSecretRows,
   frozenOwnerStepsForLine,
+  hasPendingPrecondition,
   heldFollowUpSecretRows,
   heldOwnerStepsForLine,
   heldSecretRows,
   openOwnerStepsForLine,
   openSetupItems,
+  OWNER_STEPS,
+  ownerStepById,
   SECRET_ROW_GATE_MET,
-  SECRET_ROW_GATE_SHORT,
+  secretRowHoldReason,
+  type OwnerStep,
   type SecretGateSite,
 } from "./owner-steps.js";
 import {
@@ -43,7 +47,7 @@ import {
   readSite,
   type PageViewReadResult,
 } from "./page-views-reader.js";
-import type { PageViewGateReading, PageViewVerdict } from "./page-views.js";
+import { PAGE_VIEW_GATES, endWeekOfDay, type PageViewGateReading, type PageViewVerdict } from "./page-views.js";
 import { REFUND_RATE_WINDOW_DAYS } from "./connectors/gumroad.js";
 import {
   computePortfolioSummary,
@@ -420,6 +424,9 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     if (g.verdict === "instrument_fault") result.blockers.push(`page views ${g.lineId}: instrument fault — ${g.notes.join("; ")}`);
     if (g.verdict === "reader_down") result.blockers.push(`page views ${g.lineId}: reader down — ${g.notes.join("; ")}`);
   }
+  // A PASS is "a paid product is ready" for steps 2 and 3 (floors 28.9 row 9; ruling 12.10), recorded by hand in
+  // owner-steps.ts: until it is, the tick names it for the main thread, so the fold cannot be forgotten. Never an ask.
+  result.blockers.push(...paidProductReadyBlockers(result.pageViewGates));
 
   if (shouldRun("revenue_supervisor_review")) {
     result.supervisor = runSupervisorReview(db, nowIso, policy);
@@ -689,7 +696,8 @@ export function renderReport(db: Database, result: TickResult, site: SecretGateS
       out.push(`**${line.name}** (\`${line.id}\`)`);
       out.push(
         `Owner steps still open for \`${line.id}\` (docs/OWNER_STEPS.he.md): ${askedNowList(line.id)}` +
-          notAskedNowNote(line.id),
+          notAskedNowNote(line.id) +
+          earlyPartNote(line.id),
       );
       for (const item of openSetupItems(line)) out.push(`- [ ] ${item}`);
       out.push("");
@@ -807,6 +815,52 @@ function askedNowList(lineId: string): string {
 }
 
 /**
+ * "; step 6's early part, 8 min, may follow step 8" when a step with an early part (step 6 alone) is asked now for the
+ * line — the step it may follow by its number, the minutes from `earlyPart` — and "" otherwise (ruling 12.10 §3(5): a
+ * reader of "7, 6" or "8, 6" otherwise sees nothing saying that 8 minutes of step 6 come first).
+ */
+function earlyPartNote(lineId: string): string {
+  return openOwnerStepsForLine(lineId)
+    .filter((s) => s.earlyPart)
+    .map((s) => {
+      const after = ownerStepById(s.earlyPart!.afterStep);
+      return `; step ${s.number}'s early part, ${s.earlyPart!.minutes} min, may follow step ${after?.number ?? s.earlyPart!.afterStep}`;
+    })
+    .join("");
+}
+
+/**
+ * The page-view PASSes whose "a paid product is ready" is not yet recorded on steps 2 and 3, one blocker per passing
+ * line that step 3 unlocks (il-biz-tools and pcn874), while `gumroad` or `tax-file` still has a pending precondition
+ * (ruling 12.10 Fold 4). The read's day is the day-56 one when weeks 5-8 average at the pass bar, else the day-112 one
+ * after the extension (page-views.ts reachRead); its date is the day the read's last week was written. A blocker for
+ * the main thread, which records `precondition.metOn` with the reading; never an owner ask.
+ */
+export function paidProductReadyBlockers(readings: PageViewGateReading[], steps: OwnerStep[] = OWNER_STEPS): string[] {
+  const pending = (["tax-file", "gumroad"] as const).some((id) => {
+    const step = ownerStepById(id, steps);
+    return step !== undefined && hasPendingPrecondition(step);
+  });
+  const unlocked = ownerStepById("gumroad", steps)?.lines ?? [];
+  if (!pending) return [];
+  return readings
+    .filter((g) => g.verdict === "pass" && unlocked.includes(g.lineId))
+    .map((g) => {
+      const views = new Map(g.weeks.map((w) => [w.week, w]));
+      const firstEnd = endWeekOfDay(PAGE_VIEW_GATES.reachDay);
+      const lastFour = [firstEnd - 3, firstEnd - 2, firstEnd - 1, firstEnd].map((w) => views.get(w)?.views ?? 0);
+      const firstPassed = lastFour.reduce((a, b) => a + b, 0) / lastFour.length >= PAGE_VIEW_GATES.passMinWeeklyAverage;
+      const day = firstPassed ? PAGE_VIEW_GATES.reachDay : PAGE_VIEW_GATES.extensionDay;
+      const date = views.get(endWeekOfDay(day))?.writtenAt.slice(0, 10) ?? "an unrecorded date";
+      return (
+        `the day-${day} read PASSED for ${g.lineId} on ${date}: 'a paid product is ready' holds for steps 2 and 3 and is not ` +
+        "yet recorded (owner-steps.ts precondition.metOn) — record it with the reading; the report then asks them together " +
+        "(floors 28.9 row 9; ruling 12.10)"
+      );
+    });
+}
+
+/**
  * The site facts a secret row's gate reads (owner-steps.ts `askedOnlyWhen`). A site.json that cannot be read holds
  * every gated row back, so a row is never asked before the thing it opens exists.
  */
@@ -819,21 +873,28 @@ export function secretGateSite(siteDir: string = DEFAULT_PAGE_VIEW_SITE_DIR): Se
 }
 
 /**
- * The secret rows of the steps asked now of the given lines that a gate still holds back, as one report line, or ""
- * when there are none. Each step is named once however many of the lines it gates, so the report prints the line once
- * (tick 32: it printed once per line waiting on step 6, four times). Today that is step 6's POSTHOG_READ_KEY until the
- * colony has created the brand's PostHog project and written its id to site.json
- * (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4): named with its reason, never as something to do.
- * Once the id is written the line disappears and step 6 is asked with the row.
+ * The secret rows of the steps asked now of the given lines that a gate, or the step that makes them, still holds back,
+ * as one report line, or "" when there are none. Each step is named once however many of the lines it gates, so the
+ * report prints the line once (tick 32: it printed once per line waiting on step 6, four times). Today that is step
+ * 6's POSTHOG_READ_KEY until the colony has created the brand's PostHog project and written its id to site.json
+ * (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4), and since ruling 12.10 (§2(5)) the rows steps 3
+ * and 7 make until those steps are done: each named with its reason (owner-steps.ts secretRowHoldReason), never as
+ * something to do — the gated rows first, then the made ones, each in table order. A row goes from the line once its
+ * gate holds and its maker is done, and step 6 is asked with it.
  */
 export function heldSecretRowsNote(lineIds: string[], site: SecretGateSite = secretGateSite()): string {
   const steps = [...new Set(lineIds.flatMap((id) => openOwnerStepsForLine(id)))].sort((a, b) => a.order - b.order);
   const parts = steps.flatMap((step) =>
-    heldSecretRows(step, site).map(
-      (row) => `step ${step.number}'s \`${row.name}\` row ${SECRET_ROW_GATE_SHORT[row.askedOnlyWhen!]}`,
+    gatedRowsFirst(heldSecretRows(step, site)).map(
+      (row) => `step ${step.number}'s \`${row.name}\` row ${secretRowHoldReason(row, site)}`,
     ),
   );
   return parts.length ? `Not asked yet: ${parts.join("; ")}.` : "";
+}
+
+/** Held rows with an `askedOnlyWhen` gate first, then the rest, each group in the order given (table order). */
+export function gatedRowsFirst<T extends { askedOnlyWhen?: unknown }>(rows: T[]): T[] {
+  return [...rows.filter((r) => r.askedOnlyWhen), ...rows.filter((r) => !r.askedOnlyWhen)];
 }
 
 /**
@@ -866,7 +927,7 @@ export function doneStepRowsReport(site: SecretGateSite = secretGateSite()): str
   }
   const held = heldFollowUpSecretRows(site).map(
     ({ step, row }) =>
-      `step ${step.number}'s \`${row.name}\` row ${SECRET_ROW_GATE_SHORT[row.askedOnlyWhen!]} — step ${step.number} ` +
+      `step ${step.number}'s \`${row.name}\` row ${secretRowHoldReason(row, site)} — step ${step.number} ` +
       "itself is done, and the row will be asked alone",
   );
   if (held.length) {

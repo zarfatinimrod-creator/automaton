@@ -5,7 +5,7 @@
  * from one command instead of ten agents. The path section answers "how far are we from the first shekel?" from
  * owner-steps.ts and portfolio.ts: per line, the steps in the code's order with minutes, identity checks, gates and what
  * each unlocks, the reads the line also waits on, and the smallest set of steps after which one line can take a payment
- * (it prints the code's order beside the note that the order is under review, FABLE_QUEUE row 29, and picks neither).
+ * (it prints the code's order beside the line that states the board's ruling of 12.10 on it, FABLE_QUEUE row 29).
  *
  *   pnpm exec tsx scripts/owner-report.ts [--db <path>] [--json] [--now <iso>]
  *

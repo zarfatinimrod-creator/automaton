@@ -25,7 +25,10 @@
  * outside the eight steps). From those it names the smallest set of steps after which a line can take a payment: a
  * line's set is every step that gates it, done and frozen steps aside (a frozen step's line goes without it at ₪0, which
  * is what `frozen.freeInstead` says), and a line that also needs an owner action outside the eight steps is not counted.
- * The steps print in the code's order beside OWNER_STEP_ORDER_REVIEW; the section never picks between the two orders.
+ * The steps print in the code's order beside OWNER_STEP_ORDER_RULED, which states the order the board ruled on 12.10
+ * (research/channel-loop/RULING-2026-10-12-owner-step-order.md): the code's `order` is the one checklist's, and the free
+ * steps come first because of the gates (step 1 done, step 5 frozen, steps 2 and 3 held until a paid product is ready),
+ * not because of a second order.
  */
 
 import type { Database } from "better-sqlite3";
@@ -51,18 +54,18 @@ import {
   LINE_PAYMENT_WAITS,
   openOwnerStepsForLine,
   openSetupItems,
-  OWNER_STEP_ORDER_REVIEW,
+  OWNER_STEP_ORDER_RULED,
   ownerStepById,
   ownerStepMinutes,
   ownerStepsForLine,
   ownerStepsInOrder,
-  SECRET_ROW_GATE_SHORT,
+  secretRowHoldReason,
   type LinePaymentWait,
   type OwnerStep,
   type OwnerStepIdentity,
   type SecretGateSite,
 } from "./owner-steps.js";
-import { checkLiveness, lastRunKey, LOOP_GAP_ALERT_MS, secretGateSite } from "./runner.js";
+import { checkLiveness, gatedRowsFirst, lastRunKey, LOOP_GAP_ALERT_MS, secretGateSite } from "./runner.js";
 import type { RevenueLineStatus, RevenueLineTier } from "./types.js";
 
 const DAY_MS = 86_400_000;
@@ -173,8 +176,8 @@ export interface PathCandidate {
 export interface FirstPaymentPath {
   /** Every step's number in the code's order (owner-steps.ts `order`). */
   codeOrder: number[];
-  /** OWNER_STEP_ORDER_REVIEW: printed beside the code's order, which this section does not choose over the other. */
-  orderReview: string;
+  /** OWNER_STEP_ORDER_RULED: printed beside the code's order, the order the board ruled on 12.10. */
+  orderRuled: string;
   lines: PathLine[];
   /** The line(s) whose remaining steps take the fewest owner minutes, ties included; empty when no line can be paid by the steps alone. */
   smallest: PathCandidate[];
@@ -200,7 +203,10 @@ export interface OwnerReport {
     askedNow: OwnerReportStep[];
     totalMinutesAskedNow: { min: number; max: number };
     notAskedNow: OwnerReportStepNotAsked[];
-    /** Secret rows of steps asked now that a gate still holds back, with the gate's reason. */
+    /**
+     * Secret rows of steps asked now that a gate, or the step that makes them, still holds back, with the reason
+     * (owner-steps.ts secretRowHoldReason): the gated rows first, then the made ones (ruling 12.10 §2(5)).
+     */
     heldSecretRows: { step: number; row: string; reason: string }[];
     /**
      * Rows done steps still owe: asked alone once their gate holds (askedNow, printed under its own heading before "Not
@@ -323,7 +329,7 @@ export function buildFirstPaymentPath(
   const candidate = (l: PathLine): PathCandidate => ({ line: l.id, steps: l.toPay.steps, minutes: l.toPay.minutes });
   return {
     codeOrder: ownerStepsInOrder(steps).map((s) => s.number),
-    orderReview: OWNER_STEP_ORDER_REVIEW,
+    orderRuled: OWNER_STEP_ORDER_RULED,
     lines,
     smallest: best ? candidates.filter((l) => fewest(l, best) === 0).map(candidate) : [],
     closeBehind: best
@@ -445,7 +451,7 @@ export function buildOwnerReport(
             : notAskedNow(s)),
         })),
       heldSecretRows: asked.flatMap((s) =>
-        heldSecretRows(s, site).map((row) => ({ step: s.number, row: row.name, reason: SECRET_ROW_GATE_SHORT[row.askedOnlyWhen!] })),
+        gatedRowsFirst(heldSecretRows(s, site)).map((row) => ({ step: s.number, row: row.name, reason: secretRowHoldReason(row, site)! })),
       ),
       owedRows: [
         ...followUpSecretRows(site).map(({ step, row }) => ({ step: step.number, row: row.name, askedNow: true, reason: null })),
@@ -453,7 +459,7 @@ export function buildOwnerReport(
           step: step.number,
           row: row.name,
           askedNow: false,
-          reason: SECRET_ROW_GATE_SHORT[row.askedOnlyWhen!],
+          reason: secretRowHoldReason(row, site)!,
         })),
       ],
     },
@@ -493,7 +499,7 @@ export function renderFirstPayment(p: FirstPaymentPath): string[] {
   out.push("## Shortest path to a first payment (owner-steps.ts, portfolio.ts)");
   out.push("");
   out.push(`Steps in the code's order (owner-steps.ts \`order\`): ${p.codeOrder.join(" → ")}.`);
-  out.push(`${p.orderReview.charAt(0).toUpperCase()}${p.orderReview.slice(1)}.`);
+  out.push(`${p.orderRuled.charAt(0).toUpperCase()}${p.orderRuled.slice(1)}.`);
   out.push("");
   // Each step's identity check once, in the code's order, as the step asks it; each line's list says whether its path meets it.
   const seen = new Map<number, PathStep>();

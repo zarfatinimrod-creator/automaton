@@ -32,7 +32,7 @@ import {
   LINE_PAYMENT_WAITS,
   openOwnerStepsForLine,
   openSetupItems,
-  OWNER_STEP_ORDER_REVIEW,
+  OWNER_STEP_ORDER_RULED,
   ownerStepById,
   ownerStepMinutes,
   ownerStepsForLine,
@@ -113,11 +113,14 @@ const USDC_AGOROT = toAgorotAtRate(5000, "USDC", USDC_RATE);
   setLineBudget(health.raw, "pcn874", 1234);
   insertReview(health.raw, { lineId: null, level: "board", reviewer: "board", periodStart: ago(1), periodEnd: NOW, metrics: {}, decision: "hold", rationale: `nothing to decide; ${EMAIL}` });
   health.close();
-  // Two lines that no longer wait on the owner: one killed, one whose setup is recorded done (still awaiting_setup).
+  // Three lines that no longer wait on the owner: one killed, two whose setup is recorded done (still awaiting_setup).
+  // apify-actors joined on ruling 12.10: with step 3 held, step 8 (apify-actors, il-biz-tools) is the open step whose
+  // every line no longer waits, which the test below needs to exist.
   const steps = createDatabase(STEPS_DB);
   seedDefaultPortfolio(steps.raw);
   updateLineStatus(steps.raw, "il-biz-tools", "killed", { reason: "test", force: true });
   setHumanSetupDone(steps.raw, "pcn874", true);
+  setHumanSetupDone(steps.raw, "apify-actors", true);
   steps.close();
 }
 
@@ -201,10 +204,12 @@ describe("revenue lines: the database's lines with owner-steps.ts's steps for ea
       expect(l.stepsNotAskedNow.map((s) => s.number)).toEqual(notAsked.map((s) => s.number));
       expect(l.openSetupItems).toBe(openSetupItems(DEFAULT_PORTFOLIO.find((s) => s.id === l.id)!).length);
     }
-    // A line gated by both a held and a frozen step lists them in execution order, not frozen-first.
+    // A line gated by both a held and a frozen step lists them in execution order, not frozen-first. Since ruling 12.10
+    // step 3 is held too, until the day-56 PASS.
     const ilb = r.lines.find((l) => l.id === "il-biz-tools")!;
-    expect(ilb.stepsNotAskedNow.map((s) => s.number)).toEqual([2, 5]);
-    expect(ilb.stepsNotAskedNow[1].reason).toMatch(/^frozen by /);
+    expect(ilb.stepsNotAskedNow.map((s) => s.number)).toEqual([2, 3, 5]);
+    expect(ilb.stepsNotAskedNow[1].reason).toBe(ownerStepById("gumroad")!.precondition!.short);
+    expect(ilb.stepsNotAskedNow[2].reason).toMatch(/^frozen by /);
   });
 });
 
@@ -239,7 +244,11 @@ describe("owner steps: owner-steps.ts's order, minutes and reasons", () => {
 
   it("asks a step only for a line the database still has waiting on the owner, and names the rest with their lines' state", () => {
     const r = report(STEPS_DB);
-    const state: Record<string, string> = { "il-biz-tools": "killed", pcn874: "set up (awaiting_setup)" };
+    const state: Record<string, string> = {
+      "apify-actors": "set up (awaiting_setup)",
+      "il-biz-tools": "killed",
+      pcn874: "set up (awaiting_setup)",
+    };
     const waiting = new Set(DEFAULT_PORTFOLIO.map((l) => l.id).filter((id) => !(id in state)));
     expect(new Set(r.lines.filter((l) => l.waitsOnOwner).map((l) => l.id))).toEqual(waiting);
     const open = ownerStepsInOrder().filter(isOwnerStepOpen);
@@ -295,13 +304,72 @@ describe("owner steps: owner-steps.ts's order, minutes and reasons", () => {
     expect(text).toContain("minutes in all, and 1 row(s) of done steps asked alone\n");
   });
 
+  // Ruling 12.10 (RULING-2026-10-12-owner-step-order.md §2, "What the surfaces print after the fold"): asked now are
+  // steps 8, 7 and 6, 43-53 minutes; step 3 is held with its gate; the rows steps 3 and 7 make are not asked yet.
+  it("asks steps 8, 7 and 6 now, names step 3 held with its gate, and the rows other steps make as not asked yet (ruling 12.10)", () => {
+    const text = renderOwnerReport(report(EMPTY_DB));
+    const block = text.slice(text.indexOf("## Owner steps (docs/OWNER_STEPS.he.md)"), text.indexOf("## Shortest path to a first payment"));
+    expect(block).toContain(
+      "## Owner steps (docs/OWNER_STEPS.he.md): 3 asked now, 43-53 minutes in all\n\n" +
+        "1. Step 8 (`brand-mailbox`): 10 min — lines apify-actors, il-biz-tools\n" +
+        "2. Step 7 (`github-org`): 15-20 min — lines oss-bounties, pcn874\n" +
+        "3. Step 6 (`ci-tokens`): 18-23 min; its early part, 8 min, may follow step 8 — lines apify-actors, il-biz-tools, oss-bounties, pcn874\n",
+    );
+    const notAsked = block.slice(block.indexOf("Not asked now:"));
+    expect(notAsked).toContain(
+      "- Step 2 (`tax-file`, 60-90 min): only when a paid product is ready, after the official cost check\n" +
+        "- Step 3 (`gumroad`, 20 min): only when a paid product is ready — after the day-56 page-view PASS of il-biz-tools or pcn874, together with step 2\n" +
+        "- Step 5 (`domain`, 10 min): frozen by the owner's ₪0 rule of 27.9.2026\n",
+    );
+    expect(notAsked).toContain(
+      "- Step 6's `POSTHOG_READ_KEY` row waits until the colony has created the brand's PostHog project (posthog.projectId in products/il-biz-tools/src/config/site.json)\n" +
+        "- Step 6's `GUMROAD_ACCESS_TOKEN` row waits until step 3, which makes it, is done\n" +
+        "- Step 6's `BRAND_GITHUB_TOKEN` row waits until step 7, which makes it, is done\n" +
+        "- Step 6's `ORG_BUDGETS_READ_TOKEN` row waits until step 7, which makes it, is done\n",
+    );
+    expect(notAsked).not.toContain("APIFY_TOKEN");
+    // The smallest set is unchanged by the hold: a held step is still between the line and a payment.
+    expect(text).toContain("Steps 8, 2, 3, 6 (in the code's order), 108-143 minutes in all: after them `il-biz-tools` can take a payment");
+  });
+
+  it("names a row a done step owes with its gate's reason until the gate holds, then asks it alone", () => {
+    const step6 = ownerStepById("ci-tokens")!;
+    const saved = step6.doneOn;
+    step6.doneOn = { date: "2026-10-02", evidence: "test only", heldRows: ["POSTHOG_READ_KEY"] };
+    const db = new Database(EMPTY_DB, { readonly: true });
+    try {
+      const held = buildOwnerReport(db, { nowIso: NOW, site: { projectId: "" } }).ownerSteps.owedRows;
+      expect(held).toEqual([
+        {
+          step: 6,
+          row: "POSTHOG_READ_KEY",
+          askedNow: false,
+          reason: "waits until the colony has created the brand's PostHog project (posthog.projectId in products/il-biz-tools/src/config/site.json)",
+        },
+      ]);
+      expect(buildOwnerReport(db, { nowIso: NOW, site: { projectId: "12345" } }).ownerSteps.owedRows).toEqual([
+        { step: 6, row: "POSTHOG_READ_KEY", askedNow: true, reason: null },
+      ]);
+    } finally {
+      db.close();
+      step6.doneOn = saved;
+    }
+    expect(ownerStepById("ci-tokens")!.doneOn).toBeUndefined();
+  });
+
   it("holds a gated secret row back until the site has its project, and asks it once it does", () => {
     const db = new Database(EMPTY_DB, { readonly: true });
     try {
       const held = buildOwnerReport(db, { nowIso: NOW, site: { projectId: "" } }).ownerSteps.heldSecretRows;
       const open = buildOwnerReport(db, { nowIso: NOW, site: { projectId: "12345" } }).ownerSteps.heldSecretRows;
       expect(held.map((h) => h.row)).toContain("POSTHOG_READ_KEY");
-      expect(open).toEqual([]);
+      // Once the project exists the gated row is asked; the rows steps 3 and 7 make still wait for those steps (ruling 12.10).
+      expect(open.map((h) => h.row)).not.toContain("POSTHOG_READ_KEY");
+      expect(open).toEqual([
+        { step: 6, row: "GUMROAD_ACCESS_TOKEN", reason: "waits until step 3, which makes it, is done" },
+        { step: 6, row: "BRAND_GITHUB_TOKEN", reason: "waits until step 7, which makes it, is done" },
+        { step: 6, row: "ORG_BUDGETS_READ_TOKEN", reason: "waits until step 7, which makes it, is done" },
+      ]);
     } finally {
       db.close();
     }
@@ -407,16 +475,19 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
   const text = renderOwnerReport(report(EMPTY_DB));
   const section = text.slice(text.indexOf("## Shortest path to a first payment"), text.indexOf("## Colony health"));
 
-  it("prints the code's order beside the note that the order is under review, and picks neither", () => {
+  // Ruling 12.10 (RULING-2026-10-12-owner-step-order.md §1, Fold 6): the board has ruled; the line beside the code's order
+  // says what it ruled, and the section no longer "picks neither".
+  it("prints the code's order and, beside it, the ruled line of 12.10", () => {
     expect(path.codeOrder).toEqual(ownerStepsInOrder().map((s) => s.number));
     expect(path.codeOrder).toEqual([1, 8, 2, 3, 5, 7, 4, 6]);
-    expect(path.orderReview).toBe(OWNER_STEP_ORDER_REVIEW);
-    expect(section).toContain("Steps in the code's order (owner-steps.ts `order`): 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.\n");
-    expect(section).toContain("\nThe order is under review (FABLE_QUEUE row 29): the ₪0 sequence of docs/OWNER_STEPS.he.md");
-    // Beside the ₪0 sequence, the floors ruling's row 9 that the row's brief adds (review NOTE 6).
+    expect(path.orderRuled).toBe(OWNER_STEP_ORDER_RULED);
     expect(section).toContain(
-      "the floors ruling of 28.9 (research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3) has il-biz-tools' paid-tier steps 2, 3 and 6b join the ask batch only at its page-view PASS (the day-56 read, or the day-112 read after its one extension); and the board has not ruled which order binds.\n",
+      "Steps in the code's order (owner-steps.ts `order`): 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.\n" +
+        "The order is the code's, ruled 12.10.2026 (research/channel-loop/RULING-2026-10-12-owner-step-order.md, FABLE_QUEUE row 29): " +
+        "the free steps come first because step 1 is done, step 5 is frozen and steps 2 and 3 are held until a paid product is ready — " +
+        "for il-biz-tools and pcn874 the day-56 page-view PASS, or the day-112 read after its one extension, the floors ruling of 28.9 row 9 item 3.\n",
     );
+    expect(section).not.toMatch(/under review|has not ruled/);
     // Between the owner-steps list and colony health, as one section.
     expect(text.indexOf("## Shortest path to a first payment")).toBeGreaterThan(text.indexOf("Not asked now:"));
   });
@@ -456,7 +527,8 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
     expect(ilb.toPay.minutes).toEqual({ min: 108, max: 143 });
     expect(line(path, "oss-bounties").toPay).toEqual({ steps: [2, 7, 4, 6], minutes: { min: 108, max: 148 } });
     expect(line(path, "pcn874").toPay).toEqual({ steps: [2, 3, 7, 6], minutes: { min: 113, max: 153 } });
-    expect(line(path, "apify-actors").toPay).toEqual({ steps: [2, 6], minutes: { min: 78, max: 113 } });
+    // Step 8 gates apify-actors since ruling 12.10 (§3(3)): its Apify account is opened with the brand mailbox.
+    expect(line(path, "apify-actors").toPay).toEqual({ steps: [8, 2, 6], minutes: { min: 88, max: 123 } });
   });
 
   it("names the smallest set: il-biz-tools' four steps, not apify-actors' cheaper two, whose payout needs an owner action outside the steps", () => {
@@ -469,7 +541,7 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
     const noLater = Object.fromEntries(Object.entries(LINE_PAYMENT_WAITS).map(([id, ws]) => [id, ws.filter((w) => w.kind === "read")]));
     const lines = path.lines.map((l) => ({ id: l.id, waitsOnOwner: l.waitsOnOwner }));
     const withoutLater = buildFirstPaymentPath(lines, ownerStepsInOrder(), noLater);
-    expect(withoutLater.smallest).toEqual([{ line: "apify-actors", steps: [2, 6], minutes: { min: 78, max: 113 } }]);
+    expect(withoutLater.smallest).toEqual([{ line: "apify-actors", steps: [8, 2, 6], minutes: { min: 88, max: 123 } }]);
     // On apify-actors' own path step 6's identity part is asked, and the smallest set counts it.
     expect(renderFirstPayment(withoutLater).join("\n")).toContain(
       "after them `apify-actors` can take a payment, once its read above passes. Identity checks among them: step 2 (yes), step 6 (in one part).\n",
@@ -578,6 +650,13 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
       "- step 6 (`ci-tokens`), 18-23 min, identity check: no on this line (its identity part is for `apify-actors` only). Unlocks: Converts every 'the owner must push' recurring operation into a one-time step.\n",
     );
     expect(ilb).toContain("Held or frozen, with the gate:\n- held: step 2 (`tax-file`), 60-90 min, identity check: yes — only when a paid product is ready, after the official cost check. Unlocks: The legal right to receive any shekel at all.\n");
+    // Ruling 12.10: step 3 is asked now no more; it is held, with its gate, between steps 2 and 5, and the asked list is 8, 6.
+    expect(ilb).toContain(
+      "- held: step 3 (`gumroad`), 20 min, identity check: yes — only when a paid product is ready — after the day-56 page-view PASS of il-biz-tools or pcn874, together with step 2. " +
+        `Unlocks: ${firstSentence(ownerStepById("gumroad")!.unlocks)}\n- frozen: step 5 (\`domain\`)`,
+    );
+    const askedBlock = ilb.slice(ilb.indexOf("Asked now, in the code's order:"), ilb.indexOf("Held or frozen, with the gate:"));
+    expect([...askedBlock.matchAll(/^- step (\d) /gm)].map((m) => Number(m[1]))).toEqual([8, 6]);
     expect(ilb).toContain("- frozen: step 5 (`domain`), 10 min, identity check: no — frozen by the owner's ₪0 rule of 27.9.2026; instead: Sites deploy on *.netlify.app (Netlify's free subdomain). Unlocks: Anonymity and search, both.\n");
     expect(ilb).toContain("Done:\n- done: step 1 (`merge-pr`), 2 min, identity check: no — done on 2026-09-22. Unlocks:");
     expect(ilb).toContain(`Also waits on:\n- a read the colony takes, not an owner step: ${LINE_PAYMENT_WAITS["il-biz-tools"]![0].what} (${LINE_PAYMENT_WAITS["il-biz-tools"]![0].rule})\n`);
@@ -586,7 +665,7 @@ describe("the shortest path to a first payment: owner-steps.ts's steps, gates an
     expect(oss).toContain("Owner steps still between it and a payment: steps 2, 7, 4, 6, 108-148 min.\n");
     const apify = section.slice(section.indexOf("### `apify-actors`"), section.indexOf("### `il-biz-tools`"));
     expect(apify).toContain(`- an owner action outside the eight steps: ${LINE_PAYMENT_WAITS["apify-actors"]![1].what}`);
-    expect(apify).toContain("Owner steps still between it and a payment: steps 2, 6, 78-113 min; the eight steps alone do not make it payable.\n");
+    expect(apify).toContain("Owner steps still between it and a payment: steps 8, 2, 6, 88-123 min; the eight steps alone do not make it payable.\n");
     expect(apify).toContain("- step 6 (`ci-tokens`), 18-23 min, identity check: in one part. Unlocks:");
     const smallest = section.slice(section.indexOf("### The smallest set"));
     expect(smallest).toContain(
