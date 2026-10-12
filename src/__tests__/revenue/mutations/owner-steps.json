@@ -93,8 +93,8 @@
   {
     "id": "T69-S2",
     "file": "src/revenue/owner-steps.ts",
-    "find": "\"the order is under review (FABLE_QUEUE row 29): the",
-    "replace": "\"the order is under review: the",
+    "find": "\"the order is the code's, ruled 12.10.2026 (research/channel-loop/RULING-2026-10-12-owner-step-order.md, FABLE_QUEUE row 29): \" +",
+    "replace": "\"the order is the code's (research/channel-loop/RULING-2026-10-12-owner-step-order.md): \" +",
     "note": "tick 69: the order note names the row it waits on",
     "test": [
       "src/__tests__/revenue/owner-steps.test.ts",
@@ -224,7 +224,7 @@
   {
     "id": "T69R-S4",
     "file": "src/revenue/owner-steps.ts",
-    "find": "  \"the floors ruling of 28.9 (research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3) has il-biz-tools' paid-tier steps 2, 3 and 6b \" +\n",
+    "find": "  \"the free steps come first because step 1 is done, step 5 is frozen and steps 2 and 3 are held until a paid product is ready — \" +\n",
     "replace": "",
     "note": "review NOTE 6: the order note names the floors ruling's row 9 beside the ₪0 sequence",
     "test": [
@@ -266,5 +266,271 @@
     "replace": "and it is booked through src/revenue/connectors/x402-local.ts:",
     "note": "review NOTE 2: x402's standby does not say its USDC is booked, since nothing writes the row the connector reads",
     "test": "src/__tests__/revenue/target-basis.test.ts"
+  },
+  {
+    "id": "T73-OS1",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "      afterStep: \"brand-mailbox\",",
+    "replace": "      afterStep: \"merge-pr\",",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/runner.test.ts",
+      "src/__tests__/revenue/owner-report.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 §3(2): step 6's early part back after step 1 (the early-part test's afterStep; the runner's and owner report's 'may follow step 8')"
+  },
+  {
+    "id": "T73-OS2",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "    lines: [\"apify-actors\", \"il-biz-tools\"],",
+    "replace": "    lines: [\"il-biz-tools\"],",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/runner.test.ts",
+      "src/__tests__/revenue/owner-report.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 §3(3): step 8 no longer gates apify-actors (step 8's lines pin, apify-actors' 8, 6)"
+  },
+  {
+    "id": "T73-OS3",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "      short: `only when a paid product is ready — after the day-",
+    "replace": "      short: `asked when a paid product is ready — after the day-",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 §2(2): step 3's short form loses its opening (/^only when a paid product is ready/; the Hebrew quote of the report)"
+  },
+  {
+    "id": "T73-OS4",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "metOn is set by hand with the PASS reading as evidence, in the fold that records the verdict; ",
+    "replace": "",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 §2(2), §2 BASIS 6: step 3's precondition no longer says metOn is set by hand with the reading"
+  },
+  {
+    "id": "T73-OS5",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "  if (makerNotDone(row, steps)) return false;",
+    "replace": "  if (makerNotDone(row, steps)) return true;",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/runner.test.ts",
+      "src/__tests__/revenue/owner-report.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 §2(5): a row whose making step is not done is asked anyway (isSecretRowAsked's madeIn check)"
+  },
+  {
+    "id": "T73-OS6",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "  \"the floors ruling of 28.9 row 9 item 3\";",
+    "replace": "  \"the floors ruling of 28.9 row 9\";",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/owner-report.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 Fold 1: OWNER_STEP_ORDER_RULED's tail no longer names row 9 item 3"
+  },
+  {
+    "id": "T73-OS7",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": ">   5. **צעדים 2 ו-3 — רק כשמוצר בתשלום מוכן למכירה**",
+    "replace": ">   5. **צעדים 2 ו-3 — כשמוצר בתשלום מוכן למכירה**",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 3: the ₪0 box's merged item 5 loses its needle"
+  },
+  {
+    "id": "T73-OS8",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "(**עם כתובת המייל של המותג מצעד 8 — לא כתובת אישית**;",
+    "replace": "(אימייל;",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 3: step 6 part ב's Apify sign-up no longer names the brand mailbox of step 8"
+  },
+  {
+    "id": "T73-OS9",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "`waits until step ${maker.number}, which makes it, is done`",
+    "replace": "`waits until step ${maker.number} is done`",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/runner.test.ts",
+      "src/__tests__/revenue/owner-report.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 §2(5): the madeIn row's reason no longer says the step makes it"
+  },
+  {
+    "id": "T73-OS10",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "return reasons.length ? reasons.join(\", and \") : null;",
+    "replace": "return reasons.length ? reasons[reasons.length - 1] : null;",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 1: a row held both ways drops its gate's reason (secretRowHoldReason, askedOnlyWhen first)"
+  },
+  {
+    "id": "T73-OS11",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "if (row.askedOnlyWhen && !secretGateHolds(row.askedOnlyWhen, site))",
+    "replace": "if (row.askedOnlyWhen && secretGateHolds(row.askedOnlyWhen, site))",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/runner.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 Fold 1: secretRowHoldReason names the gate when it holds instead of when it does not"
+  },
+  {
+    "id": "T73-OS12",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "  return (step.secrets ?? []).filter((r) => isSecretRowAsked(r, site, steps));",
+    "replace": "  return (step.secrets ?? []).filter((r) => isSecretRowAsked(r, site));",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 1: askedSecretRows ignores the steps it is given"
+  },
+  {
+    "id": "T73-OS13",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "  return (step.secrets ?? []).filter((r) => !isSecretRowAsked(r, site, steps));",
+    "replace": "  return (step.secrets ?? []).filter((r) => !isSecretRowAsked(r, site));",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 1: heldSecretRows ignores the steps it is given"
+  },
+  {
+    "id": "T73-OS14",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "**הדירקטוריון פסק ב-12.10**",
+    "replace": "**הדירקטוריון יפסוק**",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 3: the order bullet no longer says the board ruled on 12.10"
+  },
+  {
+    "id": "T73-OS15",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "> **מבוקש רק כשמוצר בתשלום מוכן** — כשקריאת",
+    "replace": "> **מבוקש כשמוצר בתשלום מוכן** — כשקריאת",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 3: step 3's section loses 'רק כשמוצר בתשלום מוכן'"
+  },
+  {
+    "id": "T73-OS16",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "אפשר להדביק כבר מיד אחרי צעד 8 (חשבון Apify נפתח עם תיבת המותג)",
+    "replace": "אפשר להדביק כבר מיד אחרי צעד 1",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 3: the Apify token back to 'right after step 1' under the code's order"
+  },
+  {
+    "id": "T73-OS17",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "| 3 | חשבון Gumroad + טוקן — רק כשמוצר בתשלום מוכן (קריאת יום 56 עוברת), יחד עם צעד 2 |",
+    "replace": "| 3 | חשבון Gumroad + טוקן |",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 3: the summary table's step-3 row loses its gate"
+  },
+  {
+    "id": "T73-OS18",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "— **ראשון, מיד אחרי צעד 8**",
+    "replace": "— **ראשון, כבר עכשיו**",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 3: step 6's ₪0 split back to 'first, now'"
+  },
+  {
+    "id": "T73-OS19",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "step 6's Gumroad-token row, \"6b\"",
+    "replace": "step 6's paid-tier part, \"6b\"",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 §2(4): il-biz-tools' read names 6b as a paid-tier part again"
+  },
+  {
+    "id": "T73-OS20",
+    "file": "src/revenue/portfolio.ts",
+    "find": "        contextSteps: [8],",
+    "replace": "        contextSteps: [1],",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 5: apify-actors' item links step 1 as context, not step 8"
+  },
+  {
+    "id": "T73-OS21",
+    "file": "src/revenue/portfolio.ts",
+    "find": "text: \"Asked only when a paid product is ready — the day-56 page-view PASS (RULING-2026-09-28-floors.md row 9; ruling 12.10) — together with step 2: Open a Gumroad account in your legal identity with the BRAND as the store name, add",
+    "replace": "text: \"Open a Gumroad account in your legal identity with the BRAND as the store name, add",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/runner.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 Fold 5: il-biz-tools' Gumroad item loses its gate"
+  },
+  {
+    "id": "T73-OS22",
+    "file": "src/revenue/portfolio.ts",
+    "find": "Actions secret (owner step 6) — the Gumroad token only once step 3 is done (ruling 12.10)",
+    "replace": "Actions secret (owner step 6)",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/runner.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 Fold 5: il-biz-tools' Netlify-and-token item no longer says the token waits for step 3"
+  },
+  {
+    "id": "T73-OS23",
+    "file": "docs/INCOME_PLAN.he.md",
+    "find": "**שמונה צעדים, בסדר שבקוד (פסיקות 7.9, 28.9 ו-12.10): 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.**",
+    "replace": "**שבעה צעדים, בסדר שהדירקטוריון פסק (7.9.2026): 1 → 2 → 3 → 5 → 7 → 4 → 6.**",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 6 housekeeping: INCOME_PLAN.he.md §6's stale seven-step order back"
+  },
+  {
+    "id": "T73-OS24",
+    "file": "docs/INCOME_PLAN.he.md",
+    "find": "לעשות מיד אחרי צעד 8**",
+    "replace": "לעשות מיד אחרי צעד 1**",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 6 housekeeping: INCOME_PLAN.he.md's Apify half back after step 1"
+  },
+  {
+    "id": "T73-OS25",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "**עודכן 12.10.2026 (פסיקה 12.10,",
+    "replace": "**עודכן (פסיקה 12.10,",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 3: the dated paragraph loses its date"
+  },
+  {
+    "id": "T73-OS26",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": ", כתובת ההרשמה של חשבון Apify |",
+    "replace": " |",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 3: the table's step-8 row no longer names the Apify sign-up address"
+  },
+  {
+    "id": "T73-OS27",
+    "file": "src/revenue/owner-steps.ts",
+    "find": " It is also the sign-in address of the Apify account step 6's early part opens",
+    "replace": " It is also the address of the Apify account step 6's early part opens",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 1: step 8's unlocks loses 'sign-in address'"
+  },
+  {
+    "id": "T73-OS28",
+    "file": "src/revenue/owner-steps.ts",
+    "find": "    // hourly report ask the owner for step 3, together with step 2.\n    precondition: {",
+    "replace": "    // hourly report ask the owner for step 3, together with step 2.\n    preconditionOff: {",
+    "test": [
+      "src/__tests__/revenue/owner-steps.test.ts",
+      "src/__tests__/revenue/runner.test.ts",
+      "src/__tests__/revenue/owner-report.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 §2(2): step 3's precondition gone, so step 3 is asked now again"
+  },
+  {
+    "id": "T73-OS29",
+    "file": "src/revenue/owner-steps.ts",
+    "find": " The Apify account is registered with the brand mailbox of step 8, never a personal address, so this part follows step 8; part ד needs no mailbox and is reported alone when done first (ruling 12.10).",
+    "replace": "",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 1: the early part's what no longer names the brand mailbox"
   }
 ]

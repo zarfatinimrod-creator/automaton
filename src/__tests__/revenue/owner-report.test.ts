@@ -113,11 +113,14 @@ const USDC_AGOROT = toAgorotAtRate(5000, "USDC", USDC_RATE);
   setLineBudget(health.raw, "pcn874", 1234);
   insertReview(health.raw, { lineId: null, level: "board", reviewer: "board", periodStart: ago(1), periodEnd: NOW, metrics: {}, decision: "hold", rationale: `nothing to decide; ${EMAIL}` });
   health.close();
-  // Two lines that no longer wait on the owner: one killed, one whose setup is recorded done (still awaiting_setup).
+  // Three lines that no longer wait on the owner: one killed, two whose setup is recorded done (still awaiting_setup).
+  // apify-actors joined on ruling 12.10: with step 3 held, step 8 (apify-actors, il-biz-tools) is the open step whose
+  // every line no longer waits, which the test below needs to exist.
   const steps = createDatabase(STEPS_DB);
   seedDefaultPortfolio(steps.raw);
   updateLineStatus(steps.raw, "il-biz-tools", "killed", { reason: "test", force: true });
   setHumanSetupDone(steps.raw, "pcn874", true);
+  setHumanSetupDone(steps.raw, "apify-actors", true);
   steps.close();
 }
 
@@ -241,7 +244,11 @@ describe("owner steps: owner-steps.ts's order, minutes and reasons", () => {
 
   it("asks a step only for a line the database still has waiting on the owner, and names the rest with their lines' state", () => {
     const r = report(STEPS_DB);
-    const state: Record<string, string> = { "il-biz-tools": "killed", pcn874: "set up (awaiting_setup)" };
+    const state: Record<string, string> = {
+      "apify-actors": "set up (awaiting_setup)",
+      "il-biz-tools": "killed",
+      pcn874: "set up (awaiting_setup)",
+    };
     const waiting = new Set(DEFAULT_PORTFOLIO.map((l) => l.id).filter((id) => !(id in state)));
     expect(new Set(r.lines.filter((l) => l.waitsOnOwner).map((l) => l.id))).toEqual(waiting);
     const open = ownerStepsInOrder().filter(isOwnerStepOpen);
@@ -323,6 +330,31 @@ describe("owner steps: owner-steps.ts's order, minutes and reasons", () => {
     expect(notAsked).not.toContain("APIFY_TOKEN");
     // The smallest set is unchanged by the hold: a held step is still between the line and a payment.
     expect(text).toContain("Steps 8, 2, 3, 6 (in the code's order), 108-143 minutes in all: after them `il-biz-tools` can take a payment");
+  });
+
+  it("names a row a done step owes with its gate's reason until the gate holds, then asks it alone", () => {
+    const step6 = ownerStepById("ci-tokens")!;
+    const saved = step6.doneOn;
+    step6.doneOn = { date: "2026-10-02", evidence: "test only", heldRows: ["POSTHOG_READ_KEY"] };
+    const db = new Database(EMPTY_DB, { readonly: true });
+    try {
+      const held = buildOwnerReport(db, { nowIso: NOW, site: { projectId: "" } }).ownerSteps.owedRows;
+      expect(held).toEqual([
+        {
+          step: 6,
+          row: "POSTHOG_READ_KEY",
+          askedNow: false,
+          reason: "waits until the colony has created the brand's PostHog project (posthog.projectId in products/il-biz-tools/src/config/site.json)",
+        },
+      ]);
+      expect(buildOwnerReport(db, { nowIso: NOW, site: { projectId: "12345" } }).ownerSteps.owedRows).toEqual([
+        { step: 6, row: "POSTHOG_READ_KEY", askedNow: true, reason: null },
+      ]);
+    } finally {
+      db.close();
+      step6.doneOn = saved;
+    }
+    expect(ownerStepById("ci-tokens")!.doneOn).toBeUndefined();
   });
 
   it("holds a gated secret row back until the site has its project, and asks it once it does", () => {

@@ -28,13 +28,13 @@ import {
   type OwnerStep,
   type OwnerStepId,
 } from "../../revenue/owner-steps.js";
-import type { PageViewGateReading } from "../../revenue/page-views.js";
+import { PAGE_VIEW_KPI, type PageViewGateReading } from "../../revenue/page-views.js";
 import { renderDashboard } from "../../revenue/dashboard.js";
 import { getLine, listLines, recordKpi, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
 import { LAST_AUDIT_KEY, LAST_LEDGER_SYNC_KEY, REVENUE_TASK_INTERVALS_MS, lastAudit } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
 import { DEFAULT_PORTFOLIO, portfolioTargetAgorot, seedDefaultPortfolio, summarizeTargetBasis, syncPortfolio } from "../../revenue/portfolio.js";
-import { PAGE_VIEW_KPI, pageViewUnit, readSite } from "../../revenue/page-views-reader.js";
+import { pageViewUnit, readSite } from "../../revenue/page-views-reader.js";
 
 const HOUR = 3_600_000;
 
@@ -267,7 +267,8 @@ describe("revenue/runner report rendering", () => {
       expect(line, `${id} has no open-steps line`).toBeTruthy();
       const [asked, notAsked] = line.split(" (not asked now: ");
       expect(asked).not.toMatch(/\b5\b/);
-      expect(notAsked).toMatch(/(^|; )step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\)$/);
+      // Since ruling 12.10 the line ends with step 6's early part, after the not-asked note (Fold 4).
+      expect(notAsked).toMatch(/(^|; )step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\); step 6's early part, 8 min, may follow step 8$/);
     }
     expect(report).not.toMatch(/- \[ \] Buy the company domain/);
     expect(result.blockers.find((b) => b.startsWith("pcn874 is waiting on the owner")))
@@ -1109,6 +1110,10 @@ describe("revenue/runner the owner steps after ruling 12.10", () => {
       `the day-56 read PASSED for il-biz-tools on ${iso(56).slice(0, 10)}${tail}`,
     ]);
     expect(iso(56).slice(0, 10)).toBe("2026-11-30");
+    // At the bar exactly (100 a week over weeks 5-8) the day-56 read passes: page-views.ts reachRead's ">=".
+    expect(paidProductReadyBlockers([reading("il-biz-tools", "pass", [50, 50, 50, 50, 100, 100, 100, 100])])).toEqual([
+      `the day-56 read PASSED for il-biz-tools on 2026-11-30${tail}`,
+    ]);
     // After the one extension the read is the day-112 one, and its date is week 16's.
     expect(paidProductReadyBlockers([reading("pcn874", "pass", PASS_112)])).toEqual([
       `the day-112 read PASSED for pcn874 on ${iso(112).slice(0, 10)}${tail}`,

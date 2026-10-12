@@ -335,5 +335,144 @@
     "replace": "        else if (result.status === \"incomplete\") process.exitCode = 0;",
     "test": "src/__tests__/revenue/colony-cli.test.ts",
     "note": "tick 69 review (R-4): verify-gumroad exits 0 when the listing is refused, as if the ledger were verified (killed by the refused-listing test's exit 1)"
+  },
+  {
+    "id": "T73-C1",
+    "file": "src/revenue/runner.ts",
+    "find": "          notAskedNowNote(line.id) +\n          earlyPartNote(line.id),\n",
+    "replace": "          notAskedNowNote(line.id),\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 §3(5): the per-line row loses step 6's early-part clause"
+  },
+  {
+    "id": "T73-C2",
+    "file": "src/revenue/runner.ts",
+    "find": "may follow step ${after?.number ?? s.earlyPart!.afterStep}`",
+    "replace": "may follow step ${s.earlyPart!.afterStep}`",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 §3(5): the clause prints afterStep's id, not its number"
+  },
+  {
+    "id": "T73-C3",
+    "file": "src/revenue/runner.ts",
+    "find": "  return openOwnerStepsForLine(lineId)\n    .filter((s) => s.earlyPart)",
+    "replace": "  return OWNER_STEPS.filter((s) => s.lines.includes(lineId))\n    .filter((s) => s.earlyPart)",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 §3(5): the clause is printed while step 6 is not asked on the line"
+  },
+  {
+    "id": "T73-C4",
+    "file": "src/revenue/runner.ts",
+    "find": "${s.earlyPart!.minutes} min",
+    "replace": "${s.minutes[0]} min",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 §3(5): the clause prints step 6's minutes, not the early part's"
+  },
+  {
+    "id": "T73-C5",
+    "file": "src/revenue/runner.ts",
+    "find": "    gatedRowsFirst(heldSecretRows(step, site)).map(",
+    "replace": "    heldSecretRows(step, site).map(",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: 'Not asked yet' in table order, the Gumroad row before POSTHOG_READ_KEY"
+  },
+  {
+    "id": "T73-C6",
+    "file": "src/revenue/runner.ts",
+    "find": "row ${secretRowHoldReason(row, site)}`,",
+    "replace": "row is held`,",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: 'Not asked yet' names no reason"
+  },
+  {
+    "id": "T73-C7",
+    "file": "src/revenue/runner.ts",
+    "find": "row ${secretRowHoldReason(row, site)} — step ${step.number} ",
+    "replace": "row — step ${step.number} ",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: a done step's owed row is named without its reason"
+  },
+  {
+    "id": "T73-C8",
+    "file": "src/revenue/runner.ts",
+    "find": "  result.blockers.push(...paidProductReadyBlockers(result.pageViewGates));\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the tick no longer raises the PASS guard"
+  },
+  {
+    "id": "T73-C9",
+    "file": "src/revenue/runner.ts",
+    "find": "    return step !== undefined && hasPendingPrecondition(step);",
+    "replace": "    return step !== undefined;",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS guard fires after both preconditions are recorded met"
+  },
+  {
+    "id": "T73-C10",
+    "file": "src/revenue/runner.ts",
+    "find": "    .filter((g) => g.verdict === \"pass\" && unlocked.includes(g.lineId))",
+    "replace": "    .filter((g) => unlocked.includes(g.lineId))",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS guard fires on any verdict (absent on pause)"
+  },
+  {
+    "id": "T73-C11",
+    "file": "src/revenue/runner.ts",
+    "find": "    .filter((g) => g.verdict === \"pass\" && unlocked.includes(g.lineId))",
+    "replace": "    .filter((g) => g.verdict === \"pass\")",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS guard fires for a line step 3 does not unlock"
+  },
+  {
+    "id": "T73-C12",
+    "file": "src/revenue/runner.ts",
+    "find": "const day = firstPassed ? PAGE_VIEW_GATES.reachDay : PAGE_VIEW_GATES.extensionDay;",
+    "replace": "const day = PAGE_VIEW_GATES.reachDay;",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: a day-112 PASS is named as the day-56 read"
+  },
+  {
+    "id": "T73-C13",
+    "file": "src/revenue/runner.ts",
+    "find": ">= PAGE_VIEW_GATES.passMinWeeklyAverage;",
+    "replace": "> PAGE_VIEW_GATES.passMinWeeklyAverage;",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: a day-56 PASS at the bar exactly is named as the day-112 read"
+  },
+  {
+    "id": "T73-C14",
+    "file": "src/revenue/runner.ts",
+    "find": "const date = views.get(endWeekOfDay(day))?.writtenAt.slice(0, 10) ?? \"an unrecorded date\";",
+    "replace": "const date = g.anchorDay ?? \"an unrecorded date\";",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS is dated D0, not the day its last week was written"
+  },
+  {
+    "id": "T73-C15",
+    "file": "src/revenue/runner.ts",
+    "find": "const unlocked = ownerStepById(\"gumroad\", steps)?.lines ?? [];",
+    "replace": "const unlocked = [\"apify-actors\", \"il-biz-tools\", \"pcn874\"];",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS guard's lines are not step 3's"
+  },
+  {
+    "id": "T73-C16",
+    "file": "src/revenue/runner.ts",
+    "find": "([\"tax-file\", \"gumroad\"] as const).some(",
+    "replace": "([\"tax-file\"] as const).some(",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS guard reads step 2's precondition alone"
+  },
+  {
+    "id": "T73-C17",
+    "file": "src/revenue/runner.ts",
+    "find": "  return [...rows.filter((r) => r.askedOnlyWhen), ...rows.filter((r) => !r.askedOnlyWhen)];",
+    "replace": "  return rows;",
+    "test": [
+      "src/__tests__/revenue/runner.test.ts",
+      "src/__tests__/revenue/owner-report.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: gatedRowsFirst keeps table order"
   }
 ]

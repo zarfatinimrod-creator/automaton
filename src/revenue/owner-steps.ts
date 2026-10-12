@@ -51,12 +51,10 @@
  *     payments. Until `precondition.metOn` is set the report names it outside
  *     the asked-now list, as it names the frozen domain — so an owner following
  *     the hourly report is never sent to register before that check.
- *   - The Hebrew document now leads with the free steps — the Apify half of 6,
- *     then 7, then the Netlify half of 6, then 3 (free to open; its fees come
- *     out of sales), and 2 only when a paid product is ready.
- *   - The `order` field is still the board's 7.9 ruling, and the tests still pin
- *     it. Re-sequencing is the board's call; until it re-rules, the ₪0 sequence
- *     lives in the document as text and says that it awaits the board.
+ *   - The Hebrew document leads with the free steps — which is what the gates
+ *     leave asked now.
+ *   - `order` is the boards' and stands, ruled 12.10; the ₪0 sequence is the
+ *     gates' output, not a second order.
  *
  * The same day the owner also gave standing consent to merge and publish under
  * the brand: the agent merges its own green pull requests without asking each
@@ -139,9 +137,21 @@
  *   - `LINE_PAYMENT_WAITS` names what each line waits on before its first payment besides these eight steps, where the
  *     code knows it: a scheduled read the colony takes, or an owner action that is not one of the eight and is asked
  *     only later. The owner report's "Shortest path to a first payment" reads both, with the steps.
- *   - `OWNER_STEP_ORDER_REVIEW`: two step orders are in force (the `order` below and the ₪0 sequence of the Hebrew
- *     document) and the board has not ruled which binds (logs/FABLE_QUEUE.md row 29). Every surface that prints the
- *     code's order prints this line beside it, and none of them picks.
+ *   - `OWNER_STEP_ORDER_REVIEW`: two step orders were in force (the `order` below and the ₪0 sequence of the Hebrew
+ *     document) and the board had not ruled which binds (logs/FABLE_QUEUE.md row 29). Every surface that printed the
+ *     code's order printed that line beside it, and none of them picked. The board ruled on 12.10 (below): the line is
+ *     now `OWNER_STEP_ORDER_RULED`, and it states the ruling.
+ *
+ * Ruling of 12.10.2026 (research/channel-loop/RULING-2026-10-12-owner-step-order.md, FABLE_QUEUE row 29) — no step
+ * added, removed, renumbered or reordered; `order` is the checklist's and stands: (a) step 3 is HELD by a `precondition`
+ * like step 2's — asked only when a paid product is ready, which for il-biz-tools and pcn874 is the day-56 page-view
+ * PASS (or the day-112 PASS after the one extension), the floors ruling of 28.9 row 9 item 3 and the lines ruling of
+ * 29.9 (f); asked then together with step 2, with the reading; `metOn` set by hand with the reading; (b) a secret row
+ * whose `madeIn` step is not done is not asked and is named 'not asked yet' with that reason (`isSecretRowAsked`);
+ * `heldRows` is unchanged; (c) step 6's early part follows step 8, `afterStep: "brand-mailbox"`: the Apify account is
+ * opened with the brand mailbox (BOARD-LOOP PUBLISH-9; research/breadth/BOARD.md Q2), as step 3's account is; part ד
+ * needs no mailbox (ruling 7.10) and is asked in the same sitting; (d) step 8's `lines` gains apify-actors; (e)
+ * `OWNER_STEP_ORDER_REVIEW` becomes `OWNER_STEP_ORDER_RULED`.
  */
 
 import { SUPPLY_THRESHOLDS } from "./bounties/supply.js";
@@ -254,7 +264,8 @@ export interface OwnerStep {
    * and the step it may follow. Only step 6 has one, and it matters: the Apify
    * token is what starts the 30-day stranger count, a month earlier than the
    * rest of the checklist would allow. (Step 4 had one, 4a, from the bounty-rail
-   * ruling until the breadth board dropped it on 28.9.2026.)
+   * ruling until the breadth board dropped it on 28.9.2026.) Since ruling 12.10
+   * it follows step 8, whose mailbox the Apify account is opened with.
    */
   earlyPart?: { what: string; afterStep: OwnerStepId; minutes: number };
   /**
@@ -331,12 +342,12 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "תיבת דואר של המותג (חשבון Google בשם המותג)",
     minutes: [10, 10],
     unlocks:
-      "A Google account under the brand (Gmail, mehudak) — the inbox every new-account venue needs for verification mail and one-time codes, and the brand-owned accessibility contact that is il-biz-tools' last publish gate. It is a Google account rather than a mailbox elsewhere because the same account later serves Search Console; YouTube Stage A uses a dedicated brand Google account (ruling 30.9 16(c)). Google Play Books Partner Center was another use until 28.9.2026, when it was killed: Israel is not a supported country (research/measurements/google-play-books.md). If Google's sign-up asks for more than a phone number — an ID document, a video or a payment — stop and use a free Outlook.com mailbox instead (IMAP). The owner's own phone number for the sign-up check is allowed (private, no camera); it is never the owner's personal Gmail (PUBLISH-9). The agent reads it and the owner never answers anyone: a second Gmail connector for the brand account in this environment, and for CI an app password (or OAuth token) as a secret of the GitHub environment brand-mailbox, whose deployment branches are limited to main — not a repository secret, which every branch and workflow could read. Once step 8 is done, the tick's probe will report the unread count, with accessibility mail unanswered for 7 days as a blocker, and the colony will answer accessibility mail itself — neither runs yet: the probe is built but not scheduled (scripts/brand_mail.py probe via .github/workflows/brand-mail.yml, dispatch only; the report already reads its numbers from state/colony/brand-mail.json, and it joins colony.yml's schedule once this step is done), and the responder is not built. Every written question the colony sends a platform from this address discloses that it comes from the company's automated operator (as disclosure.ts does), which is what lets the colony ask the written questions that decide CrazyGames (runner-operated submission) and Spreadshirt (automated uploads); the seven are drafted in research/owner-asks/questions.json and leave through the same workflow, dry run first. The address is published only as the brand's accessibility contact. Cost ₪0; about ten minutes; no identity step (research/breadth/BOARD.md Q2, 28.9.2026). It is first among the free steps because it unblocks more than any other (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (b)): seven written questions, il-biz-tools' publish gate, the pcn874 page, npm's account (proposed step 9, not yet asked) and Displate's login (if Displate is admitted) wait on it — said once, never as a reminder.",
+      "A Google account under the brand (Gmail, mehudak) — the inbox every new-account venue needs for verification mail and one-time codes, and the brand-owned accessibility contact that is il-biz-tools' last publish gate. It is a Google account rather than a mailbox elsewhere because the same account later serves Search Console; YouTube Stage A uses a dedicated brand Google account (ruling 30.9 16(c)). Google Play Books Partner Center was another use until 28.9.2026, when it was killed: Israel is not a supported country (research/measurements/google-play-books.md). If Google's sign-up asks for more than a phone number — an ID document, a video or a payment — stop and use a free Outlook.com mailbox instead (IMAP). The owner's own phone number for the sign-up check is allowed (private, no camera); it is never the owner's personal Gmail (PUBLISH-9). The agent reads it and the owner never answers anyone: a second Gmail connector for the brand account in this environment, and for CI an app password (or OAuth token) as a secret of the GitHub environment brand-mailbox, whose deployment branches are limited to main — not a repository secret, which every branch and workflow could read. Once step 8 is done, the tick's probe will report the unread count, with accessibility mail unanswered for 7 days as a blocker, and the colony will answer accessibility mail itself — neither runs yet: the probe is built but not scheduled (scripts/brand_mail.py probe via .github/workflows/brand-mail.yml, dispatch only; the report already reads its numbers from state/colony/brand-mail.json, and it joins colony.yml's schedule once this step is done), and the responder is not built. Every written question the colony sends a platform from this address discloses that it comes from the company's automated operator (as disclosure.ts does), which is what lets the colony ask the written questions that decide CrazyGames (runner-operated submission) and Spreadshirt (automated uploads); the seven are drafted in research/owner-asks/questions.json and leave through the same workflow, dry run first. The address is published only as the brand's accessibility contact. Cost ₪0; about ten minutes; no identity step (research/breadth/BOARD.md Q2, 28.9.2026). It is first among the free steps because it unblocks more than any other (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (b)): seven written questions, il-biz-tools' publish gate, the pcn874 page, npm's account (proposed step 9, not yet asked) and Displate's login (if Displate is admitted) wait on it — said once, never as a reminder. It is also the sign-in address of the Apify account step 6's early part opens (never a personal address, BOARD-LOOP PUBLISH-9), so apify-actors waits on it too (ruling 12.10).",
     identity: {
       needs: "no",
       what: "a phone number for Google's sign-up check (the owner's own phone is allowed); no ID document and no camera — if Google asks for more than a phone number, the owner stops and opens a free Outlook.com mailbox instead",
     },
-    lines: ["il-biz-tools"],
+    lines: ["apify-actors", "il-biz-tools"],
     // Not an identity step and not in the chief audit's catalogue: a brand account asked for by the breadth board.
     catalogueRef: null,
   },
@@ -380,6 +391,16 @@ export const OWNER_STEPS: OwnerStep[] = [
     },
     lines: ["il-biz-tools", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.2",
+    // Ruling 12.10 §2 (research/channel-loop/RULING-2026-10-12-owner-step-order.md): HELD like step 2 until a paid product
+    // is ready. metOn stays unset until the day-56 page-view read (or the day-112 read after the one extension) PASSES for
+    // il-biz-tools or pcn874; it is set by hand with the PASS reading as evidence, and setting it is what makes the
+    // hourly report ask the owner for step 3, together with step 2.
+    precondition: {
+      what:
+        `Under the floors ruling of 28.9 (research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3) and the lines ruling of 29.9 (f) (portfolio.ts TARGET_BASIS.pcn874), a paid product on il-biz-tools or pcn874 is ready only when that line's day-${PAGE_VIEW_GATES.reachDay} page-view read PASSES — 100 a week or more averaged over weeks 5-8 of the netlify.app period, or the same read at day ${PAGE_VIEW_GATES.extensionDay} after its one extension (page-views.ts PAGE_VIEW_GATES) — and until then no owner step is asked on the line's account. Step 3 is free to open and its fees come out of sales (MISSION 27.9), so no cost check is part of this gate; it is held because it is an identity step whose only use before a sale — the token that reads sales and creates the Pro draft — reads nothing and sells nothing before step 2, which is itself asked only then. metOn is set by hand with the PASS reading as evidence, in the fold that records the verdict; setting it asks the owner for step 3 together with step 2, with the reading (ruling 12.10, research/channel-loop/RULING-2026-10-12-owner-step-order.md §2).`,
+      // Printed after "step 3 " in the report, inside its parentheses: no "(", ")" or ";", and no step number first.
+      short: `only when a paid product is ready — after the day-${PAGE_VIEW_GATES.reachDay} page-view PASS of il-biz-tools or pcn874, together with step 2`,
+    },
     ownerDecision:
       "Paddle is an OPTION, not a step, and the board recommends against it: Sumsub may demand a selfie video (a mandate collision), approval is discretionary and pre-revenue sellers have been refused, and ILS is not a payout currency. Gumroad covers the same products.",
   },
@@ -496,26 +517,25 @@ export const OWNER_STEPS: OwnerStep[] = [
     ],
     earlyPart: {
       what:
-        "Apify sign-up with the BRAND as the username (the Store URL apify.com/<username>/… is public) and APIFY_TOKEN into GitHub secrets; and part ד, two PostHog organisations named for the brand and for the T1 sub-brand, created by the owner inside the PostHog login the connector already reaches (ruling 7.10, research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2; free, no card, no identity, nothing pasted; the owner stops and says so if PostHog asks for a card, a payment, an ID or a phone, or offers the new organisation only a trial or a paid plan). The Apify part alone starts the 30-day stranger count a month earlier than the rest of the checklist would; the PostHog part is what every page deploy's D0 waits on, since the counter must be live at D0, so it comes before the deploy route. Neither needs identity verification.",
-      afterStep: "merge-pr",
+        "Apify sign-up with the BRAND as the username (the Store URL apify.com/<username>/… is public) and APIFY_TOKEN into GitHub secrets; and part ד, two PostHog organisations named for the brand and for the T1 sub-brand, created by the owner inside the PostHog login the connector already reaches (ruling 7.10, research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2; free, no card, no identity, nothing pasted; the owner stops and says so if PostHog asks for a card, a payment, an ID or a phone, or offers the new organisation only a trial or a paid plan). The Apify part alone starts the 30-day stranger count a month earlier than the rest of the checklist would; the PostHog part is what every page deploy's D0 waits on, since the counter must be live at D0, so it comes before the deploy route. Neither needs identity verification. The Apify account is registered with the brand mailbox of step 8, never a personal address, so this part follows step 8; part ד needs no mailbox and is reported alone when done first (ruling 12.10).",
+      afterStep: "brand-mailbox",
       minutes: 8,
     },
   },
 ];
 
 /**
- * Printed beside the code's order wherever a surface prints it as the owner's sequence, until the board rules: two
- * orders are in force — `order` above (the 7.9 board's, step 8 put second on 28.9) and the ₪0 sequence the Hebrew
- * document and logs/CHANNEL_LOOP.md §6 lead with (the free, no-identity steps first; step 3 only when a paid product is
- * ready) — and FABLE_QUEUE row 29 asks which binds; the row's brief adds the floors ruling of 28.9, row 9 item 3, which
- * puts il-biz-tools' paid-tier steps after its day-56 PASS. Nothing here picks one. The row's fold clears it with the
- * ruling.
+ * What the board ruled on the order (ruling 12.10, FABLE_QUEUE row 29), for the one surface that prints the code's order
+ * as the owner's sequence: the owner report's "Shortest path to a first payment" prints it once, beside the code's
+ * order. Never in REPORT.md, which prints the gates' output — the steps asked now — and not an order. It replaced
+ * OWNER_STEP_ORDER_REVIEW, the line that said two orders were in force and picked neither: `order` is the checklist's,
+ * and the free steps come first because of the gates, not because of a second order.
  */
-export const OWNER_STEP_ORDER_REVIEW =
-  "the order is under review (FABLE_QUEUE row 29): the ₪0 sequence of docs/OWNER_STEPS.he.md asks the free, no-identity steps first; " +
-  "the floors ruling of 28.9 (research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3) has il-biz-tools' paid-tier steps 2, 3 and 6b " +
-  `join the ask batch only at its page-view PASS (the day-${PAGE_VIEW_GATES.reachDay} read, or the day-${PAGE_VIEW_GATES.extensionDay} read after its one extension); ` +
-  "and the board has not ruled which order binds";
+export const OWNER_STEP_ORDER_RULED =
+  "the order is the code's, ruled 12.10.2026 (research/channel-loop/RULING-2026-10-12-owner-step-order.md, FABLE_QUEUE row 29): " +
+  "the free steps come first because step 1 is done, step 5 is frozen and steps 2 and 3 are held until a paid product is ready — " +
+  `for il-biz-tools and pcn874 the day-${PAGE_VIEW_GATES.reachDay} page-view PASS, or the day-${PAGE_VIEW_GATES.extensionDay} read after its one extension, ` +
+  "the floors ruling of 28.9 row 9 item 3";
 
 /**
  * What a line waits on before its first payment besides the eight steps above.
@@ -558,7 +578,7 @@ export const LINE_PAYMENT_WAITS: Record<string, LinePaymentWait[]> = {
       what:
         `the day-${PAGE_VIEW_GATES.reachDay} page-view read, counted from D0, the public *.netlify.app deploy (not yet made): ` +
         `under ${PAGE_VIEW_GATES.reachMinTotal} page views over the ${PAGE_VIEW_GATES.reachDay} days → the line is paused at ₪0 and no owner step is asked on its account; ` +
-        `${PAGE_VIEW_GATES.passMinWeeklyAverage} a week or more averaged over weeks ${READ_WEEKS - 3}-${READ_WEEKS} → PASS, and the paid tier's owner steps (2, 3 and step 6's paid-tier part, "6b") join the ask batch as "a paid product is ready"; ` +
+        `${PAGE_VIEW_GATES.passMinWeeklyAverage} a week or more averaged over weeks ${READ_WEEKS - 3}-${READ_WEEKS} → PASS, and the paid tier's owner steps (2, 3 and step 6's Gumroad-token row, "6b") join the ask batch as "a paid product is ready"; ` +
         `between → one extension to day ${PAGE_VIEW_GATES.extensionDay}`,
       rule: "the floors ruling of 28.9, row 9: research/channel-loop/RULING-2026-09-28-floors.md, Row 9 item 3; src/revenue/page-views.ts PAGE_VIEW_GATES",
     },
@@ -634,24 +654,51 @@ export function heldOwnerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER
   return ownerStepsForLine(lineId, steps).filter((s) => !s.doneOn && !s.frozen && hasPendingPrecondition(s));
 }
 
-/** True when a secret row may be asked now: it has no gate, or its gate holds on the site's config. */
-export function isSecretRowAsked(row: OwnerSecretRow, site: SecretGateSite): boolean {
-  switch (row.askedOnlyWhen) {
-    case undefined:
-      return true;
+/** True when an `askedOnlyWhen` gate holds on the site's config. */
+function secretGateHolds(gate: SecretRowGate, site: SecretGateSite): boolean {
+  switch (gate) {
     case "posthog-project-exists":
       return site.projectId.trim() !== "";
   }
 }
 
-/** A step's secret rows the owner may be asked for now, in table order. */
-export function askedSecretRows(step: OwnerStep, site: SecretGateSite): OwnerSecretRow[] {
-  return (step.secrets ?? []).filter((r) => isSecretRowAsked(r, site));
+/** The step that makes a row (`madeIn`) when that step is not done yet, so the row is a key to nothing; else undefined. */
+function makerNotDone(row: OwnerSecretRow, steps: OwnerStep[]): { number: number | string } | undefined {
+  if (!row.madeIn) return undefined;
+  const maker = ownerStepById(row.madeIn, steps);
+  return maker?.doneOn ? undefined : { number: maker?.number ?? row.madeIn };
 }
 
-/** A step's secret rows its gates still hold back, in table order: the complement of `askedSecretRows`. */
-export function heldSecretRows(step: OwnerStep, site: SecretGateSite): OwnerSecretRow[] {
-  return (step.secrets ?? []).filter((r) => !isSecretRowAsked(r, site));
+/**
+ * True when a secret row may be asked now: the step that makes it, if another step does (`madeIn`), is done (ruling
+ * 12.10 §2(5): a key to nothing is not asked), and it has no gate or its gate holds on the site's config. `steps` is the
+ * checklist the maker is looked up in (OWNER_STEPS unless a test gives another).
+ */
+export function isSecretRowAsked(row: OwnerSecretRow, site: SecretGateSite, steps: OwnerStep[] = OWNER_STEPS): boolean {
+  if (makerNotDone(row, steps)) return false;
+  return row.askedOnlyWhen === undefined || secretGateHolds(row.askedOnlyWhen, site);
+}
+
+/**
+ * Why a secret row is not asked now, as the report prints it after "step N's `ROW` row" — a reason, never something for
+ * the owner to do — or null when it is asked. The `askedOnlyWhen` reason comes first when both hold (ruling 12.10 §2(5)).
+ */
+export function secretRowHoldReason(row: OwnerSecretRow, site: SecretGateSite, steps: OwnerStep[] = OWNER_STEPS): string | null {
+  const reasons: string[] = [];
+  if (row.askedOnlyWhen && !secretGateHolds(row.askedOnlyWhen, site)) reasons.push(SECRET_ROW_GATE_SHORT[row.askedOnlyWhen]);
+  const maker = makerNotDone(row, steps);
+  if (maker) reasons.push(`waits until step ${maker.number}, which makes it, is done`);
+  return reasons.length ? reasons.join(", and ") : null;
+}
+
+/** A step's secret rows the owner may be asked for now, in table order. */
+export function askedSecretRows(step: OwnerStep, site: SecretGateSite, steps: OwnerStep[] = OWNER_STEPS): OwnerSecretRow[] {
+  return (step.secrets ?? []).filter((r) => isSecretRowAsked(r, site, steps));
+}
+
+/** A step's secret rows its gates or their makers still hold back, in table order: the complement of `askedSecretRows`. */
+export function heldSecretRows(step: OwnerStep, site: SecretGateSite, steps: OwnerStep[] = OWNER_STEPS): OwnerSecretRow[] {
+  return (step.secrets ?? []).filter((r) => !isSecretRowAsked(r, site, steps));
 }
 
 /** A secret row a DONE step still owes: held back on the day the step was done, and not pasted since. */
@@ -673,12 +720,12 @@ function owedSecretRows(steps: OwnerStep[]): OwedSecretRow[] {
 
 /** The owed rows the owner is asked for now, each alone, as a follow-up to its done step: the gate holds. */
 export function followUpSecretRows(site: SecretGateSite, steps: OwnerStep[] = OWNER_STEPS): OwedSecretRow[] {
-  return owedSecretRows(steps).filter(({ row }) => isSecretRowAsked(row, site));
+  return owedSecretRows(steps).filter(({ row }) => isSecretRowAsked(row, site, steps));
 }
 
 /** The owed rows whose gate still holds them back: named with the reason, never asked. */
 export function heldFollowUpSecretRows(site: SecretGateSite, steps: OwnerStep[] = OWNER_STEPS): OwedSecretRow[] {
-  return owedSecretRows(steps).filter(({ row }) => !isSecretRowAsked(row, site));
+  return owedSecretRows(steps).filter(({ row }) => !isSecretRowAsked(row, site, steps));
 }
 
 /**

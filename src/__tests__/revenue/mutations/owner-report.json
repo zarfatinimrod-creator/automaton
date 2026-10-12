@@ -106,8 +106,8 @@
   {
     "id": "T64-OR14",
     "file": "src/revenue/owner-report.ts",
-    "find": "heldSecretRows(s, site).map(",
-    "replace": "heldSecretRows(s, { projectId: \"x\" }).map(",
+    "find": "heldSecretRows(s, site))",
+    "replace": "heldSecretRows(s, { projectId: \"x\" }))",
     "note": "tick 64: a gated secret row reads the site it is given",
     "test": "src/__tests__/revenue/owner-report.test.ts"
   },
@@ -386,8 +386,8 @@
   {
     "id": "T69-OR13",
     "file": "src/revenue/owner-report.ts",
-    "find": "    orderReview: OWNER_STEP_ORDER_REVIEW,",
-    "replace": "    orderReview: \"\",",
+    "find": "    orderRuled: OWNER_STEP_ORDER_RULED,",
+    "replace": "    orderRuled: \"\",",
     "note": "tick 69: the path carries the order-review note (FABLE_QUEUE row 29)",
     "test": "src/__tests__/revenue/owner-report.test.ts"
   },
@@ -402,7 +402,7 @@
   {
     "id": "T69-OR15",
     "file": "src/revenue/owner-report.ts",
-    "find": "  out.push(`${p.orderReview.charAt(0).toUpperCase()}${p.orderReview.slice(1)}.`);",
+    "find": "  out.push(`${p.orderRuled.charAt(0).toUpperCase()}${p.orderRuled.slice(1)}.`);",
     "replace": "  out.push(\"\");",
     "note": "tick 69: the section prints the order-review line beside the code's order",
     "test": "src/__tests__/revenue/owner-report.test.ts"
@@ -614,5 +614,29 @@
     "replace": "    closeBehind: false\n",
     "note": "review NOTE 6: the path carries the lines close behind the smallest set",
     "test": "src/__tests__/revenue/owner-report.test.ts"
+  },
+  {
+    "id": "T73-OR1",
+    "file": "src/revenue/owner-report.ts",
+    "find": "gatedRowsFirst(heldSecretRows(s, site)).map(",
+    "replace": "heldSecretRows(s, site).map(",
+    "test": "src/__tests__/revenue/owner-report.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 6: 'Not asked now' lists the held rows in table order"
+  },
+  {
+    "id": "T73-OR2",
+    "file": "src/revenue/owner-report.ts",
+    "find": "reason: secretRowHoldReason(row, site)! })),",
+    "replace": "reason: \"held\" })),",
+    "test": "src/__tests__/revenue/owner-report.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 6: a held row of a step asked now loses its reason"
+  },
+  {
+    "id": "T73-OR3",
+    "file": "src/revenue/owner-report.ts",
+    "find": "          reason: secretRowHoldReason(row, site)!,\n",
+    "replace": "          reason: \"\",\n",
+    "test": "src/__tests__/revenue/owner-report.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 6: a row a done step owes loses its gate's reason"
   }
 ]

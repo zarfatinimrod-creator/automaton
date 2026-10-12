@@ -1632,6 +1632,19 @@ describe("the owner's documents state each step's minutes as the code does (tick
     }
   });
 
+  // Ruling 12.10 Fold 6 (housekeeping): INCOME_PLAN.he.md §6 said "שבעה צעדים … 1 → 2 → 3 → 5 → 7 → 4 → 6" (7.9),
+  // stale since 28.9. Every order §6 states is now the code's, and the Apify half follows step 8.
+  it("INCOME_PLAN.he.md §6 states only the code's order, and the Apify half after step 8", () => {
+    const start = income.indexOf("## 6.");
+    const six = income.slice(start, start + 1 + income.slice(start + 1).search(/^## /m));
+    const orders = [...six.matchAll(/\d(?:\s*→\s*\d)+/g)].map((m) => m[0].split("→").map((n) => Number(n.trim())));
+    expect(orders.length).toBeGreaterThan(0);
+    for (const order of orders) expect(order).toEqual(ownerStepsInOrder().map((s) => s.number));
+    expect(flat(six)).toContain("**שמונה צעדים, בסדר שבקוד (פסיקות 7.9, 28.9 ו-12.10): 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.**");
+    expect(flat(six)).toContain("**חצי אחד של צעד 6 — טוקן Apify — אפשר לעשות מיד אחרי צעד 8**");
+    expect(six).not.toContain("שבעה צעדים");
+  });
+
   it("the table in INCOME_PLAN.he.md §6 has one row per step with the code's minutes", () => {
     const start = income.indexOf("## 6.");
     const six = income.slice(start, start + 1 + income.slice(start + 1).search(/^## /m));
