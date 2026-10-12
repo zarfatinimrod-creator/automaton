@@ -539,6 +539,8 @@ describe("the scanner", () => {
 
   it("lets a phrase in the possessive own a line after \"own\", and a phrase broken across two lines", () => {
     expect(files("\"The ledger\" is `src/revenue/ledger.ts`.\n\nSee `MISSION.md:1` and the ledger's own `:9`.")).toContain("src/revenue/ledger.ts:9-9");
+    // Through the phrase in the possessive, not through the role its one word also is since tick 72 (T70F-17).
+    expect(scan("\"The ledger\" is `src/revenue/ledger.ts`.\n\nSee `MISSION.md:1` and the ledger's own `:9`.").find((r: { range: number[] | null }) => r.range?.[0] === 9)).toMatchObject({ path: "src/revenue/ledger.ts", via: "the ledger" });
     const text = "\"The read-back\" is `scripts/r.ts`.\n\n`MISSION.md:1` is the log call at the\n  read-back `:126-130` now.";
     const ref = scan(text).find((r: { range: number[] | null }) => r.range?.[0] === 126);
     expect(ref).toMatchObject({ path: "scripts/r.ts", via: "the read-back", docLine: 4 });

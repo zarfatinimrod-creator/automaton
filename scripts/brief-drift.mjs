@@ -514,9 +514,10 @@ export function scanCitations(text, resolver, { only = null, definitions = null 
   const phraseList = [...phrases.keys()].sort((a, b) => b.length - a.length);
   const PHRASES = phraseList.map((p) => ({ phrase: p, re: new RegExp(`(?<![A-Za-z0-9_-])(?:${phraseSource(p)})(?![A-Za-z0-9_-])`, "g") }));
   // A role the document defines as "the X" ("The test" is `src/__tests__/revenue/owner-steps.test.ts`) also owns a line
-  // as its one word X right before that line ("pinned at test `:913-917`", "Test's `:5`"), when every definition of X,
-  // with or without "the", names one file of the tree. Anywhere else the one word is prose ("a test passes"); two
-  // definitions that disagree, or one that names no file, make no role: never a guess.
+  // as its one word X right before that line ("pinned at test `:913-917`", "Test's `:5`"), when every definition of
+  // "the X" (any case) names one file of the tree. Anywhere else the one word is prose ("a test passes"); two
+  // definitions that disagree, or one that names no file, make no role: never a guess. (A one-word phrase is matched
+  // as a phrase already, and takes the span first.)
   const roleWord = (p) => /^the\s+(\S+)$/i.exec(p)?.[1] ?? null;
   const targetsOf = new Map();
   for (const [p, list] of phrases) {
