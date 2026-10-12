@@ -12,6 +12,7 @@ import {
   markRan,
   renderCommitSummary,
   heldSecretRowsNote,
+  paidProductReadyBlockers,
   renderReport,
   SILENT_LINE_ALERT_DAYS,
   tick,
@@ -24,14 +25,16 @@ import {
   ownerStepById,
   ownerStepsForLine,
   secretRowsPastedBeforeMade,
+  type OwnerStep,
   type OwnerStepId,
 } from "../../revenue/owner-steps.js";
+import type { PageViewGateReading } from "../../revenue/page-views.js";
 import { renderDashboard } from "../../revenue/dashboard.js";
 import { getLine, listLines, recordKpi, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
 import { LAST_AUDIT_KEY, LAST_LEDGER_SYNC_KEY, REVENUE_TASK_INTERVALS_MS, lastAudit } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
 import { DEFAULT_PORTFOLIO, portfolioTargetAgorot, seedDefaultPortfolio, summarizeTargetBasis, syncPortfolio } from "../../revenue/portfolio.js";
-import { readSite } from "../../revenue/page-views-reader.js";
+import { PAGE_VIEW_KPI, pageViewUnit, readSite } from "../../revenue/page-views-reader.js";
 
 const HOUR = 3_600_000;
 
@@ -244,7 +247,8 @@ describe("revenue/runner report rendering", () => {
       const row = report.split("\n").find((l) => l.startsWith(`Owner steps still open for \`${line.id}\``))!;
       expect(row, `${line.id} lost step 2 from its row`).toMatch(/\bstep 2 /);
     }
-    expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*: 3, 7, 6 \(not asked now: /);
+    // Ruling 12.10: step 3 is held like step 2, so pcn874 is asked 7 and 6 and names 2, 3 and the frozen 5 outside them.
+    expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*: 7, 6 \(not asked now: step 2 [^;]+; step 3 only when a paid product is ready[^;]+; step 5 frozen/);
     // a step recorded as done is not asked for again
     const done = OWNER_STEPS.filter((s) => s.doneOn).map((s) => s.number);
     expect(done).toContain(1);
@@ -299,14 +303,16 @@ describe("revenue/runner report rendering", () => {
       expect(blocker, `${line.id} blocker does not name the held step`).toContain(`(not asked now: ${held}`);
     }
     // The four lines as the reviewer read them on the real database.
+    // Since ruling 12.10 (§3(3)) step 8 gates apify-actors too: its Apify account is opened with the brand mailbox.
     expect(result.blockers.find((b) => b.startsWith("apify-actors is waiting")))
-      .toMatch(/^apify-actors is waiting on the owner: steps 6 of docs\/OWNER_STEPS\.he\.md \(not asked now: step 2 only/);
-    // Step 8, the brand mailbox, is asked now and comes first for il-biz-tools (research/breadth/BOARD.md Q2, 28.9.2026).
-    expect(report).toMatch(/Owner steps still open for `il-biz-tools`[^\n]*: 8, 3, 6 \(not asked now: step 2 only when a paid product is ready, after the official cost check; step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\)/);
-    expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*: 3, 7, 6 \(not asked now: step 2 [^;]+; step 5 frozen/);
+      .toMatch(/^apify-actors is waiting on the owner: steps 8, 6 of docs\/OWNER_STEPS\.he\.md \(not asked now: step 2 only/);
+    // Step 8, the brand mailbox, is asked now and comes first for il-biz-tools (research/breadth/BOARD.md Q2, 28.9.2026);
+    // step 3 is held until the day-56 PASS (ruling 12.10 §2), and step 6's early part may follow step 8 (§3).
+    expect(report).toMatch(/Owner steps still open for `il-biz-tools`[^\n]*: 8, 6 \(not asked now: step 2 only when a paid product is ready, after the official cost check; step 3 only when a paid product is ready — after the day-56 page-view PASS of il-biz-tools or pcn874, together with step 2; step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\)/);
+    expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*: 7, 6 \(not asked now: step 2 [^;]+; step 3 only when a paid product is ready — after the day-56 page-view PASS of il-biz-tools or pcn874, together with step 2; step 5 frozen/);
     // Step 4 is held since 28.9.2026 and is 4b alone: the Stripe form, which begins with the Algora sign-in, waits for
     // the corrected week-4 count and a held reward; 4a was dropped (research/breadth/BOARD.md Part B(b)).
-    expect(report).toMatch(/Owner steps still open for `oss-bounties`[^\n]*: 7, 6 \(not asked now: step 2 [^;)]+; step 4 Stripe form 4b, asked only after [^;)]+ — the form begins with the Algora sign-in\)$/m);
+    expect(report).toMatch(/Owner steps still open for `oss-bounties`[^\n]*: 7, 6 \(not asked now: step 2 [^;)]+; step 4 Stripe form 4b, asked only after [^;)]+ — the form begins with the Algora sign-in\); step 6's early part, 8 min, may follow step 8$/m);
     expect(report).not.toMatch(/\b4a\b/);
     expect(report).not.toMatch(/step 4 4b/); // the step number printed twice read as a typo (review of 28.9.2026, finding 9)
   });
@@ -319,7 +325,8 @@ describe("revenue/runner report rendering", () => {
     try {
       const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
       const report = renderReport(db, result);
-      expect(report).toMatch(/Owner steps still open for `apify-actors` \(docs\/OWNER_STEPS\.he\.md\): 2, 6$/m);
+      // Step 8 gates apify-actors since ruling 12.10, and step 6's early part may follow it.
+      expect(report).toMatch(/Owner steps still open for `apify-actors` \(docs\/OWNER_STEPS\.he\.md\): 8, 2, 6; step 6's early part, 8 min, may follow step 8$/m);
       expect(report).not.toContain("after the official cost check");
     } finally {
       tax.precondition = saved;
@@ -334,7 +341,13 @@ describe("revenue/runner report rendering", () => {
     const held = "step 6's `POSTHOG_READ_KEY` row waits until the colony has created the brand's PostHog project";
     expect(heldSecretRowsNote(["il-biz-tools"], { projectId: "" })).toContain(held);
     expect(heldSecretRowsNote(["il-biz-tools"], { projectId: "" })).toMatch(/^Not asked yet: /);
-    expect(heldSecretRowsNote(["il-biz-tools"], { projectId: "12345" })).toBe("");
+    // Once the project exists the row is asked; the rows steps 3 and 7 make still wait for them (ruling 12.10 §2(5)).
+    expect(heldSecretRowsNote(["il-biz-tools"], { projectId: "12345" })).not.toContain("POSTHOG_READ_KEY");
+    expect(heldSecretRowsNote(["il-biz-tools"], { projectId: "12345" })).toBe(
+      "Not asked yet: step 6's `GUMROAD_ACCESS_TOKEN` row waits until step 3, which makes it, is done; " +
+        "step 6's `BRAND_GITHUB_TOKEN` row waits until step 7, which makes it, is done; " +
+        "step 6's `ORG_BUDGETS_READ_TOKEN` row waits until step 7, which makes it, is done.",
+    );
     // Step 6 gates all four lines and is named once for them (tick 32).
     expect(heldSecretRowsNote(DEFAULT_PORTFOLIO.map((l) => l.id), { projectId: "" })).toBe(
       heldSecretRowsNote(["il-biz-tools"], { projectId: "" }),
@@ -985,5 +998,171 @@ describe("revenue/runner a render's blockers are a tick's at the same moment", (
     const r = await render(T1 + 7 * 24 * HOUR);
     expect(r.dueNotRun).toContain("revenue_audit");
     expect(r.blockers).toContain(`last audit, ${at(T1)}: chief audit: 1 cost entries on killed lines after their kill date`);
+  });
+});
+
+// Ruling 12.10 (research/channel-loop/RULING-2026-10-12-owner-step-order.md), Fold 4: the report names step 6's early part
+// on each line step 6 gates, says which secret rows wait for the step that makes them, and the tick names a page-view
+// PASS whose "a paid product is ready" is not yet recorded on steps 2 and 3 — a blocker for the main thread, never an ask.
+describe("revenue/runner the owner steps after ruling 12.10", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => { db = createInMemoryDb(); });
+  afterEach(() => { db.close(); });
+
+  const NOW = "2026-09-03T00:00:00.000Z";
+  const rowOf = (report: string, id: string) => report.split("\n").find((l) => l.startsWith(`Owner steps still open for \`${id}\``))!;
+  const EARLY = "; step 6's early part, 8 min, may follow step 8";
+
+  it("names step 6's early part, and the step it may follow, on every line that asks step 6", async () => {
+    const report = renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" });
+    for (const id of ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"]) {
+      const row = rowOf(report, id);
+      expect(row, `${id} has no open-steps line`).toBeTruthy();
+      expect(row.endsWith(EARLY), `${id}: ${row}`).toBe(true);
+      expect(row.split(EARLY)).toHaveLength(2); // once per line
+    }
+    expect(rowOf(report, "il-biz-tools")).toBe(
+      "Owner steps still open for `il-biz-tools` (docs/OWNER_STEPS.he.md): 8, 6 (not asked now: step 2 only when a paid product is ready, " +
+        "after the official cost check; step 3 only when a paid product is ready — after the day-56 page-view PASS of il-biz-tools or pcn874, " +
+        "together with step 2; step 5 frozen by the owner's ₪0 rule of 27.9.2026)" + EARLY,
+    );
+    expect(rowOf(report, "pcn874")).toBe(
+      "Owner steps still open for `pcn874` (docs/OWNER_STEPS.he.md): 7, 6 (not asked now: step 2 only when a paid product is ready, " +
+        "after the official cost check; step 3 only when a paid product is ready — after the day-56 page-view PASS of il-biz-tools or pcn874, " +
+        "together with step 2; step 5 frozen by the owner's ₪0 rule of 27.9.2026)" + EARLY,
+    );
+    expect(rowOf(report, "apify-actors")).toMatch(/: 8, 6 \(not asked now: step 2 [^)]+\); step 6's early part, 8 min, may follow step 8$/);
+  });
+
+  it("drops the early-part clause from a line once step 6 is no longer asked on it", async () => {
+    const step6 = ownerStepById("ci-tokens")!;
+    const saved = step6.precondition;
+    step6.precondition = { what: "test only", short: "held for the test" };
+    try {
+      const report = renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" });
+      for (const id of ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"]) {
+        expect(rowOf(report, id), id).not.toContain("early part");
+      }
+    } finally {
+      step6.precondition = saved;
+    }
+    expect(ownerStepById("ci-tokens")!.precondition).toBeUndefined();
+  });
+
+  it("names the rows steps 3 and 7 make as not asked yet, each once, with their reason, and no step-7 row once step 7 is done", async () => {
+    const report = renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" });
+    const note = report.split("\n").filter((l) => l.startsWith("Not asked yet: "));
+    expect(note).toHaveLength(1);
+    expect(note[0]).toBe(
+      "Not asked yet: step 6's `POSTHOG_READ_KEY` row waits until the colony has created the brand's PostHog project " +
+        "(posthog.projectId in products/il-biz-tools/src/config/site.json); " +
+        "step 6's `GUMROAD_ACCESS_TOKEN` row waits until step 3, which makes it, is done; " +
+        "step 6's `BRAND_GITHUB_TOKEN` row waits until step 7, which makes it, is done; " +
+        "step 6's `ORG_BUDGETS_READ_TOKEN` row waits until step 7, which makes it, is done.",
+    );
+    for (const name of ["POSTHOG_READ_KEY", "GUMROAD_ACCESS_TOKEN", "BRAND_GITHUB_TOKEN", "ORG_BUDGETS_READ_TOKEN"]) {
+      expect(report.split(`\`${name}\``).length - 1, name).toBe(1);
+    }
+    expect(report).not.toContain("`APIFY_TOKEN`");
+    // Step 7 done (synthetic): its two tokens exist, so step 6 asks them; the Gumroad row still waits for step 3.
+    const step7 = ownerStepById("github-org")!;
+    step7.doneOn = { date: "2026-10-01", evidence: "test only" };
+    try {
+      expect(secretRowsPastedBeforeMade()).toEqual([]);
+      const after = heldSecretRowsNote(DEFAULT_PORTFOLIO.map((l) => l.id), { projectId: "" });
+      expect(after).toContain("`GUMROAD_ACCESS_TOKEN` row waits until step 3, which makes it, is done");
+      expect(after).not.toContain("BRAND_GITHUB_TOKEN");
+      expect(after).not.toContain("ORG_BUDGETS_READ_TOKEN");
+      expect(after).toMatch(/^Not asked yet: step 6's `POSTHOG_READ_KEY` row /);
+    } finally {
+      delete step7.doneOn;
+    }
+    expect(ownerStepById("github-org")!.doneOn).toBeUndefined();
+  });
+
+  const D0 = "2026-10-05";
+  const DAY = 24 * HOUR;
+  const iso = (days: number, hours = 6) => new Date(Date.parse(`${D0}T00:00:00.000Z`) + days * DAY + hours * HOUR).toISOString();
+  /** A netlify-period reading with the given weekly views, week w written on day 7w (plus six hours). */
+  const reading = (lineId: string, verdict: PageViewGateReading["verdict"], views: number[]): PageViewGateReading => ({
+    lineId,
+    period: "netlify",
+    anchorDay: D0,
+    day: views.length * 7 + 1,
+    weeks: views.map((v, i) => ({ week: i + 1, views: v, writtenAt: iso((i + 1) * 7) })),
+    instrumented: true,
+    verdict,
+    notes: [],
+  });
+  const PASS_56 = [50, 50, 50, 50, 120, 120, 120, 120];
+  const PASS_112 = [...[50, 50, 50, 50, 50, 50, 50, 50], ...[120, 120, 120, 120, 120, 120, 120, 120]];
+  const tail =
+    ": 'a paid product is ready' holds for steps 2 and 3 and is not yet recorded (owner-steps.ts precondition.metOn) — " +
+    "record it with the reading; the report then asks them together (floors 28.9 row 9; ruling 12.10)";
+  const met = (ids: OwnerStepId[]): OwnerStep[] =>
+    OWNER_STEPS.map((s) =>
+      ids.includes(s.id) ? { ...s, precondition: { ...s.precondition!, metOn: { date: "2026-12-01", evidence: "test only" } } } : s,
+    );
+
+  it("names a PASS whose 'paid product is ready' is not recorded as a blocker, with the read's day and date", () => {
+    expect(paidProductReadyBlockers([reading("il-biz-tools", "pass", PASS_56)])).toEqual([
+      `the day-56 read PASSED for il-biz-tools on ${iso(56).slice(0, 10)}${tail}`,
+    ]);
+    expect(iso(56).slice(0, 10)).toBe("2026-11-30");
+    // After the one extension the read is the day-112 one, and its date is week 16's.
+    expect(paidProductReadyBlockers([reading("pcn874", "pass", PASS_112)])).toEqual([
+      `the day-112 read PASSED for pcn874 on ${iso(112).slice(0, 10)}${tail}`,
+    ]);
+    // One per passing line.
+    expect(paidProductReadyBlockers([reading("il-biz-tools", "pass", PASS_56), reading("pcn874", "pass", PASS_56)])).toHaveLength(2);
+  });
+
+  it("names nothing on any other verdict, on a line step 3 does not unlock, or once both preconditions are recorded met", () => {
+    for (const verdict of ["pause", "extend", "measuring", "kill", "no_clock"] as const) {
+      expect(paidProductReadyBlockers([reading("il-biz-tools", verdict, PASS_56)]), verdict).toEqual([]);
+    }
+    expect(paidProductReadyBlockers([reading("apify-actors", "pass", PASS_56)])).toEqual([]);
+    expect(paidProductReadyBlockers([reading("il-biz-tools", "pass", PASS_56)], met(["tax-file", "gumroad"]))).toEqual([]);
+    // Either one still pending keeps it named.
+    expect(paidProductReadyBlockers([reading("il-biz-tools", "pass", PASS_56)], met(["gumroad"]))).toHaveLength(1);
+    expect(paidProductReadyBlockers([reading("il-biz-tools", "pass", PASS_56)], met(["tax-file"]))).toHaveLength(1);
+  });
+
+  it("raises it in the tick from the recorded weeks, never as an owner step, and not on a pause", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "runner-pass-"));
+    try {
+      const siteDir = join(dir, "site");
+      mkdirSync(join(siteDir, "src", "config"), { recursive: true });
+      writeFileSync(join(siteDir, "src", "config", "site.json"), JSON.stringify({ siteUrl: "https://il-biz-tools.netlify.app", posthog: { projectId: "" } }));
+      const clockFile = join(dir, "page-view-clock.json");
+      writeFileSync(clockFile, JSON.stringify({ "il-biz-tools": { d0: D0, d0Evidence: "test" }, pcn874: { d0: D0, d0Evidence: "test" } }));
+      const files = {
+        measurementsDir: join(dir, "measurements"),
+        brandMailFile: join(dir, "brand-mail.json"),
+        prizeIntakeFile: join(dir, "prize-intake.json"),
+        pageViewClockFile: clockFile,
+        pageViewSiteDir: siteDir,
+      };
+      mkdirSync(files.measurementsDir);
+      seedDefaultPortfolio(db);
+      const host = "il-biz-tools.netlify.app";
+      PASS_56.forEach((v, i) => recordKpi(db, "il-biz-tools", PAGE_VIEW_KPI, v, pageViewUnit(host, D0, i + 1), iso((i + 1) * 7)));
+      PASS_56.forEach((_, i) => recordKpi(db, "pcn874", PAGE_VIEW_KPI, 0, pageViewUnit(host, D0, i + 1), iso((i + 1) * 7)));
+      const result = await tick(db, { nowIso: iso(60, 12), feedGoals: false, env: {}, ...files });
+      const gates = new Map(result.pageViewGates.map((g) => [g.lineId, g.verdict]));
+      expect(gates.get("il-biz-tools")).toBe("pass");
+      expect(gates.get("pcn874")).toBe("pause");
+      const named = result.blockers.filter((b) => b.includes("PASSED"));
+      expect(named).toEqual([`the day-56 read PASSED for il-biz-tools on 2026-11-30${tail}`]);
+      const report = renderReport(db, result, { projectId: "" });
+      // A blocker under "## Blocked on", and still no ask: step 3 stays held and outside every asked-now list.
+      expect(report).toContain(`- the day-56 read PASSED for il-biz-tools on 2026-11-30${tail}`);
+      for (const row of report.split("\n").filter((l) => l.startsWith("Owner steps still open for "))) {
+        const asked = row.split(" (not asked now: ")[0].split("): ")[1].split(", ");
+        expect(asked, row).not.toContain("3");
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
