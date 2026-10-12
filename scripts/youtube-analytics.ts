@@ -20,7 +20,11 @@
  * OUTPUT (§3 decision 4). What the consent returns is Authorized Data, and the readings are figures computed from it: they
  * may reach the authorizing user and their agent, never the public. So the output is never written under state/colony/
  * (colony.yml force-adds that whole directory to a public repository) nor anywhere in a checkout: OUTPUT_PATH is
- * ~/.local/state/mehudak/youtube-analytics.json, outside every clone, where no workflow's `git add` reaches it. It holds
+ * ~/.local/state/mehudak/youtube-analytics.json, outside every clone, where no workflow's `git add` reaches it. No flag or
+ * variable of this script moves it, but `~` is homedir(), which reads HOME: HOME is the one thing that moves it, and a HOME
+ * pointed into a checkout would bring the output back in (HOME=<checkout>/state/colony puts it where `git add -f
+ * state/colony` stages it). So right after the terms gate, outputPathRefusal refuses an output path that is
+ * inside this checkout or under any state/colony/ directory: exit 2, nothing fetched, nothing written. The output holds
  * { measuredAt, window, readings } only. The Analytics API's own response tables, once written beside them as `raw`, are
  * never written, until the privacy-and-terms build names a store only the owner and the colony can read.
  *
@@ -41,8 +45,8 @@
 
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import {
   ANALYTICS_REPORTS_URL,
@@ -57,10 +61,26 @@ import {
 import { API_TERMS_SITE, TERMS_VERDICTS, apiTermsGate, readTermsVerdicts } from "./youtube-madeforkids-readback.js";
 
 const OPENID_DISCOVERY = "https://accounts.google.com/.well-known/openid-configuration";
+/** This checkout: the output is never written inside it (the read-back's REPO_ROOT idiom). */
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const MEASUREMENTS = join("state", "colony", "measurements");
 /** Where the readings are written: outside every checkout, never under state/colony/ (ruling 12.10 row 28 §3 decision 4). */
 export const OUTPUT_PATH = join(homedir(), ".local", "state", "mehudak", "youtube-analytics.json");
 const CONSENT_ENV = ["YT_ANALYTICS_CLIENT_ID", "YT_ANALYTICS_CLIENT_SECRET", "YT_ANALYTICS_REFRESH_TOKEN"] as const;
+
+/**
+ * Why the analytics output may not be written at `path`, or null when it may (§3 decision 4): inside this checkout, or
+ * under a state/colony/ directory of any clone, a workflow's `git add` could reach it. OUTPUT_PATH follows HOME, so this is
+ * what keeps a HOME pointed into a checkout from moving the output back in.
+ */
+export function outputPathRefusal(path: string): string | null {
+  const abs = resolve(path);
+  const fromRoot = relative(REPO_ROOT, abs);
+  if (!isAbsolute(fromRoot) && fromRoot !== ".." && !fromRoot.startsWith(`..${sep}`)) return `${abs} is inside this checkout (${REPO_ROOT})`;
+  const parts = abs.split(sep);
+  if (parts.some((part, i) => part === "state" && parts[i + 1] === "colony")) return `${abs} is under a state/colony/ directory`;
+  return null;
+}
 
 type FetchInit = { method?: string; headers?: Record<string, string>; body?: URLSearchParams; signal?: AbortSignal };
 type FetchLike = (url: string, init?: FetchInit) => Promise<{ status: number; text: () => Promise<string> }>;
@@ -143,6 +163,15 @@ export async function runAnalytics(run: AnalyticsRun): Promise<number> {
     run.log(
       `youtube-analytics: ${terms.why} in ${run.verdictsPath} — refusing to run. No call is made, the OpenID discovery ` +
         `document included, until ${API_TERMS_SITE}'s verdict there is active-eligible (ruling 12.10 row 28 §3 decision 6); ` +
+        `nothing fetched, nothing written.`,
+    );
+    return 2;
+  }
+  const refusal = outputPathRefusal(run.outputPath);
+  if (refusal) {
+    run.log(
+      `youtube-analytics: the output path ${refusal} — refusing to run. The readings are Authorized Data and never go where ` +
+        `a workflow's \`git add\` reaches (ruling 12.10 row 28 §3 decision 4); OUTPUT_PATH follows HOME, so check HOME; ` +
         `nothing fetched, nothing written.`,
     );
     return 2;
