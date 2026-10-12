@@ -178,10 +178,10 @@
   {
     "id": "T70-B23",
     "file": "scripts/brief-drift.mjs",
-    "find": "const describes = (rest, li, at) => /^['’]s/.test(rest) && !/^['’]s(?:\\s+own)?\\s*\\(?`?:L?\\d/.test(rest) && !sentenceStart(lines, li, at);",
+    "find": "const describes = (rest, li, at) => /^['’]s/.test(rest) && !/^['’]s(?:\\s+own)?\\s*\\(?`?:L?\\d/.test(rest) && !sentenceStart(lines, li, at, prevRead[li]);",
     "replace": "const describes = () => false;",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
-    "note": "tick 70 B23: a describing possessive (\"the ledger's rule (`:271`)\") owns the line after it"
+    "note": "tick 70 B23: a describing possessive (\"the ledger's rule (`:271`)\") owns the line after it [tick 72: the find follows the code that took the line before a drift note as the previous line]"
   },
   {
     "id": "T70-B24",
@@ -226,7 +226,7 @@
   {
     "id": "T70-B29",
     "file": "scripts/brief-drift.mjs",
-    "find": "      if (lined && SHORT_NAME_RE.test(name)) {",
+    "find": "      if ((lined && SHORT_NAME_RE.test(name)) || refLike) {",
     "replace": "      if (false) {",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
     "note": "tick 70 B29: a short name with a line and no file (OTA:5) is dropped, and its continuation :6 goes elsewhere"
@@ -386,10 +386,10 @@
   {
     "id": "T70-B49",
     "file": "scripts/brief-drift.mjs",
-    "find": "    for (const m of line.matchAll(URL_RE)) taken.push([m.index, m.index + m[0].length]);\n",
+    "find": "    taken.push(...urls);\n",
     "replace": "",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
-    "note": "tick 70 B49: a URL's path:N is read as a citation"
+    "note": "tick 70 B49: a URL's path:N is read as a citation [tick 72: the find follows the URL spans kept for the line-reference count]"
   },
   {
     "id": "T70-B50",
@@ -434,10 +434,10 @@
   {
     "id": "T70-B55",
     "file": "scripts/brief-drift.mjs",
-    "find": "return { refs: only ? refs.filter((r) => only.has(r.docLine)) : refs, skipped, skippedParts: skippedLeads };",
-    "replace": "return { refs, skipped, skippedParts: skippedLeads };",
+    "find": "return { refs: only ? refs.filter((r) => only.has(r.docLine)) : refs, skipped, skippedParts: skippedLeads, pointers };",
+    "replace": "return { refs, skipped, skippedParts: skippedLeads, pointers };",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
-    "note": "tick 70 B55: --row reads the whole document"
+    "note": "tick 70 B55: --row reads the whole document [tick 72: the find follows the returned pointer count]"
   },
   {
     "id": "T70F-1",
@@ -506,8 +506,8 @@
   {
     "id": "T70F-9",
     "file": "scripts/brief-drift.mjs",
-    "find": "if ((boundary(line) && !heading) || skip.has(docLine)) return;",
-    "replace": "if (boundary(line) || skip.has(docLine)) return;",
+    "find": "if (boundary(line) && !heading && !skip.has(docLine)) {",
+    "replace": "if (boundary(line) && !skip.has(docLine)) {",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
     "note": "tick 70 fixer, note 1: headings are not read"
   },
@@ -586,10 +586,10 @@
   {
     "id": "T70F-19",
     "file": "scripts/brief-drift.mjs",
-    "find": "!row && !heading && !boundary(lines[i - 1]) &&",
+    "find": "!row && !heading && !boundary(lines[p]) &&",
     "replace": "!row && !heading &&",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
-    "note": "tick 70 fixer: a phrase is joined across a heading"
+    "note": "tick 70 fixer: a phrase is joined across a heading [tick 72: the find follows the code that took the line before a drift note as the previous line]"
   },
   {
     "id": "T70F-20",
@@ -786,8 +786,8 @@
   {
     "id": "T70F-R12",
     "file": "scripts/brief-drift.mjs",
-    "find": "if (name.endsWith(\"/\") || resolver.isDir(name)) continue;",
-    "replace": "if (name.endsWith(\"/\")) continue;",
+    "find": "if (name.endsWith(\"/\") || resolver.isDir(name)) {",
+    "replace": "if (name.endsWith(\"/\")) {",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
     "note": "tick 70 review's R12 (survived the build's tests): a directory named without a slash becomes an unknown path"
   },
@@ -818,18 +818,18 @@
   {
     "id": "T70F-R17",
     "file": "scripts/brief-drift.mjs",
-    "find": "if (!row) prevOut = !line.trim() && !skip.has(docLine) ? ctxOut : null;",
+    "find": "if (!row) prevOut = blank ? (ctxOut ?? (lastBlank ? prevOut : null)) : null;",
     "replace": "if (!row) prevOut = ctxOut;",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
-    "note": "tick 70 review's R17 (survived the build's tests): a heading between a paragraph and a table no longer stops the caption"
+    "note": "tick 70 review's R17 (survived the build's tests): a heading between a paragraph and a table no longer stops the caption [tick 72: the find follows the blank-after-blank rule]"
   },
   {
     "id": "T70F-R18",
     "file": "scripts/brief-drift.mjs",
-    "find": "|| i === 0) return true;",
+    "find": "|| p < 0) return true;",
     "replace": ") return true;",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
-    "note": "tick 70 review's R18 (survived the build's tests): line 1 of a document starts no sentence"
+    "note": "tick 70 review's R18 (survived the build's tests): line 1 of a document starts no sentence [tick 72: the find follows the code that took the line before a drift note as the previous line]"
   },
   {
     "id": "T70F-R19",
@@ -846,5 +846,565 @@
     "replace": "",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
     "note": "tick 70 review's R20 (survived the build's tests): a bare word that is a file name (no dot, no slash) becomes a whole-file citation"
+  },
+  {
+    "id": "T72-D1",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (!holdsLine(name)) map.set(name, [...(map.get(name) ?? []), { index, target }]);",
+    "replace": "    map.set(name, [...(map.get(name) ?? []), { index, target }]);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D1: a name or phrase that holds a line reference (\"`:913-917` is `b.md`\") is a definition again, and swallows the later `:913-917`"
+  },
+  {
+    "id": "T72-D2",
+    "file": "scripts/brief-drift.mjs",
+    "find": "[...name.matchAll(/:L?\\d/g)]",
+    "replace": "[...name.matchAll(/:L\\d/g)]",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D2: only an L-prefixed line reference keeps a name from being one"
+  },
+  {
+    "id": "T72-D3",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const read = lines.map((l, i) => (skip.has(i + 1) ? \" \".repeat(l.length) : l)).join(\"\\n\");",
+    "replace": "const read = text;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D3: definitions, full paths and directories are read from the drift notes again"
+  },
+  {
+    "id": "T72-D4",
+    "file": "scripts/brief-drift.mjs",
+    "find": "for (const m of read.matchAll(/`([^`\\s]+\\/)`/g))",
+    "replace": "for (const m of text.matchAll(/`([^`\\s]+\\/)`/g))",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D4: a directory a drift note names decides a name several files have"
+  },
+  {
+    "id": "T72-D5",
+    "file": "scripts/brief-drift.mjs",
+    "find": "for (const m of read.matchAll(NAME_RE))",
+    "replace": "for (const m of text.matchAll(NAME_RE))",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D5: a full path a drift note writes decides a name several files have"
+  },
+  {
+    "id": "T72-D6",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const { names, phrases } = definitions ?? findDefinitions(read, resolver);",
+    "replace": "const { names, phrases } = findDefinitions(read, resolver);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D6: the definitions handed in are ignored (the dropped backstop's seam)"
+  },
+  {
+    "id": "T72-D7",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (notes.has(docLine)) return;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D7: a drift note ends its paragraph and the table's caption again"
+  },
+  {
+    "id": "T72-D8",
+    "file": "scripts/brief-drift.mjs",
+    "find": "        notes.add(k + 1);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D8: skippedParts lists no drift-note line, so no note is read as absent"
+  },
+  {
+    "id": "T72-D9",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (!notes.has(i + 1)) lastRead = i;",
+    "replace": "    lastRead = i;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D9: the line before a line is a drift note's when one is there (a sentence's start, a phrase over two lines)"
+  },
+  {
+    "id": "T72-D10",
+    "file": "scripts/brief-drift.mjs",
+    "find": "prevOut = blank ? (ctxOut ?? (lastBlank ? prevOut : null)) : null;",
+    "replace": "prevOut = blank ? ctxOut : null;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D10: a second blank line ends the caption (a note between two blank lines leaves two)"
+  },
+  {
+    "id": "T72-D11",
+    "file": "scripts/brief-drift.mjs",
+    "find": "for (let j = k.docLine; j < li; j += 1) if (!notes.has(j + 1)) parts.push(lines[j]);",
+    "replace": "for (let j = k.docLine; j < li; j += 1) parts.push(lines[j]);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 D11: a carry's gap reads the drift note's words, so ', heading⏎`:431`' rests on the last path named"
+  },
+  {
+    "id": "T72-P1",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      found += 1;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P1: a bare line reference is not counted as found"
+  },
+  {
+    "id": "T72-P2",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      named += 1;\n      cite(...args);",
+    "replace": "      cite(...args);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P2: a name's own line reference is not counted as found"
+  },
+  {
+    "id": "T72-P3",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (!only || only.has(docLine)) pointers += found;",
+    "replace": "    pointers += found;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P3: --row counts the whole document's line references"
+  },
+  {
+    "id": "T72-P4",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      if (urls.some(([a, b]) => m.index < b && a < end)) continue;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P4: a line reference inside a URL is counted, and dropped"
+  },
+  {
+    "id": "T72-P5",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      refs.push({ kind: \"dropped\", docLine, written: m[0], range: range(m[1], m[2]), via: k ? `inside \"${line.slice(k.start, k.end)}\"` : \"inside another reference\", index: starts[i] + m.index });\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P5: a swallowed line reference is left out silently again"
+  },
+  {
+    "id": "T72-P6",
+    "file": "scripts/brief-drift.mjs",
+    "find": "written: m[0], range: range(m[1], m[2]), via: k ? `inside \"${line.slice(k.start, k.end)}\"` : \"inside another reference\"",
+    "replace": "written: m[0], range: range(m[1], m[2]), via: \"inside another reference\"",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P6: a dropped line reference no longer names what swallowed it"
+  },
+  {
+    "id": "T72-P7",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      g.occurrences += 1;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P7: a citation counts no occurrence"
+  },
+  {
+    "id": "T72-P8",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const lined = [...all.filter((c) => c.range), ...unknown, ...unchecked, ...unattributed, ...dropped];",
+    "replace": "const lined = [...all.filter((c) => c.range), ...unknown, ...unchecked, ...unattributed];",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P8: the reported count leaves the dropped line references out"
+  },
+  {
+    "id": "T72-P9",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const scanned = scanCitations(text, resolver, { only, definitions });",
+    "replace": "const scanned = scanCitations(text, resolver, { only });",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P9: buildReport drops the definitions handed in"
+  },
+  {
+    "id": "T72-P10",
+    "file": "scripts/brief-drift.mjs",
+    "find": "s.pointers.found === s.pointers.reported ? \"\" :",
+    "replace": "true ? \"\" :",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P10: two line-reference counts that differ are not said to"
+  },
+  {
+    "id": "T72-P11",
+    "file": "scripts/brief-drift.mjs",
+    "find": "  if (report.dropped.length) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 P11: the text prints no dropped section"
+  },
+  {
+    "id": "T72-A1",
+    "file": "scripts/brief-drift.mjs",
+    "find": "\\b(?:and|or|at|to|also|heading|lines?)\\b",
+    "replace": "\\b(?:and|or|at|to|also|lines?)\\b",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 A1: ', heading⏎`:431`' rests on the last path named"
+  },
+  {
+    "id": "T72-A2",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const ATTACHED_RE = /^[`)\\]]*(?:['’]s(?:\\s+own)?)?(?:",
+    "replace": "const ATTACHED_RE = /^[`)\\]]*(?:",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 A2: \"the read-back's `:99-103`\" rests on the last path named"
+  },
+  {
+    "id": "T72-A3",
+    "file": "scripts/brief-drift.mjs",
+    "find": "export const attached = (gap) => ATTACHED_RE.test(gap.replace(LINE_TOKEN_RE, \" \"));",
+    "replace": "export const attached = (gap) => ATTACHED_RE.test(gap);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 A3: a list of the name's lines ('`:445` and (`:487`)') breaks the phrase"
+  },
+  {
+    "id": "T72-A4",
+    "file": "scripts/brief-drift.mjs",
+    "find": "cite(owner, r.range, r.written, via, r.start, !attached(gapText(lines, notes, owner, i, r.start)));",
+    "replace": "cite(owner, r.range, r.written, via, r.start, false);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 A4: no attribution is marked as resting on the last path named"
+  },
+  {
+    "id": "T72-A5",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (k.docLine - 1 === li) return lines[li].slice(k.end, at);",
+    "replace": "if (k.docLine - 1 === li) return lines[li].slice(0, at);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 A5: the gap on one line starts at the line's start, not at the name's end"
+  },
+  {
+    "id": "T72-A6",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const parts = [lines[k.docLine - 1].slice(k.end)];",
+    "replace": "const parts = [lines[k.docLine - 1]];",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 A6: a carry's gap starts at its first line's start, not at the name's end"
+  },
+  {
+    "id": "T72-A7",
+    "file": "scripts/brief-drift.mjs",
+    "find": "        g.via.add(LAST_PATH_NAMED);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 A7: a citation's via does not say \"last path named\""
+  },
+  {
+    "id": "T72-A8",
+    "file": "scripts/brief-drift.mjs",
+    "find": "        g.lastPathNamed.add(r.docLine);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 A8: a citation lists no line where it rests on the last path named"
+  },
+  {
+    "id": "T72-A9",
+    "file": "scripts/brief-drift.mjs",
+    "find": ".filter((g) => g.lastPathNamed.size > 0).length;",
+    "replace": ".filter((g) => g.lastPathNamed.size > 1).length;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 A9: the summary counts only citations resting on the last path named twice"
+  },
+  {
+    "id": "T72-A10",
+    "file": "scripts/brief-drift.mjs",
+    "find": "  if (lastRows.length) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 A10: the text prints no last-path-named section"
+  },
+  {
+    "id": "T72-R1",
+    "file": "scripts/brief-drift.mjs",
+    "find": "${first}(?=${ROLE_GAP}:L?\\\\d)`, \"g\")",
+    "replace": "${first}`, \"g\")",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 R1: a role's one word owns a line anywhere, not only right before it ('a test passes (`:6`)'); since the review fixer only \"and test, `:5`\" tells it apart (a gap of a comma alone), as the bare-word rule and the attached gap take the rest"
+  },
+  {
+    "id": "T72-R2",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (paths.size !== 1 || !path) continue;",
+    "replace": "if (!path) continue;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 R2: two definitions that disagree make a role"
+  },
+  {
+    "id": "T72-R3",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (paths.size !== 1 || !path) continue;",
+    "replace": "if (paths.size !== 1) continue;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 R3: a role whose definition names no file of the tree is a role"
+  },
+  {
+    "id": "T72-R4",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (!free(m.index, end) || inQuote(m.index) || !bareRole(m.index)) continue;",
+    "replace": "if (!free(m.index, end) || !bareRole(m.index)) continue;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 R4: a role's word inside a quotation owns the line after it"
+  },
+  {
+    "id": "T72-R6",
+    "file": "scripts/brief-drift.mjs",
+    "find": "if (w) targetsOf.set(w, [...(targetsOf.get(w) ?? []), ...list.map((d) => d.target)]);",
+    "replace": "if (w) targetsOf.set(w, list.map((d) => d.target));",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 R6: \"The test\" and \"the test\" naming two files is no longer ambiguous: the last phrase's targets win"
+  },
+  {
+    "id": "T72-R7",
+    "file": "scripts/brief-drift.mjs",
+    "find": "via: `role \"${phrase}\" (as ${m[0]})`",
+    "replace": "via: m[0]",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 R7: a role's via does not name the role"
+  },
+  {
+    "id": "T72-R8",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const first = /^[A-Za-z]/.test(w) ? `[${w[0].toUpperCase()}${w[0].toLowerCase()}]${escapeRe(w.slice(1))}` : escapeRe(w);",
+    "replace": "const first = escapeRe(w);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 R8: a role's first letter's case is not free: \"Test's `:5`\" is no role"
+  },
+  {
+    "id": "T72-N1",
+    "file": "scripts/brief-drift.mjs",
+    "find": "  const prev = lines[p];\n  return !prev.trim()",
+    "replace": "  const prev = lines[i - 1];\n  return !prev.trim()",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 N1: a sentence's start reads the drift note before it as the previous line"
+  },
+  {
+    "id": "T72-N2",
+    "file": "scripts/brief-drift.mjs",
+    "find": "!isRow(lines[p]) && !skip.has(p + 1);",
+    "replace": "!isRow(lines[p]) && !skip.has(i);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 N2: a phrase broken over two lines is not joined across a drift note"
+  },
+  {
+    "id": "T72-N3",
+    "file": "scripts/brief-drift.mjs",
+    "find": "!sentenceStart(lines, li, at, prevRead[li]);",
+    "replace": "!sentenceStart(lines, li, at, li - 1);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 N3: a possessive phrase after a drift note is read as describing"
+  },
+  {
+    "id": "T72V-1",
+    "file": "scripts/brief-drift.mjs",
+    "find": "&& (!k.role || attached(line.slice(k.end, r.start)))).pop();",
+    "replace": "&& (!k.role || true)).pop();",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 1: a role's mark owns every later line of its line (\"test `:979-988`, comment `:302-306`\")"
+  },
+  {
+    "id": "T72V-2",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      const carried = owners.filter((k) => !k.role);",
+    "replace": "      const carried = owners;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 2: a role's mark is the paragraph's last name: the next item's `:227` is carried from it, and a table's caption is it"
+  },
+  {
+    "id": "T72V-3",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      if (!LINE_START_RE.test(before)) return ROLE_AFTER_RE.test(before);",
+    "replace": "      if (!LINE_START_RE.test(before)) return true;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 3: a role's word after a modifier is the role (\"the tool's page (`:167-169`)\", \"a test (`:8`)\")"
+  },
+  {
+    "id": "T72V-4",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      return ITEM_RE.test(line) || !joinable || ROLE_AFTER_RE.test(`${lines[p]} `);",
+    "replace": "      return true;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 4: a role's word at a line's start is the role whatever ends the line before (\"the tool's⏎page\")"
+  },
+  {
+    "id": "T72V-5",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      return ITEM_RE.test(line) || !joinable || ROLE_AFTER_RE.test(`${lines[p]} `);",
+    "replace": "      return !joinable || ROLE_AFTER_RE.test(`${lines[p]} `);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 5: a role's word at an item's start reads the line before (\"- Test `:7`\" after \"holds it\" is prose)"
+  },
+  {
+    "id": "T72V-6",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      return ITEM_RE.test(line) || !joinable || ROLE_AFTER_RE.test(`${lines[p]} `);",
+    "replace": "      return ITEM_RE.test(line) || ROLE_AFTER_RE.test(`${lines[p]} `);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 6: a role's word at a paragraph's first line reads the line before the paragraph"
+  },
+  {
+    "id": "T72V-7",
+    "file": "scripts/brief-drift.mjs",
+    "find": "(?:the|at|in|on|of|by|from|to|per|see|and|or|also|with|under|via))\\s*$/iu;",
+    "replace": "(?:the|in|on|of|by|from|to|per|see|and|or|also|with|under|via))\\s*$/iu;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 7: \"pinned at test `:913-917`\" is prose"
+  },
+  {
+    "id": "T72V-8",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const ROLE_AFTER_RE = /(?:[([{|,;:.!?—–-]|",
+    "replace": "const ROLE_AFTER_RE = /(?:[([{,;:.!?—–-]|",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 8: a role's word after a table's pipe is prose (\"| test `:479-487` |\")"
+  },
+  {
+    "id": "T72V-9",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const ROLE_AFTER_RE = /(?:[([{|,;:.!?—–-]|",
+    "replace": "const ROLE_AFTER_RE = /(?:[[{|,;:.!?—–-]|",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 9: a role's word after an opening bracket is prose (\"(test `:149`\")"
+  },
+  {
+    "id": "T72V-10",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    return !run || /[A-Za-z_]/.test(run);",
+    "replace": "    return true;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 10: a clock time in a phrase is a line reference again: \"The 05:23 schedule\" is no definition"
+  },
+  {
+    "id": "T72V-11",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    return !run || /[A-Za-z_]/.test(run);",
+    "replace": "    return /[A-Za-z_]/.test(run);",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 11: a bare line reference in a name (\"`:913-917` is `b.md`\") no longer keeps it from being one"
+  },
+  {
+    "id": "T72V-12",
+    "file": "scripts/brief-drift.mjs",
+    "find": "export const lineOwnerLike = (name, after) => /[A-Za-z]/.test(name) && ",
+    "replace": "export const lineOwnerLike = (name, after) => ",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 12: a time's hours (\"07:11\") are a name with a line: not checked"
+  },
+  {
+    "id": "T72V-13",
+    "file": "scripts/brief-drift.mjs",
+    "find": " && !/\\dT\\d{1,2}$/.test(name) && ",
+    "replace": " && ",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 13: an ISO date-time without seconds (\"2026-10-07T20:33 UTC\") is a name with a line"
+  },
+  {
+    "id": "T72V-14",
+    "file": "scripts/brief-drift.mjs",
+    "find": " && !/^(?::\\d|[A-Za-z_])/.test(after);",
+    "replace": ";",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 14: a hash's digits (\"sha256:12ab\") and a time's seconds are a line"
+  },
+  {
+    "id": "T72V-15",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      for (const s of stray) refs.push(",
+    "replace": "      for (const s of []) refs.push(",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 15: a fence line's line references vanish from the report"
+  },
+  {
+    "id": "T72V-16",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      if (!only || only.has(docLine)) pointers += stray.length;",
+    "replace": "      pointers += stray.length;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 16: --row counts a fence line's line references that are no line of the row"
+  },
+  {
+    "id": "T72V-17",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      if (!only || only.has(docLine)) pointers += stray.length;",
+    "replace": "      if (!only || only.has(docLine)) pointers += 0;",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 17: a fence line's line references are not counted as found"
+  },
+  {
+    "id": "T72V-18",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (m[2] !== undefined && !inUrl(m.index) && lineOwnerLike(m[1], line.slice(m.index + m[0].length))) out.push(",
+    "replace": "    if (false) out.push(",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 18: a name's own line on a fence line vanishes (`b.md:9`)"
+  },
+  {
+    "id": "T72V-19",
+    "file": "scripts/brief-drift.mjs",
+    "find": "    if (m[2] !== undefined && !inUrl(m.index) && lineOwnerLike(",
+    "replace": "    if (m[2] !== undefined && lineOwnerLike(",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 19: a name's line inside a URL on a fence line is listed"
+  },
+  {
+    "id": "T72V-20",
+    "file": "scripts/brief-drift.mjs",
+    "find": "  for (const m of line.matchAll(BARE_RE)) if (!inUrl(m.index)) out.push(",
+    "replace": "  for (const m of line.matchAll(BARE_RE)) if (true) out.push(",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 20: a bare line inside a URL on a fence line (\"/v1/:7\") is listed"
+  },
+  {
+    "id": "T72V-21",
+    "file": "scripts/brief-drift.mjs",
+    "find": "        if (refLike && !urls.some(([s, e]) => colon >= s && colon < e) && !ownColons.has(colon)) {",
+    "replace": "        if (false) {",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 21: a name's line inside a ruling's name (\"ALPHA-RULING.md:6\") vanishes, uncounted"
+  },
+  {
+    "id": "T72V-22",
+    "file": "scripts/brief-drift.mjs",
+    "find": " && !ownColons.has(colon)) {",
+    "replace": ") {",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 22: a defined name's or a ruling's own cited line is listed again as dropped"
+  },
+  {
+    "id": "T72V-23",
+    "file": "scripts/brief-drift.mjs",
+    "find": "          ownColons.add(m.index + m[1].length);",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 23: a defined name's cited line (EX:2) is listed again as dropped"
+  },
+  {
+    "id": "T72V-24",
+    "file": "scripts/brief-drift.mjs",
+    "find": "        ownColons.add(m.index + m[0].length);",
+    "replace": "",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 24: a ruling's cited line (ROBOTS-RULING:152) is listed again as dropped"
+  },
+  {
+    "id": "T72V-25",
+    "file": "scripts/brief-drift.mjs",
+    "find": "        if (refLike) {\n          const owner = { kind: \"unchecked\", name: name.replace(",
+    "replace": "        if (false) {\n          const owner = { kind: \"unchecked\", name: name.replace(",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 25: a directory's line (`src/revenue:12`) vanishes"
+  },
+  {
+    "id": "T72V-26",
+    "file": "scripts/brief-drift.mjs",
+    "find": "name: name.replace(/\\/+$/, \"\"), via: \"a directory\"",
+    "replace": "name, via: \"a directory\"",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 26: a directory written with its slash keeps the slash in its name"
+  },
+  {
+    "id": "T72V-27",
+    "file": "scripts/brief-drift.mjs",
+    "find": "      if ((lined && SHORT_NAME_RE.test(name)) || refLike) {",
+    "replace": "      if (lined && SHORT_NAME_RE.test(name)) {",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 27: `T1:5`, `v2:7` and `v1.2:3` vanish, uncounted"
+  },
+  {
+    "id": "T72V-28",
+    "file": "scripts/brief-drift.mjs",
+    "find": "const ATTACHED_RE = /^[`)\\]]*(?:",
+    "replace": "const ATTACHED_RE = /^(?:",
+    "test": "src/__tests__/revenue/brief-drift.test.ts",
+    "note": "tick 72 review fixer 28: a backticked name's possessive (\"`b.md`'s `:6`\") is marked last path named"
   }
 ]
