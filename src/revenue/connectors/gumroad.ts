@@ -17,6 +17,27 @@
  * sync reports as a `gumroad:` error. The index's order is not recorded, so nothing here depends on it. The sync's page
  * cap is its own, MAX_LEDGER_SYNC_PAGES, and a next_page_key the pager has already asked for ends the listing as a loop.
  *
+ * A refund made later (tick 74, CHANNEL_LOOP §9 tick-71 item 2): that listing books a refund only when it lists the
+ * refunded sale, which it does for about a day after the sale, so `runLedgerSync` also calls `readLateGumroadRefunds`,
+ * which lists again from the day before the oldest sale the ledger holds whose refund it does not, and books the refunds
+ * it finds there. The index picks sales by `created_at` (the sync passes no other filter) and reports each as it stands
+ * when read (`refunded: stripe_refunded`, below), so a listing from before a sale reads its refund whenever it was made.
+ * No recorded source bounds how late that is, so the re-read has no window: the period Gumroad applies (none, 7, 14, 30
+ * or 183 days, 30 by default and kept, research/measurements/refund-law-il.md:85-89) bounds the request, measured at the
+ * request (`insideWindow`, products/il-biz-tools/scripts/gumroad-pro-product.js:813-816), not the refund; the responder
+ * reads a request up to REFUND_LOOKBACK_DAYS (60) after it came and retries a refund refused for balance — the first on
+ * a new account is — "until it happens" (scripts/brand_mail.py:46-49, :82-83, :197; RULING-2026-10-05-refund-state.md:
+ * 282-283); and Gumroad refunds at its own discretion (refund-law-il.md:122-128). Its cost is pages: one per ten sales
+ * since that oldest sale, at every sync whose own listing starts after it, under MAX_LEDGER_SYNC_PAGES. Past that cap
+ * (5,000 sales since the oldest open sale) the re-read stops at every sync and says so, and it cannot move on by itself
+ * while that sale stays open: a bound or a slower schedule would be a ruling's, because no recorded source gives one. No
+ * other recorded read serves: a licence verify needs the buyer's key, GET /v2/sales/:id the raw sale id the ledger does
+ * not keep, a ping a server. The reach is taken from the day the ledger dates each open sale, which for a sale booked by
+ * hand is the day it was booked unless a time was given (revenue_record and `colony.ts record` default to now), so a
+ * sale booked days after Gumroad made it can lie before every listing's reach: an open sale that a listing read to its
+ * end should have returned by that day, and that no listing returned, is reported by its stored id and day as a
+ * `gumroad:` error at every sync while it has no refund row, never passed in silence (the tick-74 review).
+ *
  * The same sync also reads the Pro product's refund rate over the trailing 90 days (`gumroadRefundRate90d`,
  * RULING-2026-09-30-documents (d) and fold action 6): refunded / sales, a number for the board and never a reason to
  * refuse a refund. The fields are Gumroad's API v2 sale object as its public source writes it (antiwork/gumroad
@@ -145,13 +166,151 @@ export const gumroadConnector: RevenueConnector = {
       if (isCursorDay(day, latestDay) && day > newestDay) newestDay = day;
       entries.push(...gumroadSaleEntries(sale, lineId));
     }
-    if (listing.ok) return { entries, nextCursor: newestDay, unmapped: [...unmapped], ...(replaced ? { problem: replaced } : {}) };
+    if (listing.ok) return { entries, nextCursor: newestDay, listedFrom: after, listedToEnd: true, unmapped: [...unmapped], ...(replaced ? { problem: replaced } : {}) };
     // The pages read are booked; the cursor stays (and a first read keeps the window it asked for), because the sales
     // not read may lie on any day of it.
     const stop = incompleteListing(listing, after, read.length, cursorDay);
-    return { entries, nextCursor: cursorDay, unmapped: [...unmapped], problem: replaced ? `${replaced}; ${stop}` : stop };
+    return { entries, nextCursor: cursorDay, listedFrom: after, unmapped: [...unmapped], problem: replaced ? `${replaced}; ${stop}` : stop };
   },
 };
+
+// ─── The late refund (tick 74, CHANNEL_LOOP §9 tick-71 item 2) ─────────────────────────────────────────────────
+
+/** A sale the ledger holds whose refund it does not: the line it was booked on and the time it was booked at. */
+export interface OpenGumroadSale {
+  lineId: string;
+  occurredAt: string;
+}
+
+export interface LateRefundRead {
+  /** The day the re-read listed from, or null when it asked for nothing. */
+  after: string | null;
+  /** The `:refund` entries of the open sales Gumroad now reports refunded, each on the line its sale was booked on. */
+  entries: LedgerEntryInput[];
+  /** Set when the re-read could not be read to its end; the sync reports it as a `gumroad:` error. Never an id or the token. */
+  problem: string | null;
+  /**
+   * One line for each open sale whose refund state no listing read: a listing read to its end reaches the day the ledger
+   * dates it, and neither listing returned it (the tick-74 review's blocking finding). The sync reports each as a
+   * `gumroad:` error. Each names the sale by its stored form and its day only, as verify-gumroad does; never a raw id or
+   * the token.
+   */
+  unlisted: string[];
+}
+
+/** The sync's line for a re-read `readLateGumroadRefunds` could not read to its end. */
+function lateRefundStop(listing: Exclude<GumroadSalesListing, { ok: true }>, after: string, read: number): string {
+  const why = listing.problem === "refused"
+    ? `the late-refund re-read since ${after} was refused at page ${listing.page} (HTTP ${listing.status})`
+    : listing.problem === "looped"
+      ? `the late-refund re-read since ${after} loops (page ${listing.pages} names as its next a page already asked for)`
+      : `the late-refund re-read since ${after} runs past ${listing.pages} pages`;
+  const rest = listing.problem === "too_many_pages"
+    ? `a refund on a sale after page ${listing.pages} is not booked, and no later sync reads past that page while the ` +
+      "oldest open sale holds the re-read's day: past the cap the re-read cannot move on by itself, and this is said at " +
+      "every sync"
+    : "a refund on a sale it did not read is booked by a later sync's re-read, which asks again from the same day";
+  return `${why}: the refunds among the ${read} sale(s) it read are booked (one booked already is a duplicate), and the ` +
+    `cursor is not moved by it; ${rest}`;
+}
+
+/** The sync's line for an open sale no listing returned, though a listing read to its end reaches the sale's day. */
+function unlistedSale(id: string, day: string, from: string): string {
+  return `the sale ${id}, dated ${day} in the ledger, is in no listing since ${from}, which reaches that day: its refund ` +
+    "state cannot be read, so a refund of it is not booked (one way this happens is a sale booked by hand days after " +
+    "Gumroad made it, dated at its booking). Check it with verify-gumroad; if Gumroad reports it refunded, book the " +
+    `refund by hand as ${id}:refund. Said at every sync while it has no refund row`;
+}
+
+/**
+ * The refunds `fetchSince` cannot see: a refund Gumroad made after the sync's own listing stopped reaching its sale.
+ *
+ * The reach is the ledger's, not a refund window: the re-read lists from the day before the oldest sale in `open` (the
+ * sales the ledger holds whose refund it does not), because no recorded source bounds how long after a sale a refund can
+ * land (the header). It asks for nothing when there is no open sale with a readable time, or when the sync's own listing
+ * (from `listedFrom`) reached them all: that listing reads every sale created from the day after its `after`, whichever
+ * zone the index starts the day in. What it books is what `gumroadSaleEntries` books for a refunded sale — its `:refund`
+ * entry, nothing for a partial refund — on the line the sale was booked on, and only for a sale in `open`: the refund of a
+ * sale the ledger never booked would take off money the ledger never counted. It never moves the cursor. A refused,
+ * looping or capped re-read books the refunds on the pages it read and says so in `problem`.
+ *
+ * Both reaches are taken from the day the ledger dates a sale, which is Gumroad's `created_at` only for a sale the
+ * connector booked. An open sale that a listing read to its end should have returned by that day (the re-read reaches
+ * every open sale with a day; the sync's own listing, `listed` with `listedToEnd`, those dated after its `after`), and
+ * that neither returned, is in `unlisted`: its refund state cannot be read, and it is said, not passed.
+ */
+export async function readLateGumroadRefunds(params: {
+  token: string;
+  open: ReadonlyMap<string, OpenGumroadSale>;
+  listedFrom: string;
+  /** The stored ids of the sales the sync's own listing returned: their refund state was read by it. */
+  listed: ReadonlySet<string>;
+  /** Whether the sync's own listing was read to its last page. */
+  listedToEnd: boolean;
+  fetchImpl?: typeof fetch;
+}): Promise<LateRefundRead> {
+  const { token, open, listedFrom, listed, listedToEnd, fetchImpl = fetch } = params;
+  const days = new Map<string, string>();
+  let oldest: string | null = null;
+  for (const [id, sale] of open) {
+    // A time Date.parse cannot read places its sale on no day: it is left out, as verify-gumroad leaves it out of its
+    // `after`. The connector books every sale at an ISO time; only a row booked by hand can lack one.
+    const t = Date.parse(sale.occurredAt);
+    if (Number.isNaN(t)) continue;
+    const day = new Date(t).toISOString().slice(0, 10);
+    days.set(id, day);
+    if (oldest === null || day < oldest) oldest = day;
+  }
+  if (oldest === null) return { after: null, entries: [], problem: null, unlisted: [] };
+  // The re-read's reach, and the only bound on it: the day before the oldest open sale's day in the ledger (the day
+  // before, as `fetchSince` asks, because the zone `after`'s day starts in is not recorded). No refund window shortens it
+  // (the header). A sale the connector booked is dated at its `created_at`, so every one created before that day is
+  // refunded in the ledger already; a refund of a sale never booked is not booked here (below). A sale booked by hand is
+  // dated at its booking unless a time was given, so it may have been created before that day, and then no listing from
+  // its date returns it: it is reported in `unlisted` (`unlistedOf`). Nothing is asked when the sync's own listing asked
+  // from that day or earlier.
+  const after = shiftDay(oldest, -1);
+  // Each open sale with a day that a listing read to its end reaches and neither listing returned. `rereadFrom` is the
+  // re-read's `after` when it was read to its end (it reaches every open sale with a day), else null; the sync's own
+  // listing reaches a sale dated from the day after its `after`, whichever zone the index starts the day in.
+  const unlistedOf = (returned: ReadonlySet<string>, rereadFrom: string | null): string[] => {
+    const out: string[] = [];
+    for (const [id, day] of days) {
+      if (returned.has(id)) continue;
+      if (rereadFrom !== null) out.push(unlistedSale(id, day, rereadFrom));
+      else if (listedToEnd && day > listedFrom) out.push(unlistedSale(id, day, listedFrom));
+    }
+    return out;
+  };
+  if (after >= listedFrom) return { after: null, entries: [], problem: null, unlisted: unlistedOf(listed, null) };
+
+  const entries: LedgerEntryInput[] = [];
+  const returned = new Set(listed);
+  let read = 0;
+  const listing = await listGumroadSalesSince({
+    token,
+    after,
+    fetchImpl,
+    maxPages: MAX_LEDGER_SYNC_PAGES,
+    onPage: (sales) => {
+      read += sales.length;
+      for (const sale of sales as any[]) {
+        const id = sale?.id;
+        const key = id === undefined || id === null ? null : storedExternalId("gumroad", String(id));
+        const booked = key === null ? undefined : open.get(key);
+        if (!booked) continue;
+        returned.add(key!);
+        entries.push(...gumroadSaleEntries(sale, booked.lineId).filter((e) => e.kind === "refund"));
+      }
+    },
+  });
+  return {
+    after,
+    entries,
+    problem: listing.ok ? null : lateRefundStop(listing, after, read),
+    unlisted: unlistedOf(returned, listing.ok ? after : null),
+  };
+}
 
 // ─── The Pro product's refund rate (RULING-2026-09-30-documents (d), fold action 6) ─────────────────────────────
 

@@ -186,16 +186,16 @@
   {
     "id": "T71-G2",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "    return { entries, nextCursor: cursorDay, unmapped: [...unmapped], problem:",
-    "replace": "    return { entries, nextCursor: newestDay, unmapped: [...unmapped], problem:",
+    "find": "    return { entries, nextCursor: cursorDay, listedFrom: after, unmapped: [...unmapped], problem:",
+    "replace": "    return { entries, nextCursor: newestDay, listedFrom: after, unmapped: [...unmapped], problem:",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "tick 71: a listing refused part-way or past the cap moves the cursor to the newest day it read, past the sales it did not (killed by the page-2 test in newest-first order and the past-the-cap test)"
   },
   {
     "id": "T71-G3",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "    return { entries, nextCursor: cursorDay, unmapped: [...unmapped], problem:",
-    "replace": "    return { entries, unmapped: [...unmapped], problem:",
+    "find": "    return { entries, nextCursor: cursorDay, listedFrom: after, unmapped: [...unmapped], problem:",
+    "replace": "    return { entries, listedFrom: after, unmapped: [...unmapped], problem:",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "tick 71: an incomplete first read stores no cursor, so the next sync's 30-day window slides past an unread day (killed by the first-read refused test)"
   },
@@ -251,6 +251,7 @@
     "id": "T71-G10",
     "file": "src/revenue/connectors/gumroad.ts",
     "find": "was refused at page ${listing.page} (HTTP ${listing.status})`",
+    "nth": 1,
     "replace": "was refused at page ${listing.page}`",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "tick 71: the sync's line on a refused page drops the HTTP status (killed by the page-2 and first-read tests' patterns)"
@@ -462,5 +463,309 @@
     "replace": "      : listing.problem === \"never\"\n        ? `GET /v2/sales loops",
     "test": "src/__tests__/revenue/gumroad-verify.test.ts",
     "note": "tick 71 review: verify-gumroad calls a loop more than 100 pages of sales (killed by the verify loop test's detail)"
+  },
+  {
+    "id": "T74-G1",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  if (after >= listedFrom) return { after: null, entries: [], problem: null, unlisted: unlistedOf(listed, null) };",
+    "replace": "  if (after > listedFrom) return { after: null, entries: [], problem: null, unlisted: unlistedOf(listed, null) };",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the re-read also asks when it would start on the sync's own `after`, a listing that adds nothing (killed by the day-10 test's later syncs, one request each)"
+  },
+  {
+    "id": "T74-G2",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  if (after >= listedFrom) return { after: null, entries: [], problem: null, unlisted: unlistedOf(listed, null) };\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the re-read asks at every sync with an open sale, also when the sync's own listing reached them all (killed by the day-10 test's later syncs)"
+  },
+  {
+    "id": "T74-G3",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  const after = shiftDay(oldest, -1);",
+    "replace": "  const after = oldest;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the re-read starts on the oldest open sale's own day, so an index that excludes the `after` day misses it (killed by the `after`-day test)"
+  },
+  {
+    "id": "T74-G4",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    if (oldest === null || day < oldest) oldest = day;",
+    "replace": "    if (oldest === null || day > oldest) oldest = day;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the reach is the newest open sale, not the oldest, so an older sale's late refund is never read (killed by the day-10 test)"
+  },
+  {
+    "id": "T74-G5",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    if (Number.isNaN(t)) continue;\n    const day = new Date(t).toISOString().slice(0, 10);",
+    "replace": "    const day = new Date(t).toISOString().slice(0, 10);",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: a sale booked by hand at a time Date.parse cannot read throws inside the sync (killed by the hand-booked test's errors)"
+  },
+  {
+    "id": "T74-G6",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "gumroadSaleEntries(sale, booked.lineId).filter((e) => e.kind === \"refund\")",
+    "replace": "gumroadSaleEntries(sale, booked.lineId)",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the re-read books the sale and fee entries again too, duplicates the ledger drops (killed by the duplicates counts)"
+  },
+  {
+    "id": "T74-G7",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "gumroadSaleEntries(sale, booked.lineId)",
+    "replace": "gumroadSaleEntries(sale, UNASSIGNED_LINE_ID)",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the late refund lands on no line instead of its sale's (killed by the day-10 test's lineId)"
+  },
+  {
+    "id": "T74-G8",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "storedExternalId(\"gumroad\", String(id))",
+    "replace": "String(id)",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the re-read looks a listed sale up by its raw id, which the ledger never holds, so no late refund is booked (killed by the day-10 test)"
+  },
+  {
+    "id": "T74-G9",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    maxPages: MAX_LEDGER_SYNC_PAGES,\n    onPage: (sales) => {\n      read += sales.length;",
+    "replace": "    onPage: (sales) => {\n      read += sales.length;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the re-read stops at the pager's default cap of MAX_REFUND_RATE_PAGES, not the sync's (killed by the capped re-read test's request count and line)"
+  },
+  {
+    "id": "T74-G10",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "      read += sales.length;",
+    "replace": "      read += 1;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the re-read's line counts pages as sales (killed by the capped re-read test's \"2 sale(s)\")"
+  },
+  {
+    "id": "T74-G11",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  const rest = listing.problem === \"too_many_pages\"",
+    "replace": "  const rest = listing.problem === \"refused\"",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the re-read's line tells a refused re-read it is capped, and a capped one that the next sync reads on (killed by the refused and capped re-read tests)"
+  },
+  {
+    "id": "T74-G12",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    : listing.problem === \"looped\"\n      ? `the late-refund re-read since ${after} loops",
+    "replace": "    : listing.problem === \"never\"\n      ? `the late-refund re-read since ${after} loops",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the re-read's line calls a loop a re-read past the cap (killed by the looping re-read test)"
+  },
+  {
+    "id": "T74-G13",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    problem: listing.ok ? null : lateRefundStop(listing, after, read),",
+    "replace": "    problem: null,",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: a re-read that stopped short is no sync error and no blocker (killed by the refused, capped and looping re-read tests)"
+  },
+  {
+    "id": "T74-G14",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "nextCursor: newestDay, listedFrom: after,",
+    "replace": "nextCursor: newestDay, listedFrom: cursorDay,",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: fetchSince names the cursor's day as where it listed from, a day late, so the re-read asks for sales its listing reached (killed by the day-10 test's later syncs)"
+  },
+  {
+    "id": "T74-G15",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "nextCursor: cursorDay, listedFrom: after,",
+    "replace": "nextCursor: cursorDay,",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: a sync whose own listing stopped short runs no re-read, so a late refund waits on the listing (killed by the own-listing-refused test)"
+  },
+  {
+    "id": "T74-H1",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "    if (id !== null && !refunds.has(`${id}:refund`)) open.set(",
+    "replace": "    if (id !== null) open.set(",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: a sale whose refund is booked stays open, so every sync re-reads back to it for good (killed by the day-10 test's later syncs)"
+  },
+  {
+    "id": "T74-H2",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "    const id = row.kind === \"sale\" ? storedExternalId(\"gumroad\", row.externalId) : null;",
+    "replace": "    const id = storedExternalId(\"gumroad\", row.externalId);",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: refund and fee rows count as open sales, so the reach runs back to them (killed by the day-10 test's later syncs)"
+  },
+  {
+    "id": "T74-H3",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "        if (late.problem) result.errors.push(`${connector.source}: ${late.problem}`);",
+    "replace": "        if (late.problem === \"never\") result.errors.push(`${connector.source}: ${late.problem}`);",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: runLedgerSync drops the re-read's problem, so a stopped re-read is no sync error and no blocker (killed by the refused, capped and looping re-read tests)"
+  },
+  {
+    "id": "T74-H4",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "      const openGumroad = connector.source === gumroadConnector.source ? openGumroadSales(db) : null;",
+    "replace": "      const openGumroad = connector.source === \"never\" ? openGumroadSales(db) : null;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the sync runs no re-read at all, the defect itself (killed by the day-10 test and every late-refund test)"
+  },
+  {
+    "id": "T74-H5",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "          token: String(env.GUMROAD_ACCESS_TOKEN), open: openGumroad,",
+    "replace": "          token: \"\", open: openGumroad,",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the re-read asks without the token (killed by the day-10 test's query check)"
+  },
+  {
+    "id": "T74-H6",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "        for (const entry of late.entries) {",
+    "replace": "        for (const entry of late.entries.slice(1)) {",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 74: the first late refund the re-read found is not booked (killed by the day-10 test)"
+  },
+  {
+    "id": "T74R-G1",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "      if (rereadFrom !== null) out.push(unlistedSale(id, day, rereadFrom));",
+    "replace": "      if (rereadFrom === \"never\") out.push(unlistedSale(id, day, rereadFrom));",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: blocking finding (probe PC): an open sale a re-read read to its end did not return is passed in silence (killed by the hand-booked re-read-branch test)"
+  },
+  {
+    "id": "T74R-G2",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "      else if (listedToEnd && day > listedFrom) out.push(unlistedSale(id, day, listedFrom));",
+    "replace": "      else if (listedToEnd && day > \"9999\") out.push(unlistedSale(id, day, listedFrom));",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: blocking finding: an open sale only the sync's own listing reaches, which it did not return, is passed in silence (killed by the hand-booked skipped-branch test)"
+  },
+  {
+    "id": "T74R-G3",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "      else if (listedToEnd && day > listedFrom)",
+    "replace": "      else if (listedToEnd && day >= listedFrom)",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: a sale on the own listing's `after` day, which the index may not list, is called unlisted (killed by the `after`-day refused re-read test)"
+  },
+  {
+    "id": "T74R-G4",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "      else if (listedToEnd && day > listedFrom)",
+    "replace": "      else if (day > listedFrom)",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: a sale the sync's own listing did not reach because it stopped short is called unlisted (killed by the own-listing-refused, no-re-read test)"
+  },
+  {
+    "id": "T74R-G5",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "out.push(unlistedSale(id, day, rereadFrom))",
+    "replace": "out.push(unlistedSale(id, day, listedFrom))",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: the unlisted line names the own listing's `after`, not the re-read's, as where the reach began (killed by the re-read-branch test's \"since 2026-10-03\")"
+  },
+  {
+    "id": "T74R-G6",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "      if (returned.has(id)) continue;",
+    "replace": "      if (returned.has(\"never\")) continue;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: every open sale is called unlisted, also one a listing returned (killed by the day-10 test's later syncs and every late-refund test)"
+  },
+  {
+    "id": "T74R-G7",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "        returned.add(key!);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: a sale the re-read returned is not counted as returned, so it is called unlisted (killed by the day-10 test)"
+  },
+  {
+    "id": "T74R-G8",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  const returned = new Set(listed);",
+    "replace": "  const returned = new Set<string>();",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: a sale the sync's own listing returned is not counted when the re-read stopped short (killed by the refused re-read test's errors)"
+  },
+  {
+    "id": "T74R-G9",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    unlisted: unlistedOf(returned, listing.ok ? after : null),",
+    "replace": "    unlisted: unlistedOf(returned, after),",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: a re-read that stopped short is taken as having reached every open sale, so a sale on its unread pages is called unlisted (killed by the refused re-read test's errors)"
+  },
+  {
+    "id": "T74R-G10",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "problem: null, unlisted: unlistedOf(listed, null) };",
+    "replace": "problem: null, unlisted: [] };",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: with no re-read asked, the open sales are never checked against the sync's own listing (killed by the skipped-branch test)"
+  },
+  {
+    "id": "T74R-G11",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "listedFrom: after, listedToEnd: true,",
+    "replace": "listedFrom: after,",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: fetchSince never says its listing was read to its end, so its reach is never checked (killed by the skipped-branch test)"
+  },
+  {
+    "id": "T74R-G12",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": ".filter((e) => e.kind === \"refund\")",
+    "replace": ".filter((e) => e.kind !== \"sale\")",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: survivor R-M6: the re-read books a sale's fee row as well as its refund (killed by the hand-booked fee test)"
+  },
+  {
+    "id": "T74R-H1",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "        for (const line of late.unlisted) result.errors.push(`${connector.source}: ${line}`);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: blocking finding: runLedgerSync drops the unlisted lines, so they are no sync error and no blocker (killed by both hand-booked tests)"
+  },
+  {
+    "id": "T74R-H2",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "const listed = new Set(fetched.entries.flatMap((e) => (e.kind === \"sale\" && e.externalId ? [e.externalId] : [])));",
+    "replace": "const listed = new Set<string>();",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: the sales the sync's own listing returned are not passed, so an open sale it read is called unlisted (killed by the day-10 test's later syncs)"
+  },
+  {
+    "id": "T74R-H3",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "          listed, listedToEnd: fetched.listedToEnd === true,",
+    "replace": "          listed, listedToEnd: true,",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: a listing that stopped short is taken as read to its end (killed by the own-listing-refused, no-re-read test)"
+  },
+  {
+    "id": "T74R-H4",
+    "file": "src/revenue/heartbeat.ts",
+    "find": ".map((r) => storedExternalId(\"gumroad\", r.externalId)));",
+    "replace": ".map((r) => r.externalId));",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: survivor R-M3: the refund set is built from the raw external_id, so a raw `<id>:refund` row leaves its sale open and a second refund is booked (killed by the raw sale-and-refund test)"
+  },
+  {
+    "id": "T74R-H5",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "    const id = row.kind === \"sale\" ? storedExternalId(\"gumroad\", row.externalId) : null;",
+    "replace": "    const id = row.kind === \"sale\" ? row.externalId : null;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "the tick-74 review: survivor R-M4: a sale booked with its raw id is keyed raw, so the re-read never finds it and its late refund is lost (killed by the raw sale test)"
   }
 ]

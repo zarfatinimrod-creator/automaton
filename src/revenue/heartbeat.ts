@@ -20,11 +20,13 @@ import {
   PRO_LINE_ID,
   gumroadConnector,
   parseRefundRateUnit,
+  readLateGumroadRefunds,
   readProProductId,
   readProRefundCount,
   refundRate,
   refundRateUnit,
   sameRefundCounts,
+  type OpenGumroadSale,
   type RefundRateCount,
 } from "./connectors/gumroad.js";
 import {
@@ -53,7 +55,7 @@ import { enqueueGoal, feedNextGoal, lineGoalStatus, listQueuedGoals, removeQueue
 import { renderBoardDirective } from "./org.js";
 import { policyForLine, seedDefaultPortfolio } from "./portfolio.js";
 import { describeOpenSetup } from "./owner-steps.js";
-import { DIGESTED_SOURCES, isStoredForm } from "./money.js";
+import { DIGESTED_SOURCES, isStoredForm, storedExternalId } from "./money.js";
 import { allocateBudget, auditDecision, decideLine, describeDecision, experimentsToPause } from "./rules.js";
 import {
   DEFAULT_DECISION_POLICY,
@@ -282,6 +284,25 @@ async function syncGumroadRefundRate(
   return read("recorded", counted, { lineId, count, rate, rowWritten: true });
 }
 
+/**
+ * The Gumroad sales the ledger holds whose refund it does not (tick 74), keyed on their stored id (a raw id booked by hand
+ * is keyed on its digest, as `storedExternalId` keys it), each with the line it was booked on and its time. The sync reads
+ * them before it books anything of Gumroad's: a sale its own listing books was just read with its refund state.
+ */
+export function openGumroadSales(db: Database): Map<string, OpenGumroadSale> {
+  const rows = db.prepare(
+    `SELECT kind, external_id AS externalId, line_id AS lineId, occurred_at AS occurredAt
+     FROM revenue_ledger WHERE source = 'gumroad' AND external_id IS NOT NULL ORDER BY rowid`,
+  ).all() as { kind: string; externalId: string; lineId: string; occurredAt: string }[];
+  const refunds = new Set(rows.filter((r) => r.kind === "refund").map((r) => storedExternalId("gumroad", r.externalId)));
+  const open = new Map<string, OpenGumroadSale>();
+  for (const row of rows) {
+    const id = row.kind === "sale" ? storedExternalId("gumroad", row.externalId) : null;
+    if (id !== null && !refunds.has(`${id}:refund`)) open.set(id, { lineId: row.lineId, occurredAt: row.occurredAt });
+  }
+  return open;
+}
+
 export async function runLedgerSync(
   db: Database,
   env: NodeJS.ProcessEnv = process.env,
@@ -314,6 +335,7 @@ export async function runLedgerSync(
   for (const connector of REMOTE_CONNECTORS) {
     if (!connector.isConfigured(env)) continue;
     try {
+      const openGumroad = connector.source === gumroadConnector.source ? openGumroadSales(db) : null;
       const fetched = await connector.fetchSince({
         cursor: getConnectorCursor(db, connector.source),
         env,
@@ -330,6 +352,24 @@ export async function runLedgerSync(
       if (fetched.nextCursor) setConnectorCursor(db, connector.source, fetched.nextCursor);
       result.unmapped.push(...fetched.unmapped);
       result.sources.push(connector.source);
+      // Gumroad's late refunds (tick 74): a refund made after the sync's own listing stopped reaching its sale, read again
+      // from the day before the oldest sale the ledger holds unrefunded. It never moves the cursor; a re-read it could not
+      // read to its end is a sync error, as the listing's own is, and so is an open sale no listing could read (the tick-74
+      // review: a sale booked by hand days after Gumroad made it). Last in the block, so a throw in it costs nothing above.
+      if (openGumroad && fetched.listedFrom) {
+        // The stored ids of the sales the sync's own listing returned: their refund state was just read.
+        const listed = new Set(fetched.entries.flatMap((e) => (e.kind === "sale" && e.externalId ? [e.externalId] : [])));
+        const late = await readLateGumroadRefunds({
+          token: String(env.GUMROAD_ACCESS_TOKEN), open: openGumroad, listedFrom: fetched.listedFrom, fetchImpl,
+          listed, listedToEnd: fetched.listedToEnd === true,
+        });
+        if (late.problem) result.errors.push(`${connector.source}: ${late.problem}`);
+        for (const line of late.unlisted) result.errors.push(`${connector.source}: ${line}`);
+        for (const entry of late.entries) {
+          const rec = recordLedgerEntry(db, entry);
+          if (rec) result.recorded += 1; else result.duplicates += 1;
+        }
+      }
     } catch (error) {
       result.errors.push(`${connector.source}: ${(error as Error).message}`);
     }
