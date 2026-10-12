@@ -1,0 +1,162 @@
+[
+  {
+    "id": "T75-A1",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "  if (!terms.ok) {",
+    "replace": "  if (terms.ok) {",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (ruling 12.10 row 28 fold 5 (ii)): the terms gate inverted — it refuses under an active googleapis.com verdict and runs under the committed CONDITIONAL_UNMET one"
+  },
+  {
+    "id": "T75-A2",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "decision 6); ` +\n        `nothing fetched, nothing written.`,\n    );\n    return 2;",
+    "replace": "decision 6); ` +\n        `nothing fetched, nothing written.`,\n    );\n    return 0;",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (fold 5 (ii)): the gate's refusal exits 0, not 2 — a refused run reads as a run with nothing to read"
+  },
+  {
+    "id": "T75-A3",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "  if (!terms.ok) {",
+    "replace": "  if (!terms.ok && !CONSENT_ENV.some((k) => !run.env[k])) {",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (fold 5 (ii)): the consent is checked before the gate — without the consent the terms are never judged and the run exits 0"
+  },
+  {
+    "id": "T75-A4",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "JSON.stringify({ measuredAt: run.now, window: { startDate, endDate, watchStart }, readings }, null, 2)",
+    "replace": "JSON.stringify({ measuredAt: run.now, window: { startDate, endDate, watchStart }, readings, raw: { trafficTable, watchTable } }, null, 2)",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (fold 5 (i)): `raw` written — the Analytics API's own response tables beside the readings, with no private store named"
+  },
+  {
+    "id": "T75-A5",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "export const OUTPUT_PATH = join(homedir(), \".local\", \"state\", \"mehudak\", \"youtube-analytics.json\");",
+    "replace": "export const OUTPUT_PATH = join(\"state\", \"colony\", \"measurements\", \"youtube-analytics.json\");",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (fold 5 (i)): the output path moved back under state/colony/measurements/, which colony.yml force-adds to the public repository"
+  },
+  {
+    "id": "T75-A6",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "    outputPath: OUTPUT_PATH,",
+    "replace": "    outputPath: join(MEASUREMENTS, \"youtube-analytics.json\"),",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (fold 5 (i)): main()'s run writes to the old in-tree path while OUTPUT_PATH itself stays outside the checkout"
+  },
+  {
+    "id": "T75-A7",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "    verdictsPath: TERMS_VERDICTS,",
+    "replace": "    verdictsPath: join(MEASUREMENTS, \"terms-verdicts.json\"),",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (fold 5 (ii)): main()'s run reads a verdicts file other than the committed research/channel-loop/terms-verdicts.json"
+  },
+  {
+    "id": "T75-B1",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "    rmSync(path);\n",
+    "replace": "    void path;\n",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (ruling 12.10 row 28 fold 6): the deletion removed — on invalid_grant the output stays and the message still says it was deleted"
+  },
+  {
+    "id": "T75-B2",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "  if (error === \"invalid_grant\") {",
+    "replace": "  if (true) {",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (fold 6): every refresh failure deletes the output and reports invalid_grant — only invalid_grant says the authorization is gone"
+  },
+  {
+    "id": "T75-B3",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "is gone, so ${deleted} ",
+    "replace": "is gone ",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (fold 6): the thrown message no longer says what became of the output"
+  },
+  {
+    "id": "T75-B4",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "  if (!existsSync(path)) return",
+    "replace": "  if (false) return",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (fold 6): with no output yet the message says it could not be deleted instead of that there was none"
+  },
+  {
+    "id": "T75-B5",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "    return `the analytics output ${path} could NOT be deleted (${error instanceof Error ? error.message : String(error)}): delete it by hand`;",
+    "replace": "    return `the analytics output ${path} was deleted`;",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 (fold 6): an output the script could not delete is reported deleted"
+  },
+  {
+    "id": "T75-C1",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "  if (refusal) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 the review of tick 75 (fix 1, ruling 12.10 row 28 §3 decision 4): the output-path guard bypassed — a HOME pointed at <checkout>/state/colony puts the output where `git add -f state/colony` stages it"
+  },
+  {
+    "id": "T75-C2",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "  if (!isAbsolute(fromRoot) && fromRoot !== \"..\" && !fromRoot.startsWith(`..${sep}`)) return",
+    "replace": "  if (false) return",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 review fix 1: the in-checkout check dropped — an output path inside this checkout but not under state/colony/ (HOME=<checkout>) is allowed"
+  },
+  {
+    "id": "T75-C3",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "parts.some((part, i) => part === \"state\" && parts[i + 1] === \"colony\")",
+    "replace": "parts.some(() => false)",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 review fix 1: the state/colony/ segment check dropped — another clone's state/colony/ is allowed"
+  },
+  {
+    "id": "T75-C4",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "so check HOME; ` +\n        `nothing fetched, nothing written.`,\n    );\n    return 2;",
+    "replace": "so check HOME; ` +\n        `nothing fetched, nothing written.`,\n    );\n    return 0;",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 review fix 1: the guard's refusal exits 0, not 2 — a refused run reads as a run with nothing to read"
+  },
+  {
+    "id": "T75-C5",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "!fromRoot.startsWith(`..${sep}`)",
+    "replace": "!fromRoot.startsWith(\"..\")",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 review fix 1: the parent test loosened to a bare `..` prefix — a child directory whose name starts with `..` reads as outside the checkout"
+  },
+  {
+    "id": "T75-C6",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "  if (!isAbsolute(fromRoot) && fromRoot !== \"..\" && !fromRoot.startsWith(`..${sep}`)) return",
+    "replace": "  if (abs.startsWith(REPO_ROOT)) return",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 review fix 1: the in-checkout check as a string prefix — a sibling whose name starts with the checkout's is refused"
+  },
+  {
+    "id": "T75-C7",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), \"..\");",
+    "replace": "const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)));",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 review fix 1: the checkout root is scripts/, not the repository — the root's own .local is allowed"
+  },
+  {
+    "id": "T75-C8",
+    "file": "scripts/youtube-analytics.ts",
+    "find": "  const refusal = outputPathRefusal(run.outputPath);",
+    "replace": "  const refusal = CONSENT_ENV.some((k) => !run.env[k]) ? null : outputPathRefusal(run.outputPath);",
+    "test": "src/__tests__/revenue/youtube-analytics.test.ts",
+    "note": "tick 75 review fix 1: the guard checked only with the consent present — without it a wrong output path exits 0 as if nothing were wrong"
+  }
+]
