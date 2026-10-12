@@ -40,6 +40,8 @@
  *
  * USAGE
  *   pnpm exec tsx scripts/youtube-madeforkids-readback.ts --line kids-explainers [--videos <path>] [--state <path>] [--now <iso>]
+ * --now is an ISO 8601 date-time with a zone (Z or ±hh:mm) on a real day; it is written in toISOString() form, the only
+ * form the state's invariant takes, and anything else is refused (exit 2) before a call is made (runClock).
  * Exit 0 read (or nothing to read), 1 the API refused or answered badly (nothing written), 2 refused to run.
  */
 
@@ -112,6 +114,25 @@ export function defaultPaths(line: ReadbackLine): { videosPath: string; statePat
   };
 }
 
+/** An ISO 8601 date-time in extended form with an explicit zone, Z or ±hh:mm; its seconds and their fraction optional. */
+const ISO_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}:\d{2})$/;
+
+/**
+ * The run's clock as the state writes it: `now` in toISOString() form, the only form assertColonyFactsOnly takes for a
+ * time (ruling 12.10 row 28 §2 decision 2), or null when `now` is not an ISO 8601 date-time with a zone on a real calendar
+ * day. A value with no milliseconds, no seconds or an offset is normalised. Refused: a time with no zone (Date.parse would
+ * read it in the machine's own zone), a bare date, any other text Date.parse would still read ("1" is 2001), and a day
+ * the month does not have (Date.parse rolls 2027-02-30 into March). runReadback refuses a null before any call, so a
+ * --now the state cannot hold never spends a read (the tick-73 review).
+ */
+export function runClock(now: string): string | null {
+  const m = ISO_DATE_TIME.exec(now);
+  if (!m) return null;
+  const t = Date.parse(now);
+  if (Number.isNaN(t) || new Date(Date.UTC(+m[1]!, +m[2]! - 1, +m[3]!)).getUTCDate() !== +m[3]!) return null;
+  return new Date(t).toISOString();
+}
+
 type FetchLike = (
   url: string,
   init?: { signal?: AbortSignal; redirect?: "error" },
@@ -125,6 +146,7 @@ export interface ReadbackRun {
   statePath: string;
   /** research/channel-loop/terms-verdicts.json in a real run (main() passes TERMS_VERDICTS and takes no other). */
   verdictsPath: string;
+  /** The run's clock, an ISO 8601 date-time with a zone; runReadback normalises it with runClock or refuses it (exit 2). */
   now: string;
   log: (line: string) => void;
 }
@@ -146,6 +168,14 @@ export async function runReadback(run: ReadbackRun): Promise<number> {
   }
   if (!isReadbackLine(run.experiment)) {
     run.log(`youtube-madeforkids: "${String(run.experiment)}" is not a YouTube line (faceless-youtube, kids-explainers) — refusing to run.`);
+    return 2;
+  }
+  const now = runClock(run.now);
+  if (now === null) {
+    run.log(
+      `youtube-madeforkids: --now ${JSON.stringify(run.now)} is not an ISO 8601 date-time with a zone (Z or ±hh:mm) on a ` +
+        `real day — refusing to run; nothing asked, nothing written.`,
+    );
     return 2;
   }
   const redact = (s: string) => s.split(key).join("[key]");
@@ -182,14 +212,14 @@ export async function runReadback(run: ReadbackRun): Promise<number> {
         run.log(redact(`youtube-madeforkids: videos.list answered HTTP ${res.status}: ${msg} — nothing written.`));
         return 1;
       }
-      fresh.push(...parseVideosList(body, batch, run.now));
+      fresh.push(...parseVideosList(body, batch, now));
     } catch (error) {
       run.log(redact(`youtube-madeforkids: ${error instanceof Error ? error.message : String(error)} — nothing written.`));
       return 1;
     }
   }
 
-  const next = mergeReadings(state, uploads, fresh, run.now);
+  const next = mergeReadings(state, uploads, fresh, now);
   try {
     // Ruling 12.10 row 28 §2 decision 4: the state is colony facts only, or it is not written (its message names paths only).
     assertColonyFactsOnly(next);

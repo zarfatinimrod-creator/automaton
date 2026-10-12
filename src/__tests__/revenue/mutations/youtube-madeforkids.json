@@ -342,5 +342,101 @@
     "replace": "(v === null ? \"unread\" : v !== declared",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
     "note": "tick 73 (fold 3): the summary's as-declared and contrary turned round"
+  },
+  {
+    "id": "T73F-N1",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "  if (now === null) {\n",
+    "replace": "  if (false) {\n",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the refusal skipped — a --now runClock refuses falls through to the call and the state's times are written null"
+  },
+  {
+    "id": "T73F-N2",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "parseVideosList(body, batch, now)",
+    "replace": "parseVideosList(body, batch, run.now)",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the reads stamped with the raw --now — a valid --now in another form makes the call, then refuses the write (the finding itself)"
+  },
+  {
+    "id": "T73F-N3",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "mergeReadings(state, uploads, fresh, now)",
+    "replace": "mergeReadings(state, uploads, fresh, run.now)",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the state's updatedAt from the raw --now — the call made, the write refused"
+  },
+  {
+    "id": "T73F-N4",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "(?:Z|[+-]\\d{2}:\\d{2})$/;",
+    "replace": "(?:Z|[+-]\\d{2}:\\d{2})?$/;",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the zone optional — a --now with no zone read in the machine's own zone"
+  },
+  {
+    "id": "T73F-N5",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "(?:Z|[+-]\\d{2}",
+    "replace": "(?:Z|[+]\\d{2}",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): a negative offset refused — 01:00-05:00 is never normalised"
+  },
+  {
+    "id": "T73F-N6",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "[+-]\\d{2}:\\d{2})$/;",
+    "replace": "[+-]\\d{2}:?\\d{2})$/;",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): an offset with no colon taken"
+  },
+  {
+    "id": "T73F-N7",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "(?::\\d{2}(?:\\.\\d{1,9})?)?(?:Z",
+    "replace": "(?::\\d{2}(?:\\.\\d{1,9})?)(?:Z",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): seconds required — 06:00Z refused instead of normalised"
+  },
+  {
+    "id": "T73F-N8",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "T\\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d{1,9})?)?(?:Z|[+-]\\d{2}:\\d{2})$/;",
+    "replace": "(?:T\\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d{1,9})?)?(?:Z|[+-]\\d{2}:\\d{2}))?$/;",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the time optional — a bare date taken as midnight"
+  },
+  {
+    "id": "T73F-N9",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": " || new Date(Date.UTC(+m[1]!, +m[2]! - 1, +m[3]!)).getUTCDate() !== +m[3]!",
+    "replace": "",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the day check dropped — 2027-02-30 rolled into March and written"
+  },
+  {
+    "id": "T73F-N10",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "Number.isNaN(t) || ",
+    "replace": "",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the NaN check dropped — a shape Date.parse refuses (06:60) throws past the refusal"
+  },
+  {
+    "id": "T73F-N11",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "+m[2]! - 1,",
+    "replace": "+m[2]!,",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the day checked against the month after — 2027-02-29 and 2027-02-30 taken"
+  },
+  {
+    "id": "T73F-N12",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "  return new Date(t).toISOString();\n}",
+    "replace": "  return now;\n}",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): runClock returns the --now unnormalised — the call made, the write refused"
   }
 ]
