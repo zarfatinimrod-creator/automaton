@@ -841,6 +841,10 @@ describe("the scanner", () => {
     expect(at(list, 302)).toMatchObject({ path: "MISSION.md", lastPathNamed: true });
     expect(at(list, 5)).toMatchObject({ path: "MISSION.md", via: "carried from :3", lastPathNamed: true });
     expect(at(list, 30)).toMatchObject({ kind: "unattributed" });
+    // The word owns a line only right before it (its possessive, a bracket or a backtick between): "test, `:5`" is no
+    // role's line, though the comma alone would tie a list.
+    const comma = scan("\"The test\" is `src/__tests__/loop.test.ts`.\n\n`MISSION.md:1` and test, `:5`.");
+    expect(at(comma, 5)).toMatchObject({ path: "MISSION.md", lastPathNamed: true });
     // At an item's start the word stands bare, whatever ended the line before.
     const item = scan("\"The test\" is `src/__tests__/loop.test.ts`.\n\n- `MISSION.md:2` holds it\n- Test `:7` too.");
     expect(at(item, 7)).toMatchObject({ path: "src/__tests__/loop.test.ts", via: 'role "The test" (as Test)' });

@@ -1109,7 +1109,7 @@
     "find": "${first}(?=${ROLE_GAP}:L?\\\\d)`, \"g\")",
     "replace": "${first}`, \"g\")",
     "test": "src/__tests__/revenue/brief-drift.test.ts",
-    "note": "tick 72 R1: a role's one word owns a line anywhere, not only right before it ('a test passes (`:6`)')"
+    "note": "tick 72 R1: a role's one word owns a line anywhere, not only right before it ('a test passes (`:6`)'); since the review fixer only \"and test, `:5`\" tells it apart (a gap of a comma alone), as the bare-word rule and the attached gap take the rest"
   },
   {
     "id": "T72-R2",
