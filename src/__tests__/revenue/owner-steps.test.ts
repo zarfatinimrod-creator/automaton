@@ -590,10 +590,17 @@ describe("the Hebrew document has not drifted from the code", () => {
     // The document tells the owner "1 → 8 → 2 → 3 → 5 → 7 → 4 → 6". If the code is
     // reordered and the document is not, the owner does the wrong thing first —
     // and the wrong thing first here costs a month of the Apify count.
-    const stated = doc.match(/(\d(?:\s*→\s*\d){7})/);
-    expect(stated, "docs/OWNER_STEPS.he.md no longer states an execution order").toBeTruthy();
-    const order = stated![1].split("→").map((n) => Number(n.trim()));
-    expect(order).toEqual(ownerStepsInOrder().map((s) => s.number));
+    // Since ruling 12.10 (Fold 3) the ₪0 box's order bullet states the order too, ahead of the board's line, so the
+    // first arrow sequence is no longer the board's line (tick 73 review, R-X1): every sequence is checked, and the
+    // board's line ("כפי שרשום בקוד:", which Fold 2 keeps parsed) is found by its own words.
+    const code = ownerStepsInOrder().map((s) => s.number);
+    const parse = (s: string) => s.split("→").map((n) => Number(n.trim()));
+    const stated = [...doc.matchAll(/\d(?:\s*→\s*\d)+/g)].map((m) => m[0]);
+    expect(stated.length, "docs/OWNER_STEPS.he.md states the order in the ₪0 box's order bullet and in the board's line").toBeGreaterThanOrEqual(2);
+    for (const order of stated) expect(parse(order), order).toEqual(code);
+    const board = doc.match(/כפי שרשום בקוד: (\d(?:\s*→\s*\d){7})\.\*\*/);
+    expect(board, "docs/OWNER_STEPS.he.md no longer states the board's execution order").toBeTruthy();
+    expect(parse(board![1])).toEqual(code);
   });
 
   it("marks exactly the steps the code records as done", () => {
@@ -652,6 +659,47 @@ describe("the Hebrew document has not drifted from the code", () => {
     // And it says what the board ruled on the order, rather than that the order awaits it.
     expect(box).toContain("פסק ב-12.10");
     expect(doc).not.toContain("ממתין לפסיקה");
+  });
+
+  // Ruling 12.10 Fold 3 gives three paragraphs word for word: the dated paragraph, the merged box item 5 and the ruled
+  // order bullet. A needle or an opening pins none of what they say (tick 73 review: day 56 → 30, "after step 8" →
+  // "after step 1", "steps 2 and 3 held" → "step 2 held", "both asked together, with the reading" dropped, "the token
+  // rows only once the step that makes them is done" → "now" all survived), so each is pinned whole, the blockquote's
+  // "> " prefixes and line breaks flattened.
+  it("carries ruling 12.10's three Fold 3 paragraphs word for word (the dated paragraph, box item 5, the order bullet)", () => {
+    const flatQuoted = (t: string) => t.replace(/^>[ \t]*/gm, "").replace(/\s+/g, " ");
+    const flatDoc = flatQuoted(doc);
+    expect(flatDoc).toContain(
+      "**עודכן 12.10.2026 (פסיקה 12.10, `research/channel-loop/RULING-2026-10-12-owner-step-order.md`, FABLE_QUEUE שורה 29): הסדר שבקוד הוא הסדר, והוא לא השתנה; מה שמבוקש עכשיו נקבע לפי השערים ולא לפי הסדר. צעד 3 (Gumroad) מוחזק בקוד כמו צעד 2 — מבוקש רק כשמוצר בתשלום מוכן, כלומר כשקריאת הצפיות של יום 56 עוברת, ואז שניהם יחד; החלק המוקדם של צעד 6 (טוקן Apify ושני ארגוני PostHog) בא אחרי צעד 8, כי חשבון Apify נפתח עם תיבת המותג; שורות הטוקנים של צעד 6 נשאלות רק כשהצעד שיוצר אותן בוצע. שום צעד לא נוסף, ושום סדר לא השתנה.**",
+    );
+    const box = flatQuoted(doc.slice(doc.indexOf("### כלל ה-0 ₪ (27.9)"), doc.indexOf("סדר ביצוע של הדירקטוריון")));
+    expect(box).toContain(
+      "5. **צעדים 2 ו-3 — רק כשמוצר בתשלום מוכן למכירה**, כלומר כשקריאת הצפיות של יום 56 (או יום 112, אחרי ההארכה האחת) עוברת ב-`il-biz-tools` או ב-`pcn874` (פסיקת 28.9 שורה 9; פסיקת 12.10). אז שניהם מבוקשים יחד, עם הקריאה עצמה: **צעד 2** — תיק עוסק פטור, ורק אחרי שבדקתי מהמקור הרשמי אם הוא עולה משהו (פירוט בצעד 2); **צעד 3** — חשבון Gumroad: פתיחת החשבון חינם והעמלות יורדות רק מתוך מכירות, לא מהכיס שלך, אבל הוא צעד זהות (תעודת זהות, הוכחת כתובת, חשבון בנק), ומה שהוא פותח — מכירה והטוקן שקורא אותה — לא קיים לפני צעד 2, ולכן הוא לא מבוקש לפני כן. **שום מוצר בתשלום לא עולה שם למכירה לפני צעד 2.**",
+    );
+    expect(box).toContain(
+      "- **המספרים לא זזים.** \"צעד 5\" הוא עדיין הדומיין. **הדירקטוריון פסק ב-12.10** (`research/channel-loop/RULING-2026-10-12-owner-step-order.md`): הסדר הרשמי הוא זה שבקוד (`src/revenue/owner-steps.ts`) — 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6, סדר הדירקטוריון מ-7.9 עם צעד 8 שהוכנס שני ב-28.9 — והוא לא השתנה. מה שמבוקש ממך עכשיו נקבע לא לפי הסדר אלא לפי השערים: צעד 1 בוצע, צעד 5 מוקפא, וצעדים 2 ו-3 מוחזקים עד שמוצר בתשלום מוכן; לכן נשארים הצעדים החינמיים, בסדר שלמעלה — שהוא אותו סדר. בשני המקומות — אף צעד לא מבקש ממך כסף.",
+    );
+    // The day the box names is the gate's own day, not a number typed beside it.
+    expect(box).toContain(`כשקריאת הצפיות של יום ${PAGE_VIEW_GATES.reachDay} (או יום ${PAGE_VIEW_GATES.extensionDay}, אחרי ההארכה האחת)`);
+  });
+
+  // Tick 73 review: two owner-facing texts outside Fold 3's list still said the Apify half may go in "right after step 1"
+  // (step 1's done note in the Hebrew document, and products/README.md's apify-il-open-data row), against ruling 12.10
+  // §3(2): the Apify account is opened with the brand mailbox, so the early part follows step 8. Both now carry the
+  // ruling's own wording (Fold 3's Hebrew for the document, Fold 5's English for the README).
+  it("never says the Apify half follows step 1: the Hebrew document and products/README.md put it after step 8 (ruling 12.10 §3(2))", () => {
+    const flatDoc = doc.replace(/^>[ \t]*/gm, "").replace(/\s+/g, " ");
+    expect(flatDoc).not.toMatch(/מותר מיד אחרי צעד 1(?!\d)/);
+    expect(flatDoc).not.toMatch(/(טוקן Apify|APIFY_TOKEN|Apify)[^.]{0,120}אחרי צעד 1(?!\d)/);
+    const step1 = flatDoc.slice(flatDoc.indexOf("## צעד 1"), flatDoc.indexOf("## צעד 2"));
+    expect(step1).toContain(
+      "זה החצי הראשון של צעד 6, והוא מותר מיד אחרי צעד 8 (חשבון Apify נפתח עם תיבת המותג).",
+    );
+    const products = fs.readFileSync(path.join(repoRoot, "products/README.md"), "utf-8");
+    const apifyRow = products.split("\n").find((l) => l.startsWith("| `apify-il-open-data` |"))!;
+    expect(apifyRow, "products/README.md has no apify-il-open-data row").toBeTruthy();
+    expect(apifyRow).not.toMatch(/after step 1(?!\d)/);
+    expect(apifyRow).toContain("(allowed straight after step 8, with the brand mailbox as the account's address; **no KYC**)");
   });
 
   // Ruling 12.10 Fold 3: the document states the ruling where it gave the owner the order, step 3's own section says
