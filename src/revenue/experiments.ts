@@ -47,7 +47,9 @@ export interface ExperimentReadings {
    * entry per upload, "true", "false", or null for an upload with no reading yet. It is src/revenue/youtube-madeforkids.ts
    * `readbackOf(state, uploads)`: the reader re-reads every upload on every run, and an entry is the designation the line
    * does NOT declare once any read has carried it (that read is kept whatever later reads or the one appeal say), else the
-   * declared one, else null.
+   * declared one, else null. Each entry is the line's own declaration or the colony's override record, never YouTube's
+   * current value, which is read fresh each run and stored nowhere (ruling 12.10 row 28 §2 decision 7,
+   * research/channel-loop/RULING-2026-10-12-youtube-derived-metrics.md).
    *
    * On a channel that declares made for kids, "false" kills (K-mfk-designation). On one that declares not made for kids
    * (today T1), "true" is YouTube's override ("you may see your video set as “Set to Made for Kids"",
@@ -279,18 +281,20 @@ export function evaluateExperiment(spec: ExperimentSpec, r: ExperimentReadings):
   } else {
     // P-2 (MADE_FOR_KIDS_OVERRIDES): a YouTube-set made-for-kids override flags the board; the second kills that channel's
     // line. The count is due from the first upload (ASSESSMENT §9.2 item 2: a read-back after each upload), and it is the
-    // read-back's `true` entries: an unread upload is flagged below (K-mfk-unmeasured), never counted as a zero.
+    // read-back's `true` entries: an unread upload is flagged below (K-mfk-unmeasured), never counted as a zero. The count
+    // is a stop rule over the colony's own uploads: it lives here and in the kill's id, never stored, printed or shown,
+    // and the kill's note names the uploads by their ordinal, never a tally (ruling 12.10 row 28 §1).
     const mfkKillAt = MADE_FOR_KIDS_OVERRIDES.killAt;
     if (readback.length === 0) {
       notes.push("K-mfk has no reading: the read-back runs after each upload (src/revenue/youtube-madeforkids.ts); not due before the first upload");
     } else if (unread.length) {
       notes.push(`K-mfk is due from the first upload and has no reading for ${unread.map(of).join(", ")}: an override there would go unseen (status.madeForKids) — an unmeasured gate that is due counts as failed, and the board is flagged`);
     }
-    const overrides = readback.filter((v) => v === "true").length;
-    if (overrides >= mfkKillAt) {
+    const overridden = readback.flatMap((v, i) => (v === "true" ? [i + 1] : []));
+    if (overridden.length >= mfkKillAt) {
       kills.push("K-mfk");
-      notes.push(`${overrides} made-for-kids overrides by YouTube on this channel (kill at ${mfkKillAt}): this channel's line is killed, not both YouTube lines — never a replacement channel`);
-    } else if (overrides > 0) {
+      notes.push(`${overridden.map(of).join(", ")} read back the designation this line does not declare (YouTube's made-for-kids override, P-2): this channel's line is killed, not both YouTube lines — never a replacement channel`);
+    } else if (overridden.length > 0) {
       escalations.push("K-mfk-override");
       notes.push("YouTube set a video to made for kids over our declaration: it goes private, gets one appeal, and is never relabelled or re-uploaded; the board is flagged, and a second override kills the line");
     }

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "T73-K1",
+    "file": "src/revenue/experiments.ts",
+    "find": "${overridden.map(of).join(\", \")} read back the designation this line does not declare (YouTube's made-for-kids override, P-2)",
+    "replace": "${overridden.length} made-for-kids overrides by YouTube on this channel (kill at ${mfkKillAt})",
+    "test": "src/__tests__/revenue/t1-made-for-kids-kill.test.ts",
+    "note": "tick 73 (ruling 12.10 row 28 fold 2): the K-mfk kill note back to the tally form — the count is printed as a figure"
+  },
+  {
+    "id": "T73-K2",
+    "file": "src/revenue/experiments.ts",
+    "find": "${overridden.map(of).join(\", \")} read back the designation this line does not declare",
+    "replace": "some uploads read back the designation this line does not declare",
+    "test": "src/__tests__/revenue/t1-made-for-kids-kill.test.ts",
+    "note": "tick 73 (fold 2): the K-mfk kill note loses its ordinals — it names no upload, so an auditor cannot tell which uploads were overridden"
+  },
+  {
+    "id": "T73-K3",
+    "file": "src/revenue/experiments.ts",
+    "find": "if (overridden.length >= mfkKillAt) {",
+    "replace": "if (overridden.length > mfkKillAt) {",
+    "test": "src/__tests__/revenue/t1-made-for-kids-kill.test.ts",
+    "note": "tick 73 (fold 2): the second override no longer kills — the kill moves past the pre-registered killAt: 2"
+  },
+  {
+    "id": "T73-K4",
+    "file": "src/revenue/experiments.ts",
+    "find": "readback.flatMap((v, i) => (v === \"true\" ? [i + 1] : []));\n    if (overridden",
+    "replace": "readback.flatMap((v, i) => (v === \"true\" ? [i] : []));\n    if (overridden",
+    "test": "src/__tests__/revenue/t1-made-for-kids-kill.test.ts",
+    "note": "tick 73 (fold 2): the ordinals count from 0 — the note names the wrong uploads"
+  }
+]
