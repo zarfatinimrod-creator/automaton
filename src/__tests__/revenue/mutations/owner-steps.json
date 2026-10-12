@@ -532,5 +532,85 @@
     "replace": "",
     "test": "src/__tests__/revenue/owner-steps.test.ts",
     "note": "tick 73, ruling 12.10 row 29 Fold 1: the early part's what no longer names the brand mailbox"
+  },
+  {
+    "id": "T73R-OS1",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "כפי שרשום בקוד: 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.**",
+    "replace": "כפי שרשום בקוד: 1 → 2 → 8 → 3 → 5 → 7 → 4 → 6.**",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73 review fixer, review R-X1: the board's arrow line (\"כפי שרשום בקוד:\", which Fold 2 keeps parsed) reordered 1 → 2 → 8; it survived while the test read only the first arrow sequence, since Fold 3 the ₪0 box's order bullet"
+  },
+  {
+    "id": "T73R-OS2",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "(`src/revenue/owner-steps.ts`) — 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6, סדר",
+    "replace": "(`src/revenue/owner-steps.ts`) — 1 → 2 → 8 → 3 → 5 → 7 → 4 → 6, סדר",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73 review fixer: the ₪0 box's ruled order bullet (Fold 3) reordered 1 → 2 → 8"
+  },
+  {
+    "id": "T73R-OS3",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "כפי שרשום בקוד: 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.**",
+    "replace": "כפי שרשום בקוד: 1 → 2 → 3 → 5 → 7 → 4 → 6.**",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73 review fixer: the board's arrow line back to the seven-step order of 7.9 (every arrow sequence is checked, of any length)"
+  },
+  {
+    "id": "T73R-OS4",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "כשקריאת הצפיות של יום 56 (או יום 112",
+    "replace": "כשקריאת הצפיות של יום 30 (או יום 112",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73 review fixer, review R-X2: the merged box item 5 (Fold 3) names day 30 instead of the day-56 gate"
+  },
+  {
+    "id": "T73R-OS5",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "בא אחרי צעד 8, כי חשבון Apify נפתח עם תיבת המותג",
+    "replace": "בא אחרי צעד 1, כי חשבון Apify נפתח עם תיבת המותג",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73 review fixer, review R-X3: the 12.10 dated paragraph (Fold 3) puts the early part after step 1"
+  },
+  {
+    "id": "T73R-OS6",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "מוקפא, וצעדים 2 ו-3 מוחזקים",
+    "replace": "מוקפא, וצעד 2 מוחזק",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73 review fixer, review R-X4: the ruled order bullet (Fold 3) holds step 2 only"
+  },
+  {
+    "id": "T73R-OS7",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": " אז שניהם מבוקשים יחד, עם הקריאה עצמה:",
+    "replace": "",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73 review fixer, review R-X5: the merged box item 5 (Fold 3) loses \"both asked together, with the reading\""
+  },
+  {
+    "id": "T73R-OS8",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "שורות הטוקנים של צעד 6 נשאלות רק כשהצעד שיוצר אותן בוצע",
+    "replace": "שורות הטוקנים של צעד 6 נשאלות עכשיו",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73 review fixer, review R-X6: the 12.10 dated paragraph (Fold 3) asks the token rows now"
+  },
+  {
+    "id": "T73R-OS9",
+    "file": "docs/OWNER_STEPS.he.md",
+    "find": "זה החצי הראשון של צעד 6, והוא מותר מיד אחרי צעד 8 (חשבון Apify נפתח עם תיבת המותג).",
+    "replace": "זה החצי הראשון של צעד 6, והוא מותר מיד אחרי צעד 1.",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73 review fixer, review finding 2: step 1's done note puts the Apify half right after step 1 again, against ruling 12.10 §3(2)"
+  },
+  {
+    "id": "T73R-OS10",
+    "file": "products/README.md",
+    "find": "(allowed straight after step 8, with the brand mailbox as the account's address; **no KYC**)",
+    "replace": "(allowed straight after step 1; **no KYC**)",
+    "test": "src/__tests__/revenue/owner-steps.test.ts",
+    "note": "tick 73 review fixer, review finding 2: products/README.md's apify-il-open-data row puts the Apify sign-up right after step 1 again, against ruling 12.10 §3(2)"
   }
 ]
