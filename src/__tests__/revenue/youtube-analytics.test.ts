@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -16,7 +16,7 @@ import {
   tableRows,
   type ResultTable,
 } from "../../revenue/youtube-analytics.js";
-import { OUTPUT_PATH, cliRun, runAnalytics, type AnalyticsRun } from "../../../scripts/youtube-analytics.js";
+import { OUTPUT_PATH, cliRun, outputPathRefusal, runAnalytics, type AnalyticsRun } from "../../../scripts/youtube-analytics.js";
 import { TERMS_VERDICTS, apiTermsGate, readTermsVerdicts } from "../../../scripts/youtube-madeforkids-readback.js";
 
 /**
@@ -194,11 +194,18 @@ function analyticsVerdicts(verdict: string | null) {
 
 type Answer = { status: number; body: unknown };
 
+/** Every scratch directory setup() makes, removed after each test (some hold a written output with fake readings). */
+const scratchDirs: string[] = [];
+afterEach(() => {
+  for (const dir of scratchDirs.splice(0)) rmSync(dir, { recursive: true, force: true });
+});
+
 /** A scratch run of runAnalytics: its own uploads, verdicts and output path, and a fake fetch that records every URL. */
-function setup(opts: { verdicts?: string | null; verdictsPath?: string; uploads?: unknown[] | null; token?: Answer } = {}) {
+function setup(opts: { verdicts?: string | null; verdictsPath?: string; uploads?: unknown[] | null; token?: Answer; outputPath?: string } = {}) {
   const dir = mkdtempSync(join(tmpdir(), "yt-analytics-"));
+  scratchDirs.push(dir);
   const videosPath = join(dir, "youtube-videos.json");
-  const outputPath = join(dir, "private", "youtube-analytics.json");
+  const outputPath = opts.outputPath ?? join(dir, "private", "youtube-analytics.json");
   const verdictsPath = opts.verdictsPath ?? join(dir, "terms-verdicts.json");
   const uploads = opts.uploads === undefined ? UPLOADS : opts.uploads;
   if (uploads !== null) writeFileSync(videosPath, JSON.stringify(uploads));
@@ -365,6 +372,64 @@ describe("scripts/youtube-analytics.ts: its output never reaches the public repo
     expect(header).toMatch(/OUTPUT_PATH/);
     expect(header).toMatch(/`raw`/);
     expect(header).toMatch(/invalid_grant/);
+    // The review of tick 75: OUTPUT_PATH follows HOME, so the header says so and names the guard that covers it.
+    expect(header).toMatch(/HOME is the one thing that moves it/);
+    expect(header).toMatch(/outputPathRefusal/);
+    expect(header).toMatch(/inside this checkout or under any state\/colony\/ directory/);
+  });
+
+  it("refuses an output path inside the checkout — the one HOME pointed at state/colony/ gives — before any fetch or write", async () => {
+    // The reviewer's construction: HOME=<checkout>/state/colony makes OUTPUT_PATH this path, which `git add -f state/colony`
+    // (colony.yml) stages. Under an active verdict and with the consent, the run must still refuse.
+    const leakRoot = join(ROOT, "state", "colony", ".local");
+    const leakRootExisted = existsSync(leakRoot);
+    const outputPath = join(leakRoot, "state", "mehudak", "youtube-analytics.json");
+    try {
+      const s = setup({ outputPath });
+      expect(await s.run()).toBe(2);
+      expect(s.calls).toEqual([]);
+      expect(existsSync(outputPath)).toBe(false);
+      const said = s.lines.join("\n");
+      expect(said).toContain(`youtube-analytics: the output path ${outputPath} is inside this checkout (${ROOT})`);
+      expect(said).toContain("refusing to run");
+      expect(said).toContain("ruling 12.10 row 28 §3 decision 4");
+      expect(said).toContain("HOME");
+      expect(said).toContain("nothing fetched, nothing written.");
+      // Without the consent it refuses too: a wrong output path is a refusal, not a run with nothing to read.
+      expect(await s.run({})).toBe(2);
+      expect(s.calls).toEqual([]);
+    } finally {
+      // Only on a broken guard would the run have written here; never remove what was there before the test.
+      if (!leakRootExisted) rmSync(leakRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("refuses an output path under any state/colony/ directory, in this checkout or not", async () => {
+    const elsewhere = mkdtempSync(join(tmpdir(), "yt-analytics-"));
+    scratchDirs.push(elsewhere);
+    const outputPath = join(elsewhere, "clone", "state", "colony", "measurements", "youtube-analytics.json");
+    const s = setup({ outputPath });
+    expect(await s.run()).toBe(2);
+    expect(s.calls).toEqual([]);
+    expect(existsSync(outputPath)).toBe(false);
+    expect(s.lines.join("\n")).toContain(`youtube-analytics: the output path ${outputPath} is under a state/colony/ directory`);
+  });
+
+  it("outputPathRefusal: inside the checkout or under state/colony/ refused; outside both, and OUTPUT_PATH itself, allowed", () => {
+    // HOME pointed at the checkout's root: OUTPUT_PATH lands in it, with no state/colony segment.
+    expect(outputPathRefusal(join(ROOT, ".local", "state", "mehudak", "youtube-analytics.json"))).toMatch(/inside this checkout/);
+    expect(outputPathRefusal(ROOT)).toMatch(/inside this checkout/);
+    expect(outputPathRefusal(join(ROOT, "..dotted", "youtube-analytics.json"))).toMatch(/inside this checkout/);
+    expect(outputPathRefusal(join("state", "colony", "measurements", "youtube-analytics.json"))).not.toBeNull(); // the old path
+    expect(outputPathRefusal(join(tmpdir(), "x", "state", "colony", "out.json"))).toMatch(/under a state\/colony\/ directory/);
+    // A sibling whose name only starts with the checkout's is outside it; "state" or "colony" alone is not the pair.
+    expect(outputPathRefusal(`${ROOT}-sibling${sep}out.json`)).toBeNull();
+    expect(outputPathRefusal(join(tmpdir(), "x", "colony", "state", "out.json"))).toBeNull();
+    expect(outputPathRefusal(join(tmpdir(), "x", "state", "colonyish", "out.json"))).toBeNull();
+    expect(outputPathRefusal(join(tmpdir(), "x", "private", "youtube-analytics.json"))).toBeNull();
+    // Under the HOME the tests run with (never inside a checkout), the real path is allowed.
+    expect(relative(ROOT, OUTPUT_PATH).startsWith(`..${sep}`)).toBe(true);
+    expect(outputPathRefusal(OUTPUT_PATH)).toBeNull();
   });
 });
 
