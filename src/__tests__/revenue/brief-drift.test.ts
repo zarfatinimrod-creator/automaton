@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import {
+  buildReport,
   DRIFT,
   driftNoteLines,
   findDefinitions,
@@ -40,6 +41,11 @@ import {
  * after a possessive that is no file's is unattributed; "the document's own `:26`"; a phrase broken over two lines;
  * a short name for a file the tree lacks owns no bare line; pointer-housekeeping sections are skipped and listed; a
  * repeated --tree, --head or --row is a usage error; and the reviewer's 19 surviving one-off mutants are covered.
+ * Tick 72: a drift note changes nothing about how another line is read (no definition, full path or directory is taken
+ * from it, and it ends no paragraph or caption); no name or phrase holds a line reference; every line reference found
+ * is in the report once (a "dropped" one with what swallowed it), and the report counts them; a bare line that rests
+ * only on the last path named is marked without changing its file; a role the brief defines ("The test") owns a line
+ * as its one word right before it ("test `:913-917`").
  * A throwaway git repository holds the trees; one read-only run on the real repository checks tick 67's +12, with
  * the brief read as tick 67 left it.
  */
@@ -536,9 +542,12 @@ describe("the scanner", () => {
     const text = "\"The read-back\" is `scripts/r.ts`.\n\n`MISSION.md:1` is the log call at the\n  read-back `:126-130` now.";
     const ref = scan(text).find((r: { range: number[] | null }) => r.range?.[0] === 126);
     expect(ref).toMatchObject({ path: "scripts/r.ts", via: "the read-back", docLine: 4 });
-    // Across a paragraph's end (a heading, a blank line) it is no phrase.
-    expect(files("\"The read-back\" is `scripts/r.ts`.\n\n## At the\nread-back `:12`.")).not.toContain("scripts/r.ts:12-12");
-    expect(files("\"The read-back\" is `scripts/r.ts`.\n\n`MISSION.md:1` at the\n\nread-back `:12`.")).not.toContain("scripts/r.ts:12-12");
+    // Across a paragraph's end (a heading, a blank line) it is no phrase. Since tick 72 the one word right before the
+    // line is the role "The read-back" defines, so the :12 is the read-back's by that rule — never by "the read-back"
+    // joined across the end, which its `via` would name.
+    const across = (t: string) => scan(t).find((r: { range: number[] | null }) => r.range?.[0] === 12);
+    expect(across("\"The read-back\" is `scripts/r.ts`.\n\n## At the\nread-back `:12`.")).toMatchObject({ path: "scripts/r.ts", via: 'role "The read-back" (as read-back)' });
+    expect(across("\"The read-back\" is `scripts/r.ts`.\n\n`MISSION.md:1` at the\n\nread-back `:12`.")).toMatchObject({ path: "scripts/r.ts", via: 'role "The read-back" (as read-back)' });
   });
 
   it("gives no bare line to a short name or phrase for a file the tree does not have", () => {
@@ -661,6 +670,35 @@ describe("the scanner", () => {
     // The carry names the line it came from, so only that number moves.
     const norm = (refs: { via?: string | null }[], text: string) => plain(refs).map((r: { via?: string | null }) => ({ ...r, via: r.via?.replace(/:(\d+)/g, (_, n) => `«${text.split("\n")[Number(n) - 1]}»`) ?? null }));
     expect(norm(after.refs, withNotes)).toEqual(norm(before.refs, body.join("\n")));
+  });
+
+  it("reads the line before a drift note as the previous line: a sentence's start, a phrase over two lines, a carry (tick 72)", () => {
+    const body = [
+      "\"The ledger\" is `src/revenue/ledger.ts`. \"The read-back\" is `scripts/r.ts`.",
+      "",
+      "See `MISSION.md:1` here.",
+      "The ledger's rule is at `:12`; `MISSION.md:2` is the log call at the",
+      "read-back `:126-130` now; `MISSION.md:435-439`, heading",
+      "`:431`.",
+    ];
+    const withNotes = [...body.slice(0, 3), "> **Pointer drift**: moved", body[3], "> drift note: `:9` gone", body[4], "> drift, again", body[5]].join("\n");
+    const before = scanCitations(body.join("\n"), resolver);
+    const after = scanCitations(withNotes, resolver);
+    expect(after.skipped).toEqual([4, 6, 8]);
+    const norm = (refs: { via?: string | null }[], text: string) => plain(refs).map((r: { via?: string | null }) => ({ ...r, via: r.via?.replace(/:(\d+)/g, (_, n) => `«${text.split("\n")[Number(n) - 1]}»`) ?? null }));
+    expect(norm(after.refs, withNotes)).toEqual(norm(before.refs, body.join("\n")));
+    // What the lines say: "The ledger's" starts a sentence, "the⏎read-back" is one phrase, and ", heading⏎`:431`"
+    // ties the :431 to MISSION.md.
+    const at = (n: number) => after.refs.find((r: { range: number[] | null }) => r.range?.[0] === n);
+    expect(at(12)).toMatchObject({ path: "src/revenue/ledger.ts", via: "The ledger" });
+    expect(at(126)).toMatchObject({ path: "scripts/r.ts", via: "the read-back" });
+    expect(at(431)).toMatchObject({ path: "MISSION.md", lastPathNamed: false });
+  });
+
+  it("counts no line reference inside a URL, and drops none there (tick 72)", () => {
+    const out = scanCitations("See https://example.org/v1/:5 and `MISSION.md:1`.", resolver);
+    expect(out.refs.map((r: { kind: string; range: number[] | null }) => `${r.kind}:${r.range?.[0]}`)).toEqual(["file:1"]);
+    expect(out.pointers).toBe(1);
   });
 
   it("lists a line reference a mark swallowed as dropped, with the reason, never silently (tick 72)", () => {
@@ -885,6 +923,19 @@ describe("the report's account of every line reference (tick 72)", () => {
     expect(text).toContain("### dropped (a line reference the scanner found and gave to no file: a scanner defect, read it by hand)");
     expect(text).toContain('| :5 (inside ":5") | x.md:1 | dropped | — |');
     expect(text).toContain("Line references: 1 found, 1 in this report (dropped 1).");
+    expect(text).not.toContain("THEY DIFFER");
+    // Two numbers that differ say so: a line reference is missing.
+    expect(formatText({ ...rep, summary: { ...rep.summary, pointers: { found: 2, reported: 1 } } })).toContain("Line references: 2 found, 1 in this report (dropped 1). THEY DIFFER: a line reference is missing from this report.");
+  });
+
+  it("groups and counts a dropped line reference in the report, and the two numbers still agree", () => {
+    const paths = new Set(["MISSION.md", "b.md"]);
+    const fake = { paths, ref: "t", sha: "c".repeat(40), lines: () => ["one", "two", "three", "four", "five", "six"], isBinary: () => false };
+    const definitions = { names: new Map([[":5", [{ index: 0, target: { path: "b.md" } }]]]), phrases: new Map() };
+    const rep = buildReport({ root: repo, file: "x.md", text: "`MISSION.md:1` and `:5`, `:6`; again `:5`.", tree: fake, head: fake, definitions });
+    expect(rep.dropped).toEqual([{ status: "dropped", citedAt: [1], written: [":5"], via: ['inside ":5"'], range: [5, 5], occurrences: 2, lastPathNamed: [] }]);
+    expect(rep.summary).toMatchObject({ dropped: 1, pointers: { found: 4, reported: 4 } });
+    expect(rep.drifted).toBe(false);
   });
 });
 

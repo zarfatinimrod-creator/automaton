@@ -30,15 +30,29 @@
  *     table's caption: the last name of the paragraph right before the table. Nothing carries further: past its
  *     paragraph a bare line is "unattributed", never guessed. Right after a possessive that is no name of a file ("the
  *     script's `:18`", "`:279`'s `:93-99`", "`CHANNEL_LOOP.md:395`'s `:15`": a line of the citing text) it is
- *     "unattributed" too: the possessive says whose line it is, and that is not the last name's;
+ *     "unattributed" too: the possessive says whose line it is, and that is not the last name's. A bare line its own
+ *     phrase does not tie to the name — the name, then only spaces, brackets, commas, slashes, other line references,
+ *     its possessive and "and", "or", "at", "to", "also", "heading", "line(s)" ("`ledger.ts:421-442`, `:445` and
+ *     (`:487`)", "`MISSION.md:435-439`, heading `:431`") — rests only on the last path named before it: a table's
+ *     caption, a carry, or a name with other words, a clause's end or a quotation between ("**Revocation.** … in code
+ *     (`:50-72`)" after a list of logs; "the read-back `madeForKids` (`:66`)", a line of the type it names). Such an
+ *     attribution is marked (tick 72): `lastPathNamed` on the reference, "last path named" in the citation's `via`, its
+ *     lines in the citation's `lastPathNamed`, a count in the summary and its own table first in the text, so a reader
+ *     checks those first. The mark changes no attribution and no status;
  *   - a short name the document defines: `EX` is `research/…/x.md`; "the read-back" is `scripts/…`; `scripts/x.ts`
  *     ("the x script"); `a.ts`, `b.ts` ("the b") are under `src/revenue/`; "a bare `BOARD.md:n` is the 7.9 board's".
- *     A definition counts only when its target looks like a path. A phrase owns lines only outside double quotes (a
- *     quotation's words are the source's: "when it arrives in the ledger with a transaction id" (`:269-270`) is
- *     MISSION's line, not the ledger's), and in the possessive only right after it ("the read-back's `:99-103`", "the
+ *     A definition counts only when its target looks like a path, and its name holds no line reference ("`:913-917`
+ *     is `owner-steps.test.ts`" says whose line a pointer is; read as a definition it swallowed every later
+ *     `:913-917`). A phrase owns lines only outside double quotes (a quotation's words are the source's: "when it
+ *     arrives in the ledger with a transaction id" (`:269-270`) is MISSION's line, not the ledger's), and in the
+ *     possessive only right after it ("the read-back's `:99-103`", "the
  *     document's own `:26`") or starting a sentence ("The status report's appendix opens at `:38`"), never describing
  *     ("the config's rule (`:210`)"); its first letter's case is free, "the" may be dropped when two words or a digit
- *     are left ("loop ruling `:88`"), and its words may break across two lines of a paragraph ("the⏎read-back");
+ *     are left ("loop ruling `:88`"), and its words may break across two lines of a paragraph ("the⏎read-back"). A
+ *     role defined as "the X" also owns a line as its one word X right before that line, the possessive between or
+ *     not ("pinned at test `:913-917`" with "The test" defined; `via` 'role "The test" (as test)'), when every
+ *     definition of X names one file of the tree: two that disagree, or one that names no file, make no role, and the
+ *     one word anywhere else is prose ("a test passes (`:6`)");
  *   - a backticked or bare path that exists in --tree, without a line: a whole-file citation ("present" or "gone" at
  *     head: the file's lines are not compared).
  *   - a name several files have is the one the document writes in full elsewhere, else the one under the deepest
@@ -48,11 +62,20 @@
  * matches several files (`BOARD.md`: candidates listed); "not checked" when it is a short name with no file (OTA:596,
  * an undefined X-RULING, "the note"), or a line of a file that is binary at --tree (a NUL byte in its first 8000, as
  * git judges it: `colony.db` has no lines to compare). A bare :N after no name is "unattributed". URLs are skipped.
+ * Every line reference found (each bare one outside a URL, each name's own) is in the report once: a cited line, an
+ * unknown, unchecked or unattributed one, or "dropped" — one a name or phrase swallowed, listed with what swallowed it
+ * (no definition the scanner finds can now; the category is the backstop). The summary's `pointers` holds the two
+ * numbers, found and reported, which are one; each citation counts its `occurrences`.
  * Skipped, and listed with their lines, as written against other trees than the brief's: a blockquote that speaks of
  * drift (a main-thread drift note), and a pointer-housekeeping section, from an emphasised lead at the start of a line
  * that says "pointer drift" or "correction(s)"/"corrected" ("*Row 28's pointer drift*", "*Corrections the checker made
  * to the clerks*", "*Pointers this brief corrected or added*") to the next such lead, heading or rule: its pointers are
- * old ones, the trees they were checked at and their corrections side by side. `via` names the short name, phrase,
+ * old ones, the trees they were checked at and their corrections side by side. Nothing in a skipped line says how
+ * another line reads: no definition, full path or directory is taken from one, and a drift note is read as if it were
+ * not there — it ends no paragraph and no table's caption, and the line before it is the previous line of the one
+ * after it (tick 72: the tick-70 notes under the 9.10 and 10.10 briefs' titles made nine line references vanish from
+ * the report, every one swallowed by a "`:N` is `path`" in a note). A blank line after a blank line ends nothing more,
+ * as Markdown reads it (a note between two blank lines leaves two). `via` names the short name, phrase,
  * caption or carry a citation came through, so a reader can see the attribution where it is a judgement and not a
  * path: the scanner reads prose, and prose can mean another file than the last one it names; an "invalid" or
  * "changed" under a `via` is the place to look first.
@@ -72,11 +95,13 @@
  * whose entries all moved +7 is the next entry's line, and its neighbours say :266.
  * A range gets each line, and one summary when every line moved by the same offset ("moved 414-430→426-442").
  *
- * OUTPUT: a table per cited file (citation, cited at, status, new pointer; a range's lines as runs of one status,
- * offset and placing, every line in --json), then the unknown, unchecked and unattributed references, then counts by
- * status. Exit 0 when nothing drifted, 3 when anything did (a citation or one of its lines moved, ambiguous, changed or
- * gone, or an unknown path; "invalid", "not checked" and "unattributed" are listed but are not drift), 1 on a usage or
- * read error (a repeated --tree, --head or --row too: the last one would win unseen). It writes no file.
+ * OUTPUT: the citations resting only on the last path named (check these first), a table per cited file (citation,
+ * cited at, status, new pointer; a range's lines as runs of one status, offset and placing, every line in --json),
+ * then the unknown, unchecked, unattributed and dropped references, then counts by status and the line references
+ * found and reported. Exit 0 when nothing drifted, 3 when anything did (a citation or one of its lines moved,
+ * ambiguous, changed or gone, or an unknown path; "invalid", "not checked", "unattributed" and "dropped" are listed but
+ * are not drift), 1 on a usage or read error (a repeated --tree, --head or --row too: the last one would win unseen).
+ * It writes no file.
  */
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -248,10 +273,12 @@ export function lastWriter(root, rel, line) {
  * The lines skipped as written against another tree than the brief's: each run of blockquote lines (">") whose text
  * says "drift" (a note the main thread wrote later), and each pointer-housekeeping section — from a lead at the start
  * of a line that says "pointer drift" or "correction(s)"/"corrected" to the next lead, heading or rule (another such
- * lead opens a new one). { lines: Set, parts: [{ line, kind: "note" | "section", lead? }] }
+ * lead opens a new one). { lines: Set, notes: Set (the drift notes' lines alone), parts: [{ line, kind: "note" | "section",
+ * lead? }] }
  */
 export function skippedParts(lines) {
   const skip = new Set();
+  const notes = new Set();
   const parts = [];
   for (let i = 0; i < lines.length; ) {
     if (!/^\s*>/.test(lines[i])) {
@@ -262,7 +289,10 @@ export function skippedParts(lines) {
     while (j < lines.length && /^\s*>/.test(lines[j])) j += 1;
     if (/\bdrift/i.test(lines.slice(i, j).join("\n"))) {
       parts.push({ line: i + 1, kind: "note" });
-      for (let k = i; k < j; k += 1) skip.add(k + 1);
+      for (let k = i; k < j; k += 1) {
+        skip.add(k + 1);
+        notes.add(k + 1);
+      }
     }
     i = j;
   }
@@ -280,7 +310,7 @@ export function skippedParts(lines) {
     if (inSection) skip.add(i + 1);
   });
   parts.sort((a, b) => a.line - b.line);
-  return { lines: skip, parts };
+  return { lines: skip, notes, parts };
 }
 
 /** The drift-note and housekeeping lines skippedParts() leaves out, as a Set of line numbers. */
@@ -288,15 +318,23 @@ export function driftNoteLines(lines) {
   return skippedParts(lines).lines;
 }
 
+/** A line reference inside a would-be name: `:913-917`, `MISSION.md:4`, "the pin at :5". No short name holds one. */
+const HOLDS_LINE_RE = /:L?\d/;
+
 /**
  * The short names a document defines, each to { path } (a file of the tree), { unresolved, candidates } (a path-like
  * target the tree does not have once), in the order written: { names, phrases }, Map name -> [{ index, target }].
+ * A name or phrase that holds a line reference is none: "`:913-917` is `owner-steps.test.ts`" says whose line a pointer
+ * is (a tick-70 drift note said so), and read as a definition it made ":913-917" a name that swallowed every later
+ * `:913-917` of the brief, listed nowhere.
  */
 export function findDefinitions(text, resolver) {
   const flat = text.replace(/[\r\n]/g, " ");
   const names = new Map();
   const phrases = new Map();
-  const add = (map, name, index, target) => map.set(name, [...(map.get(name) ?? []), { index, target }]);
+  const add = (map, name, index, target) => {
+    if (!HOLDS_LINE_RE.test(name)) map.set(name, [...(map.get(name) ?? []), { index, target }]);
+  };
   const target = (t) => {
     const raw = t.trim();
     const alias = names.get(raw)?.[0]?.target;
@@ -377,15 +415,38 @@ function quoteSpans(line, open) {
 
 const range = (a, b) => [Number(a), b === undefined ? Number(a) : Number(b)];
 
-/** Whether position `at` of line i starts a sentence: after ". ", or at the start of an item or of a sentence's line. */
-function sentenceStart(lines, i, at) {
+/**
+ * Whether position `at` of line i starts a sentence: after ". ", or at the start of an item or of a sentence's line.
+ * p is the line read before it (-1 for none): a drift note between them is not there.
+ */
+function sentenceStart(lines, i, at, p) {
   const before = lines[i].slice(0, at);
   if (/[.!?:]["')\]*]*\s+$/.test(before)) return true;
   if (!/^\s*(?:(?:[-*+>]|\d+[.)])\s+)*(?:\*\*[^*]+\*\*\s+|\[[^\]]+\]\s+)*$/.test(before)) return false;
-  if (/^\s*(?:[-*+>]|\d+[.)])\s+/.test(lines[i]) || /\*\*\S/.test(before) || i === 0) return true;
-  const prev = lines[i - 1];
+  if (/^\s*(?:[-*+>]|\d+[.)])\s+/.test(lines[i]) || /\*\*\S/.test(before) || p < 0) return true;
+  const prev = lines[p];
   return !prev.trim() || /^#{1,6}\s/.test(prev) || /[.!?:]["')\]*]*\s*$/.test(prev);
 }
+
+/** The text between a mark's end and position `at` of line li, over the lines between (a drift note's left out). */
+function gapText(lines, notes, k, li, at) {
+  if (k.docLine - 1 === li) return lines[li].slice(k.end, at);
+  const parts = [lines[k.docLine - 1].slice(k.end)];
+  for (let j = k.docLine; j < li; j += 1) if (!notes.has(j + 1)) parts.push(lines[j]);
+  parts.push(lines[li].slice(0, at));
+  return parts.join("\n");
+}
+
+/**
+ * Whether a gap joins a bare line to the name before it as one phrase: only spaces, brackets, commas, slashes and
+ * dashes, the name's possessive ("'s", "'s own"), other line references, and "and", "or", "at", "to", "also",
+ * "heading", "line(s)" ("`ledger.ts:421-442`, `:445` and (`:487`)", "`MISSION.md:435-439`, heading `:431`", "the
+ * read-back's `:99-103`"). Anything else — a word, a sentence's or a clause's end, a quotation — means the line was
+ * given to the last name only for being the last.
+ */
+const ATTACHED_RE = /^(?:['’]s(?:\s+own)?)?(?:[\s`()[\],/&+–—-]|\b(?:and|or|at|to|also|heading|lines?)\b)*$/i;
+const LINE_TOKEN_RE = /:L?\d+(?:[-–]L?\d+)?/g;
+export const attached = (gap) => ATTACHED_RE.test(gap.replace(LINE_TOKEN_RE, " "));
 
 /**
  * Every reference in a document.
@@ -395,11 +456,16 @@ function sentenceStart(lines, i, at) {
  *        "unknown"    a path-like name with a line that no file of the tree has, or that several do (candidates);
  *        "unchecked"  a short name's line with no file behind it (OTA:596, an undefined X-RULING, "the note");
  *        "unlisted"   a path-like name without a line that the tree does not have (listed, not drift);
- *        "unattributed" a bare :N after no name in its paragraph.
- *   written: the reference as written; via: the name that owns a bare :N (or a short name's own), when it is not the path.
- * only: the line numbers to read (a --row); skipped: the drift-note lines left out.
+ *        "unattributed" a bare :N after no name in its paragraph;
+ *        "dropped"    a line reference the scanner found and gave to nothing (via says what swallowed it): never
+ *                     silent, though no definition the scanner finds can swallow one now.
+ *   written: the reference as written; via: the name that owns a bare :N (or a short name's own), when it is not the path;
+ *   lastPathNamed: a bare :N given to the last name before it although its own phrase names no file (see attached).
+ * only: the line numbers to read (a --row); skipped: the drift-note lines left out; pointers: the line references found
+ * on the lines read (every bare one and every name's own), each of which is one ref of a kind with a range.
+ * definitions: the { names, phrases } to use instead of findDefinitions' (a test hands in one no brief can make).
  */
-export function scanCitations(text, resolver, { only = null } = {}) {
+export function scanCitations(text, resolver, { only = null, definitions = null } = {}) {
   const lines = text.split("\n");
   const starts = [];
   let at = 0;
@@ -411,13 +477,26 @@ export function scanCitations(text, resolver, { only = null } = {}) {
   const skipped = [...parts.lines].filter((n) => !only || only.has(n)).sort((a, b) => a - b);
   const skippedLeads = parts.parts.filter((p) => !only || only.has(p.line));
   const skip = parts.lines;
-  const { names, phrases } = findDefinitions(text, resolver);
+  const notes = parts.notes;
+  // The skipped lines were written against other trees, so nothing in them says how another line reads: no definition,
+  // no full path and no directory is taken from them (tick 72: a tick-70 drift note's "`:913-917` is
+  // `owner-steps.test.ts`" swallowed the brief's own `:913-917`, and its full paths re-resolved names several files have).
+  // Blanked to spaces, each line keeps its length, so a definition's index is still the document's.
+  const read = lines.map((l, i) => (skip.has(i + 1) ? " ".repeat(l.length) : l)).join("\n");
+  const { names, phrases } = definitions ?? findDefinitions(read, resolver);
   // A name several files have is the one the document writes in full elsewhere, when it writes one of them so; else
   // the one under the deepest directory the document names, when one file is.
   const dirs = new Set();
-  for (const m of text.matchAll(/`([^`\s]+\/)`/g)) if (resolver.isDir(m[1])) dirs.add(m[1].replace(/^(\.\/)+/, "").replace(/\/+$/, ""));
+  for (const m of read.matchAll(/`([^`\s]+\/)`/g)) if (resolver.isDir(m[1])) dirs.add(m[1].replace(/^(\.\/)+/, "").replace(/\/+$/, ""));
   const written = new Set();
-  for (const m of text.matchAll(NAME_RE)) if (m[1].includes("/") && resolver.has(m[1])) written.add(m[1]);
+  for (const m of read.matchAll(NAME_RE)) if (m[1].includes("/") && resolver.has(m[1])) written.add(m[1]);
+  // A drift note is read as if it were not there: the line before it is the previous line of the one after it.
+  const prevRead = [];
+  let lastRead = -1;
+  lines.forEach((_, i) => {
+    prevRead.push(lastRead);
+    if (!notes.has(i + 1)) lastRead = i;
+  });
   const candidatesOf = (name) => {
     const cands = resolver.candidates(name);
     if (cands.length < 2) return cands;
@@ -434,6 +513,26 @@ export function scanCitations(text, resolver, { only = null } = {}) {
     : null;
   const phraseList = [...phrases.keys()].sort((a, b) => b.length - a.length);
   const PHRASES = phraseList.map((p) => ({ phrase: p, re: new RegExp(`(?<![A-Za-z0-9_-])(?:${phraseSource(p)})(?![A-Za-z0-9_-])`, "g") }));
+  // A role the document defines as "the X" ("The test" is `src/__tests__/revenue/owner-steps.test.ts`) also owns a line
+  // as its one word X right before that line ("pinned at test `:913-917`", "Test's `:5`"), when every definition of X,
+  // with or without "the", names one file of the tree. Anywhere else the one word is prose ("a test passes"); two
+  // definitions that disagree, or one that names no file, make no role: never a guess.
+  const roleWord = (p) => /^the\s+(\S+)$/i.exec(p)?.[1] ?? null;
+  const targetsOf = new Map();
+  for (const [p, list] of phrases) {
+    const w = roleWord(p)?.toLowerCase();
+    if (w) targetsOf.set(w, [...(targetsOf.get(w) ?? []), ...list.map((d) => d.target)]);
+  }
+  const ROLES = [];
+  for (const p of phraseList) {
+    const w = roleWord(p);
+    if (!w) continue;
+    const paths = new Set(targetsOf.get(w.toLowerCase()).map((t) => t.path));
+    const [path] = paths;
+    if (paths.size !== 1 || !path) continue;
+    const first = /^[A-Za-z]/.test(w) ? `[${w[0].toUpperCase()}${w[0].toLowerCase()}]${escapeRe(w.slice(1))}` : escapeRe(w);
+    ROLES.push({ phrase: p, path, re: new RegExp(`(?<![A-Za-z0-9_./-])${first}(?=(?:['’]s(?:\\s+own)?)?\\s*\\(?\`?:L?\\d)`, "g") });
+  }
 
   const refs = [];
   const boundary = (line) => !line.trim() || /^#{1,6}\s/.test(line) || /^\s*(```|~~~)/.test(line) || /^\s*([-*_])(\s*\1){2,}\s*$/.test(line);
@@ -449,22 +548,31 @@ export function scanCitations(text, resolver, { only = null } = {}) {
   let caption = null;
   let inTable = false;
   let open = false;
+  let lastBlank = false;
+  let pointers = 0;
   const captioned = (k) => k && { ...k, via: [k.via, `caption :${k.docLine}`].filter(Boolean).join(", ") };
 
   lines.forEach((line, i) => {
     const docLine = i + 1;
+    // A drift note is not there: it changes no state (tick 72; before, it ended the paragraph and the table's caption,
+    // so a line after it read differently once the note was in). A pointer-housekeeping section is the brief's own and
+    // still ends one.
+    if (notes.has(docLine)) return;
     const row = isRow(line);
     // A heading is read for its own names and lines, and ends its paragraph: nothing after it takes its names.
     const heading = /^#{1,6}\s/.test(line);
     if (row && !inTable) caption = captioned(ctxOut ?? prevOut);
     if (!row) caption = null;
     inTable = row;
+    const blank = !line.trim() && !skip.has(docLine);
     if (boundary(line) || row || skip.has(docLine)) {
-      if (!row) prevOut = !line.trim() && !skip.has(docLine) ? ctxOut : null;
+      // A second blank line is the first one's paragraph end still (a note between two blank lines leaves two).
+      if (!row) prevOut = blank ? (ctxOut ?? (lastBlank ? prevOut : null)) : null;
       ctx = null;
       ctxOut = null;
       open = false;
     }
+    lastBlank = blank;
     const quotes = quoteSpans(line, open);
     open = quotes.open;
     if ((boundary(line) && !heading) || skip.has(docLine)) return;
@@ -477,14 +585,21 @@ export function scanCitations(text, resolver, { only = null } = {}) {
       marks.push({ start: s, end: e, quoted: inQuote(s), docLine, lined, ...owner });
     };
     const fromTarget = (t, written) => (t.path ? { kind: "file", path: t.path, written } : { kind: "unknown", name: t.unresolved, candidates: t.candidates, written });
-    const cite = (owner, rng, written, via, at) => {
+    const cite = (owner, rng, written, via, at, lastPathNamed = false) => {
       const index = starts[i] + at;
-      if (owner.kind === "file") refs.push({ kind: "file", path: owner.path, range: rng, docLine, written, via, index });
-      else if (owner.kind === "unknown") refs.push({ kind: "unknown", name: owner.name, candidates: owner.candidates ?? [], range: rng, docLine, written, via, index });
-      else refs.push({ kind: "unchecked", name: owner.name, range: rng, docLine, written, via, index });
+      if (owner.kind === "file") refs.push({ kind: "file", path: owner.path, range: rng, docLine, written, via, index, lastPathNamed });
+      else if (owner.kind === "unknown") refs.push({ kind: "unknown", name: owner.name, candidates: owner.candidates ?? [], range: rng, docLine, written, via, index, lastPathNamed });
+      else refs.push({ kind: "unchecked", name: owner.name, range: rng, docLine, written, via, index, lastPathNamed });
+    };
+    // A name with its own line (`ledger.ts:12`, EX:4, ROBOTS-RULING:152, OTA:596) is one line reference found.
+    let named = 0;
+    const citeOwn = (...args) => {
+      named += 1;
+      cite(...args);
     };
 
-    for (const m of line.matchAll(URL_RE)) taken.push([m.index, m.index + m[0].length]);
+    const urls = [...line.matchAll(URL_RE)].map((m) => [m.index, m.index + m[0].length]);
+    taken.push(...urls);
     // The short names a document defines, before the paths (README.md may be defined as another README).
     if (NAMES) {
       for (const m of line.matchAll(NAMES)) {
@@ -495,7 +610,7 @@ export function scanCitations(text, resolver, { only = null } = {}) {
         // such a file to say what code writes it, and the line beside it is the code's. Its own `EX:5` is reported.
         const owner = { ...fromTarget(t, m[0]), via: own ? null : m[1], ownsLines: Boolean(t.path) };
         mark(m.index, m.index + m[0].length, owner, m[2] !== undefined);
-        if (m[2] !== undefined) cite(owner, range(m[2], m[3]), m[0], owner.via, m.index);
+        if (m[2] !== undefined) citeOwn(owner, range(m[2], m[3]), m[0], owner.via, m.index);
       }
     }
     for (const m of line.matchAll(RULING_NAME_RE)) {
@@ -503,7 +618,7 @@ export function scanCitations(text, resolver, { only = null } = {}) {
       const after = /^:L?(\d+)(?:[-–]L?(\d+))?(?!\d)/.exec(line.slice(m.index + m[0].length));
       const owner = { kind: "unchecked", name: m[0], via: m[0] };
       mark(m.index, m.index + m[0].length + (after ? after[0].length : 0), owner, Boolean(after));
-      if (after) cite(owner, range(after[1], after[2]), m[0] + after[0], m[0], m.index);
+      if (after) citeOwn(owner, range(after[1], after[2]), m[0] + after[0], m[0], m.index);
     }
     for (const m of line.matchAll(NAME_RE)) {
       const [whole, name, a, b] = m;
@@ -516,7 +631,7 @@ export function scanCitations(text, resolver, { only = null } = {}) {
         if (!lined && !/[./]/.test(name)) continue;
         const owner = { kind: "file", path: cands[0], via: null };
         mark(...span, owner, lined);
-        if (lined) cite(owner, range(a, b), whole, null, m.index);
+        if (lined) citeOwn(owner, range(a, b), whole, null, m.index);
         else refs.push({ kind: "file", path: cands[0], range: null, docLine, written: whole, via: null, index: starts[i] + m.index });
         continue;
       }
@@ -530,14 +645,14 @@ export function scanCitations(text, resolver, { only = null } = {}) {
         if (!lined && cands.length === 0 && !looksLikePath) continue;
         const owner = { kind: "unknown", name, candidates: cands, via: null };
         mark(...span, owner, lined);
-        if (lined) cite(owner, range(a, b), whole, name, m.index);
+        if (lined) citeOwn(owner, range(a, b), whole, name, m.index);
         else refs.push({ kind: "unlisted", name, candidates: cands, docLine, written: whole, index: starts[i] + m.index });
         continue;
       }
       if (lined && SHORT_NAME_RE.test(name)) {
         const owner = { kind: "unchecked", name, via: name };
         mark(...span, owner, true);
-        cite(owner, range(a, b), whole, name, m.index);
+        citeOwn(owner, range(a, b), whole, name, m.index);
       }
     }
     // A phrase is the brief's own word only outside quotes. In the possessive inside a sentence it describes ("the
@@ -545,8 +660,9 @@ export function scanCitations(text, resolver, { only = null } = {}) {
     // `:99-103`", "the document's own `:26`"); starting a sentence it is the subject ("The status report's appendix
     // opens at `:38`"). Its words may break across the paragraph's previous line and this one ("at the⏎ read-back
     // `:126-130`"): the mark is then this line's part of it.
-    const describes = (rest, li, at) => /^['’]s/.test(rest) && !/^['’]s(?:\s+own)?\s*\(?`?:L?\d/.test(rest) && !sentenceStart(lines, li, at);
-    const joinable = i > 0 && !row && !heading && !boundary(lines[i - 1]) && !isRow(lines[i - 1]) && !skip.has(i);
+    const describes = (rest, li, at) => /^['’]s/.test(rest) && !/^['’]s(?:\s+own)?\s*\(?`?:L?\d/.test(rest) && !sentenceStart(lines, li, at, prevRead[li]);
+    const p = prevRead[i];
+    const joinable = p >= 0 && !row && !heading && !boundary(lines[p]) && !isRow(lines[p]) && !skip.has(p + 1);
     for (const { phrase, re } of PHRASES) {
       for (const m of line.matchAll(re)) {
         if (!free(m.index, m.index + m[0].length) || inQuote(m.index)) continue;
@@ -555,24 +671,41 @@ export function scanCitations(text, resolver, { only = null } = {}) {
         mark(m.index, m.index + m[0].length, { ...fromTarget(t, m[0]), via: m[0], ownsLines: Boolean(t.path) });
       }
       if (!joinable) continue;
-      const prev = lines[i - 1];
+      const prev = lines[p];
       for (const m of `${prev}\n${line}`.matchAll(re)) {
         const end = m.index + m[0].length - prev.length - 1;
         if (m.index >= prev.length || end <= 0 || !free(0, end) || inQuote(0)) continue;
-        if (describes(line.slice(end), i - 1, m.index)) continue;
+        if (describes(line.slice(end), p, m.index)) continue;
         const words = m[0].replace(/\s+/g, " ");
-        const t = defined(phrases.get(phrase), starts[i - 1] + m.index);
+        const t = defined(phrases.get(phrase), starts[p] + m.index);
         mark(0, end, { ...fromTarget(t, words), via: words, ownsLines: Boolean(t.path) });
+      }
+    }
+    for (const { phrase, path, re } of ROLES) {
+      for (const m of line.matchAll(re)) {
+        if (free(m.index, m.index + m[0].length) && !inQuote(m.index)) mark(m.index, m.index + m[0].length, { kind: "file", path, via: `role "${phrase}" (as ${m[0]})` });
       }
     }
     for (const m of line.matchAll(NOTE_RE)) {
       if (free(m.index, m.index + m[0].length) && !inQuote(m.index)) mark(m.index, m.index + m[0].length, { kind: "unchecked", name: "the note", via: m[0] });
     }
 
+    // Every bare line reference outside a URL is one found. One inside a mark (a name, a phrase) is no pointer of its
+    // own, yet it was one in the prose: it is listed as dropped, with what swallowed it, never left out.
     const bare = [];
+    let found = named;
     for (const m of line.matchAll(BARE_RE)) {
-      if (free(m.index, m.index + m[0].length)) bare.push({ start: m.index, written: m[0], range: range(m[1], m[2]) });
+      const end = m.index + m[0].length;
+      if (urls.some(([a, b]) => m.index < b && a < end)) continue;
+      found += 1;
+      if (free(m.index, end)) {
+        bare.push({ start: m.index, written: m[0], range: range(m[1], m[2]) });
+        continue;
+      }
+      const k = marks.find((x) => m.index < x.end && x.start < end);
+      refs.push({ kind: "dropped", docLine, written: m[0], range: range(m[1], m[2]), via: k ? `inside "${line.slice(k.start, k.end)}"` : "inside another reference", index: starts[i] + m.index });
     }
+    if (!only || only.has(docLine)) pointers += found;
     marks.sort((x, y) => x.start - y.start);
     const owners = marks.filter((k) => k.ownsLines !== false);
     // In a table row a line belongs to a name in its own cell, else to the table's caption.
@@ -611,7 +744,10 @@ export function scanCitations(text, resolver, { only = null } = {}) {
         if (owner) via = row ? (owner.via ?? null) : [owner.via, `carried from :${owner.docLine}`].filter(Boolean).join(", ");
       }
       if (!owner) refs.push({ kind: "unattributed", docLine, written: r.written, range: r.range, via: null, index });
-      else cite(owner, r.range, r.written, via, r.start);
+      // A line its own phrase does not tie to the name — a name with other words, a clause's end or a quotation
+      // between, or a table's caption (the rows between hold the table's pipes) — went to that name only for being the
+      // last before it (tick 72): marked, so a reader checks it first. The mark changes no attribution and no status.
+      else cite(owner, r.range, r.written, via, r.start, !attached(gapText(lines, notes, owner, i, r.start)));
     }
     if (row || heading) {
       ctx = null;
@@ -623,7 +759,7 @@ export function scanCitations(text, resolver, { only = null } = {}) {
     }
   });
   refs.sort((x, y) => x.index - y.index);
-  return { refs: only ? refs.filter((r) => only.has(r.docLine)) : refs, skipped, skippedParts: skippedLeads };
+  return { refs: only ? refs.filter((r) => only.has(r.docLine)) : refs, skipped, skippedParts: skippedLeads, pointers };
 }
 
 // --------------------------------------------------------------------------------------------------------- comparison
@@ -718,14 +854,21 @@ export function rangeFate(old, head, [a, b], oldIdx = lineIndex(old), headIdx = 
 const rangeKey = (r) => (r ? `${r[0]}-${r[1]}` : "file");
 const rangeText = (r) => (r ? (r[0] === r[1] ? `:${r[0]}` : `:${r[0]}-${r[1]}`) : "(file)");
 
+/** What a reader is told of a bare line given to the last name before it although its own phrase names no file. */
+export const LAST_PATH_NAMED = "last path named";
+
 /**
  * The report: { file, row, tree, head, skipped, skippedParts, files: [{ path, citations }], unknown, unchecked,
- * unattributed, unlisted, summary, drifted }.
+ * unattributed, dropped, unlisted, summary, drifted }. Each citation (one path or name and one range) counts its
+ * `occurrences` (one per time it is written) and lists in `lastPathNamed` the lines where it rests only on the last path
+ * named (its `via` then says "last path named"); summary.pointers.found is every line reference the scanner found,
+ * summary.pointers.reported the occurrences of all the report's line citations, unattributed and dropped ones among
+ * them: the two are one number.
  */
-export function buildReport({ root, file, text, row = null, tree, head }) {
+export function buildReport({ root, file, text, row = null, tree, head, definitions = null }) {
   const resolver = makeResolver(tree.paths);
   const only = row ? new Set([row.line]) : null;
-  const scanned = scanCitations(text, resolver, { only });
+  const scanned = scanCitations(text, resolver, { only, definitions });
   const { skipped, skippedParts: parts } = scanned;
   // A binary file (colony.db) has no lines: its cited lines are listed as not checked, never compared as text.
   const refs = scanned.refs.map((r) => (r.kind === "file" && r.range && tree.isBinary(r.path) ? { ...r, kind: "unchecked", name: r.path, via: "binary at --tree" } : r));
@@ -738,11 +881,16 @@ export function buildReport({ root, file, text, row = null, tree, head }) {
       const g = map.get(key);
       g.citedAt.add(r.docLine);
       g.written.add(r.written);
+      g.occurrences += 1;
       if (r.via) g.via.add(r.via);
+      if (r.lastPathNamed) {
+        g.via.add(LAST_PATH_NAMED);
+        g.lastPathNamed.add(r.docLine);
+      }
     }
     return [...map.values()];
   };
-  const fresh = (r) => ({ citedAt: new Set(), written: new Set(), via: new Set(), range: r.range ?? null });
+  const fresh = (r) => ({ citedAt: new Set(), written: new Set(), via: new Set(), range: r.range ?? null, occurrences: 0, lastPathNamed: new Set() });
 
   const files = new Map();
   for (const g of group(refs.filter((r) => r.kind === "file"), (r) => `${r.path}\0${rangeKey(r.range)}`, (r) => ({ path: r.path, ...fresh(r) }))) {
@@ -769,6 +917,7 @@ export function buildReport({ root, file, text, row = null, tree, head }) {
   const unknown = group(refs.filter((r) => r.kind === "unknown"), (r) => `${r.name}\0${rangeKey(r.range)}`, (r) => ({ name: r.name, candidates: r.candidates, status: "unknown path", ...fresh(r) }));
   const unchecked = group(refs.filter((r) => r.kind === "unchecked"), (r) => `${r.name}\0${rangeKey(r.range)}`, (r) => ({ name: r.name, status: "not checked", ...fresh(r) }));
   const unattributed = group(refs.filter((r) => r.kind === "unattributed"), (r) => `${rangeKey(r.range)}\0${r.via ?? ""}`, (r) => ({ status: "unattributed", ...fresh(r) }));
+  const dropped = group(refs.filter((r) => r.kind === "dropped"), (r) => `${rangeKey(r.range)}\0${r.via ?? ""}`, (r) => ({ status: "dropped", ...fresh(r) }));
   const unlisted = group(refs.filter((r) => r.kind === "unlisted"), (r) => r.name, (r) => ({ name: r.name, candidates: r.candidates, ...fresh(r) }));
 
   const all = fileGroups.flatMap((g) => g.citations);
@@ -782,7 +931,11 @@ export function buildReport({ root, file, text, row = null, tree, head }) {
   // A citation drifted when it, or one of its lines, did: a range that runs past the file's end is "invalid" as a
   // whole, yet the lines it does have may have moved.
   const drifted = all.some((c) => DRIFT.includes(c.status) || c.lines.some((l) => DRIFT.includes(l.status))) || unknown.length > 0;
-  const plain = (g) => ({ ...g, citedAt: [...g.citedAt].sort((a, b) => a - b), written: [...g.written], via: [...g.via] });
+  const plain = (g) => ({ ...g, citedAt: [...g.citedAt].sort((a, b) => a - b), written: [...g.written], via: [...g.via], lastPathNamed: [...g.lastPathNamed].sort((a, b) => a - b) });
+  // Every line reference the scanner found is one occurrence of a line citation, an unattributed or a dropped one.
+  const lined = [...all.filter((c) => c.range), ...unknown, ...unchecked, ...unattributed, ...dropped];
+  const reported = lined.reduce((n, g) => n + g.occurrences, 0);
+  const lastPathNamed = [...all, ...unknown, ...unchecked].filter((g) => g.lastPathNamed.size > 0).length;
   return {
     file,
     row: row ? { n: row.n, line: row.line } : null,
@@ -794,8 +947,18 @@ export function buildReport({ root, file, text, row = null, tree, head }) {
     unknown: unknown.map(plain),
     unchecked: unchecked.map(plain),
     unattributed: unattributed.map(plain),
+    dropped: dropped.map(plain),
     unlisted: unlisted.map(plain),
-    summary: { citations, lines: lineCounts, unchecked: unchecked.length, unattributed: unattributed.length, unlisted: unlisted.length },
+    summary: {
+      citations,
+      lines: lineCounts,
+      unchecked: unchecked.length,
+      unattributed: unattributed.length,
+      unlisted: unlisted.length,
+      dropped: dropped.length,
+      lastPathNamed,
+      pointers: { found: scanned.pointers, reported },
+    },
     drifted,
   };
 }
@@ -879,6 +1042,16 @@ export function formatText(report) {
     const what = (p) => (p.kind === "note" ? `a drift note at :${p.line}` : `${p.lead} at :${p.line}`);
     out.push(`Skipped ${report.skipped.length} line(s) written against other trees (drift notes, pointer-housekeeping sections): ${pointer(report.skipped)}${report.skippedParts.length ? ` — ${report.skippedParts.map(what).join("; ")}` : ""}.`);
   }
+  // The bare lines given to the last name before them although their own phrase names no file: a judgement each.
+  const lastRows = [
+    ...report.files.flatMap((g) => g.citations.map((c) => ({ ...c, name: g.path }))),
+    ...report.unknown,
+    ...report.unchecked,
+  ].filter((c) => c.lastPathNamed.length);
+  if (lastRows.length) {
+    out.push("", "### resting only on the last path named (check these first)", "");
+    out.push(...table(lastRows.map((c) => [`${c.name}${rangeText(c.range)}`, citedAt(report.file, c.lastPathNamed), c.lines ? statusText(c) : c.status, c.newPointer ?? "—"])));
+  }
   for (const g of report.files) {
     out.push("", `### ${g.path}`, "");
     const rows = [];
@@ -906,6 +1079,10 @@ export function formatText(report) {
     out.push("", "### unattributed (a line reference after no name in its paragraph, or after a possessive that is no file's)", "");
     out.push(...table(report.unattributed.map((u) => [`${rangeText(u.range)}${u.via.length ? ` (${u.via.join("; ")})` : ""}`, citedAt(report.file, u.citedAt), "unattributed", "—"])));
   }
+  if (report.dropped.length) {
+    out.push("", "### dropped (a line reference the scanner found and gave to no file: a scanner defect, read it by hand)", "");
+    out.push(...table(report.dropped.map((u) => [`${rangeText(u.range)}${u.via.length ? ` (${u.via.join("; ")})` : ""}`, citedAt(report.file, u.citedAt), "dropped", "—"])));
+  }
   if (report.unlisted.length) {
     out.push("", `Named without a line and not one file of the tree (not checked): ${report.unlisted.map((u) => `${u.name} (${citedAt(report.file, u.citedAt, 3)})`).join("; ")}.`);
   }
@@ -915,6 +1092,7 @@ export function formatText(report) {
   out.push(
     "",
     `Summary: ${total} citation(s) — ${counts(s.citations)}; cited lines — ${counts(s.lines)}; not checked ${s.unchecked}; unattributed ${s.unattributed}; named without a line, not in the tree ${s.unlisted}.`,
+    `Line references: ${s.pointers.found} found, ${s.pointers.reported} in this report (dropped ${s.dropped}).${s.pointers.found === s.pointers.reported ? "" : " THEY DIFFER: a line reference is missing from this report."} ${s.lastPathNamed} attribution(s) rest only on the last path named before the line (via "${LAST_PATH_NAMED}"): check those first.`,
     report.drifted ? "Drift: yes (exit 3)." : "Drift: none (exit 0).",
   );
   return out.join("\n");
