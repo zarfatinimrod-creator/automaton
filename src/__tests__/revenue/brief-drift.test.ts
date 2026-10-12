@@ -10,6 +10,7 @@ import {
   driftNoteLines,
   findDefinitions,
   findRow,
+  formatText,
   isGeneric,
   lineFate,
   makeResolver,
@@ -623,6 +624,267 @@ describe("the scanner", () => {
     expect(findRow(text, 7)).toEqual({ line: 3, text: "| 7 | `b.md:1` (`:2`) |" });
     expect(findRow(text, 9)).toBeNull();
     expect(scan(text, new Set([3])).map((r: { path: string; range: number[] }) => `${r.path}:${r.range[0]}`)).toEqual(["b.md:1", "b.md:2"]);
+  });
+
+  // Tick 72 (CHANNEL_LOOP §9 tick-70 item (1b)): the tick-70 drift notes said "`:913-917` is `owner-steps.test.ts`",
+  // and the scanner, reading definitions from the whole document, took ":913-917" for a short name: every later
+  // `:913-917` was swallowed by it and listed nowhere. A drift note now changes nothing about how another line is read.
+  const plain = (refs: { docLine?: number; index?: number }[]) => refs.map(({ docLine: _d, index: _i, ...r }) => r);
+
+  it("reads no definition, full path or directory from a drift note (tick 72)", () => {
+    const body = "`BOARD.md:3` and `loop.test.ts:9`; the bee (`:4`); `MISSION.md:1`, and the bee `:2`.";
+    const note = "> **[main thread] Pointer drift**: `y/BOARD.md` and `src/__tests__/revenue/` hold them; `:4` is `b.md`; \"the bee\" is `scripts/r.ts`.";
+    const before = scanCitations(`# T\n\n${body}\n`, resolver);
+    const after = scanCitations(`# T\n\n${note}\n\n${body}\n`, resolver);
+    expect(after.skipped).toEqual([3]);
+    expect(plain(after.refs)).toEqual(plain(before.refs));
+    // Read without the note: both names are several files', and the :4 is the last name's, `loop.test.ts`'s.
+    expect(after.refs.filter((r: { kind: string }) => r.kind === "unknown").map((r: { name: string; range: number[] }) => `${r.name}:${r.range[0]}`)).toEqual(["BOARD.md:3", "loop.test.ts:9", "loop.test.ts:4"]);
+    expect(files(`# T\n\n${note}\n\n${body}\n`)).toEqual(["MISSION.md:1-1", "MISSION.md:2-2"]);
+  });
+
+  it("finds no short name or phrase that holds a line reference (tick 72)", () => {
+    const { names, phrases } = findDefinitions("`:913-917` is `b.md`. `MISSION.md:4` is `b.md`. \"the pin at :5\" is `b.md`. `EX` is `scripts/r.ts`. \"The pin\" is `b.md`.", resolver);
+    expect([...names.keys()]).toEqual(["EX"]);
+    expect([...phrases.keys()]).toEqual(["The pin"]);
+    // So the pointer in such a sentence is read as a pointer, never as a name.
+    expect(files("`MISSION.md:1`; `:913-917` is `b.md`.\n\nSee `MISSION.md:2` and `:913-917`.")).toEqual(["MISSION.md:1-1", "MISSION.md:913-917", "b.md", "MISSION.md:2-2", "MISSION.md:913-917"]);
+  });
+
+  it("reads a paragraph and a table's caption across a drift note as if the note were not there (tick 72)", () => {
+    const body = ["- An item (`MISSION.md:1`)", "- next item (`:2`).", "", "**The steps** (`b.md`).", "", "| step | where |", "|---|---|", "| one | (`:3`) |"];
+    const before = scanCitations(body.join("\n"), resolver);
+    const withNotes = [body[0], "> **Pointer drift**: `:2` moved.", body[1], body[2], body[3], body[4], "> A drift note: `:3` is fine.", "", ...body.slice(5)].join("\n");
+    const after = scanCitations(withNotes, resolver);
+    expect(after.skipped).toEqual([2, 7]);
+    expect(files(withNotes)).toEqual(["MISSION.md:1-1", "MISSION.md:2-2", "b.md", "b.md:3-3"]);
+    // The carry names the line it came from, so only that number moves.
+    const norm = (refs: { via?: string | null }[], text: string) => plain(refs).map((r: { via?: string | null }) => ({ ...r, via: r.via?.replace(/:(\d+)/g, (_, n) => `«${text.split("\n")[Number(n) - 1]}»`) ?? null }));
+    expect(norm(after.refs, withNotes)).toEqual(norm(before.refs, body.join("\n")));
+  });
+
+  it("lists a line reference a mark swallowed as dropped, with the reason, never silently (tick 72)", () => {
+    // No definition the scanner finds can hold a line reference now; a definition handed in can, which is how a
+    // future way of swallowing one would look. It is reported, and the count of line references still adds up.
+    const definitions = { names: new Map([[":5", [{ index: 0, target: { path: "b.md" } }]]]), phrases: new Map() };
+    const out = scanCitations("`MISSION.md:1` and `:5`, `:6`.", resolver, { definitions });
+    expect(out.refs.map((r: { kind: string; range: number[] }) => `${r.kind}:${r.range[0]}`)).toEqual(["file:1", "dropped:5", "file:6"]);
+    expect(out.refs.find((r: { kind: string }) => r.kind === "dropped")).toMatchObject({ written: ":5", docLine: 1, via: 'inside ":5"' });
+    expect(out.pointers).toBe(3);
+    expect(scanCitations("`MISSION.md:1` and `:5`, `:6`.", resolver).pointers).toBe(3);
+  });
+
+  // Tick 72 (§9 tick-70 item (1)): a bare `:N` goes to the last name before it, which prose often means otherwise
+  // ("**Revocation.** … (`:50-72`)" after a list of logs; "`t1Passed` (`:32`, `:246`)" after the read-back).
+  const flagged = (refs: { kind: string; range: number[] | null; lastPathNamed?: boolean; path?: string }[]) =>
+    refs.filter((r) => r.range && r.lastPathNamed).map((r) => `${r.path ?? r.kind}:${r.range?.[0]}`);
+
+  it("marks a bare line that rests only on the last path named before it, and gives it to the same file (tick 72)", () => {
+    const text = [
+      "\"The read-back\" is `scripts/r.ts`.",
+      "",
+      "- **The gates.** The read-back refuses unless the verdict holds; the verdict is CONDITIONAL_UNMET (`b.md:263`),",
+      "  checked then (`:265`). It refuses next without the key (`:133-137`). It checks the host (`:161`).",
+      "- **Revocation.** The token is refreshed every run (`:50-72`).",
+      "- **One type.** `Readings` (`ledger.ts:20-69`) holds the read-back `madeForKids` (`:66`), which K0 reads (`:311-342`).",
+      "",
+      "Attached: `MISSION.md:435-439`, heading",
+      "`:431`; `ledger.ts:421-442`, `:445` and (`:487`); the read-back's `:99-103`; the read-back (`:11-13`, `:101`).",
+    ].join("\n");
+    const refs = scan(text);
+    expect(flagged(refs)).toEqual(["b.md:265", "b.md:133", "b.md:161", "b.md:50", "scripts/r.ts:66", "scripts/r.ts:311"]);
+    // The mark changes no attribution: each line goes where it went before.
+    expect(files(text).filter((f: string) => /:/.test(f))).toEqual([
+      "b.md:263-263",
+      "b.md:265-265",
+      "b.md:133-137",
+      "b.md:161-161",
+      "b.md:50-72",
+      "src/revenue/ledger.ts:20-69",
+      "scripts/r.ts:66-66",
+      "scripts/r.ts:311-342",
+      "MISSION.md:435-439",
+      "MISSION.md:431-431",
+      "src/revenue/ledger.ts:421-442",
+      "src/revenue/ledger.ts:445-445",
+      "src/revenue/ledger.ts:487-487",
+      "scripts/r.ts:99-103",
+      "scripts/r.ts:11-13",
+      "scripts/r.ts:101-101",
+    ]);
+    // A line right after its name, its possessive or a list of the name's lines is the name's own.
+    expect(refs.find((r: { range: number[] | null }) => r.range?.[0] === 431)).toMatchObject({ via: "carried from :8", lastPathNamed: false });
+    // A table's caption is the last path named too; a name in its own cell is not.
+    const table = scan("**The steps** (`b.md`).\n\n| step | where |\n|---|---|\n| one | (`:3`) |\n| two | `MISSION.md:5`, `:6` |");
+    expect(flagged(table)).toEqual(["b.md:3"]);
+  });
+
+  it("resolves a role the brief defines when it stands right before the line (\"test `:913-917`\") (tick 72)", () => {
+    const text = [
+      "\"The test\" is `src/__tests__/loop.test.ts`. \"The ledger\" is `src/revenue/ledger.ts`.",
+      "",
+      "- Pinned (`MISSION.md:274-279`, pinned at test `:913-917`; and Test's `:5`).",
+      "- `b.md:1`; a test passes (`:6`), and the test `:7`; ledger (`:8`); \"at test `:9`\" quoted.",
+    ].join("\n");
+    const refs = scan(text);
+    const at = (n: number) => refs.find((r: { range: number[] | null }) => r.range?.[0] === n);
+    expect(at(913)).toMatchObject({ kind: "file", path: "src/__tests__/loop.test.ts", via: 'role "The test" (as test)', lastPathNamed: false });
+    expect(at(5)).toMatchObject({ path: "src/__tests__/loop.test.ts", via: 'role "The test" (as Test)' });
+    // "a test passes (`:6`)": the word is not right before the line, so it is no role; the line is the last path's.
+    expect(at(6)).toMatchObject({ path: "b.md", lastPathNamed: true });
+    expect(at(7)).toMatchObject({ path: "src/__tests__/loop.test.ts", via: "the test" });
+    expect(at(8)).toMatchObject({ path: "src/revenue/ledger.ts", via: 'role "The ledger" (as ledger)' });
+    // Inside a quotation the word is the source's.
+    expect(at(9)).toMatchObject({ path: "src/revenue/ledger.ts" });
+    // Two definitions that disagree are no role: never a guess.
+    const two = scan("\"The test\" is `src/__tests__/loop.test.ts`.\n\nLater \"the test\" is `src/__tests__/revenue/loop.test.ts`.\n\n`MISSION.md:1`, test `:9`.");
+    expect(two.find((r: { range: number[] | null }) => r.range?.[0] === 9)).toMatchObject({ path: "MISSION.md", lastPathNamed: true });
+    // A role for a file the tree does not have resolves nothing.
+    const none = scan("\"The output\" is `out/none.json`.\n\n`MISSION.md:1`, output `:9`.");
+    expect(none.find((r: { range: number[] | null }) => r.range?.[0] === 9)).toMatchObject({ path: "MISSION.md" });
+  });
+});
+
+describe("the report's account of every line reference (tick 72)", () => {
+  // A brief, and the same brief with three drift notes: under the title (it defines short names and writes a full
+  // path), inside a list, and between a paragraph and the table it captions.
+  const BEFORE = [
+    "# Brief for the note test",
+    "",
+    "**What this is.** An assembler wrote this file on `TREE`.",
+    "",
+    "**Short names.** \"The bee file\" is `b.md`.",
+    "",
+    "- Moved: `src/a.ts:2`, and a continuation `:6-9`.",
+    "- The bee file (`:2`), and the pin at `:3`.",
+    "- An item (`src/a.ts:11`)",
+    "- next item (`:13`).",
+    "- Several files: `dup.md:1`, and `b.md:2` with `b.md:2` again.",
+    "",
+    "**The steps** (`src/a.ts`).",
+    "",
+    "| step | where |",
+    "|---|---|",
+    "| one | (`:5`) |",
+    "",
+    "`c.ts:1` and the end.",
+    "",
+  ];
+  const NOTE_TOP = [
+    "> **[main thread] Pointer drift since assembly.** `:6-9` is `b.md`; \"the pin\" is `c.ts`; `notes/dup.md:1` holds one;",
+    ">",
+    "> and `:13` is `c.ts`; `src/a.ts:2` moved to `:5`.",
+    "",
+  ];
+  const AFTER = [
+    ...BEFORE.slice(0, 2),
+    ...NOTE_TOP,
+    ...BEFORE.slice(2, 9),
+    "> **Pointer drift**: `:13` moved.",
+    ...BEFORE.slice(9, 13),
+    "> A drift note: `:5` is `b.md`.",
+    "",
+    ...BEFORE.slice(13),
+  ];
+  type Group = { range: [number, number] | null; citedAt: number[]; via: string[]; status?: string; occurrences: number; lastPathNamed: number[] };
+  type Full = Report & { dropped: Group[]; unlisted: Group[]; summary: { pointers: { found: number; reported: number }; dropped: number; lastPathNamed: number } };
+  const keyed = (json: Full, text: string) => {
+    const lines = text.split("\n");
+    const via = (v: string[]) => v.map((s) => s.replace(/:(\d+)/g, (_, n) => `«${lines[Number(n) - 1]}»`)).sort();
+    const out: string[] = [];
+    const add = (cat: string, owner: string, g: Group) => {
+      for (const at of g.citedAt) out.push(JSON.stringify([cat, owner, g.range, g.status ?? null, lines[at - 1], via(g.via), g.occurrences, g.lastPathNamed.map((n) => lines[n - 1])]));
+    };
+    for (const f of json.files) for (const c of f.citations as unknown as Group[]) add("file", f.path, c);
+    for (const u of json.unknown as unknown as (Group & { name: string })[]) add("unknown", u.name, u);
+    for (const u of json.unchecked as unknown as (Group & { name: string })[]) add("unchecked", u.name, u);
+    for (const u of json.unattributed as unknown as Group[]) add("unattributed", "", u);
+    for (const u of json.dropped) add("dropped", "", u);
+    return out.sort();
+  };
+  // The line references as a reader counts them: every `:N`, `:N-M` on a line that is not a drift note's.
+  const tokens = (text: string) => text.split("\n").filter((l) => !l.startsWith(">")).reduce((n, l) => n + (l.match(/:\d+(?:-\d+)?/g) ?? []).length, 0);
+  const total = (json: Full) => {
+    const groups = [...json.files.flatMap((f) => f.citations as unknown as Group[]).filter((c) => c.range), ...(json.unknown as unknown as Group[]), ...(json.unchecked as unknown as Group[]), ...(json.unattributed as unknown as Group[]), ...json.dropped];
+    return groups.reduce((n, g) => n + g.occurrences, 0);
+  };
+
+  it("gives the same citations, keyed by their lines' text, with a drift note inserted above them", () => {
+    const before = BEFORE.join("\n").replace("TREE", tree.slice(0, 7));
+    const after = AFTER.join("\n").replace("TREE", tree.slice(0, 7));
+    write(repo, "note-before.md", before);
+    write(repo, "note-after.md", after);
+    const a = report("note-before.md", "--tree", tree, "--head", head);
+    const b = report("note-after.md", "--tree", tree, "--head", head);
+    expect(b.status).toBe(a.status);
+    expect(b.json.skipped).toEqual([3, 4, 5, 14, 19]);
+    expect(keyed(b.json as Full, after)).toEqual(keyed(a.json as Full, before));
+    // What the brief says without the notes: the continuation is a.ts's, the pin the bee file's, dup.md several files'.
+    expect(cit(b.json, "src/a.ts", [6, 9])).toMatchObject({ status: "moved" });
+    expect(cit(b.json, "b.md", [3, 3])).toMatchObject({ via: ["The bee file", "last path named"] });
+    expect(cit(b.json, "src/a.ts", [13, 13])).toBeDefined();
+    expect(cit(b.json, "src/a.ts", [5, 5])?.via).toContain("caption :18");
+    expect(b.json.unknown.map((u) => u.name)).toEqual(["dup.md"]);
+  });
+
+  it("counts every line reference it found, and the report holds as many", () => {
+    for (const [file, lines] of [["note-before.md", BEFORE], ["note-after.md", AFTER]] as const) {
+      const { json } = report(file, "--tree", tree, "--head", head);
+      const full = json as Full;
+      expect(full.summary.pointers.found, file).toBe(tokens(lines.join("\n")));
+      expect(full.summary.pointers.reported, file).toBe(full.summary.pointers.found);
+      expect(total(full), file).toBe(full.summary.pointers.found);
+      expect(full.summary.dropped).toBe(0);
+      // `b.md:2` twice on one line is one citation of two occurrences.
+      expect((cit(json, "b.md", [2, 2]) as unknown as Group).occurrences).toBe(3);
+    }
+    const brief = report("brief.md", "--tree", tree, "--head", head).json as Full;
+    expect(total(brief)).toBe(brief.summary.pointers.found);
+    expect(brief.summary.pointers.found).toBe(tokens(BRIEF(tree.slice(0, 7))));
+    expect(brief.summary.pointers.found).toBe(26);
+    // --row counts the row's line only.
+    expect((report("brief.md", "--tree", tree, "--head", head, "--row", "7").json as Full).summary.pointers).toEqual({ found: 2, reported: 2 });
+    const text = run(repo, "note-after.md", "--tree", tree, "--head", head).stdout;
+    expect(text).toContain("Line references: 11 found, 11 in this report (dropped 0).");
+  });
+
+  it("lists and counts the attributions that rest only on the last path named, and changes no status", () => {
+    write(repo, "last.md", "`src/a.ts:2` holds it; the code refreshes it (`:3`).\n- An item (`b.md:2`)\n- the next (`:3`), and `:2`.\n");
+    const { status, json } = report("last.md", "--tree", tree, "--head", head);
+    const full = json as Full;
+    expect(status).toBe(3);
+    expect(cit(json, "src/a.ts", [3, 3])).toMatchObject({ status: "moved", newPointer: ":6", via: ["last path named"], lastPathNamed: [1] });
+    expect(cit(json, "b.md", [3, 3])).toMatchObject({ status: "same", via: ["carried from :2", "last path named"], lastPathNamed: [3] });
+    expect(cit(json, "src/a.ts", [2, 2])).toMatchObject({ via: [], lastPathNamed: [] });
+    expect(full.summary.lastPathNamed).toBe(3);
+    const text = run(repo, "last.md", "--tree", tree, "--head", head).stdout;
+    expect(text).toContain("### resting only on the last path named (check these first)");
+    expect(text).toContain("| src/a.ts:3 | last.md:1 | moved 3→6 | :6 |");
+    expect(text).toContain("| b.md:2 | last.md:3 | same | :2 |");
+    expect(text).toContain("3 attribution(s) rest only on the last path named before the line");
+  });
+
+  it("prints a dropped line reference in its own section", () => {
+    const rep = {
+      file: "x.md",
+      row: null,
+      tree: { ref: "t", sha: "a".repeat(40) },
+      head: { ref: "h", sha: "b".repeat(40) },
+      skipped: [],
+      skippedParts: [],
+      files: [],
+      unknown: [],
+      unchecked: [],
+      unattributed: [],
+      dropped: [{ range: [5, 5], citedAt: [1], written: [":5"], via: ['inside ":5"'], occurrences: 1, lastPathNamed: [] }],
+      unlisted: [],
+      summary: { citations: {}, lines: {}, unchecked: 0, unattributed: 0, unlisted: 0, dropped: 1, lastPathNamed: 0, pointers: { found: 1, reported: 1 } },
+      drifted: false,
+    };
+    const text = formatText(rep);
+    expect(text).toContain("### dropped (a line reference the scanner found and gave to no file: a scanner defect, read it by hand)");
+    expect(text).toContain('| :5 (inside ":5") | x.md:1 | dropped | — |');
+    expect(text).toContain("Line references: 1 found, 1 in this report (dropped 1).");
   });
 });
 
