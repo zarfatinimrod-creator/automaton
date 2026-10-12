@@ -744,6 +744,43 @@ describe("the script (scripts/youtube-madeforkids-readback.ts), offline", () => 
     expect(said).not.toMatch(/\b(public|private|unlisted|true|false)\b/); // the path is named, never the value
   });
 
+  it("normalises a --now with no milliseconds, no seconds or an offset before the call, and writes it in toISOString() form (tick-73 review)", async () => {
+    // The invariant takes only a time that round-trips through toISOString() (ruling 12.10 row 28 §2 decision 2): a valid
+    // ISO --now in another form used to make the live call and then refuse to write what it read.
+    for (const now of ["2027-03-11T06:00:00Z", "2027-03-11T06:00Z", "2027-03-11T08:00:00+02:00", "2027-03-11T01:00:00.000-05:00", AT]) {
+      const s = setup([{ id: "kidsVid0001" }]);
+      s.answers.kidsVid0001 = fixture("true");
+      const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now, log: s.log });
+      expect(code, now).toBe(0);
+      expect(s.calls, now).toHaveLength(1);
+      const state = JSON.parse(readFileSync(s.statePath, "utf8")) as MadeForKidsState;
+      expect(state.updatedAt, now).toBe(AT);
+      expect(state.videos, now).toEqual([{
+        id: "kidsVid0001", firstReadAt: AT, firstReadReturned: true, p1Api: true, firstDesignationAt: AT, p2ClockAt: AT,
+        lastPublicAt: AT, leftPublicAt: null, contradictedAt: null,
+      }]);
+    }
+  });
+
+  it("refuses a --now that is not an ISO date-time with a zone on a real day before any call: exit 2, nothing asked, nothing written (tick-73 review)", async () => {
+    const refused = [
+      "", "not a time", "1", "March 11 2027", "2027-03-11", // Date.parse reads "1" as 2001 and a bare date as midnight
+      "2027-03-11T06:00:00", "2027-03-11T06:00:00+0200", // no zone (the machine's own zone would be read), or not ±hh:mm
+      "2027-02-30T06:00:00Z", "2027-02-29T06:00:00Z", // Date.parse rolls a day the month does not have into the next month
+      "2027-03-11T06:60:00Z", "2027-13-01T06:00:00Z", // the shape, but Date.parse refuses it
+    ];
+    for (const now of refused) {
+      const s = setup([{ id: "kidsVid0001" }]);
+      s.answers.kidsVid0001 = fixture("true");
+      const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now, log: s.log });
+      expect(code, now).toBe(2);
+      expect(s.calls, now).toEqual([]);
+      expect(existsSync(s.statePath), now).toBe(false);
+      expect(s.lines.join("\n"), now).toMatch(/--now .* is not an ISO 8601 date-time with a zone/);
+      expect(s.lines.join("\n"), now).toMatch(/nothing asked, nothing written/);
+    }
+  });
+
   it("asks nothing when the uploads list is empty", async () => {
     const s = setup([]);
     const code = await runReadback({ env: { [API_KEY_ENV]: KEY }, fetchImpl: s.fetchImpl, experiment: "kids-explainers", videosPath: s.videosPath, statePath: s.statePath, verdictsPath: s.verdictsPath, now: AT, log: s.log });
