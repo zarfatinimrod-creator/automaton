@@ -838,4 +838,64 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
     ]);
     expect(refundsOf(s1)).toHaveLength(1);
   });
+
+  // The tick-74 review's blocking finding (probe PC): revenue_record and `colony.ts record` date a row at now unless told
+  // otherwise, so a Gumroad sale booked by hand days after Gumroad made it is dated after it, and every listing whose
+  // reach is taken from that date starts after the sale. Its refund state is then read by no listing: the sync says so.
+  /** Book a Gumroad sale by hand, as revenue_record does: the raw id (the ledger stores its digest) and a time given. */
+  const bookByHand = (s: Sale, occurredAt: string, lineId = "fake-line-a") =>
+    expect(recordLedgerEntry(db, {
+      lineId, kind: "sale", amountMinor: s.price, currency: "USD", source: "gumroad", externalId: s.id, occurredAt,
+    })).not.toBeNull();
+  /** The sync's line for an open sale no complete listing returned although its reach covers the sale's ledger day. */
+  const unlistedLine = (s: Sale, day: string, from: string) =>
+    `gumroad: the sale sha256:${sha(s.id)}, dated ${day} in the ledger, is in no listing since ${from}, which reaches ` +
+    "that day: its refund state cannot be read, so a refund of it is not booked (one way this happens is a sale booked " +
+    "by hand days after Gumroad made it, dated at its booking). Check it with verify-gumroad; if Gumroad reports it " +
+    `refunded, book the refund by hand as sha256:${sha(s.id)}:refund. Said at every sync while it has no refund row`;
+
+  it("a sale booked by hand three days after Gumroad made it, then refunded: the re-read cannot reach it, and the sync says so at every sync, by its stored id and ledger day, until its refund is booked", async () => {
+    setConnectorCursor(db, "gumroad", "2026-10-05");
+    const hand = { ...sale(7, "2026-10-01T10:00:00Z"), refunded: true };
+    bookByHand(hand, "2026-10-04T12:00:00.000Z");
+    const { fetchImpl, urls } = index([hand]);
+    at("2026-10-12T12:00:00Z");
+    const first = await sync(fetchImpl);
+    // The sync's own listing from 2026-10-04 and the re-read from 2026-10-03: both start after the sale.
+    expect(afters(urls, 0)).toEqual(["2026-10-04", "2026-10-03"]);
+    expect(first).toMatchObject({ recorded: 0, duplicates: 0 });
+    expect(first.errors).toEqual([unlistedLine(hand, "2026-10-04", "2026-10-03")]);
+    expect(first.errors[0]).not.toContain(hand.id);
+    expect(first.errors[0]).not.toContain(TOKEN);
+    expect(refundsOf(hand)).toEqual([]);
+    expect(getConnectorCursor(db, "gumroad")).toBe("2026-10-05");
+
+    // Nothing has changed at the next sync, so it is said again.
+    at("2026-10-13T12:00:00Z");
+    expect((await sync(fetchImpl)).errors).toEqual([unlistedLine(hand, "2026-10-04", "2026-10-03")]);
+
+    // Its refund booked by hand under the stored form the line names: the sale is closed, nothing is re-read or said.
+    expect(recordLedgerEntry(db, {
+      lineId: "fake-line-a", kind: "refund", amountMinor: hand.price, currency: "USD", source: "gumroad",
+      externalId: `sha256:${sha(hand.id)}:refund`, occurredAt: "2026-10-13T12:00:00.000Z",
+    })).not.toBeNull();
+    const m = urls.length;
+    expect(await sync(fetchImpl)).toMatchObject({ recorded: 0, duplicates: 0, errors: [] });
+    expect(afters(urls, m)).toEqual(["2026-10-04"]);
+    expect(refundsOf(hand)).toHaveLength(1);
+  });
+
+  it("the same hand-booked sale as the only open one, dated where the sync's own listing reaches it: no re-read is asked, and the sync says so all the same", async () => {
+    setConnectorCursor(db, "gumroad", "2026-10-04");
+    const hand = { ...sale(8, "2026-10-01T10:00:00Z"), refunded: true };
+    bookByHand(hand, "2026-10-04T12:00:00.000Z");
+    const { fetchImpl, urls } = index([hand]);
+    at("2026-10-12T12:00:00Z");
+    const result = await sync(fetchImpl);
+    // The re-read would start on 2026-10-03, the sync's own `after`, so it is not asked (T74-G1).
+    expect(afters(urls, 0)).toEqual(["2026-10-03"]);
+    expect(result).toMatchObject({ recorded: 0, duplicates: 0 });
+    expect(result.errors).toEqual([unlistedLine(hand, "2026-10-04", "2026-10-03")]);
+    expect(refundsOf(hand)).toEqual([]);
+  });
 });
