@@ -48,7 +48,7 @@ import {
   readLastSwept,
   sweepCoverage,
 } from "../src/revenue/criteria.js";
-import type { LedgerKind } from "../src/revenue/types.js";
+import { LEDGER_KINDS, type LedgerKind } from "../src/revenue/types.js";
 
 const DEFAULT_DB = "state/colony/colony.db";
 const DEFAULT_REPORT = "state/colony/REPORT.md";
@@ -90,6 +90,9 @@ Commands:
                        already booked, on that sale's line, because the hourly sync re-reads every
                        Gumroad sale with no refund under that id and would book it again; any other
                        is refused, and nothing is written.
+                       Gumroad money is booked only under --source gumroad: a refund under another
+                       source whose id is <sale id>:refund (raw or stored) of a Gumroad sale already
+                       booked is refused too. --kind is one of the five kinds below; any other is refused.
   verify-gumroad       Re-derive the ledger's Gumroad rows (RULING-2026-10-11-ledger-sale-ids.md C3): with
                        GUMROAD_ACCESS_TOKEN, list the account's sales from a day before the oldest row,
                        digest each id and match the rows. Prints counts, stored ids and days, never a
@@ -320,7 +323,9 @@ async function main(): Promise<void> {
 
       case "record": {
         const lineId = values.line ?? fail("--line is required");
-        const kind = (values.kind ?? fail("--kind is required")) as LedgerKind;
+        const kind = (values.kind ?? fail("--kind is required")).trim() as LedgerKind;
+        // As revenue_record checks it: a kind outside the five is booked by no rule, and counted by no sum (the tick-76 review).
+        if (!LEDGER_KINDS.includes(kind)) fail(`--kind must be one of ${LEDGER_KINDS.join(", ")}`);
         const amount = num(values.amount, "amount");
         if (!Number.isInteger(amount) || amount === 0) fail("--amount must be a non-zero integer in minor units");
         const currency = values.currency ?? fail("--currency is required");
