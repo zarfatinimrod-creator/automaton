@@ -209,7 +209,10 @@ const isUnlistedSale = (v: unknown): v is UnlistedGumroadSale => {
   return !!u && typeof u === "object" && typeof u.id === "string" && typeof u.day === "string" && typeof u.from === "string";
 };
 
-/** The last late-refund re-read's record, or null when none is stored or what is stored cannot be read as one. */
+/**
+ * The last late-refund re-read's record (kv `revenue.gumroad_late_reread.last`), or null when none is stored or what is
+ * stored cannot be read as one: then the sync re-reads, as on a new day.
+ */
 export function lastGumroadLateReread(db: Database): GumroadLateRereadLast | null {
   const raw = getKv(db, GUMROAD_LATE_REREAD_LAST_KEY);
   if (!raw) return null;
