@@ -38,6 +38,12 @@ export interface RevenueConnector {
     env: NodeJS.ProcessEnv;
     resolveLine: (productKey: string) => string | undefined;
     fetchImpl?: typeof fetch;
+    /**
+     * The line a sale already in the ledger was booked on, by its stored id: a refund or fee of that sale goes there,
+     * not on the line the product map gives at this sync (RULING-2026-10-13 §4); Gumroad only today. Stripe and Lemon
+     * Squeezy do not read it.
+     */
+    lineOfBookedSale?: (externalId: string) => string | undefined;
   }): Promise<ConnectorFetchResult>;
 }
 

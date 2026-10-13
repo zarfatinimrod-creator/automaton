@@ -467,16 +467,16 @@
   {
     "id": "T74-G1",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "  if (after >= listedFrom) return { after: null, entries: [], problem: null, unlisted: unlistedOf(listed, null) };",
-    "replace": "  if (after > listedFrom) return { after: null, entries: [], problem: null, unlisted: unlistedOf(listed, null) };",
+    "find": "  if (!reread || after >= listedFrom) return noListing(unlistedOf(listed, null));",
+    "replace": "  if (!reread || after > listedFrom) return noListing(unlistedOf(listed, null));",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "tick 74: the re-read also asks when it would start on the sync's own `after`, a listing that adds nothing (killed by the day-10 test's later syncs, one request each)"
   },
   {
     "id": "T74-G2",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "  if (after >= listedFrom) return { after: null, entries: [], problem: null, unlisted: unlistedOf(listed, null) };\n",
-    "replace": "",
+    "find": "  if (!reread || after >= listedFrom) return noListing(unlistedOf(listed, null));\n",
+    "replace": "  if (!reread) return noListing(unlistedOf(listed, null));\n",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "tick 74: the re-read asks at every sync with an open sale, also when the sync's own listing reached them all (killed by the day-10 test's later syncs)"
   },
@@ -563,7 +563,7 @@
   {
     "id": "T74-G13",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "    problem: listing.ok ? null : lateRefundStop(listing, after, read),",
+    "find": "    problem: listing.ok ? null : lateRefundStop(listing, after, read, created),",
     "replace": "    problem: null,",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "tick 74: a re-read that stopped short is no sync error and no blocker (killed by the refused, capped and looping re-read tests)"
@@ -635,16 +635,16 @@
   {
     "id": "T74R-G1",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "      if (rereadFrom !== null) out.push(unlistedSale(id, day, rereadFrom));",
-    "replace": "      if (rereadFrom === \"never\") out.push(unlistedSale(id, day, rereadFrom));",
+    "find": "      if (rereadFrom !== null) out.push({ id, day, from: rereadFrom });",
+    "replace": "      if (rereadFrom === \"never\") out.push({ id, day, from: rereadFrom });",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "the tick-74 review: blocking finding (probe PC): an open sale a re-read read to its end did not return is passed in silence (killed by the hand-booked re-read-branch test)"
   },
   {
     "id": "T74R-G2",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "      else if (listedToEnd && day > listedFrom) out.push(unlistedSale(id, day, listedFrom));",
-    "replace": "      else if (listedToEnd && day > \"9999\") out.push(unlistedSale(id, day, listedFrom));",
+    "find": "      else if (listedToEnd && day > listedFrom) out.push({ id, day, from: listedFrom });",
+    "replace": "      else if (listedToEnd && day > \"9999\") out.push({ id, day, from: listedFrom });",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "the tick-74 review: blocking finding: an open sale only the sync's own listing reaches, which it did not return, is passed in silence (killed by the hand-booked skipped-branch test)"
   },
@@ -667,8 +667,8 @@
   {
     "id": "T74R-G5",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "out.push(unlistedSale(id, day, rereadFrom))",
-    "replace": "out.push(unlistedSale(id, day, listedFrom))",
+    "find": "out.push({ id, day, from: rereadFrom })",
+    "replace": "out.push({ id, day, from: listedFrom })",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "the tick-74 review: the unlisted line names the own listing's `after`, not the re-read's, as where the reach began (killed by the re-read-branch test's \"since 2026-10-03\")"
   },
@@ -707,8 +707,8 @@
   {
     "id": "T74R-G10",
     "file": "src/revenue/connectors/gumroad.ts",
-    "find": "problem: null, unlisted: unlistedOf(listed, null) };",
-    "replace": "problem: null, unlisted: [] };",
+    "find": "return noListing(unlistedOf(listed, null));",
+    "replace": "return noListing([]);",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "the tick-74 review: with no re-read asked, the open sales are never checked against the sync's own listing (killed by the skipped-branch test)"
   },
@@ -767,5 +767,109 @@
     "replace": "    const id = row.kind === \"sale\" ? row.externalId : null;",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "the tick-74 review: survivor R-M4: a sale booked with its raw id is keyed raw, so the re-read never finds it and its late refund is lost (killed by the raw sale test)"
+  },
+  {
+    "id": "T77-H1",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "        const due = last === null || last.day !== rereadDay;",
+    "replace": "        const due = true;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a71 item 1: the re-read runs at every sync, not the day's first alone (killed by (a)'s request counts)"
+  },
+  {
+    "id": "T77-H2",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "late.stop !== \"refused\" && ",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a71 item 2: a refused re-read is recorded, so the day's next sync does not ask again (killed by (b))"
+  },
+  {
+    "id": "T77-H3",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "late.stop !== \"looped\") {",
+    "replace": "late.stop !== \"looped\" && late.stop !== \"too_many_pages\") {",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a71 item 2: a capped re-read is not recorded, so every sync asks the cap's pages again (killed by (d)'s 01:17Z request count)"
+  },
+  {
+    "id": "T77-H4",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "        if (!due && last?.problem) result.errors.push(`${connector.source}: last late-refund re-read, ${last.day}: ${last.problem}`);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a71 item 3: the recorded stop is not said at the day's later syncs (killed by (d)'s 01:17Z errors, the tick's blockers and the render)"
+  },
+  {
+    "id": "T77-H5",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "        const rereadDay = (options.nowIso ?? new Date().toISOString()).slice(0, 10);",
+    "replace": "        const rereadDay = options.nowIso ?? new Date().toISOString();",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a71 item 1: the day compared as the sync's full ISO time, so no record ever holds the day off (killed by (a))"
+  },
+  {
+    "id": "T77-H6",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "        ...(booked ? { lineOfBookedSale: (id: string) => booked.get(id) } : {}),\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a74: runLedgerSync passes fetchSince no lineOfBookedSale, so a refund or fee goes on the map's line (killed by (h))"
+  },
+  {
+    "id": "T77-H7",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "  for (const row of rows) {\n    const id = storedExternalId(\"gumroad\", row.externalId);\n    if (id !== null) booked.set(id, row.lineId);\n  }\n",
+    "replace": "  for (const [id, sale] of openGumroadSales(db)) booked.set(id, sale.lineId);\n",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a74: bookedGumroadSales built from the open sales only, so a sale whose refund is booked loses its line (killed by (h)'s fee on a closed sale)"
+  },
+  {
+    "id": "T77-G1",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "(saleId && lineOfBookedSale?.(saleId)) ?? lineId",
+    "replace": "lineId",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a74: fetchSince ignores lineOfBookedSale and books a booked sale's refund or fee on the map's line (killed by (h))"
+  },
+  {
+    "id": "T77-G2",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "  if (!reread || after >= listedFrom)",
+    "replace": "  if (after >= listedFrom)",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a71: reread false still lists (killed by (a)'s request counts)"
+  },
+  {
+    "id": "T77-G3",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": ", the sales read created ${span}",
+    "replace": "",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a72 item 2: the capped line drops the created-day span of the sales it read (killed by (d) and the capped re-read test)"
+  },
+  {
+    "id": "T77-G4",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "    for (const c of carried) {",
+    "replace": "    for (const c of [] as UnlistedGumroadSale[]) {",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a71 item 3: the record's unlisted sales are not said at the day's later syncs (killed by (f))"
+  },
+  {
+    "id": "T77-G5",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": " || named.has(c.id)) continue;",
+    "replace": ") continue;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a71 item 3: a carried sale the sync's own listing names too is said twice (killed by (f)'s count on the sale both name)"
+  },
+  {
+    "id": "T77-G6",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "\"Gumroad made it, dated at its booking). Place it on the day Gumroad made it with colony.ts place-gumroad-sale, \" +\n    \"which takes that day from Gumroad's own listing; its refund, if any, is then booked by the next re-read. Said at \" +\n    \"every sync while it is open\";",
+    "replace": "\"Gumroad made it, dated at its booking). Check it with verify-gumroad; if Gumroad reports it refunded, book the \" +\n    `refund by hand as ${id}:refund. Said at every sync while it has no refund row`;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a73 item 4: the unlisted line's advice restored to verify-gumroad and a refund by hand (killed by the hand-booked tests' exact line)"
   }
 ]

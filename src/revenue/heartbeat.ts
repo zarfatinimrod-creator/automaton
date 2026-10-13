@@ -6,6 +6,13 @@
  *   revenue_board_review       daily    the board applies decisions, allocates budget, files goals
  *   revenue_audit              weekly   auditor re-checks supervisor reviews; chief auditor monthly
  *
+ * Inside the hourly sync, Gumroad's late-refund re-read (`readLateGumroadRefunds`) lists the ledger's whole reach, so it
+ * runs at the first sync of each UTC day only, by the sync's own clock; a re-read refused or looping is asked again at the
+ * next sync, and one read to its end or past the cap is kept under GUMROAD_LATE_REREAD_LAST_KEY, whose stop and unlisted
+ * sales every later sync of that day says again. A refund or fee of a Gumroad sale the ledger already holds is booked on
+ * that sale's line on every path: the sync's own listing is given `lineOfBookedSale` (`bookedGumroadSales`), read before
+ * anything is booked (research/channel-loop/RULING-2026-10-13-gumroad-refund-reread.md §1 and §4).
+ *
  * The functions are exported individually so tools and tests can drive them
  * without the scheduler.
  */
@@ -28,6 +35,7 @@ import {
   sameRefundCounts,
   type OpenGumroadSale,
   type RefundRateCount,
+  type UnlistedGumroadSale,
 } from "./connectors/gumroad.js";
 import {
   computeLineMetrics,
@@ -175,6 +183,49 @@ export function lastGumroadRefundRateRead(db: Database): GumroadRefundRateLastRe
   return v as GumroadRefundRateLastRead;
 }
 
+/**
+ * The last Gumroad late-refund re-read that made a listing and was read to its end or past the cap
+ * (RULING-2026-10-13-gumroad-refund-reread.md §1 item 2): its UTC day, the `after` it asked from, the pages and sales it
+ * read, the refunds it booked, its unlisted sales and its `problem`. The sync re-reads when the day of its clock is not
+ * this record's; at its other syncs of the day it says this record's `problem` and unlisted sales again. Written after
+ * the re-read and never for a refused or looping one, so the next sync asks again.
+ */
+export const GUMROAD_LATE_REREAD_LAST_KEY = "revenue.gumroad_late_reread.last";
+
+export interface GumroadLateRereadLast {
+  day: string;
+  after: string;
+  pages: number;
+  read: number;
+  refundsBooked: number;
+  unlisted: Array<{ id: string; day: string; from: string }>;
+  problem: string | null;
+}
+
+const KV_DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
+const isCount = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 0;
+const isUnlistedSale = (v: unknown): v is UnlistedGumroadSale => {
+  const u = v as Partial<UnlistedGumroadSale> | null;
+  return !!u && typeof u === "object" && typeof u.id === "string" && typeof u.day === "string" && typeof u.from === "string";
+};
+
+/** The last late-refund re-read's record, or null when none is stored or what is stored cannot be read as one. */
+export function lastGumroadLateReread(db: Database): GumroadLateRereadLast | null {
+  const raw = getKv(db, GUMROAD_LATE_REREAD_LAST_KEY);
+  if (!raw) return null;
+  let v: Partial<GumroadLateRereadLast>;
+  try {
+    v = JSON.parse(raw) as Partial<GumroadLateRereadLast>;
+  } catch {
+    return null;
+  }
+  if (!v || typeof v !== "object" || typeof v.day !== "string" || !KV_DAY_RE.test(v.day)) return null;
+  if (typeof v.after !== "string" || !isCount(v.pages) || !isCount(v.read) || !isCount(v.refundsBooked)) return null;
+  if (!Array.isArray(v.unlisted) || !v.unlisted.every(isUnlistedSale)) return null;
+  if (v.problem !== null && typeof v.problem !== "string") return null;
+  return v as GumroadLateRereadLast;
+}
+
 /** Every sync's result, with the wall-clock time it ran: what a render (runner.ts readOnly) reports for a due sync. */
 export const LAST_LEDGER_SYNC_KEY = "revenue.last_ledger_sync";
 
@@ -303,6 +354,24 @@ export function openGumroadSales(db: Database): Map<string, OpenGumroadSale> {
   return open;
 }
 
+/**
+ * Every Gumroad sale the ledger holds, open or closed, keyed on its stored id as `openGumroadSales` keys it, with the line
+ * it was booked on: the sync's own listing books a refund or fee it reads of one of them on that line, not on the line
+ * the product map gives at this sync (RULING-2026-10-13-gumroad-refund-reread.md §4). Read before anything is booked.
+ */
+export function bookedGumroadSales(db: Database): Map<string, string> {
+  const rows = db.prepare(
+    `SELECT external_id AS externalId, line_id AS lineId
+     FROM revenue_ledger WHERE source = 'gumroad' AND kind = 'sale' AND external_id IS NOT NULL ORDER BY rowid`,
+  ).all() as { externalId: string; lineId: string }[];
+  const booked = new Map<string, string>();
+  for (const row of rows) {
+    const id = storedExternalId("gumroad", row.externalId);
+    if (id !== null) booked.set(id, row.lineId);
+  }
+  return booked;
+}
+
 export async function runLedgerSync(
   db: Database,
   env: NodeJS.ProcessEnv = process.env,
@@ -336,11 +405,15 @@ export async function runLedgerSync(
     if (!connector.isConfigured(env)) continue;
     try {
       const openGumroad = connector.source === gumroadConnector.source ? openGumroadSales(db) : null;
+      // The line of every Gumroad sale already booked, read before anything is (RULING-2026-10-13 §4): a refund or fee
+      // the listing reads of one of them goes on its sale's line.
+      const booked = connector.source === gumroadConnector.source ? bookedGumroadSales(db) : null;
       const fetched = await connector.fetchSince({
         cursor: getConnectorCursor(db, connector.source),
         env,
         resolveLine,
         fetchImpl,
+        ...(booked ? { lineOfBookedSale: (id: string) => booked.get(id) } : {}),
       });
       // A listing the connector could not read to its end: what it read is booked below and its cursor passes no sale
       // it did not read; the stop is a sync error, as a connector's thrown error is (tick 71).
@@ -356,18 +429,37 @@ export async function runLedgerSync(
       // from the day before the oldest sale the ledger holds unrefunded. It never moves the cursor; a re-read it could not
       // read to its end is a sync error, as the listing's own is, and so is an open sale no listing could read (the tick-74
       // review: a sale booked by hand days after Gumroad made it). Last in the block, so a throw in it costs nothing above.
+      // Its cadence (RULING-2026-10-13-gumroad-refund-reread.md §1): the re-read lists the ledger's whole reach, so it runs
+      // at the first sync of the UTC day of the sync's clock, and the record it leaves (GUMROAD_LATE_REREAD_LAST_KEY) holds
+      // the rest of that day off. A refused or looping re-read leaves no record, so the next sync asks again; one read to
+      // its end or past the cap is recorded, and its stop and its unlisted sales still open are said at every later sync of
+      // the day, so a capped re-read is a steady blocker, never one that shows an hour in 24.
       if (openGumroad && fetched.listedFrom) {
         // The stored ids of the sales the sync's own listing returned: their refund state was just read.
         const listed = new Set(fetched.entries.flatMap((e) => (e.kind === "sale" && e.externalId ? [e.externalId] : [])));
+        const rereadDay = (options.nowIso ?? new Date().toISOString()).slice(0, 10);
+        const last = lastGumroadLateReread(db);
+        const due = last === null || last.day !== rereadDay;
         const late = await readLateGumroadRefunds({
           token: String(env.GUMROAD_ACCESS_TOKEN), open: openGumroad, listedFrom: fetched.listedFrom, fetchImpl,
           listed, listedToEnd: fetched.listedToEnd === true,
+          reread: due, carried: due ? [] : (last?.unlisted ?? []), carriedDay: last?.day,
         });
         if (late.problem) result.errors.push(`${connector.source}: ${late.problem}`);
+        if (!due && last?.problem) result.errors.push(`${connector.source}: last late-refund re-read, ${last.day}: ${last.problem}`);
         for (const line of late.unlisted) result.errors.push(`${connector.source}: ${line}`);
+        let refundsBooked = 0;
         for (const entry of late.entries) {
           const rec = recordLedgerEntry(db, entry);
           if (rec) result.recorded += 1; else result.duplicates += 1;
+          if (rec) refundsBooked += 1;
+        }
+        if (late.after !== null && late.stop !== "refused" && late.stop !== "looped") {
+          const record: GumroadLateRereadLast = {
+            day: rereadDay, after: late.after, pages: late.pages, read: late.read, refundsBooked, unlisted: late.unlistedSales,
+            problem: late.problem,
+          };
+          setKv(db, GUMROAD_LATE_REREAD_LAST_KEY, JSON.stringify(record));
         }
       }
     } catch (error) {
