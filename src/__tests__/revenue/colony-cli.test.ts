@@ -467,4 +467,36 @@ describe("record books a Gumroad refund only where the sync will find it (tick 7
     const usage = cliSource.slice(cliSource.indexOf("const USAGE ="), cliSource.indexOf("function fail("));
     expect(usage).toContain("A gumroad refund is booked only as <sale id>:refund");
   });
+
+  // The tick-76 review. Each of these compares the whole ledger before and after, so it holds wherever it runs.
+  it("--kind is one of the five ledger kinds, trimmed: Refund is refused, and 'refund ' meets the refund rule", () => {
+    const before = rows();
+    const odd = record("Refund", "fake-refund-T76c-kind");
+    expect(odd.status).toBe(1);
+    expect(odd.stderr).toContain("Error: --kind must be one of sale, subscription, payout, refund, cost");
+    expect(odd.stdout).not.toContain("Recorded");
+    const spaced = record("refund ", "fake-refund-T76c-kind");
+    expect(spaced.status).toBe(1);
+    expect(spaced.stderr).toContain("Error: a gumroad refund is booked under its sale's own id");
+    expect(rows()).toEqual(before);
+    const sale = record(" sale ", "fake-sale-T76c-trim");
+    expect(sale.status, sale.stderr).toBe(0);
+    expect(sale.stdout).toContain("Recorded sale");
+    expect(rows()).toEqual([...before, { kind: "sale", lineId: "il-biz-tools", source: "gumroad", externalId: stored("fake-sale-T76c-trim") }]);
+  }, 60_000);
+
+  it("a refund of a booked Gumroad sale under --source manual: exit 1, nothing booked", () => {
+    const before = rows();
+    const out = record("refund", `${SALE}:refund`, "il-biz-tools", "manual");
+    expect(out.status).toBe(1);
+    expect(out.stderr).toContain(`Error: the Gumroad sale ${stored(SALE)} is in the ledger`);
+    expect(out.stderr).toContain("Gumroad money is booked only under source gumroad");
+    expect(out.stdout + out.stderr).not.toContain(SALE);
+    expect(rows()).toEqual(before);
+  }, 60_000);
+
+  it("the usage text for record says Gumroad money is booked under source gumroad only", () => {
+    const usage = cliSource.slice(cliSource.indexOf("const USAGE ="), cliSource.indexOf("function fail("));
+    expect(usage).toContain("Gumroad money is booked only under --source gumroad");
+  });
 });

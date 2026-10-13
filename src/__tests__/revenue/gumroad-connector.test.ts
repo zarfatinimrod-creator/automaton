@@ -1066,4 +1066,18 @@ describe("a Gumroad refund booked by hand is booked once, whatever the sync then
     expect(await runLedgerSync(db, ENV, index().fetchImpl, NO_PRO)).toMatchObject({ recorded: 0, errors: [] });
     expect(refundRows()).toHaveLength(1);
   });
+
+  // The tick-76 review's probe: under source manual, the sale's own refund id booked a second refund row beside the
+  // sync's, and the raw form put the raw sale id in the ledger.
+  it("under source manual, raw or stored: the tool refuses it, and the sync's re-read books the one refund under gumroad", async () => {
+    expect(await record({ kind: "sale", external_id: SALE.id })).toContain("Recorded sale");
+    for (const id of [`${SALE.id}:refund`, `sha256:${sha(SALE.id)}:refund`]) {
+      expect(await record({ kind: "refund", source: "manual", external_id: id }), id).toContain("Gumroad money is booked only under source gumroad");
+    }
+    expect(await runLedgerSync(db, ENV, index().fetchImpl, NO_PRO)).toMatchObject({ recorded: 1, duplicates: 0, errors: [] });
+    expect(db.prepare("SELECT source, amount_minor AS amountMinor, external_id AS externalId FROM revenue_ledger WHERE kind = 'refund'").all())
+      .toEqual([{ source: "gumroad", amountMinor: -7900, externalId: `sha256:${sha(SALE.id)}:refund` }]);
+    const raw = db.prepare("SELECT COUNT(*) AS n FROM revenue_ledger WHERE external_id LIKE ?").get(`%${SALE.id}%`) as { n: number };
+    expect(raw.n).toBe(0);
+  });
 });
