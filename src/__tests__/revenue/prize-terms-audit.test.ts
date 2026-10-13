@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -406,14 +406,18 @@ const RULINGS_SECTION = [
  * kept. Later in tick 57 agenthon.net's last two terms documents were read (no site terms) and its robots verdict set
  * again: it is in the second group, and the fourth is empty, its heading kept. Tick 60 rendered adaptionlabs.ai's terms
  * page once in js mode and the render came back empty (spentShell): its rules URL left the third group, empty since, its
- * heading kept, for the seventh, whose heading names tick 60 too. The counts test reads the groups nine times, with the
- * verdicts as they are, as renderBefore() gives them (before that render; every earlier state is read on it), as
+ * heading kept, for the seventh, whose heading names tick 60 too. Tick 68 ruled virtualembryo.ai a Stanford site
+ * (CONDITIONAL_UNMET, checked 8.10, VE68 below): its rules URL left "Now" for the seventh, which names tick 68 too. The
+ * seventh and eighth groups are told apart by whether the site's terms page was fetched on 6.10 (TERMS_READ), which until
+ * tick 68 was the same as a `checked` of 6.10, and virtualembryo.ai's ruling rests on that fetch with stanford.edu's. The
+ * counts test reads the groups ten times, with the verdicts as they are, as ve68Before() gives them (before the ruling),
+ * as renderBefore() gives them (before that render; every earlier state is read on it), as
  * tick57e() gives them (after eurocontrol.int's robots verdict, before
  * agenthon.net's third terms read), as tick56() gives them (after the
  * second terms read, before eurocontrol.int's robots verdict; its probe "unjudged"), as tick55() gives them (after the
  * terms links were found, before the second terms read), as tick54() gives them (after the js render, before the terms
  * links were found), as jsReadBefore() gives them (after the terms read, before the js render), as termsReadBefore()
- * gives them (after the robots verdicts, before the terms read) and as tick45() gives them, and the note states all nine.
+ * gives them (after the robots verdicts, before the terms read) and as tick45() gives them, and the note states all ten.
  */
 type Probe = "captured" | "queued" | "unjudged" | null;
 /**
@@ -444,15 +448,15 @@ const RENDER_GROUPS: { opens: string; holds: (site: string, e: Entry, probe: Pro
   },
   {
     opens: "- **Shut by the 6.10 terms fetch and the once-only js render ",
-    holds: (_, e) =>
+    holds: (site, e) =>
       spentShell(e) ||
-      (e.checked === TERMS_CHECKED &&
+      (Object.hasOwn(TERMS_READ, site) &&
         (e.verdict === "BARRED" || e.verdict === "CONDITIONAL_UNMET" || (e.verdict === "NO_TERMS" && /^refusal-type\b/.test(e.note ?? "")))),
   },
   {
     opens: "- **Graded with no capture, on their terms: ",
     holds: (site, e) =>
-      e.checked !== TERMS_CHECKED && (e.verdict === "BARRED" || (e.verdict === "CONDITIONAL_UNMET" && !NAMED_ADDRESSES.includes(site))),
+      !Object.hasOwn(TERMS_READ, site) && (e.verdict === "BARRED" || (e.verdict === "CONDITIONAL_UNMET" && !NAMED_ADDRESSES.includes(site))),
   },
   {
     opens: "- **Graded with no capture until render-watch masks addresses before commit: ",
@@ -609,7 +613,13 @@ const TERMS_LINES: Record<string, { slug: string; state: string; js?: boolean }>
     state: "# retired (7.10.2026: rendered once in js mode under ruling 6.10 row 21 (c) 3(2)(vi) and amendment 2; the render timed out at the runner's 30 s budget — status 200, no body, no text, nothing read; no second attempt in any mode, no other page of the site fetched)",
     js: true,
   },
-  "virtualembryo.ai": { slug: "terms-virtualembryo", state: "active" },
+  // Active after the 6.10 reading (NOT_BARRED); paused as read since tick 68 (8.10), when the Stanford scope ruling made the
+  // site CONDITIONAL_UNMET, in stanford.edu's form with the ruling as its reason (urls-pause-comments.mjs keeps it as written).
+  "virtualembryo.ai": {
+    slug: "terms-virtualembryo",
+    state:
+      "# paused (terms read, left paused: the Stanford scope ruling of tick 68, 8.10.2026): virtualembryo.ai is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json",
+  },
   "eurocontrol.int": {
     slug: "terms-eurocontrol",
     // In tick 55 the site was TERMS_PENDING again, and scripts/urls-pause-comments.mjs --fix rewrote the verdict word; the
@@ -709,18 +719,24 @@ const ANS_TICK56 =
 /** Tick 57 changed it again, when eurocontrol.int's robots verdict was set. */
 const ANS_NOW =
   "(eurocontrol.int's entry: NO_TERMS on 6.10, TERMS_PENDING in tick 55, when its footer's Disclaimers page was found, NO_TERMS, exhaustive-negative, again in tick 56, when that page was read: no site terms, and NO_TERMS_ROBOTS_OK since tick 57, when scripts/robots-verdict.mjs found that its robots.txt allows its one queued rules page)";
-/** The verdicts as tick 54 left them: the two reopened entries put back from the fixture, every other entry as it is. */
+/**
+ * The verdicts as tick 54 left them: the two reopened entries put back from the fixture, and virtualembryo.ai's NOT_BARRED
+ * entry (ve68Before(), tick 68), every other entry as it is.
+ */
 const tick54 = (v: Record<string, Entry>): Record<string, Entry> => ({
-  ...v,
+  ...ve68Before(v),
   ...(JSON.parse(readFileSync(LINKS_FIXTURE, "utf8")) as Record<string, Entry>),
 });
 /** Tick 56: the tick-55 entries of the two sites, as terms-verdicts.json held them at READ2_BASE (the tick-56 build's base). */
 const READ2_FIXTURE = "src/__tests__/revenue/fixtures/terms-verdicts-4f3527d-terms-read.json";
 const READ2_FIXTURE_SHA256 = "0491dc0745ede6bb1f9486d33085a40e750c9a705fa7dccf3efcf1163b19c979";
 const READ2_BASE = "4f3527d";
-/** The verdicts as tick 55 left them: the two entries tick 56 rewrote put back from that fixture, every other entry as it is. */
+/**
+ * The verdicts as tick 55 left them: the two entries tick 56 rewrote put back from that fixture, and virtualembryo.ai's
+ * NOT_BARRED entry (ve68Before()), every other entry as it is.
+ */
 const tick55 = (v: Record<string, Entry>): Record<string, Entry> => ({
-  ...v,
+  ...ve68Before(v),
   ...(JSON.parse(readFileSync(READ2_FIXTURE, "utf8")) as Record<string, Entry>),
 });
 /** Tick 57: eurocontrol.int's tick-56 entry, as terms-verdicts.json held it at ROBOTS57_BASE (the tick-57 build's base). */
@@ -736,10 +752,11 @@ const AGENTHON57_FIXTURE_SHA256 = "70be8076bc7f70596ae687668850dd090a3d6f9cebf3f
 const AGENTHON57_BASE = "23e17e7";
 /**
  * The verdicts as eurocontrol.int's robots verdict (tick 57) left them, before agenthon.net's third terms read:
- * agenthon.net's entry put back from that fixture, every other entry as it is.
+ * agenthon.net's entry put back from that fixture, and virtualembryo.ai's NOT_BARRED entry (ve68Before()), every other
+ * entry as it is.
  */
 const tick57e = (v: Record<string, Entry>): Record<string, Entry> => ({
-  ...v,
+  ...ve68Before(v),
   ...(JSON.parse(readFileSync(AGENTHON57_FIXTURE, "utf8")) as Record<string, Entry>),
 });
 /**
@@ -757,9 +774,12 @@ const RENDER60 = {
 };
 const RENDER60_FIXTURE = "src/__tests__/revenue/fixtures/terms-verdicts-9e02a08-adaption-render.json";
 const RENDER60_FIXTURE_SHA256 = "858f7479153ef1c2e38852e5aa8f12e2a7f1143ec35460d6eef00a08b022d9f5";
-/** The verdicts as they stood before that render: adaptionlabs.ai's entry put back from the fixture, every other as it is. */
+/**
+ * The verdicts as they stood before that render: adaptionlabs.ai's entry put back from the fixture, and virtualembryo.ai's
+ * NOT_BARRED entry (ve68Before()), every other as it is.
+ */
 const renderBefore = (v: Record<string, Entry>): Record<string, Entry> => ({
-  ...v,
+  ...ve68Before(v),
   ...(JSON.parse(readFileSync(RENDER60_FIXTURE, "utf8")) as Record<string, Entry>),
 });
 /** The verdicts as tick 56 left them: eurocontrol.int's entry put back from that fixture on tick57e()'s state. */
@@ -790,10 +810,77 @@ const YT61_BASE = "c1df0c8";
 /** The sentence ruling 7.10 row 25 fold 8 appended to posthog.com's note in the same tick (merged after YT61_BASE). */
 const PH61_SENTENCE =
   " A second and a third free organisation, one per public face (brand, T1 sub-brand), each using its one included project, is use of PostHog's documented unit (organizations.mdx:24-28), not a circumvention under 2.1(d) (ruling 7.10 §1 option 8).";
-/** The verdicts as they stood before googleapis.com's entry (tick 61): that entry taken out. */
-const yt61Before = (v: Record<string, Entry>): Record<string, Entry> => Object.fromEntries(Object.entries(v).filter(([site]) => site !== YT61_SITE));
+/**
+ * The verdicts as they stood before googleapis.com's entry (tick 61): that entry taken out, and virtualembryo.ai's
+ * NOT_BARRED entry put back (ve68Before(), tick 68).
+ */
+const yt61Before = (v: Record<string, Entry>): Record<string, Entry> =>
+  Object.fromEntries(Object.entries(ve68Before(v)).filter(([site]) => site !== YT61_SITE));
 /** The verdicts as they stood before un.org's terms read (tick 60): its entry put back from that fixture, and tick 61's taken out. */
 const un60Before = (v: Record<string, Entry>): Record<string, Entry> => ({ ...yt61Before(v), ...un60Fixture() });
+/**
+ * Tick 68 (8.10.2026): the main thread ruled virtualembryo.ai one of the "other Stanford sites" that Stanford's Terms of Use
+ * govern (research/rendered/terms-stanford-2026-10-06.txt:97, "any Stanford-affiliated entity" at :99), its footer naming a
+ * Stanford University lab (research/rendered/terms-virtualembryo-2026-10-06.txt:109): two sets of terms bind a visitor, the
+ * stricter governs, and Stanford's allows download only for personal, non-commercial use (:125). So the site takes
+ * stanford.edu's verdict and copying field, CONDITIONAL_UNMET and barred, checked 8.10; its terms line is paused as read.
+ * The /challenge line had been dispatched earlier the same tick (render-watch run 37742767006, commit 7d2efd9), while the
+ * verdict was NOT_BARRED; its capture stays as the record and nothing is graded or quoted from it. The NOT_BARRED entry,
+ * as terms-verdicts.json held it at VE68_BASE (the fold's base), is a fixture pinned by sha256; ve68Before() puts it back,
+ * and every reconstruction of an earlier tick above (tick54() to renderBefore(), yt61Before() and un60Before()) reads
+ * through it, so the blocks above hold what they held. The "tick 68" block holds the new state.
+ */
+const VE68 = {
+  site: "virtualembryo.ai",
+  checked: "2026-10-08",
+  termsUrl: "https://virtualembryo.ai/challenge/terms",
+  termsSlug: "terms-virtualembryo",
+  rulesUrl: "https://virtualembryo.ai/challenge?ref=mlcontests",
+  rulesSlug: "prize-virtualembryo-ai-challenge-ref-mlcontests-6cd009a6",
+  run: "37742767006",
+  commit: "7d2efd9",
+};
+const VE68_FIXTURE = "src/__tests__/revenue/fixtures/terms-verdicts-f838285-virtualembryo-stanford.json";
+const VE68_FIXTURE_SHA256 = "de9d61648b00e9f8af8c840e6b4d397fae1b9c16ca031ce410111e41d80f7c98";
+const VE68_BASE = "f838285";
+const ve68Fixture = () => JSON.parse(readFileSync(VE68_FIXTURE, "utf8")) as Record<string, Entry>;
+/**
+ * Tick 69 (11.10.2026): capitax.co.il's entry is new (ruling 11.10 row 27, fold 13(d),
+ * research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md): TERMS_PENDING, copying unread, with one plain terms line
+ * (ZERO-TESTS row 270). The site had no entry before it, so cx69Before() takes it out, and ve68Before() reads through it
+ * (the file had none before tick 68 either), so every reconstruction of an earlier tick above holds what it held, and the
+ * "tick 68" block reads the state tick 68 left through it. The entry and the line are pinned in
+ * src/__tests__/revenue/capitax-terms.test.ts; the "tick 69" block below holds the counts that moved.
+ */
+const CX69 = { site: "capitax.co.il", row: 270, url: "https://www.capitax.co.il/legalterms", slug: "terms-capitax", base: "00d35bc" };
+/**
+ * sha256 of terms-verdicts.json at CX69.base (the fold's base), the file before the entry: the "tick 69" block rebuilds
+ * it from the live file with the entry taken out, so the claim that the fold moved no other entry holds where 00d35bc
+ * cannot be reached too (a sim-tree.sh tree, a shallow checkout).
+ */
+const CX69_BASE_SHA256 = "0f411d7f64cb6fdd03a4efaca25874225b829bbfdd93f01e8f40f6c9806e1aa6";
+/** The verdicts as they stood before capitax.co.il's entry (tick 69): that entry taken out. */
+const cx69Before = (v: Record<string, Entry>): Record<string, Entry> =>
+  Object.fromEntries(Object.entries(v).filter(([site]) => site !== CX69.site));
+/**
+ * urls.txt as it stood before tick 69: row 270's comment and the terms line under it taken out, the line active or, once
+ * the terms are read, paused or retired in the " — URL<TAB>slug" form. Throws unless it finds each exactly once.
+ */
+const cx69UrlsBefore = (text: string): string => {
+  const lines = text.split("\n");
+  const comments = lines.flatMap((l, i) => (l.startsWith(`# research/channel-loop/ZERO-TESTS.md row ${CX69.row} — `) ? [i] : []));
+  const tail = `${CX69.url}\t${CX69.slug}`;
+  const own = lines.flatMap((l, i) => (l === tail || l.endsWith(` — ${tail}`) ? [i] : []));
+  if (comments.length !== 1 || own.length !== 1 || own[0] !== comments[0] + 1) {
+    throw new Error(`cx69UrlsBefore: row ${CX69.row}'s comment and line not found once each, the line under the comment`);
+  }
+  return lines.filter((_, i) => i !== comments[0] && i !== own[0]).join("\n");
+};
+/**
+ * The verdicts as they stood before the Stanford scope ruling (tick 68): virtualembryo.ai's NOT_BARRED entry put back, and
+ * tick 69's capitax.co.il entry taken out (cx69Before()).
+ */
+const ve68Before = (v: Record<string, Entry>): Record<string, Entry> => ({ ...cx69Before(v), ...ve68Fixture() });
 /** The frozen copies tick 56 read and cites: the two terms pages (4f3527d) and eurocontrol.int's robots.txt (364bf71). */
 const AG_TERMS = "research/rendered/terms-agenthon-2026-10-06";
 const EU_DISCLAIMERS = "research/rendered/terms-eurocontrol-disclaimers-2026-10-06";
@@ -1280,7 +1367,9 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
         // adaptionlabs.ai's retired js line still passes the gate (a TERMS_PENDING site's terms page): decision 3(2)(vi)
         // retired it after its once-only render came back empty (tick 60), not the gate, and the route refuses it again.
         const spent = site === RENDER60.site;
-        expect(termsGate(url, slug, tick56(v)).ok, site).toBe(spent);
+        // virtualembryo.ai's passed the gate until tick 68 (NOT_BARRED, its line active) and fails it since (CONDITIONAL_UNMET).
+        const ruled68 = site === VE68.site;
+        expect(termsGate(url, slug, tick56(v)).ok, site).toBe(spent || ruled68);
         expect(termsGate(url, slug, v).ok, site).toBe(site === EURO_PROBE.site || spent);
         if (spent) {
           expect(() => queueTermsShell({ urls: text.join("\n"), url, slug, date: "7.10.2026", verdicts: v }), site).toThrow(
@@ -1399,12 +1488,14 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     // probes of the sites a terms link reopened, each ZERO-TESTS row marked PAUSED 6.10 (tick 55). Tick 56: the two terms
     // lines tick 55 queued, paused as read, and eurocontrol.int's probe active again (agenthon.net's stayed paused). Tick
     // 57: the two terms lines tick 56 queued, paused as read, and agenthon.net's probe active again, so no probe is paused.
+    // Tick 68: virtualembryo.ai's terms line, active since the 6.10 reading, paused as read on the Stanford scope ruling.
     const shut = Object.entries(TERMS_LINES).filter(([, l]) => l.state.startsWith("# paused")).map(([, l]) => l.slug);
     expect(paused.map((p) => p.slug).sort()).toEqual(
       [...shut, ...Object.values(READ2).map((r) => r.slug), ...QUEUED2.map((q) => q.slug)].sort(),
     );
     expect(paused.filter((p) => isRobotsProbe(p.url, p.slug))).toEqual([]);
-    expect(shut).toHaveLength(5);
+    expect(shut).toHaveLength(6);
+    expect(shut.filter((slug) => slug !== VE68.termsSlug)).toHaveLength(5);
     const pausedRows = new Map(Object.entries(LINKS_FOUND).map(([site, f]) => [f.probe.row, site]));
     for (let n = 235; n <= 264; n += 1) {
       const site = pausedRows.get(n);
@@ -1453,13 +1544,15 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     const rows = zeroRows();
     // The terms lines as the 6.10 reading left them; (tick 55) the two probes paused, of which (tick 56) agenthon.net's still
     // was and (tick 57) neither is; the two terms lines tick 55 queued (rows 266-267) paused as read since tick 56, and the
-    // two tick 56 queued (rows 268-269) paused as read since tick 57 (active in tick 56).
+    // two tick 56 queued (rows 268-269) paused as read since tick 57 (active in tick 56); and (tick 69) capitax.co.il's terms
+    // line (row 270, CX69), active until its terms are read.
     const bySlug = new Map<string, string>([
       ...Object.values(TERMS_LINES).map((l) => [l.slug, l.state] as [string, string]),
       ...Object.values(READ2).map((r) => [r.slug, r.paused] as [string, string]),
       ...READ3.map((r) => [r.slug, r.paused] as [string, string]),
     ]);
-    const last = Math.max(...Object.values(LINKS_FOUND).map((f) => f.row), ...QUEUED2.map((q) => q.row));
+    const last = Math.max(...Object.values(LINKS_FOUND).map((f) => f.row), ...QUEUED2.map((q) => q.row), CX69.row);
+    expect(last).toBe(CX69.row);
     for (let n = 235; n <= last; n += 1) {
       const { comment, line } = listedRow(n);
       expect(comment, `row ${n}`).toBeDefined();
@@ -1501,13 +1594,18 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(audited().filter((e) => termsGate(e.url, e.slug, then).ok)).toHaveLength(13);
     // 6.10: 33 after the robots verdicts, 34 with virtualembryo.ai's terms read (NOT_BARRED); 33 in ticks 55 and 56, with
     // agenthon.net's one rules URL refused (TERMS_PENDING again); 34 in tick 57, with eurocontrol.int's admitted
-    // (NO_TERMS_ROBOTS_OK); 35 since agenthon.net's robots verdict, later in tick 57.
+    // (NO_TERMS_ROBOTS_OK); 35 from agenthon.net's robots verdict, later in tick 57, to the Stanford scope ruling of tick 68;
+    // 34 since, with virtualembryo.ai's one rules URL refused (CONDITIONAL_UNMET).
     expect(audited().filter((e) => termsGate(e.url, e.slug, termsReadBefore(v)).ok)).toHaveLength(33);
     expect(audited().filter((e) => termsGate(e.url, e.slug, tick54(v)).ok)).toHaveLength(34);
     expect(audited().filter((e) => termsGate(e.url, e.slug, tick55(v)).ok)).toHaveLength(33);
     expect(audited().filter((e) => termsGate(e.url, e.slug, tick56(v)).ok)).toHaveLength(33);
     expect(audited().filter((e) => termsGate(e.url, e.slug, tick57e(v)).ok)).toHaveLength(34);
-    expect(audited().filter((e) => termsGate(e.url, e.slug, v).ok)).toHaveLength(35);
+    expect(audited().filter((e) => termsGate(e.url, e.slug, ve68Before(v)).ok)).toHaveLength(35);
+    expect(audited().filter((e) => termsGate(e.url, e.slug, v).ok)).toHaveLength(34);
+    expect(rulesOf(VE68.site).map((e) => termsGate(e.url, e.slug, v))).toEqual([
+      { ok: false, site: VE68.site, verdict: "CONDITIONAL_UNMET", why: "virtualembryo.ai is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json" },
+    ]);
     // Every rules URL of a NO_TERMS_ROBOTS_OK site passes; every rules URL of a site still NO_TERMS is refused, for that.
     for (const e of audited()) {
       const site = siteOfUrl(e.url);
@@ -1569,6 +1667,9 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       return { counts, urls, sums: counts.map((m) => [[...m.values()].reduce((a, b) => a + b, 0), m.size]) };
     };
     const now = group(verdicts());
+    // Tick 68: the Stanford scope ruling made virtualembryo.ai CONDITIONAL_UNMET; rulingBefore is the state before it (from
+    // adaptionlabs.ai's js render in tick 60).
+    const rulingBefore = group(ve68Before(verdicts()));
     // Tick 60: adaptionlabs.ai's once-only js render came back empty; past is the state before it (from agenthon.net's
     // third terms read in tick 57), and every earlier state is read on it.
     const past = renderBefore(verdicts());
@@ -1619,7 +1720,20 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(renderedBefore.sums.map((c) => c.join("/"))).toEqual(["14/13", "21/18", "1/1", "0/0", "9/4", "0/0", "37/6", "19/3", "0/0"]);
     // Tick 60: adaptionlabs.ai's once-only js render came back empty, so its rules URL leaves the third group, empty since,
     // for the shut one.
-    expect(computed.map((c) => c.join("/"))).toEqual(["14/13", "21/18", "0/0", "0/0", "9/4", "0/0", "38/7", "19/3", "0/0"]);
+    expect(rulingBefore.sums.map((c) => c.join("/"))).toEqual(["14/13", "21/18", "0/0", "0/0", "9/4", "0/0", "38/7", "19/3", "0/0"]);
+    // Tick 68: the Stanford scope ruling moves virtualembryo.ai's one rules URL from "Now" to the shut group.
+    expect(computed.map((c) => c.join("/"))).toEqual(["13/12", "21/18", "0/0", "0/0", "9/4", "0/0", "39/8", "19/3", "0/0"]);
+    expect(rulingBefore.counts[0].get(VE68.site)).toBe(1);
+    expect(now.counts[6].get(VE68.site)).toBe(1);
+    // The shut and graded groups split on TERMS_READ (the site's terms page fetched on 6.10); before tick 68 that was the
+    // same as a `checked` of 6.10 for every audited site in every state read here, so no earlier grouping moved with it.
+    const shutVerdict = (e: Entry) => e.verdict === "BARRED" || e.verdict === "CONDITIONAL_UNMET" || (e.verdict === "NO_TERMS" && /^refusal-type\b/.test(e.note ?? ""));
+    for (const s of [ve68Before(verdicts()), past, tick57e(past), tick56(past), tick55(past), tick54(past), jsReadBefore(past), termsReadBefore(past), tick45(past)]) {
+      for (const site of new Set(audited().map((e) => siteOfUrl(e.url)))) {
+        expect(Object.hasOwn(TERMS_READ, site) && shutVerdict(s[site]), site).toBe(s[site].checked === TERMS_CHECKED && shutVerdict(s[site]));
+      }
+    }
+    expect(verdicts()[VE68.site].checked).not.toBe(TERMS_CHECKED);
     // Each bullet's per-site list: `site` n, for every site of the group and no other.
     bullets.forEach((b, i) => {
       const listed = Object.fromEntries([...b.matchAll(/`([a-z0-9.-]+\.[a-z]+)` (\d+)/g)].map((m) => [m[1], Number(m[2])]));
@@ -1682,6 +1796,11 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(beforeRender).not.toBeNull();
     expect([terms(beforeRender![1]), terms(beforeRender![3])]).toEqual([renderedBefore.sums.map((c) => c[0]), renderedBefore.sums.map((c) => c[1])]);
     expect([Number(beforeRender![2]), Number(beforeRender![4])]).toEqual([101, 45]);
+    // ...and (tick 68) the 7.10 line after adaptionlabs.ai's js render and before the Stanford scope ruling.
+    const beforeRuling = section.match(/^7\.10 \(tick 60\), after adaptionlabs\.ai's js render and before the Stanford scope ruling of 8\.10 \(tick 68\): ([\d + ]+) = (\d+) URLs, over ([\d + ]+) = (\d+) sites\.$/m);
+    expect(beforeRuling).not.toBeNull();
+    expect([terms(beforeRuling![1]), terms(beforeRuling![3])]).toEqual([rulingBefore.sums.map((c) => c[0]), rulingBefore.sums.map((c) => c[1])]);
+    expect([Number(beforeRuling![2]), Number(beforeRuling![4])]).toEqual([101, 45]);
     // The history lines run in time order, the newest last, before the paragraph that closes the section.
     const order = [
       "5.10 (tick 45), before",
@@ -1692,10 +1811,25 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       "6.10 (tick 56), after",
       "6.10 (tick 57), after",
       "6.10 (tick 57), after agenthon",
+      "7.10 (tick 60), after adaptionlabs",
+      'The fourth group ("Terms link found',
+      "8.10 (tick 68): virtualembryo.ai left",
     ];
     const where = order.map((o) => section.indexOf(`\n${o}`));
     expect(where.every((x, i) => x > 0 && (i === 0 || x > where[i - 1])), where.join(",")).toBe(true);
-    for (const sums of [computed, renderedBefore.sums, euroAfter.sums, robotsBefore.sums, readBefore.sums, linksBefore.sums, jsBefore.sums, robots.sums, then.sums]) {
+    // The dated line of tick 68 says why virtualembryo.ai moved, citing the three Stanford lines and the footer's line.
+    const why68 = section.split("\n").find((l) => l.startsWith("8.10 (tick 68): virtualembryo.ai left "))!;
+    for (const cite of [
+      "`research/rendered/terms-stanford-2026-10-06.txt:97`",
+      "`research/rendered/terms-stanford-2026-10-06.txt:99`",
+      "`research/rendered/terms-stanford-2026-10-06.txt:125`",
+      "`research/rendered/terms-virtualembryo-2026-10-06.txt:109`",
+      `render-watch run ${VE68.run}, commit ${VE68.commit}`,
+      "no grade, clause cell or quotation is taken from it",
+    ]) {
+      expect(why68, cite).toContain(cite);
+    }
+    for (const sums of [computed, rulingBefore.sums, renderedBefore.sums, euroAfter.sums, robotsBefore.sums, readBefore.sums, linksBefore.sums, jsBefore.sums, robots.sums, then.sums]) {
       expect(sums.reduce((a, c) => a + c[0], 0)).toBe(101);
       expect(sums.reduce((a, c) => a + c[1], 0)).toBe(45);
     }
@@ -2515,6 +2649,8 @@ describe("tick 54: the terms read on 6.10", () => {
     expect(v["stanford.edu"].note).toContain("the main thread kept CONDITIONAL_UNMET, and the outcome is the same");
     expect(v["stanford.edu"].note).toContain("aimslab.stanford.edu and quantiphy.stanford.edu are covered on the text");
     expect(v["virtualembryo.ai"].note).toMatch(/^NOT_BARRED: /);
+    // Since tick 68 the note opens with the Stanford scope ruling, and keeps this reading of the site's own terms after it.
+    expect(verdicts()["virtualembryo.ai"].note).toMatch(/^CONDITIONAL_UNMET: ruled by the main thread \(tick 68, 8\.10\): /);
     expect(v["eurocontrol.int"].note).toMatch(/^exhaustive-negative: the tick-45 record searched Open Terms Archive, tosdr\/tosdr-snapshots and EUROCONTROL's own GitHub organisation/);
     expect(v["eurocontrol.int"].note).toContain(EURO_PROBE.url);
     expect(v["eurocontrol.int"].note).toContain("ZERO-TESTS row 265");
@@ -2539,8 +2675,9 @@ describe("tick 54: the terms read on 6.10", () => {
     }
   });
 
-  it("gives every site a copying field: barred with its clause cited, allowed for virtualembryo.ai, unread for the rest", () => {
-    // As ticks 54-59 left the field: un.org's TERMS_PENDING entry put back (copying barred since tick 60, "tick 60" below).
+  it("gives every site a copying field: barred with its clause cited, allowed for virtualembryo.ai until tick 68, unread for the rest", () => {
+    // As ticks 54-59 left the field: un.org's TERMS_PENDING entry put back (copying barred since tick 60, "tick 60" below),
+    // and virtualembryo.ai's NOT_BARRED one (copying barred since tick 68, "tick 68" below).
     const v = un60Before(verdicts());
     const raw = JSON.parse(readFileSync(VERDICTS, "utf8"));
     for (const [site, e] of Object.entries(v)) expect(["barred", "allowed", "unread"], site).toContain(e.copying);
@@ -2566,6 +2703,12 @@ describe("tick 54: the terms read on 6.10", () => {
     for (const [site, words] of Object.entries(COPY_CLAUSE)) expect(v[site].note, site).toContain(words);
     expect(Object.keys(v).filter((s) => v[s].copying === "allowed")).toEqual(["virtualembryo.ai"]);
     expect(v["virtualembryo.ai"].note).toContain("copying: allowed, read 6.10");
+    // Since tick 68 no entry is "allowed": the Stanford scope ruling barred virtualembryo.ai's copying, and its note no
+    // longer says "allowed".
+    const now = verdicts();
+    expect(Object.keys(now).filter((s) => now[s].copying === "allowed")).toEqual([]);
+    expect(now["virtualembryo.ai"].copying).toBe("barred");
+    expect(now["virtualembryo.ai"].note).not.toContain("copying: allowed");
     expect(Object.keys(v).filter((s) => v[s].copying === "unread")).toHaveLength(Object.keys(v).length - 12);
     // The field sits after "note" (or after "checked" when there is none) in every entry, and the _about says what it is.
     for (const [site, e] of Object.entries(raw.sites as Record<string, Entry>)) expect(Object.keys(e).at(-1), site).toBe("copying");
@@ -2642,6 +2785,14 @@ describe("tick 54: the terms read on 6.10", () => {
     );
     expect(v["virtualembryo.ai"].verdict).toBe("NOT_BARRED");
     expect(row("virtualembryo.ai")).toContain("Open for the main thread (tick-54 review): the footer names a Stanford University lab");
+    // Answered in tick 68: the site is one of the "other Stanford sites", and the note closes the question as answered (the
+    // audit's tick-54 row is that tick's dated record and stays as written).
+    const answered = verdicts()["virtualembryo.ai"];
+    expect(answered.verdict).toBe("CONDITIONAL_UNMET");
+    expect(answered.note).not.toContain("Open for the main thread");
+    expect(answered.note).toContain(
+      'The question the tick-54 review left open for the main thread, whether virtualembryo.ai is one of the "other Stanford sites", is answered: it is, on the text (tick 68).',
+    );
     // kaggle.com: the --js --terms-shell route was built 6.10 (the base this branch merged), not "being built"; the note
     // now also says when it was queued and rendered.
     expect(v["kaggle.com"].note).toContain("(decision 3(2); built 6.10, commit 5a3ee24; queued c058238, rendered a3cb438)");
@@ -3376,7 +3527,9 @@ describe("tick 55: the terms links found after the verdicts", () => {
     const end = audit.indexOf("\n## ", start + 1);
     expect(audit.slice(end + 1).startsWith("## Terms read, second round (6.10.2026, tick 56)\n")).toBe(true);
     const text = audit.slice(start, end + 1);
-    const v = verdicts();
+    // The section and the dated pointers in it precede the Stanford scope ruling (tick 68): its "now" is the verdicts as
+    // they stood before it, virtualembryo.ai NOT_BARRED ("tick 68" below holds the counts since).
+    const v = ve68Before(verdicts());
     const t54 = tick54(v);
     const t55 = tick55(v);
     const t56 = tick56(v);
@@ -3863,7 +4016,9 @@ describe("tick 56: the second terms read (agenthon.net's Terms of Participation,
     const audit = readFileSync(AUDIT, "utf8");
     expect(audit.indexOf("## Terms read, second round (6.10.2026, tick 56)")).toBeGreaterThan(audit.indexOf("## Terms links found after the verdicts (6.10.2026, tick 55)"));
     expect(text.indexOf("\n## ", 1)).toBe(-1);
-    const v = verdicts();
+    // The section's dated counts precede the Stanford scope ruling (tick 68): its "now" is the verdicts as they stood
+    // before it, virtualembryo.ai NOT_BARRED ("tick 68" below holds the counts since).
+    const v = ve68Before(verdicts());
     const t56 = tick56(v);
     const rows = text.split("\n").filter((l) => /^\| `[a-z0-9.-]+` \|/.test(l));
     expect(rows.map((r) => r.match(/^\| `([a-z0-9.-]+)` \|/)![1])).toEqual(Object.keys(READ2));
@@ -4148,7 +4303,9 @@ describe("tick 57: eurocontrol.int's robots verdict (R1's repository grep ruled 
   });
 
   it("records it: ZERO-TESTS row 265's mark, the audit note's dated paragraph, the render groups and the counts as the files hold them", () => {
-    const v = verdicts();
+    // The dated paragraph precedes the Stanford scope ruling (tick 68): its "now" is the verdicts as they stood before it,
+    // virtualembryo.ai NOT_BARRED ("tick 68" below holds the counts since).
+    const v = ve68Before(verdicts());
     const rows = zeroRows();
     // Row 265 gains the tick-57 mark, last; rows 242 and 267 say nothing of tick 57.
     expect(rows.get(EURO_PROBE.row)?.row.endsWith(` **ACTIVE again 6.10 (tick 56): eurocontrol.int is NO_TERMS, exhaustive-negative, again: its Disclaimers page (row 267) holds no site terms; scripts/robots-verdict.mjs was run on the capture dry, and applying it is the main thread's call, once R1's grep of the organisations' repository contents is run at github grade or ruled immaterial (tick-56 review), and with --urls research/measurements/ai-allowed-events.urls.txt.** ${EURO_PROBE_MARK57} |`)).toBe(true);
@@ -4605,7 +4762,9 @@ describe("tick 57, third round: agenthon.net's Licensing Policy and Privacy Noti
   });
 
   it("records it in the audit note's third round: the table, the verifiers' points, the ruling, the probe paragraph and the counts paragraph, pinned whole", () => {
-    const v = verdicts();
+    // The section precedes the Stanford scope ruling (tick 68): its "now" is the verdicts as they stood before it,
+    // virtualembryo.ai NOT_BARRED ("tick 68" below holds the counts since).
+    const v = ve68Before(verdicts());
     const t57e = tick57e(v);
     const audit = readFileSync(AUDIT, "utf8");
     const text = section();
@@ -4983,9 +5142,10 @@ describe("tick 60: un.org's terms read (7.10), CONDITIONAL_UNMET, copying barred
     // The pause comment is current (scripts/urls-pause-comments.mjs keeps a CONDITIONAL_UNMET reason as written).
     const sync = syncPauseComments(text, verdicts(), { today: "7.10.2026" });
     expect((sync.changes as { line: number }[]).length).toBe(0);
-    // queue-zero-test --apply-verdicts would pause nothing more, and with the entry before the reading it pauses nothing.
+    // queue-zero-test --apply-verdicts would pause nothing more, and with the entry before the reading it pauses nothing (on
+    // urls.txt as it was then: tick 69's capitax.co.il line, whose site had no entry before it, taken out, cx69UrlsBefore()).
     expect(applyVerdicts(text, verdicts()).paused).toEqual([]);
-    expect(applyVerdicts(text.replace(PAUSED, `${TERMS_URL}\t${SLUG}`), un60Before(verdicts())).paused).toEqual([]);
+    expect(applyVerdicts(cx69UrlsBefore(text).replace(PAUSED, `${TERMS_URL}\t${SLUG}`), un60Before(verdicts())).paused).toEqual([]);
     expect(applyVerdicts(text.replace(PAUSED, `${TERMS_URL}\t${SLUG}`), verdicts()).paused).toEqual([SLUG]);
   });
 
@@ -5067,7 +5227,9 @@ describe("tick 60: un.org's terms read (7.10), CONDITIONAL_UNMET, copying barred
   });
 
   it("moves un.org alone: one more copying-barred entry, one fewer kindless note", () => {
-    const v = verdicts();
+    // The state tick 60 and tick 68 left: tick 69's capitax.co.il entry, a kindless TERMS_PENDING note, taken out
+    // (cx69Before(); "tick 69" below counts it in).
+    const v = cx69Before(verdicts());
     const then = un60Before(v);
     // googleapis.com's entry, added in tick 61, taken out of the file's side ("tick 61" below).
     expect(barred(yt61Before(v))).toEqual([...barred(then), SITE].sort());
@@ -5193,7 +5355,12 @@ describe("tick 60: adaptionlabs.ai's once-only js render came back empty (a time
     // The render groups: the shell group is empty since tick 60, its heading kept; the shut group names the site.
     const groups = text.split("\n").filter((l) => l.startsWith("- **"));
     expect(groups.find((l) => l.startsWith("- **Terms page a shell after the 6.10 fetch "))).toMatch(/: 0 URLs on 0 sites\*\* \(5\.10: 40 URLs on 9 sites, /);
-    expect(groups.find((l) => l.startsWith("- **Shut by the 6.10 terms fetch and the once-only js render "))).toContain("(ticks 54 and 60): 38 URLs on 7 sites** ");
+    // Since tick 68 the shut group holds virtualembryo.ai's rules URL too, and its heading names that tick; the count tick 60
+    // left (38 URLs on 7 sites) is in its history, dated.
+    const shut = groups.find((l) => l.startsWith("- **Shut by the 6.10 terms fetch and the once-only js render "))!;
+    expect(shut).toContain("(ticks 54, 60 and 68): 39 URLs on 8 sites** ");
+    expect(shut).toContain("37 URLs on 6 sites from that render until adaptionlabs.ai's of 7.10 (tick 60), and 38 URLs on 7 sites from then until the Stanford scope ruling of 8.10 (tick 68)");
+    expect(shut).toContain("`adaptionlabs.ai` 1, ");
   });
 });
 
@@ -5285,7 +5452,8 @@ describe("tick 61: googleapis.com's entry (7.10), CONDITIONAL_UNMET, copying bar
   });
 
   it("counts one more copying-barred entry (13) and one more CONDITIONAL_UNMET (10); the rest as tick 60 left them", () => {
-    const v = verdicts();
+    // As tick 61 left the file: virtualembryo.ai's NOT_BARRED entry put back ("tick 68" below holds the counts since).
+    const v = ve68Before(verdicts());
     const then = yt61Before(v);
     expect(barred(v)).toEqual([...barred(then), YT61_SITE].sort());
     expect(barred(v)).toHaveLength(13);
@@ -5294,5 +5462,346 @@ describe("tick 61: googleapis.com's entry (7.10), CONDITIONAL_UNMET, copying bar
     expect([barred(v).length, copying(v, "unread"), copying(v, "allowed"), count(v, "CONDITIONAL_UNMET"), count(v, "TERMS_PENDING")]).toEqual([13, 119, 1, 10, 3]);
     expect([barred(then).length, copying(then, "unread"), copying(then, "allowed"), count(then, "CONDITIONAL_UNMET"), count(then, "TERMS_PENDING")]).toEqual([12, 119, 1, 9, 3]);
     expect(Object.keys(v)).toHaveLength(133);
+  });
+});
+
+/**
+ * Tick 68 (8.10.2026): the main thread's Stanford scope ruling (VE68 above). virtualembryo.ai is one of the "other Stanford
+ * sites" that Stanford's Terms of Use govern, on the text; the conservative reading of an open text, recorded as arguable.
+ * The site takes stanford.edu's verdict and copying field, its terms line is paused as read, and prize-dispatch's gate
+ * fails its /challenge line, which had been dispatched earlier the same tick, before the ruling: that capture stays in the
+ * tree as the record, and no grade, clause cell or quotation is taken from it. Every block above reads the NOT_BARRED
+ * entry back through ve68Before(); this block holds the state since.
+ */
+describe("tick 68: the Stanford scope ruling (8.10), virtualembryo.ai CONDITIONAL_UNMET, copying barred", () => {
+  const VE = "research/rendered/terms-virtualembryo-2026-10-06.txt";
+  const SU = "research/rendered/terms-stanford-2026-10-06.txt";
+  const PAUSED = `# paused (terms read, left paused: the Stanford scope ruling of tick 68, 8.10.2026): virtualembryo.ai is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — ${VE68.termsUrl}\t${VE68.termsSlug}`;
+  /**
+   * Every line range the new note cites in a frozen copy, as rangeCites reads it (a bare ":N" read against the file named
+   * last before it), with words the range holds; quoted: the note quotes the words too.
+   */
+  const CITED68: { file: string; from: number; to: number; words: string[]; quoted: boolean }[] = [
+    { file: SU, from: 97, to: 97, words: ["or other Stanford sites"], quoted: true },
+    { file: SU, from: 99, to: 99, words: ["any Stanford-affiliated entity"], quoted: true },
+    {
+      file: SU,
+      from: 125,
+      to: 125,
+      words: ["only for User’s own personal, non-commercial use", "User may not otherwise copy, reproduce, retransmit, distribute, publish, commercially exploit or otherwise transfer any material."],
+      quoted: true,
+    },
+    { file: VE, from: 109, to: 109, words: ["Lab, Stanford University. All rights reserved."], quoted: true },
+    { file: VE, from: 17, to: 17, words: ["Official Rules, which form part of these Terms"], quoted: false },
+    { file: VE, from: 64, to: 64, words: ["the organizers and affiliated institutions"], quoted: true },
+    { file: VE, from: 12, to: 13, words: ["Website Terms of Use", "Effective 10 August 2026"], quoted: false },
+    { file: VE, from: 84, to: 84, words: ["Challenge Rules"], quoted: true },
+    { file: VE, from: 43, to: 43, words: ["Reverse engineer, disrupt, or attack the Services."], quoted: true },
+    {
+      file: VE,
+      from: 54,
+      to: 54,
+      words: ["All website content, datasets, documentation, software, graphics, logos, and trademarks remain the property of the organizers or their licensors unless otherwise stated."],
+      quoted: true,
+    },
+    { file: VE, from: 55, to: 55, words: ["Participants may use released competition materials only"], quoted: false },
+    { file: VE, from: 14, to: 14, words: ["(collectively, the “Services”)"], quoted: false },
+    { file: VE, from: 16, to: 16, words: ["documentation"], quoted: true },
+    { file: VE, from: 75, to: 75, words: ["https://virtualembryo.ai"], quoted: true },
+    { file: VE, from: 45, to: 45, words: ["Violate applicable laws or the Official Rules."], quoted: false },
+  ];
+  const barred = (s: Record<string, Entry>) => Object.keys(s).filter((x) => s[x].copying === "barred").sort();
+
+  it("keeps virtualembryo.ai's entry before the ruling as a fixture, as terms-verdicts.json held it at f838285, and the fold moved nothing else", () => {
+    expect(createHash("sha256").update(readFileSync(VE68_FIXTURE)).digest("hex")).toBe(VE68_FIXTURE_SHA256);
+    const fixture = ve68Fixture();
+    expect(Object.keys(fixture)).toEqual([VE68.site]);
+    expect([fixture[VE68.site].verdict, fixture[VE68.site].checked, fixture[VE68.site].copying]).toEqual(["NOT_BARRED", "2026-10-06", "allowed"]);
+    expect(fixture[VE68.site].note).toMatch(/^NOT_BARRED: /);
+    // The file keeps its exact serialisation: one-space indentation, its key order, no final newline.
+    const raw = readFileSync(VERDICTS, "utf8");
+    expect(JSON.stringify(JSON.parse(raw), null, 1)).toBe(raw);
+    // Where the base is reachable, the fixture is byte for byte its entry, and with that entry put back the file is the
+    // base's (each read before any --recheck rewrite, which the weekly tick may apply to NO_TERMS_ROBOTS_OK entries).
+    let base: string | null = null;
+    try {
+      base = execFileSync("git", ["show", `${VE68_BASE}:${VERDICTS}`], { stdio: ["ignore", "pipe", "ignore"], encoding: "utf8" });
+    } catch {
+      base = null;
+    }
+    if (base === null) return;
+    const then = JSON.parse(base) as { _about: string; sites: Record<string, Entry> };
+    expect(then.sites[VE68.site]).toEqual(fixture[VE68.site]);
+    const now = JSON.parse(raw) as { _about: string; sites: Record<string, Entry> };
+    expect(now._about).toBe(then._about);
+    // Tick 69 added capitax.co.il's entry, in its sorted place, after this fold (cx69Before() takes it out).
+    expect(Object.keys(cx69Before(now.sites))).toEqual(Object.keys(then.sites));
+    expect(ve68Before(verdictsOf(now))).toEqual(verdictsOf(then));
+  });
+
+  it("gives it stanford.edu's verdict and copying field, checked 8.10, and keeps the source that names what was read", () => {
+    const v = verdicts();
+    const e = v[VE68.site];
+    expect([e.verdict, e.checked, e.copying]).toEqual(["CONDITIONAL_UNMET", VE68.checked, "barred"]);
+    expect([e.verdict, e.copying]).toEqual([v["stanford.edu"].verdict, v["stanford.edu"].copying]);
+    const raw = JSON.parse(readFileSync(VERDICTS, "utf8")).sites as Record<string, Entry>;
+    expect(Object.keys(raw[VE68.site])).toEqual(["verdict", "source", "checked", "note", "copying"]);
+    expect(e.source).toBe(ve68Fixture()[VE68.site].source);
+    expect(e.source.startsWith(`${VE} (`)).toBe(true);
+    // CONDITIONAL_UNMET is not active-eligible, the site is not in TERMS_BARRED (a verdict, not code), and it is not a robots site.
+    expect(ACTIVE_VERDICTS.has(e.verdict)).toBe(false);
+    expect(termsBarred(VE68.site)).toBeNull();
+    expect(isRobotsOkVerdict(e) || isExhaustiveNegative(e)).toBe(false);
+  });
+
+  it("states the ruling first, citing Stanford's :97, :99 and :125 and the footer's :109, then the tick-54 reading of the site's own terms, the closed question and the slip", () => {
+    const note = verdicts()[VE68.site].note!;
+    expect(note.startsWith(`CONDITIONAL_UNMET: ruled by the main thread (tick 68, 8.10): virtualembryo.ai is one of the "other Stanford sites" that Stanford's Terms of Use govern (${SU}:97), on the text, so it takes stanford.edu's verdict and copying field. `)).toBe(true);
+    for (const cite of [`${SU}:97`, `${SU}:99`, `${SU}:125`, `${VE}:109`]) expect(note, cite).toContain(cite);
+    for (const words of [
+      `The page's footer names a Stanford University lab as the copyright holder ("© 2026 … Lab, Stanford University. All rights reserved.", ${VE}:109)`,
+      `"Stanford" includes "any Stanford-affiliated entity" (${SU}:99), and Stanford's scope has no domain limit ("or other Stanford sites", :97)`,
+      `The site's own Website Terms of Use do not displace other terms: they incorporate the Official Rules (${VE}:17) and name "the organizers and affiliated institutions" (${VE}:64).`,
+      "So two sets of terms bind a visitor, and the stricter one governs what the runner may do: Stanford's,",
+      "The reasons are stanford.edu's: the runner's purpose is neither personal nor non-commercial, and committing page bytes to a public repository is copying and publishing, so the condition is unmet and copying is barred.",
+      "This is the conservative reading of an open text, recorded as arguable: the opposite reading (a lab's own domain with its own complete terms is not a \"Stanford site\") is not adopted",
+      "a later primary text could reopen the verdict: a Stanford policy naming which sites its Terms of Use cover, or the site itself stating that Stanford's terms do not apply.",
+      // The tick-54 reading of the site's own terms, kept as the reading of that document, its citations intact.
+      "The tick-54 reading of the site's own terms stands as a reading of that document; only the verdict changed, because a second set of terms reaches the site:",
+      `the Website Terms of Use (${VE}:12-13), separate from the Challenge Rules (:84), have no clause on robots, crawling, scraping or automated access`,
+      ':54 is an ownership notice ("All website content, datasets, documentation, software, graphics, logos, and trademarks remain the property of the organizers or their licensors unless otherwise stated.")',
+      "documentation included (:14, :16), at https://virtualembryo.ai (:75)",
+      'The Official Rules "form part of these Terms" (:17), and violating them is barred to every user (:45); they are unread, and under this verdict no page of the site is fetched',
+      "The terms line is paused as read (8.10), as stanford.edu's is.",
+      'The question the tick-54 review left open for the main thread, whether virtualembryo.ai is one of the "other Stanford sites", is answered: it is, on the text (tick 68).',
+      // The slip, recorded: the line dispatched before the ruling, and what its capture is now.
+      `tick 68 dispatched the /challenge line (${VE68.rulesUrl}; render-watch run ${VE68.run}, commit ${VE68.commit}) while the verdict was still NOT_BARRED, so the gate passed it`,
+      "The capture stays in the tree as the record, as the TikTok and Gumroad captures fetched before their bars do; no grade, clause cell or quotation is taken from it, and prize-dispatch's gate no longer offers the line.",
+    ]) {
+      expect(note, words).toContain(words);
+    }
+    // The tick-54 note's open question and "allowed" are gone; the rules URL it cites is the pinned one, and nothing else.
+    expect(note).not.toContain("Open for the main thread");
+    expect(note).not.toContain("copying: allowed");
+    expect(note).not.toContain("a bar found there reopens this verdict");
+    expect(pinnedLines(note)).toEqual([182]);
+    // Every range the note cites is one CITED68 checks against its frozen copy, and every one of CITED68 is cited.
+    const cites = rangeCites(note);
+    const key = (c: { file: string | null; from: number; to: number }) => `${c.file}:${c.from}-${c.to}`;
+    expect([...new Set(cites.map(key))].sort()).toEqual([...new Set(CITED68.map(key))].sort());
+    const lines = new Map<string, string[]>();
+    for (const { file, from, to, words, quoted } of CITED68) {
+      if (!lines.has(file)) lines.set(file, readFileSync(file, "utf8").split("\n"));
+      const held = lines.get(file)!.slice(from - 1, to).join("\n");
+      for (const w of words) {
+        expect(held, `${file}:${from}-${to}`).toContain(w);
+        if (quoted) expect(note, `${file}:${from}-${to}`).toContain(w);
+      }
+    }
+    // No person is named (the footer's words before " Lab," stay out), no address, and the prize capture's slug is not
+    // written beside the line citations (trim-capture's scanner would read them as citations of that capture).
+    const footer = readFileSync(VE, "utf8").split("\n")[108];
+    const named = footer.slice(0, footer.indexOf(" Lab,"));
+    expect(named.length).toBeGreaterThan("© 2026 ".length);
+    expect(note.includes(named)).toBe(false);
+    expect(ADDRESS.test(note)).toBe(false);
+    expect(note).not.toContain(VE68.rulesSlug);
+  });
+
+  it("pauses the terms line as read in stanford.edu's form, and the gate and pause tools agree", () => {
+    const text = readFileSync(URLS, "utf8");
+    expect(text.split("\n").filter((l) => l.endsWith(`\t${VE68.termsSlug}`))).toEqual([PAUSED]);
+    expect(PAUSED_LINE.exec(PAUSED)?.slice(1)).toEqual([VE68.termsUrl, VE68.termsSlug]);
+    expect(active().filter((l) => siteOfUrl(l.url) === VE68.site)).toEqual([]);
+    // stanford.edu's line has the same form, its reason being the read.
+    expect(text.split("\n").filter((l) => l.endsWith("\tterms-stanford"))).toEqual([
+      "# paused (terms read, left paused, 6.10.2026): stanford.edu is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://www.stanford.edu/site/terms/\tterms-stanford",
+    ]);
+    // The comment is current (urls-pause-comments.mjs keeps a person's reason as written), applying the verdicts pauses
+    // nothing more, and the line as it was would be paused now and was not before the ruling.
+    expect((syncPauseComments(text, verdicts(), { today: "8.10.2026" }).changes as unknown[]).length).toBe(0);
+    expect(applyVerdicts(text, verdicts()).paused).toEqual([]);
+    const restored = text.replace(PAUSED, `${VE68.termsUrl}\t${VE68.termsSlug}`);
+    // Before the ruling, on urls.txt as it was then (tick 69's capitax.co.il line taken out: cx69UrlsBefore()).
+    expect(applyVerdicts(cx69UrlsBefore(restored), ve68Before(verdicts())).paused).toEqual([]);
+    expect(applyVerdicts(restored, verdicts()).paused).toEqual([VE68.termsSlug]);
+    expect(termsGate(VE68.termsUrl, VE68.termsSlug, verdicts()).ok).toBe(false);
+    expect(termsGate(VE68.termsUrl, VE68.termsSlug, ve68Before(verdicts())).ok).toBe(true);
+    // urls.txt never held the /challenge line: it was dispatched through the workflow's input.
+    expect(text.includes(VE68.rulesUrl) || text.includes(VE68.rulesSlug)).toBe(false);
+  });
+
+  it("fails virtualembryo.ai in prize-dispatch: selectDispatchLines and the script itself, on the pinned live list", () => {
+    const list = readFileSync(PRIZE_URLS_AT, "utf8");
+    const at = linesOf(list).find((l) => l.url === VE68.rulesUrl)!;
+    expect([at.slug, at.n]).toEqual([VE68.rulesSlug, 54]);
+    const why = "virtualembryo.ai is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json";
+    const now = selectDispatchLines(list, verdicts());
+    expect(now.failures.filter((f: { site: string }) => f.site === VE68.site)).toEqual([
+      { url: VE68.rulesUrl, slug: VE68.rulesSlug, lineNumber: 54, site: VE68.site, why },
+    ]);
+    expect(now.lines).not.toContain(`${VE68.rulesUrl}\t${VE68.rulesSlug}`);
+    // Before the ruling the gate passed it: that is how tick 68 dispatched it.
+    const before = selectDispatchLines(list, ve68Before(verdicts()));
+    expect(before.lines).toContain(`${VE68.rulesUrl}\t${VE68.rulesSlug}`);
+    expect(before.lines.length - now.lines.length).toBe(1);
+    // The script, run on the same list: the line is not printed, and stderr names the site under fail with that reason.
+    const run = spawnSync(process.execPath, ["scripts/prize-dispatch.mjs", "--urls", PRIZE_URLS_AT], { encoding: "utf8" });
+    expect(run.status).toBe(0);
+    expect(run.stdout).not.toContain(VE68.rulesUrl);
+    expect(run.stdout.trimEnd().split("\n")).toEqual(now.lines);
+    expect(run.stderr.split("\n")).toContain(`  fail  ${VE68.site}  1: ${why}`);
+    // With --skip-captured too: the capture exists, but a failing line is a failure, not a skip.
+    const skip = selectDispatchLines(list, verdicts(), { skipCaptured: true, captureExists: (slug: string) => existsSync(`research/rendered/${slug}.meta.json`) });
+    expect(skip.skipped.filter((s: { site: string }) => s.site === VE68.site)).toEqual([]);
+    expect(skip.failures.filter((f: { site: string }) => f.site === VE68.site)).toHaveLength(1);
+  });
+
+  it("keeps the capture dispatched before the ruling as the record, and no row of the prize instrument cites it", () => {
+    // The capture tick 68 dispatched: the /challenge page, fetched 8.10 by the run of 7d2efd9, in the tree.
+    const meta = JSON.parse(readFileSync(`research/rendered/${VE68.rulesSlug}.meta.json`, "utf8")) as Capture["meta"];
+    expect([meta.url, meta.slug, meta.status, meta.fetchedAt.slice(0, 10)]).toEqual([VE68.rulesUrl, VE68.rulesSlug, 200, "2026-10-08"]);
+    // research/measurements/ai-allowed-events.md is read, not edited: its row for the event holds the rules URL and no grade
+    // taken from the capture, and no row anywhere in it names the capture.
+    const md = readFileSync("research/measurements/ai-allowed-events.md", "utf8").split("\n");
+    const rows = md.filter((l) => l.startsWith("|"));
+    expect(rows.length).toBeGreaterThan(10);
+    expect(rows.filter((r) => r.includes("prize-virtualembryo-ai-challenge"))).toEqual([]);
+    const row = rows.filter((r) => r.includes(`<${VE68.rulesUrl}>`));
+    expect(row).toHaveLength(1);
+    expect(row[0].includes(VE68.rulesSlug)).toBe(false);
+    // No decision-bearing file names the capture, so trim-capture's scanner finds no citation of it.
+    for (const file of decisionFiles() as string[]) expect(readFileSync(file, "utf8").includes(VE68.rulesSlug), file).toBe(false);
+  });
+
+  it("marks ZERO-TESTS row 241 with a dated tick-68 mark after its READ mark, and records the move in the audit note", () => {
+    const row = zeroRows().get(241)!.row;
+    expect(row.endsWith(
+      "**READ 6.10 (tick 54): NOT_BARRED: the Website Terms of Use (effective 10 August 2026, research/rendered/terms-virtualembryo-2026-10-06.txt:12-13) bar neither automated access nor copying; the Official Rules they incorporate (:17) are unread. The line stays active.** " +
+        "**8.10 (tick 68): the main thread ruled virtualembryo.ai one of the \"other Stanford sites\" that Stanford's Terms of Use govern (research/rendered/terms-stanford-2026-10-06.txt:97, :99), so it takes stanford.edu's verdict: CONDITIONAL_UNMET, copying barred (:125 allows downloading only for personal, non-commercial use); this line is paused as read.** |",
+    )).toBe(true);
+    const audit = readFileSync(AUDIT, "utf8");
+    const groups = audit.split("\n").filter((l) => l.startsWith("- **"));
+    const nowGroup = groups.find((l) => l.startsWith("- **Now: "))!;
+    expect(nowGroup.startsWith("- **Now: 13 URLs on 12 sites** (CONDITIONAL_MET and NOT_BARRED, and github.com; 6.10, tick 54, to 8.10, tick 68: 14 URLs on 13 sites, with virtualembryo.ai,")).toBe(true);
+    expect(nowGroup).not.toContain("`virtualembryo.ai` 1");
+    expect(nowGroup).toContain('virtualembryo.ai left this group on 8.10 (tick 68): its own Website Terms of Use bar neither automated access nor copying, but the main thread ruled it one of the "other Stanford sites"');
+    expect(audit).not.toContain(`- \`${VE68.rulesUrl}\` (`);
+    const shut = groups.find((l) => l.startsWith("- **Shut by the 6.10 terms fetch and the once-only js render "))!;
+    expect(shut).toContain("`stanford.edu` 2, `virtualembryo.ai` 1, `zindi.africa` 5.");
+    expect(shut).toContain("grand-challenge.org, stanford.edu and virtualembryo.ai are CONDITIONAL_UNMET on a copying condition the runner does not meet (virtualembryo.ai since 8.10, tick 68:");
+    // The tick-54 section's row is that tick's dated record and keeps its words (the open question with it).
+    const read = audit.slice(audit.indexOf("## Terms read (6.10.2026, tick 54)"));
+    expect(read.split("\n").find((l) => l.startsWith("| `virtualembryo.ai` | "))!.startsWith("| `virtualembryo.ai` | NOT_BARRED | ")).toBe(true);
+    expect(ADDRESS.test(audit.slice(0, audit.indexOf("## Every URL the agents fetched")))).toBe(false);
+  });
+
+  it("counts one more copying-barred entry (14) and one more CONDITIONAL_UNMET (11), and none allowed; the rest as tick 61 left them", () => {
+    // The state tick 68 left: tick 69's capitax.co.il entry taken out (cx69Before(); "tick 69" below counts it in).
+    const v = cx69Before(verdicts());
+    const then = ve68Before(v);
+    expect(barred(v)).toEqual([...barred(then), VE68.site].sort());
+    const count = (s: Record<string, Entry>, verdict: string) => Object.values(s).filter((e) => e.verdict === verdict).length;
+    const copying = (s: Record<string, Entry>, value: string) => Object.values(s).filter((e) => e.copying === value).length;
+    expect([barred(v).length, copying(v, "unread"), copying(v, "allowed"), count(v, "CONDITIONAL_UNMET"), count(v, "NOT_BARRED"), count(v, "TERMS_PENDING")]).toEqual([
+      14,
+      119,
+      0,
+      11,
+      count(then, "NOT_BARRED") - 1,
+      3,
+    ]);
+    expect([barred(then).length, copying(then, "allowed"), count(then, "CONDITIONAL_UNMET")]).toEqual([13, 1, 10]);
+    expect(Object.keys(v)).toHaveLength(133);
+    // Of the audited sites, the gate now admits 34 of the 101 rules URLs (35 before the ruling).
+    expect(audited().filter((e) => termsGate(e.url, e.slug, v).ok)).toHaveLength(34);
+    expect(audited().filter((e) => termsGate(e.url, e.slug, then).ok)).toHaveLength(35);
+  });
+});
+
+/**
+ * Tick 69 (11.10.2026): capitax.co.il's TERMS_PENDING entry and its one plain terms line (CX69 above; ruling 11.10 row 27,
+ * fold 13(d)). The site is not a prize-event host, so no audited rules URL moves; what moves is the file's counts. Every
+ * block above reads the entry out through cx69Before() (and urls.txt through cx69UrlsBefore()); this block holds the
+ * state since. The entry's words and the line are pinned in src/__tests__/revenue/capitax-terms.test.ts.
+ */
+describe("tick 69: capitax.co.il TERMS_PENDING (11.10), its terms page queued once", () => {
+  const KIND = /^(refusal-type|exhaustive-negative|unanswered|shell|deferred to [a-z0-9.-]+)\b/;
+  const kindless = (s: Record<string, Entry>) =>
+    Object.keys(s)
+      .filter((x) => ["NO_TERMS", "TERMS_PENDING"].includes(s[x].verdict) && !KIND.test(s[x].note ?? ""))
+      .sort();
+  const count = (s: Record<string, Entry>, verdict: string) => Object.values(s).filter((e) => e.verdict === verdict).length;
+  const copying = (s: Record<string, Entry>, value: string) => Object.values(s).filter((e) => e.copying === value).length;
+
+  it("adds capitax.co.il alone, in its sorted place, and moves no other entry", () => {
+    const raw = JSON.parse(readFileSync(VERDICTS, "utf8")).sites as Record<string, Entry>;
+    const keys = Object.keys(raw);
+    expect(keys).toEqual([...keys].sort());
+    expect(keys.slice(keys.indexOf(CX69.site) - 1, keys.indexOf(CX69.site) + 2)).toEqual(["build-arena.github.io", CX69.site, "codabench.org"]);
+    expect(Object.keys(raw[CX69.site])).toEqual(["verdict", "source", "checked", "note", "copying"]);
+    expect(Object.keys(cx69Before(raw))).toEqual(keys.filter((k) => k !== CX69.site));
+    const now = JSON.parse(readFileSync(VERDICTS, "utf8")) as { _about: string; sites: Record<string, Entry> };
+    // Where the base is reachable, the comparison names any entry that moved (each side read before any --recheck rewrite).
+    let base: string | null = null;
+    try {
+      base = execFileSync("git", ["show", `${CX69.base}:${VERDICTS}`], { stdio: ["ignore", "pipe", "ignore"], encoding: "utf8" });
+    } catch {
+      base = null; // a sim-tree.sh tree has one commit, and a shallow checkout may lack 00d35bc; the pin below still holds
+    }
+    if (base !== null) {
+      expect(createHash("sha256").update(base).digest("hex")).toBe(CX69_BASE_SHA256);
+      const then = JSON.parse(base) as { _about: string; sites: Record<string, Entry> };
+      expect(then.sites[CX69.site]).toBeUndefined();
+      expect(now._about).toBe(then._about);
+      expect(Object.keys(cx69Before(now.sites))).toEqual(Object.keys(then.sites));
+      expect(cx69Before(verdictsOf(now))).toEqual(verdictsOf(then));
+    }
+    // Everywhere, base or no base: with the entry taken out, the file (read before any --recheck rewrite) is byte for byte
+    // the file at the base, every other entry and _about as they were, in the same order.
+    const rebuilt = serializeVerdicts({ ...now, sites: cx69Before(verdictsOf(now)) });
+    expect(createHash("sha256").update(rebuilt).digest("hex")).toBe(CX69_BASE_SHA256);
+  });
+
+  it("counts one more entry (134), one more TERMS_PENDING (4), one more unread copying field (120) and one more kindless note (23); the rest as tick 68 left them", () => {
+    const v = verdicts();
+    const then = cx69Before(v);
+    expect(Object.keys(v)).toHaveLength(134);
+    expect(Object.keys(then)).toHaveLength(133);
+    expect([copying(v, "barred"), copying(v, "unread"), copying(v, "allowed"), count(v, "CONDITIONAL_UNMET"), count(v, "TERMS_PENDING")]).toEqual([14, 120, 0, 11, 4]);
+    expect([copying(then, "barred"), copying(then, "unread"), copying(then, "allowed"), count(then, "CONDITIONAL_UNMET"), count(then, "TERMS_PENDING")]).toEqual([14, 119, 0, 11, 3]);
+    for (const verdict of ["BARRED", "NOT_BARRED", "CONDITIONAL_MET", "NO_TERMS", "NO_TERMS_ROBOTS_OK"]) {
+      expect(count(v, verdict), verdict).toBe(count(then, verdict));
+    }
+    expect(Object.keys(v).filter((s) => v[s].verdict === "TERMS_PENDING").sort()).toEqual(["adaptionlabs.ai", CX69.site, "medium.com", "wikimedia.org"]);
+    // Its note opens "terms unread:", as a TERMS_PENDING note whose terms page was never fetched does (tick 55's form): no
+    // kind word fits until the page answers.
+    expect(kindless(v)).toEqual([...kindless(then), CX69.site].sort());
+    expect(kindless(v)).toHaveLength(23);
+    expect(v[CX69.site].note!.startsWith("terms unread: ")).toBe(true);
+    // No audited rules URL moves: the gate still admits 34 of the 101, and none is on the site.
+    expect(audited().filter((e) => termsGate(e.url, e.slug, v).ok)).toHaveLength(34);
+    expect(audited().filter((e) => siteOfUrl(e.url) === CX69.site)).toEqual([]);
+  });
+
+  it("queues the terms page as ZERO-TESTS row 270, the highest row, with its line under its comment, and the tools agree", () => {
+    const rows = zeroRows();
+    expect(Math.max(...rows.keys())).toBe(CX69.row);
+    expect(rows.get(CX69.row)?.url).toBe(CX69.url);
+    expect(rows.has(CX69.row - 1)).toBe(true);
+    const { comment, line } = listedRow(CX69.row);
+    expect(comment!.startsWith(`# research/channel-loop/ZERO-TESTS.md row ${CX69.row} — ${CX69.site} TERMS_PENDING (tick 69, `)).toBe(true);
+    expect(line).toBe(`${CX69.url}\t${CX69.slug}`);
+    expect(active().filter((l) => siteOfUrl(l.url) === CX69.site).map((l) => [l.url, l.slug])).toEqual([[CX69.url, CX69.slug]]);
+    // The gate passes the line now and would refuse it without the entry; --apply-verdicts pauses nothing, and on urls.txt
+    // as it was before the tick the verdicts as they were pause nothing either.
+    const text = readFileSync(URLS, "utf8");
+    expect(termsGate(CX69.url, CX69.slug, verdicts())).toEqual({ ok: true, site: CX69.site, verdict: "TERMS_PENDING" });
+    expect(termsGate(CX69.url, CX69.slug, cx69Before(verdicts())).ok).toBe(false);
+    expect(applyVerdicts(text, verdicts()).paused).toEqual([]);
+    expect(applyVerdicts(text, cx69Before(verdicts())).paused).toEqual([CX69.slug]);
+    expect(applyVerdicts(cx69UrlsBefore(text), cx69Before(verdicts())).paused).toEqual([]);
+    // cx69UrlsBefore takes out exactly the two lines.
+    expect(text.split("\n").length - cx69UrlsBefore(text).split("\n").length).toBe(2);
   });
 });

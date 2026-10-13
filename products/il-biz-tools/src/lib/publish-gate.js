@@ -74,7 +74,9 @@ export const PAGE_RATE_SOURCES = {
   // to a capture line. The 2026 cap is not in any primary text read: it waits, unverified, in
   // osek-zair-unverified.json (with a VAT section reference from a regulation whose one capture here is
   // [robots-bar]), which this page does not render or load, so it is not listed here (listing it would withhold
-  // the whole page for a year the page already refuses).
+  // the whole page for a year the page already refuses). osek-patur.html's 2026 ceiling waits the same way since
+  // 11.10.2026, in osek-patur-unverified.json, which that page does not render or load either
+  // (research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md, decision 2).
   'osek-zair.html': ['src/config/osek-zair.json'],
   'net-salary.html': ['src/config/tax-2026.json'],
   'invoice.html': ['src/config/vat.json'],
@@ -208,6 +210,9 @@ export function filterSitemap(xml, withheldPages = []) {
 export const CONFIG_PUBLISH_RULES = {
   'src/config/vat.json': 'verified',
   'src/config/osek-patur.json': 'verified',
+  // Never ships while unverified: it holds the 2026 ceiling no primary text read states (ruling 11.10 row 27).
+  // No page loads it.
+  'src/config/osek-patur-unverified.json': 'verified',
   'src/config/osek-zair.json': 'verified',
   // Never ships while unverified: it holds the 2026 cap and a VAT section reference no primary text read states.
   // No page loads it.

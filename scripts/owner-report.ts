@@ -1,7 +1,11 @@
 #!/usr/bin/env -S node --import tsx
 /**
- * The facts of the owner's status report — money, revenue lines, owner steps, colony health — from the colony database
- * and the code alone (src/revenue/owner-report.ts), so the next report starts from one command instead of ten agents.
+ * The facts of the owner's status report — money, revenue lines, owner steps, the shortest path to a first payment,
+ * colony health — from the colony database and the code alone (src/revenue/owner-report.ts), so the next report starts
+ * from one command instead of ten agents. The path section answers "how far are we from the first shekel?" from
+ * owner-steps.ts and portfolio.ts: per line, the steps in the code's order with minutes, identity checks, gates and what
+ * each unlocks, the reads the line also waits on, and the smallest set of steps after which one line can take a payment
+ * (it prints the code's order beside the line that states the board's ruling of 12.10 on it, FABLE_QUEUE row 29).
  *
  *   pnpm exec tsx scripts/owner-report.ts [--db <path>] [--json] [--now <iso>]
  *

@@ -5,7 +5,7 @@
     "find": ">= hours * 3_600_000 ? true : null;",
     "replace": "> hours * 3_600_000 ? true : null;",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (ruling 7.10 row 24 fold 2): stayedPublic's >= — an upload read public exactly 72 h after its first designation read no longer passes P2"
+    "note": "tick 61 (ruling 7.10 row 24 fold 2): stayedPublic's >= — an upload read public exactly 72 h after its first designation read no longer passes P2 — since tick 73 it lands on the new comparison, lastPublicAt − p2ClockAt, and is the mutation ruling 12.10 row 28 fold 1 names (\"stayedPublic's >= → > on the new comparison\"), so no second entry repeats it"
   },
   {
     "id": "T61-SP2",
@@ -26,10 +26,10 @@
   {
     "id": "T61-SP4",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "first: p.first ?? (designated ? r : null),",
-    "replace": "first: p.first ?? r,",
+    "find": "    const firstDesignationAt = p.firstDesignationAt ?? (designated ? r.readAt : null);\n",
+    "replace": "    const firstDesignationAt = p.firstDesignationAt ?? r.readAt;\n",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (fold 2, §4 decision 2): a public read with no designation becomes the first read and starts P2's clock"
+    "note": "tick 61 (fold 2, §4 decision 2): a public read with no designation becomes the first designation read and starts P2's clock (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FW1",
@@ -42,26 +42,26 @@
   {
     "id": "T61-FW2",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "else if (firstRead !== null && (firstRead.returned === false || firstRead.privacyStatus !== \"public\")) p1 = false;",
+    "find": "else if (p1Api === false) p1 = false;",
     "replace": "else if (false) p1 = false;",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (fold 2): firstUploadWindow's second false branch — a first read that is not public no longer fails P1 (find moved with amendment 1: the branch reads firstRead)"
+    "note": "tick 61 (fold 2): firstUploadWindow's second false branch — a first read that is not public no longer fails P1 (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FW3",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "else if (firstRead !== null && (firstRead.returned === false || firstRead.privacyStatus !== \"public\")) p1 = false;",
-    "replace": "else if (firstRead !== null && (firstRead.returned === false || firstRead.privacyStatus === \"private\")) p1 = false;",
+    "find": "(r.returned && r.privacyStatus === \"public\")",
+    "replace": "(r.returned && r.privacyStatus !== \"private\")",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (fold 2): only private fails P1 — an unlisted first read is no longer a fail (find moved with amendment 1)"
+    "note": "tick 61 (fold 2): only private fails P1 — an unlisted first read is no longer a fail (P1's API half is judged in the merge) (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FW4",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "else if (publisherAccepted === true && firstRead?.privacyStatus === \"public\") p1 = true;",
-    "replace": "else if (firstRead?.privacyStatus === \"public\") p1 = true;",
+    "find": "else if (publisherAccepted === true && p1Api === true) p1 = true;",
+    "replace": "else if (p1Api === true) p1 = true;",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (fold 2): P1 passes on the read alone, with no publisher response recorded (find moved with amendment 1)"
+    "note": "tick 61 (fold 2): P1 passes on the read alone, with no publisher response recorded (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FW5",
@@ -154,50 +154,50 @@
   {
     "id": "T61-FR1",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "(firstRead.returned === false || firstRead.privacyStatus !== \"public\")",
-    "replace": "(firstRead.privacyStatus !== \"public\")",
+    "find": "(r.returned && r.privacyStatus === \"public\")",
+    "replace": "(r.privacyStatus === \"public\")",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (amendment 1 of ruling 7.10 row 24): the returned === false branch dropped — a first read that says the video was not returned fails P1 only through its privacyStatus"
+    "note": "tick 61 (amendment 1 of ruling 7.10 row 24): the returned branch dropped — a first read that says the video was not returned fails P1 only through its privacyStatus (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FR2",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "(firstRead.returned === false || firstRead.privacyStatus !== \"public\")",
-    "replace": "(firstRead.returned === false)",
+    "find": "(r.returned && r.privacyStatus === \"public\")",
+    "replace": "(r.returned)",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (amendment 1): the privacyStatus !== \"public\" branch dropped — a private or unlisted first read no longer fails P1"
+    "note": "tick 61 (amendment 1): the privacyStatus \"public\" branch dropped — a private or unlisted first read no longer fails P1 (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FR3",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "firstRead: p.firstRead ?? { readAt: r.readAt, returned: r.returned, privacyStatus: r.privacyStatus },",
-    "replace": "firstRead: { readAt: r.readAt, returned: r.returned, privacyStatus: r.privacyStatus },",
+    "find": "p1Api: p.p1Api ?? (r.returned && r.privacyStatus === \"public\"),",
+    "replace": "p1Api: (r.returned && r.privacyStatus === \"public\"),",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (amendment 1): firstRead is no longer written once — every run's read replaces it, so a later public read hides a first read that failed P1"
+    "note": "tick 61 (amendment 1): P1's API half is no longer written once — every run's read replaces it, so a later public read hides a first read that failed P1 (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FR4",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "else if (publisherAccepted === true && firstRead?.privacyStatus === \"public\") p1 = true;",
-    "replace": "else if (publisherAccepted === true && entry?.first?.privacyStatus === \"public\") p1 = true;",
+    "find": "else if (publisherAccepted === true && p1Api === true) p1 = true;",
+    "replace": "else if (publisherAccepted === true && entry?.p2ClockAt != null) p1 = true;",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (amendment 1): P1's true branch reads first (the first designation read) again — an undesignated public first read no longer gives P1 true"
+    "note": "tick 61 (amendment 1): P1's true branch reads the first designation read again (its public start of P2's clock) — an undesignated public first read no longer gives P1 true (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FR5",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "else if (publisherAccepted === true && firstRead?.privacyStatus === \"public\") p1 = true;",
+    "find": "else if (publisherAccepted === true && p1Api === true) p1 = true;",
     "replace": "else if (publisherAccepted === true) p1 = true;",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (amendment 1): P1's true branch drops the public read — the publisher's yes alone passes P1 with no read taken"
+    "note": "tick 61 (amendment 1): P1's true branch drops the public read — the publisher's yes alone passes P1 with no read taken (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FR6",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "const firstRead = entry?.firstRead ?? null;",
-    "replace": "const firstRead = entry?.first ? { readAt: entry.first.readAt, returned: true, privacyStatus: entry.first.privacyStatus } : null;",
+    "find": "const p1Api = entry?.p1Api ?? null;",
+    "replace": "const p1Api = entry?.p2ClockAt != null ? true : entry?.firstDesignationAt != null ? false : null;",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (amendment 1): firstUploadWindow back to the pre-amendment P1, read through first — the measured fixture (a not-returned first read, designated public reads at +1 h and +73 h) passes again"
+    "note": "tick 61 (amendment 1): firstUploadWindow back to the pre-amendment P1, read through the first designation read — the measured fixture (a not-returned first read, designated public reads at +1 h and +73 h) passes again (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FR7",
@@ -210,17 +210,233 @@
   {
     "id": "T61-FR8",
     "file": "src/revenue/youtube-madeforkids.ts",
-    "find": "returned: r.returned, privacyStatus: r.privacyStatus },",
-    "replace": "returned: r.privacyStatus !== null, privacyStatus: r.privacyStatus },",
+    "find": "firstReadReturned: p.firstReadReturned ?? r.returned,",
+    "replace": "firstReadReturned: p.firstReadReturned ?? r.privacyStatus !== null,",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (amendment 1): the merge guesses returned from privacyStatus — a returned video whose status carried no privacyStatus is recorded as not returned"
+    "note": "tick 61 (amendment 1): the merge guesses returned from privacyStatus — a returned video whose status carried no privacyStatus is recorded as not returned (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
   },
   {
     "id": "T61-FR9",
     "file": "src/revenue/youtube-madeforkids.ts",
     "find": "    if (!r) return p;\n",
-    "replace": "    if (!r) return { ...p, firstRead: p.firstRead ?? { readAt: now, returned: false, privacyStatus: null } };\n",
+    "replace": "    if (!r) return { ...p, firstReadAt: p.firstReadAt ?? now, firstReadReturned: p.firstReadReturned ?? false, p1Api: p.p1Api ?? false };\n",
     "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
-    "note": "tick 61 (amendment 1): a listed upload the run has no reading for gets a firstRead anyway — a read that was never taken is recorded"
+    "note": "tick 61 (amendment 1): a listed upload the run has no reading for gets a first read anyway — a read that was never taken is recorded (find moved with ruling 12.10 row 28 fold 1, tick 73: the state keeps colony facts only)"
+  },
+  {
+    "id": "T73-RB1",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "v.firstDesignationAt !== null ? declared : null",
+    "replace": "true ? declared : null",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (ruling 12.10 row 28 fold 1): readbackOf's firstDesignationAt !== null → true — an upload with no designation read reads as the line's declaration instead of unread"
+  },
+  {
+    "id": "T73-P2C1",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "p2ClockAt: startsClock ? (isPublic ? r.readAt : null) : p.p2ClockAt,",
+    "replace": "p2ClockAt: startsClock ? r.readAt : p.p2ClockAt,",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): p2ClockAt's public condition dropped — a first designation read that found the upload private starts P2's clock, and a later public run passes P2"
+  },
+  {
+    "id": "T73-LP1",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "(p.lastPublicAt !== null && !isPublic ? r.readAt : null)",
+    "replace": "(true && !isPublic ? r.readAt : null)",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): leftPublicAt's lastPublicAt !== null → true — a read that is not public counts as a departure with no public read before it"
+  },
+  {
+    "id": "T73-P1A1",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "(r.returned && r.privacyStatus === \"public\")",
+    "replace": "(r.returned || r.privacyStatus === \"public\")",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): p1Api's && → || — a returned private or unlisted first read passes P1's API half"
+  },
+  {
+    "id": "T73-FRA1",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "firstReadAt: p.firstReadAt ?? r.readAt,",
+    "replace": "firstReadAt: r.readAt,",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): firstReadAt's written-once ?? → always overwrite — the first read's time moves to every later run"
+  },
+  {
+    "id": "T73-AF1",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "  if (bad.length) {\n    throw",
+    "replace": "  if (false) {\n    throw",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): assertColonyFactsOnly's throw removed — a state carrying \"public\" passes the invariant"
+  },
+  {
+    "id": "T73-LPR1",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "lastPublicAt: isPublic ? r.readAt : p.lastPublicAt,",
+    "replace": "lastPublicAt: p.lastPublicAt ?? (isPublic ? r.readAt : null),",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): lastPublicAt written once instead of refreshed — P2 never reaches 72 h, the window never passes"
+  },
+  {
+    "id": "T73-CL1",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "    const startsClock = p.firstDesignationAt === null && firstDesignationAt !== null;\n",
+    "replace": "    const startsClock = firstDesignationAt !== null;\n",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): p2ClockAt rewritten by every designated run, not only beside firstDesignationAt — the clock restarts at each read and a private first designation read is forgotten"
+  },
+  {
+    "id": "T73-AF2",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "key === \"id\" ? VIDEO_ID.test(x) : isIsoTime(x)",
+    "replace": "key === \"id\" ? true : isIsoTime(x)",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): the invariant takes any string under id — an id that is not a video id passes"
+  },
+  {
+    "id": "T73-AF3",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "!API_VALUES.has(x) &&",
+    "replace": "true &&",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): the invariant forgets the five API words — an id of \"public\" passes as a video id"
+  },
+  {
+    "id": "T73-AF4",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "return !Number.isNaN(t) && new Date(t).toISOString() === s;",
+    "replace": "return !Number.isNaN(t);",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): the invariant takes any string Date.parse accepts — \"2027-03-01\" passes as a time without round-tripping"
+  },
+  {
+    "id": "T73-AF5",
+    "file": "src/revenue/youtube-madeforkids.ts",
+    "find": "key === \"experiment\" ? isReadbackLine(x)",
+    "replace": "key === \"experiment\" ? VIDEO_ID.test(x)",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 1): the invariant takes any id-shaped string as the line — another line's name passes"
+  },
+  {
+    "id": "T73-W1",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "    assertColonyFactsOnly(next);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (ruling 12.10 row 28 fold 3): the invariant call removed before the write — a state carrying the API's values is written"
+  },
+  {
+    "id": "T73-W2",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "v === declared ? \"as-declared\" : \"contrary\"",
+    "replace": "v === declared ? \"as-declared\" : v",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 3): a designation string leaked into the summary — the contrary upload prints the API's value"
+  },
+  {
+    "id": "T73-W3",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "(v === null ? \"unread\" : v === declared",
+    "replace": "(v === null ? \"unread\" : v !== declared",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 (fold 3): the summary's as-declared and contrary turned round"
+  },
+  {
+    "id": "T73F-N1",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "  if (now === null) {\n",
+    "replace": "  if (false) {\n",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the refusal skipped — a --now runClock refuses falls through to the call and the state's times are written null"
+  },
+  {
+    "id": "T73F-N2",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "parseVideosList(body, batch, now)",
+    "replace": "parseVideosList(body, batch, run.now)",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the reads stamped with the raw --now — a valid --now in another form makes the call, then refuses the write (the finding itself)"
+  },
+  {
+    "id": "T73F-N3",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "mergeReadings(state, uploads, fresh, now)",
+    "replace": "mergeReadings(state, uploads, fresh, run.now)",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the state's updatedAt from the raw --now — the call made, the write refused"
+  },
+  {
+    "id": "T73F-N4",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "(?:Z|[+-]\\d{2}:\\d{2})$/;",
+    "replace": "(?:Z|[+-]\\d{2}:\\d{2})?$/;",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the zone optional — a --now with no zone read in the machine's own zone"
+  },
+  {
+    "id": "T73F-N5",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "(?:Z|[+-]\\d{2}",
+    "replace": "(?:Z|[+]\\d{2}",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): a negative offset refused — 01:00-05:00 is never normalised"
+  },
+  {
+    "id": "T73F-N6",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "[+-]\\d{2}:\\d{2})$/;",
+    "replace": "[+-]\\d{2}:?\\d{2})$/;",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): an offset with no colon taken"
+  },
+  {
+    "id": "T73F-N7",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "(?::\\d{2}(?:\\.\\d{1,9})?)?(?:Z",
+    "replace": "(?::\\d{2}(?:\\.\\d{1,9})?)(?:Z",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): seconds required — 06:00Z refused instead of normalised"
+  },
+  {
+    "id": "T73F-N8",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "T\\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d{1,9})?)?(?:Z|[+-]\\d{2}:\\d{2})$/;",
+    "replace": "(?:T\\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d{1,9})?)?(?:Z|[+-]\\d{2}:\\d{2}))?$/;",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the time optional — a bare date taken as midnight"
+  },
+  {
+    "id": "T73F-N9",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": " || new Date(Date.UTC(+m[1]!, +m[2]! - 1, +m[3]!)).getUTCDate() !== +m[3]!",
+    "replace": "",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the day check dropped — 2027-02-30 rolled into March and written"
+  },
+  {
+    "id": "T73F-N10",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "Number.isNaN(t) || ",
+    "replace": "",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the NaN check dropped — a shape Date.parse refuses (06:60) throws past the refusal"
+  },
+  {
+    "id": "T73F-N11",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "+m[2]! - 1,",
+    "replace": "+m[2]!,",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): the day checked against the month after — 2027-02-29 and 2027-02-30 taken"
+  },
+  {
+    "id": "T73F-N12",
+    "file": "scripts/youtube-madeforkids-readback.ts",
+    "find": "  return new Date(t).toISOString();\n}",
+    "replace": "  return now;\n}",
+    "test": "src/__tests__/revenue/youtube-madeforkids.test.ts",
+    "note": "tick 73 review fix (the --now finding): runClock returns the --now unnormalised — the call made, the write refused"
   }
 ]

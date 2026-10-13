@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -33,6 +33,7 @@ describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
       "capture-check.json",
       "colony.json",
       "freeze-capture.json",
+      "gumroad.json",
       "ledger.json",
       "loop-edit.json",
       "mutate.json",
@@ -81,6 +82,61 @@ describe("src/__tests__/revenue/mutations: the kept mutation plans", () => {
 
     it("every mutation would apply to the code as it is (mutate.mjs --check exits 0)", () => {
       const r = spawnSync(process.execPath, [MUTATE, "--check", "--allow-dirty", "--plan", join(DIR, name)], { cwd: ROOT, encoding: "utf8" });
+      expect(r.status, `${r.stdout}${r.stderr}`).toBe(0);
+      expect(r.stdout).toMatch(new RegExp(`--check: ${plan.length} of ${plan.length} would apply\\n`));
+    });
+  });
+});
+
+/**
+ * Plans kept beside a product's own tests, products/<product>/tests/mutations/<name>.json (ruling 11.10 row 27 fold 10
+ * put the first one there: products/il-biz-tools/tests/mutations/osek-patur-2026.json). A product has its own vitest, so
+ * its entries name no test paths: each runs the product's whole suite with the --cmd below, and --check is given the
+ * same --cmd (under --cmd the test paths are the command's arguments, so none is required). The run itself, inside
+ * scripts/sim-tree.sh, also needs the product's node_modules linked in the tree (the tree links only the root's): the
+ * plan's README says how.
+ */
+const PRODUCTS = join(ROOT, "products");
+const PRODUCT_PLANS = readdirSync(PRODUCTS)
+  .filter((p) => existsSync(join(PRODUCTS, p, "tests", "mutations")))
+  .flatMap((p) =>
+    readdirSync(join(PRODUCTS, p, "tests", "mutations"))
+      .filter((f) => f.endsWith(".json"))
+      .sort()
+      .map((f) => ({ product: p, name: f, path: join(PRODUCTS, p, "tests", "mutations", f) })),
+  );
+const productCmd = (product: string) => `node products/${product}/node_modules/vitest/vitest.mjs run --root products/${product}`;
+
+describe("products/*/tests/mutations: plans kept beside a product's tests", () => {
+  it("finds osek-patur-2026.json beside il-biz-tools' tests, and a README that says how to run it", () => {
+    expect(PRODUCT_PLANS.map((x) => `${x.product}/${x.name}`)).toContain("il-biz-tools/osek-patur-2026.json");
+    const readme = readFileSync(join(PRODUCTS, "il-biz-tools", "tests", "mutations", "README.md"), "utf8");
+    expect(readme).toContain(`--cmd "${productCmd("il-biz-tools")}"`);
+  });
+
+  describe.each(PRODUCT_PLANS)("$product/$name", ({ product, name, path }) => {
+    const plan = JSON.parse(readFileSync(path, "utf8")) as Entry[];
+
+    it("is a non-empty array of {id, file, find, replace, note[, nth]} with unique ids, each file inside its product", () => {
+      expect(Array.isArray(plan)).toBe(true);
+      expect(plan.length).toBeGreaterThan(0);
+      const ids = new Set<string>();
+      for (const m of plan) {
+        const where = `${product}/${name} ${String(m.id)}`;
+        expect(Object.keys(m).filter((k) => !KEYS.has(k) || k === "test"), where).toEqual([]);
+        for (const k of ["id", "file", "find", "replace", "note"]) expect(typeof m[k], `${where}: ${k}`).toBe("string");
+        expect((m.file as string).startsWith(`products/${product}/`), `${where}: file`).toBe(true);
+        expect((m.find as string).length, where).toBeGreaterThan(0);
+        expect(m.replace, where).not.toBe(m.find);
+        expect((m.note as string).trim().length, `${where}: note`).toBeGreaterThan(0);
+        if (m.nth !== undefined) expect(Number.isInteger(m.nth) && (m.nth as number) > 0, `${where}: nth`).toBe(true);
+        expect(ids.has(m.id as string), `${where}: duplicate id`).toBe(false);
+        ids.add(m.id as string);
+      }
+    });
+
+    it("every mutation would apply to the code as it is (mutate.mjs --check --cmd <the product's vitest> exits 0)", () => {
+      const r = spawnSync(process.execPath, [MUTATE, "--check", "--allow-dirty", "--plan", path, "--cmd", productCmd(product)], { cwd: ROOT, encoding: "utf8" });
       expect(r.status, `${r.stdout}${r.stderr}`).toBe(0);
       expect(r.stdout).toMatch(new RegExp(`--check: ${plan.length} of ${plan.length} would apply\\n`));
     });

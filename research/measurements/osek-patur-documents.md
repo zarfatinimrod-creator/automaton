@@ -854,6 +854,9 @@ Line numbers without a file name are this file's (`research/measurements/osek-pa
   each 1 January (§126(א), `R-VAT:1637`). [inference] A figure current on 13.7.2026 is therefore the 2026 figure.
 - `research/tiktok/08-reads/hebrew-israel.md:365` lists "Cap is 122,833 ₪ for 2026" as "Not settled". That row is
   about the income-tax עסק זעיר track.
+- Ruled 11.10 (`research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md`): osek-patur.html's 2026
+  ceiling moved to pending; 122,833 is held unverified in `osek-patur-unverified.json`; the page computes 2024-2025 from the
+  gazette's section 35; the restore route is section 3 there.
 - The track's cap is a statutory reference to this VAT amount: 87ב as read at
   `research/tiktok/08-reads/tt2-render-check.md:99`, "אינו עולה על הסכום הקבוע בהגדרה 'עוסק פטור' שבסעיף 1 לחוק מס
   ערך מוסף".

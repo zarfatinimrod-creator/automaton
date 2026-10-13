@@ -297,11 +297,17 @@ describe('2026: refused on the page, its unverified cap never shown and never sh
     expect(unverified.vatLawSense.section).toBe('31(3)');
   });
 
-  it('the 2026 value is the osek patur ceiling of 2026, the amount the cap is tied to by statute; osek-patur.json no longer leans on the barred capture', () => {
+  it('the 2026 value is the osek patur ceiling of 2026 held back in osek-patur-unverified.json, the amount the cap is tied to by statute; osek-patur.json leans on no barred capture and calls its search history "never a read" (ruling 11.10 row 27, decision 1(4))', () => {
     const osek = JSON.parse(read('src/config/osek-patur.json'));
-    if (osek.year === 2026) expect(cap2026).toBe(osek.ceiling);
-    expect(osek.check.note).not.toMatch(/nevo|Beside Kol Zchut/);
-    expect(osek.check.note.endsWith('turns this into how: "read".')).toBe(true);
+    const osekUnverified = JSON.parse(read('src/config/osek-patur-unverified.json'));
+    expect(cap2026).toBe(osekUnverified.years['2026'].ceiling);
+    expect(Object.keys(osekUnverified.years)).toEqual(Object.keys(unverified.years));
+    expect(Object.keys(osek.pendingYears)).toEqual(Object.keys(config.pendingYears));
+    // One statutory amount, one answer: the years both configs compute carry the same ceiling.
+    for (const [y, { cap }] of Object.entries(config.years)) expect(osek.years[y]?.ceiling, y).toBe(cap);
+    expect(osek.documents.gazette).toEqual(config.documents.gazette);
+    for (const text of [osek.about, osek.check.note, osek.check.earlier.note]) expect(text).not.toMatch(/nevo|נבו|Beside Kol Zchut/);
+    expect(osek.check.earlier.note).toContain('never a read');
   });
 
   it('the page, its script and the module never state it or cite the VAT section; the config states it only in the history check.vatLaw keeps', () => {
@@ -660,7 +666,9 @@ describe('the site around it', () => {
     // Nor which years the tool covers: the gate can withhold the page but not this sentence, so the lead leaves the
     // tool out of its "updated for 2026" and sends the reader to the page.
     expect(lead).not.toMatch(/כולל הבדיקה של בעל עסק זעיר/);
-    expect(lead).toContain('חוץ מהבדיקה של בעל עסק זעיר, שאומרת בדף שלה לאילו שנות מס היא מחשבת');
+    // Since 11.10.2026 the osek patur tracker is left out of it too (research/channel-loop/RULING-2026-10-11-osek-patur-
+    // ceiling.md, decision 2(6)).
+    expect(lead).toContain('חוץ ממעקב תקרת עוסק פטור ומהבדיקה של בעל עסק זעיר, שאומרים בדף שלהם לאילו שנות מס הם מחשבים');
   });
 
   it('the home page lists it, the sitemap lists it, and every page with the main navigation links to it', () => {

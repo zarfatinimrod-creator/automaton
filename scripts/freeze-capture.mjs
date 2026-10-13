@@ -651,6 +651,13 @@ export const NAMED_RE = /(?<![A-Za-z0-9_./-])[A-Za-z0-9_./-]*[A-Za-z_]:\d+(?:-\d
  * note ("an install note (`:115`)", "a GameMaker note (`:8831`") is not one.
  */
 const NOTE_RE = /(?<![A-Za-z0-9_-])(?:[Tt]he note(?![A-Za-z0-9_'-])|[Nn]ote's(?![A-Za-z0-9_-])|[Nn]ote(?=\s+`?:L?\d)|(?<=\()[Nn]ote\s*$)/g;
+/**
+ * A ruling named by its short name, the house form of the briefs and rulings (`ROBOTS-RULING` for
+ * RULING-2026-10-06-robots-and-terms.md, `VIDEO-RULING`): "(ROBOTS-RULING `:152-154`)" or "ROBOTS-RULING 1(2) … (`:125-129`)"
+ * is the ruling's line, not one of a capture named before it on the line (ruling 11.10 row 27, `:364`: "the weekly
+ * `robots-nevo` probe (ROBOTS-RULING `:152-154`)"). Written with its line (`ROBOTS-RULING:121-160`) it is NAMED_RE's.
+ */
+const RULING_NAME_RE = /(?<![A-Za-z0-9_./-])[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-RULING(?![A-Za-z0-9_-])/g;
 const OTHER_FILE_RE = new RegExp(
   `(?<![A-Za-z0-9_./-])[A-Za-z0-9_./-]*[A-Za-z0-9_-]\\.(?:md|py|ts|tsx|js|mjs|cjs|jsx|yml|yaml|csv|sh|toml|rb|ex|exs|go|rs|php|sql|${EXTS_RE})(?![A-Za-z0-9_])`,
   "g",
@@ -691,7 +698,8 @@ function bySuffix(known, suffix, exact) {
  *   NAME.<ext>:N a citation with alias NAME; the capture's own citation there (aliasFor NAME) also holds all of their
  *   ranges, and is the one text that names the capture (repoint moves it; the references follow). Another file's
  *   name (PAT:173, a note's path) or the note a brief summarises ("the note's inference (`:79`)", "note `:545`":
- *   NOTE_RE) owns the bare lines after it, on its line and, carried, on the next.
+ *   NOTE_RE), or a ruling by its short name (ROBOTS-RULING: RULING_NAME_RE) owns the bare lines after it, on its line
+ *   and, carried, on the next.
  *   full:     written with a path (…rendered/); a short one counts only when its slug is known
  *   slugStart, slugEnd: where the slug (or the …-suffix) is written: repoint inserts the frozen date at slugEnd
  * unattributed: { fileLine, text, index }: line references after no name at all in their section.
@@ -850,7 +858,7 @@ export function scanCitations(text, known = new Set(), { carry = true, lineParag
       mark(s, s + p.text.length, "other", null, null);
       if (p.exts.length) others.push({ name: p.slug, ext: p.ext, lines: p.own ? [p.own] : [], fileLine: i + 1, text: p.text, index: p.index });
     }
-    for (const re of [NAMED_RE, OTHER_FILE_RE, NOTE_RE]) {
+    for (const re of [NAMED_RE, OTHER_FILE_RE, NOTE_RE, RULING_NAME_RE]) {
       for (const m of line.matchAll(re)) {
         if (!overlaps(m.index, m.index + m[0].length) && !inExtRef(m.index, m.index + m[0].length)) mark(m.index, m.index + m[0].length, "other", null, null);
       }

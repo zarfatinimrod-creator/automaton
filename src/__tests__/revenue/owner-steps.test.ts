@@ -10,21 +10,34 @@ import {
   heldFollowUpSecretRows,
   heldOwnerStepsForLine,
   heldSecretRows,
+  identityOnLine,
   isOwnerStepOpen,
   isSecretRowAsked,
+  LINE_PAYMENT_WAITS,
   linesWithNoOwnerStep,
   openOwnerStepsForLine,
+  OWNER_STEP_ORDER_RULED,
   ownerStepById,
   ownerStepMinutes,
   ownerStepsForLine,
   ownerStepsInOrder,
+  SECRET_ROW_GATE_SHORT,
+  secretRowHoldReason,
   secretRowsPastedBeforeMade,
+  type OwnerStep,
+  type OwnerStepId,
 } from "../../revenue/owner-steps.js";
-import { DEFAULT_PORTFOLIO } from "../../revenue/portfolio.js";
+import { DEFAULT_PORTFOLIO, TARGET_BASIS } from "../../revenue/portfolio.js";
 import { readSite } from "../../revenue/page-views-reader.js";
+import { PAGE_VIEW_GATES } from "../../revenue/page-views.js";
+import { SUPPLY_THRESHOLDS } from "../../revenue/bounties/supply.js";
 
 const repoRoot = path.resolve(__dirname, "../../..");
 const doc = fs.readFileSync(path.join(repoRoot, "docs/OWNER_STEPS.he.md"), "utf-8");
+
+/** The checklist with the given steps recorded done, for a test only; OWNER_STEPS itself is left as it is. */
+const withDoneSteps = (ids: OwnerStepId[]): OwnerStep[] =>
+  OWNER_STEPS.map((s) => (ids.includes(s.id) ? { ...s, doneOn: { date: "2026-10-01", evidence: "test only" } } : s));
 
 describe("the owner's checklist is eight steps and stays eight", () => {
   it("has exactly eight steps, with stable numbers 1..8", () => {
@@ -54,15 +67,18 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     expect(OWNER_STEPS.map((s) => s.order).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
-  it("lets the Apify half of step 6 be done straight after step 1, and step 6 is the only step with an early part", () => {
+  it("lets the early part of step 6 (the Apify token and part ד) follow step 8", () => {
     // The early part and the reason the list has them at all: the token starts the
     // 30-day stranger count a month earlier than the rest of the checklist would
     // allow, and it needs no identity check. Step 4's early part (4a) was dropped
-    // on 28.9.2026 (research/breadth/BOARD.md Part B(b)).
+    // on 28.9.2026 (research/breadth/BOARD.md Part B(b)). Step 6 is still the only step with one.
     const early = OWNER_STEPS.filter((s) => s.earlyPart);
     expect(early.map((s) => s.id)).toEqual(["ci-tokens"]);
     const apify = ownerStepById("ci-tokens")!.earlyPart!;
-    expect(apify.afterStep).toBe("merge-pr");
+    // Ruling 12.10 (RULING-2026-10-12-owner-step-order.md §3(2)): the Apify account is opened with the brand mailbox of
+    // step 8, never a personal address, so the early part follows step 8 (it followed merge-pr since 27.9).
+    expect(apify.afterStep).toBe("brand-mailbox");
+    expect(apify.what).toMatch(/brand mailbox/);
     expect(apify.what).toMatch(/APIFY_TOKEN/);
     // Ruling 7.10 (research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2): part ד, the owner's two PostHog
     // organisations, joins the early part beside the Apify token, and the early part goes from 5 minutes to 8.
@@ -103,7 +119,12 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     expect(step8.number).toBe(8);
     expect(step8.order).toBe(2);
     expect(step8.minutes).toEqual([10, 10]);
-    expect(step8.lines).toEqual(["il-biz-tools"]);
+    // Ruling 12.10 §3(3): the Apify account is registered with the brand mailbox, so apify-actors waits on step 8 too.
+    expect(step8.lines).toEqual(["apify-actors", "il-biz-tools"]);
+    expect(openOwnerStepsForLine("apify-actors").map((s) => s.number)).toEqual([8, 6]);
+    expect(step8.unlocks).toContain(
+      "It is also the sign-in address of the Apify account step 6's early part opens (never a personal address, BOARD-LOOP PUBLISH-9), so apify-actors waits on it too (ruling 12.10).",
+    );
     // Consent-and-account, not identity: no chief-audit catalogue item, and nothing holds it back.
     expect(step8.catalogueRef).toBeNull();
     expect(isOwnerStepOpen(step8)).toBe(true);
@@ -145,8 +166,9 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     expect(step8.unlocks).toMatch(/never the owner's personal Gmail/);
     expect(step8.unlocks).toMatch(/CrazyGames/);
     expect(step8.unlocks).toMatch(/Spreadshirt/);
-    // il-biz-tools now waits on it, first in its asked-now list.
-    expect(openOwnerStepsForLine("il-biz-tools").map((s) => s.number)).toEqual([8, 3, 6]);
+    // il-biz-tools now waits on it, first in its asked-now list. Since ruling 12.10 step 3 is held (a paid product is
+    // ready only at the day-56 PASS), so the list is 8, 6.
+    expect(openOwnerStepsForLine("il-biz-tools").map((s) => s.number)).toEqual([8, 6]);
     // Loop board 29.9.2026 (RULING-2026-09-29-loop.md (b)): what waits on the mailbox, counted once.
     // npm step 9 is proposed, not asked, and Displate is not admitted (ruling (c)): both are qualified so neither reads as
     // a step on the way (review of the loop-board diff, finding 6).
@@ -233,12 +255,22 @@ describe("every line's human setup maps to a step, and every step unlocks a line
 
   // Review of the breadth-board builder diff, finding 5: the report said "steps 8, 3, 6" for il-biz-tools while its
   // checklist (humanSetup) showed only 3 and 6, so humanSetupDone could be set without the mailbox.
+  // Ruling 12.10 §3(3): step 8 gates apify-actors too, because the Apify account is registered with the brand mailbox;
+  // that line's setup item names step 8 as context, not as its step (the mailbox itself is il-biz-tools' item).
   it("names owner step 8 in the setup notes of every line it gates, first", () => {
     const step8 = ownerStepById("brand-mailbox")!;
+    expect(step8.lines).toEqual(["apify-actors", "il-biz-tools"]);
     for (const id of step8.lines) {
       const line = DEFAULT_PORTFOLIO.find((l) => l.id === id)!;
-      expect(line.humanSetup[0], `${id}: the mailbox note should come first`).toMatch(/^Open the brand mailbox \(owner step 8\)/);
+      const first = line.humanSetupItems![0];
+      expect(first.text, `${id}: the first note names step 8`).toMatch(/\bstep 8\b/);
+      if (first.steps.includes(8)) {
+        expect(line.humanSetup[0], `${id}: the mailbox note should come first`).toMatch(/^Open the brand mailbox \(owner step 8\)/);
+      } else {
+        expect(first.contextSteps, `${id}: step 8 is the first note's context`).toContain(8);
+      }
     }
+    expect(DEFAULT_PORTFOLIO.find((l) => l.id === "il-biz-tools")!.humanSetup[0]).toMatch(/^Open the brand mailbox \(owner step 8\)/);
   });
 
   it("routes each line to the steps that actually gate it", () => {
@@ -290,12 +322,36 @@ describe("each humanSetup item is linked to exactly the owner steps its text nam
 
   it("links the items that name more than one step as the texts read", () => {
     const item = (id: string, i: number) => DEFAULT_PORTFOLIO.find((l) => l.id === id)!.humanSetupItems![i];
-    // "(owner step 6; this half may be done straight after step 1)": step 1 is an order note, not part of the item.
-    expect([item("apify-actors", 0).steps, item("apify-actors", 0).contextSteps]).toEqual([[6], [1]]);
+    // "(owner step 6; this half may be done straight after step 8, with the brand mailbox as the account's address)":
+    // step 8 is an order note, not part of the item (ruling 12.10 Fold 5; it was step 1 until then).
+    expect([item("apify-actors", 0).steps, item("apify-actors", 0).contextSteps]).toEqual([[6], [8]]);
+    expect(item("apify-actors", 0).text).toContain(
+      "(owner step 6; this half may be done straight after step 8, with the brand mailbox as the account's address)",
+    );
     // The machine account is step 7; its token is "made with step 7, pasted in step 6" — both are the item's.
     expect([item("oss-bounties", 0).steps, item("oss-bounties", 0).contextSteps]).toEqual([[7, 6], undefined]);
-    // "(The company domain, owner step 5, is frozen … and is not asked for.)": named, never asked.
-    expect([item("pcn874", 2).steps, item("pcn874", 2).contextSteps]).toEqual([[6], [5]]);
+    // "(The company domain, owner step 5, is frozen … and is not asked for.)": named, never asked. Since ruling 12.10 the
+    // item also says the Gumroad token is pasted only once step 3 is done: step 3 is context too.
+    expect([item("pcn874", 2).steps, item("pcn874", 2).contextSteps]).toEqual([[6], [3, 5]]);
+  });
+
+  // Ruling 12.10 Fold 5: the Gumroad items carry step 3's gate, as 4b's text carries its own, and the token paste waits
+  // for step 3.
+  it("says on each Gumroad item when it is asked, and on each token paste that it waits for step 3 (ruling 12.10)", () => {
+    const item = (id: string, i: number) => DEFAULT_PORTFOLIO.find((l) => l.id === id)!.humanSetupItems![i];
+    const gate =
+      "Asked only when a paid product is ready — the day-56 page-view PASS (RULING-2026-09-28-floors.md row 9; ruling 12.10) — together with step 2: ";
+    for (const g of [item("il-biz-tools", 2), item("pcn874", 0)]) {
+      expect(g.text.startsWith(gate), g.text).toBe(true);
+      expect(g.text).toMatch(/\(owner step 3\)( — the same account il-biz-tools uses)?$/);
+      expect([g.steps, g.contextSteps]).toEqual([[3], [2]]);
+    }
+    for (const p of [item("il-biz-tools", 3), item("pcn874", 2)]) {
+      expect(p.text).toContain("GUMROAD_ACCESS_TOKEN");
+      expect(p.text).toContain(" — the Gumroad token only once step 3 is done (ruling 12.10)");
+      expect(p.steps).toEqual([6]);
+      expect(p.contextSteps).toContain(3);
+    }
   });
 });
 
@@ -390,14 +446,15 @@ describe("the owner's ₪0 rule and standing consent of 27.9.2026", () => {
   it("stops asking for a frozen step without losing which lines it gates", () => {
     expect(isOwnerStepOpen(ownerStepById("domain")!)).toBe(false);
     expect(isOwnerStepOpen(ownerStepById("merge-pr")!)).toBe(false);
-    expect(isOwnerStepOpen(ownerStepById("gumroad")!)).toBe(true);
+    // Held since ruling 12.10 (§2(2)): asked only when a paid product is ready, with step 2.
+    expect(isOwnerStepOpen(ownerStepById("gumroad")!)).toBe(false);
     for (const id of ["il-biz-tools", "pcn874"]) {
       expect(ownerStepsForLine(id).map((s) => s.id)).toContain("domain");
       expect(openOwnerStepsForLine(id).map((s) => s.id)).not.toContain("domain");
       expect(frozenOwnerStepsForLine(id).map((s) => s.id)).toEqual(["domain"]);
     }
-    // Step 2 is not asked either: it is held by its precondition (next describe).
-    expect(openOwnerStepsForLine("pcn874").map((s) => s.number)).toEqual([3, 7, 6]);
+    // Steps 2 and 3 are not asked either: each is held by its precondition (below; step 3 since ruling 12.10).
+    expect(openOwnerStepsForLine("pcn874").map((s) => s.number)).toEqual([7, 6]);
     expect(frozenOwnerStepsForLine("apify-actors")).toEqual([]);
   });
 
@@ -444,28 +501,81 @@ describe("the owner's ₪0 rule and standing consent of 27.9.2026", () => {
     for (const id of tax.lines) {
       expect(ownerStepsForLine(id).map((s) => s.id), id).toContain("tax-file");
       expect(openOwnerStepsForLine(id).map((s) => s.id), id).not.toContain("tax-file");
-      // oss-bounties is also held on step 4b since 28.9.2026 (RULING-2026-09-28-bounty-rail.md §4.1).
-      expect(heldOwnerStepsForLine(id).map((s) => s.id), id).toEqual(id === "oss-bounties" ? ["tax-file", "algora-stripe"] : ["tax-file"]);
+      // oss-bounties is also held on step 4b since 28.9.2026 (RULING-2026-09-28-bounty-rail.md §4.1); il-biz-tools and
+      // pcn874 on step 3 since ruling 12.10 (§2(2)).
+      const held: Record<string, string[]> = {
+        "apify-actors": ["tax-file"],
+        "il-biz-tools": ["tax-file", "gumroad"],
+        "oss-bounties": ["tax-file", "algora-stripe"],
+        pcn874: ["tax-file", "gumroad"],
+      };
+      expect(heldOwnerStepsForLine(id).map((s) => s.id), id).toEqual(held[id]);
     }
-    // Steps 2 and 4 are held; a frozen step is reported as frozen, not as held.
-    expect(OWNER_STEPS.filter(hasPendingPrecondition).map((s) => s.id).sort()).toEqual(["algora-stripe", "tax-file"]);
+    // Steps 2, 3 and 4 are held; a frozen step is reported as frozen, not as held.
+    expect(OWNER_STEPS.filter(hasPendingPrecondition).map((s) => s.id).sort()).toEqual(["algora-stripe", "gumroad", "tax-file"]);
     expect(heldOwnerStepsForLine("il-biz-tools").map((s) => s.id)).not.toContain("domain");
   });
 
-  it("asks for step 2 again once the colony records its precondition met", () => {
-    const met = OWNER_STEPS.map((s) =>
-      s.id === "tax-file"
-        ? { ...s, precondition: { ...s.precondition!, metOn: { date: "2026-10-01", evidence: "test" } } }
-        : s,
+  // Ruling 12.10 (RULING-2026-10-12-owner-step-order.md §2): step 3 is held like step 2 — asked only when a paid product
+  // is ready, which for il-biz-tools and pcn874 is the day-56 page-view PASS (or the day-112 read after the one
+  // extension), the floors ruling's own gate; asked then together with step 2. No cost check is part of its gate.
+  it("holds step 3 until a paid product is ready — the day-56 page-view PASS — and asks it then with step 2 (ruling 12.10)", () => {
+    const step3 = ownerStepById("gumroad")!;
+    expect(hasPendingPrecondition(step3)).toBe(true);
+    expect(isOwnerStepOpen(step3)).toBe(false);
+    expect(step3.doneOn).toBeUndefined();
+    expect(step3.precondition!.metOn).toBeUndefined();
+    const { short, what } = step3.precondition!;
+    expect(short).toMatch(/^only when a paid product is ready/);
+    expect(short).toMatch(/day-56/);
+    expect(short).toMatch(/together with step 2/);
+    expect(short).toBe(
+      `only when a paid product is ready — after the day-${PAGE_VIEW_GATES.reachDay} page-view PASS of il-biz-tools or pcn874, together with step 2`,
     );
+    expect(short).not.toMatch(/[();]/); // it is printed inside the report's parentheses
+    expect(`step ${step3.number} ${short}`).not.toMatch(/^step 3 3/); // printed after "step 3 "
+    for (const words of ["RULING-2026-09-28-floors.md", "Row 9 item 3", "day-56", "day 112", "free to open", "metOn is set by hand"]) {
+      expect(what, words).toContain(words);
+    }
+    expect(what).toContain(`day-${PAGE_VIEW_GATES.reachDay} page-view read PASSES`);
+    expect(what).toContain(`the same read at day ${PAGE_VIEW_GATES.extensionDay} after its one extension`);
+    expect(what).toContain("so no cost check is part of this gate");
+    expect(what).toContain("asks the owner for step 3 together with step 2, with the reading");
+    expect(what).toContain("RULING-2026-10-12-owner-step-order.md §2");
+    // It states no figure in shekels: the account is free to open and its fees come out of sales.
+    expect(what).not.toMatch(/₪\s?\d/);
+    // It still gates its two lines; only the ask waits.
+    expect(step3.lines).toEqual(["il-biz-tools", "pcn874"]);
+    for (const id of step3.lines) {
+      expect(ownerStepsForLine(id).map((s) => s.id), id).toContain("gumroad");
+      expect(openOwnerStepsForLine(id).map((s) => s.id), id).not.toContain("gumroad");
+    }
+  });
+
+  const withMet = (ids: OwnerStepId[]): OwnerStep[] =>
+    OWNER_STEPS.map((s) =>
+      ids.includes(s.id) ? { ...s, precondition: { ...s.precondition!, metOn: { date: "2026-10-01", evidence: "test" } } } : s,
+    );
+
+  it("asks for step 2 again once the colony records its precondition met", () => {
+    const met = withMet(["tax-file"]);
     const tax = met.find((s) => s.id === "tax-file")!;
     expect(hasPendingPrecondition(tax)).toBe(false);
     expect(isOwnerStepOpen(tax)).toBe(true);
-    expect(openOwnerStepsForLine("pcn874", met).map((s) => s.number)).toEqual([2, 3, 7, 6]);
-    expect(heldOwnerStepsForLine("pcn874", met)).toEqual([]);
+    // Step 3 stays held until its own metOn (ruling 12.10).
+    expect(openOwnerStepsForLine("pcn874", met).map((s) => s.number)).toEqual([2, 7, 6]);
+    expect(heldOwnerStepsForLine("pcn874", met).map((s) => s.id)).toEqual(["gumroad"]);
   });
 
-  it("keeps the board's pinned order: the ₪0 sequence is text until the board re-rules", () => {
+  it("asks steps 2 and 3 together once both preconditions are recorded met, at the PASS (ruling 12.10)", () => {
+    const met = withMet(["tax-file", "gumroad"]);
+    expect(isOwnerStepOpen(met.find((s) => s.id === "gumroad")!)).toBe(true);
+    expect(openOwnerStepsForLine("pcn874", met).map((s) => s.number)).toEqual([2, 3, 7, 6]);
+    expect(heldOwnerStepsForLine("pcn874", met)).toEqual([]);
+    expect(openOwnerStepsForLine("il-biz-tools", met).map((s) => s.number)).toEqual([8, 2, 3, 6]);
+  });
+
+  it("keeps the boards' order: ruled 12.10, the code's order is the checklist's", () => {
     expect(ownerStepsInOrder().map((s) => s.number)).toEqual([1, 8, 2, 3, 5, 7, 4, 6]);
   });
 });
@@ -480,10 +590,17 @@ describe("the Hebrew document has not drifted from the code", () => {
     // The document tells the owner "1 → 8 → 2 → 3 → 5 → 7 → 4 → 6". If the code is
     // reordered and the document is not, the owner does the wrong thing first —
     // and the wrong thing first here costs a month of the Apify count.
-    const stated = doc.match(/(\d(?:\s*→\s*\d){7})/);
-    expect(stated, "docs/OWNER_STEPS.he.md no longer states an execution order").toBeTruthy();
-    const order = stated![1].split("→").map((n) => Number(n.trim()));
-    expect(order).toEqual(ownerStepsInOrder().map((s) => s.number));
+    // Since ruling 12.10 (Fold 3) the ₪0 box's order bullet states the order too, ahead of the board's line, so the
+    // first arrow sequence is no longer the board's line (tick 73 review, R-X1): every sequence is checked, and the
+    // board's line ("כפי שרשום בקוד:", which Fold 2 keeps parsed) is found by its own words.
+    const code = ownerStepsInOrder().map((s) => s.number);
+    const parse = (s: string) => s.split("→").map((n) => Number(n.trim()));
+    const stated = [...doc.matchAll(/\d(?:\s*→\s*\d)+/g)].map((m) => m[0]);
+    expect(stated.length, "docs/OWNER_STEPS.he.md states the order in the ₪0 box's order bullet and in the board's line").toBeGreaterThanOrEqual(2);
+    for (const order of stated) expect(parse(order), order).toEqual(code);
+    const board = doc.match(/כפי שרשום בקוד: (\d(?:\s*→\s*\d){7})\.\*\*/);
+    expect(board, "docs/OWNER_STEPS.he.md no longer states the board's execution order").toBeTruthy();
+    expect(parse(board![1])).toEqual(code);
   });
 
   it("marks exactly the steps the code records as done", () => {
@@ -521,8 +638,10 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(box).toMatch(/ה-₪200 שאישרת ב-3\.9 \*\*מושהים\*\*/);
     // The free sequence, in order: step 8 (the brand mailbox, asked now since the
     // breadth board of 28.9.2026), then the Apify half of 6, then 7, then Netlify
-    // half of 6, then 3, then 2 only when a paid product is ready. Since ruling 7.10
-    // (RULING-2026-10-07-posthog-organisation.md §2 edit 9) the second item is step 6's Apify and PostHog parts together.
+    // half of 6, then 2 and 3 together only when a paid product is ready. Since ruling 7.10
+    // (RULING-2026-10-07-posthog-organisation.md §2 edit 9) the second item is step 6's Apify and PostHog parts together;
+    // since ruling 12.10 (RULING-2026-10-12-owner-step-order.md, Fold 3) steps 2 and 3 are one held item, in the code's
+    // order, asked together at the day-56 PASS.
     const at = (needle: string) => {
       const i = box.indexOf(needle);
       expect(i, `the ₪0 box does not mention "${needle}"`).toBeGreaterThan(-1);
@@ -533,12 +652,85 @@ describe("the Hebrew document has not drifted from the code", () => {
       at("**צעד 6 — רק החלק של Apify והחלק של PostHog**"),
       at("**צעד 7**"),
       at("**צעד 6 — חיבור Netlify.**"),
-      at("**צעד 3 — חשבון Gumroad.**"),
-      at("**צעד 2 — רק כשמוצר בתשלום מוכן למכירה**"),
+      at("**צעדים 2 ו-3 — רק כשמוצר בתשלום מוכן למכירה**"),
     ];
     expect([...order].sort((a, b) => a - b)).toEqual(order);
-    // And it says the code's order awaits the board, rather than silently diverging.
-    expect(box).toContain("ממתין לפסיקה");
+    expect(box).not.toContain("**צעד 3 — חשבון Gumroad.**");
+    // And it says what the board ruled on the order, rather than that the order awaits it.
+    expect(box).toContain("פסק ב-12.10");
+    expect(doc).not.toContain("ממתין לפסיקה");
+  });
+
+  // Ruling 12.10 Fold 3 gives three paragraphs word for word: the dated paragraph, the merged box item 5 and the ruled
+  // order bullet. A needle or an opening pins none of what they say (tick 73 review: day 56 → 30, "after step 8" →
+  // "after step 1", "steps 2 and 3 held" → "step 2 held", "both asked together, with the reading" dropped, "the token
+  // rows only once the step that makes them is done" → "now" all survived), so each is pinned whole, the blockquote's
+  // "> " prefixes and line breaks flattened.
+  it("carries ruling 12.10's three Fold 3 paragraphs word for word (the dated paragraph, box item 5, the order bullet)", () => {
+    const flatQuoted = (t: string) => t.replace(/^>[ \t]*/gm, "").replace(/\s+/g, " ");
+    const flatDoc = flatQuoted(doc);
+    expect(flatDoc).toContain(
+      "**עודכן 12.10.2026 (פסיקה 12.10, `research/channel-loop/RULING-2026-10-12-owner-step-order.md`, FABLE_QUEUE שורה 29): הסדר שבקוד הוא הסדר, והוא לא השתנה; מה שמבוקש עכשיו נקבע לפי השערים ולא לפי הסדר. צעד 3 (Gumroad) מוחזק בקוד כמו צעד 2 — מבוקש רק כשמוצר בתשלום מוכן, כלומר כשקריאת הצפיות של יום 56 עוברת, ואז שניהם יחד; החלק המוקדם של צעד 6 (טוקן Apify ושני ארגוני PostHog) בא אחרי צעד 8, כי חשבון Apify נפתח עם תיבת המותג; שורות הטוקנים של צעד 6 נשאלות רק כשהצעד שיוצר אותן בוצע. שום צעד לא נוסף, ושום סדר לא השתנה.**",
+    );
+    const box = flatQuoted(doc.slice(doc.indexOf("### כלל ה-0 ₪ (27.9)"), doc.indexOf("סדר ביצוע של הדירקטוריון")));
+    expect(box).toContain(
+      "5. **צעדים 2 ו-3 — רק כשמוצר בתשלום מוכן למכירה**, כלומר כשקריאת הצפיות של יום 56 (או יום 112, אחרי ההארכה האחת) עוברת ב-`il-biz-tools` או ב-`pcn874` (פסיקת 28.9 שורה 9; פסיקת 12.10). אז שניהם מבוקשים יחד, עם הקריאה עצמה: **צעד 2** — תיק עוסק פטור, ורק אחרי שבדקתי מהמקור הרשמי אם הוא עולה משהו (פירוט בצעד 2); **צעד 3** — חשבון Gumroad: פתיחת החשבון חינם והעמלות יורדות רק מתוך מכירות, לא מהכיס שלך, אבל הוא צעד זהות (תעודת זהות, הוכחת כתובת, חשבון בנק), ומה שהוא פותח — מכירה והטוקן שקורא אותה — לא קיים לפני צעד 2, ולכן הוא לא מבוקש לפני כן. **שום מוצר בתשלום לא עולה שם למכירה לפני צעד 2.**",
+    );
+    expect(box).toContain(
+      "- **המספרים לא זזים.** \"צעד 5\" הוא עדיין הדומיין. **הדירקטוריון פסק ב-12.10** (`research/channel-loop/RULING-2026-10-12-owner-step-order.md`): הסדר הרשמי הוא זה שבקוד (`src/revenue/owner-steps.ts`) — 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6, סדר הדירקטוריון מ-7.9 עם צעד 8 שהוכנס שני ב-28.9 — והוא לא השתנה. מה שמבוקש ממך עכשיו נקבע לא לפי הסדר אלא לפי השערים: צעד 1 בוצע, צעד 5 מוקפא, וצעדים 2 ו-3 מוחזקים עד שמוצר בתשלום מוכן; לכן נשארים הצעדים החינמיים, בסדר שלמעלה — שהוא אותו סדר. בשני המקומות — אף צעד לא מבקש ממך כסף.",
+    );
+    // The day the box names is the gate's own day, not a number typed beside it.
+    expect(box).toContain(`כשקריאת הצפיות של יום ${PAGE_VIEW_GATES.reachDay} (או יום ${PAGE_VIEW_GATES.extensionDay}, אחרי ההארכה האחת)`);
+  });
+
+  // Tick 73 review: two owner-facing texts outside Fold 3's list still said the Apify half may go in "right after step 1"
+  // (step 1's done note in the Hebrew document, and products/README.md's apify-il-open-data row), against ruling 12.10
+  // §3(2): the Apify account is opened with the brand mailbox, so the early part follows step 8. Both now carry the
+  // ruling's own wording (Fold 3's Hebrew for the document, Fold 5's English for the README).
+  it("never says the Apify half follows step 1: the Hebrew document and products/README.md put it after step 8 (ruling 12.10 §3(2))", () => {
+    const flatDoc = doc.replace(/^>[ \t]*/gm, "").replace(/\s+/g, " ");
+    expect(flatDoc).not.toMatch(/מותר מיד אחרי צעד 1(?!\d)/);
+    expect(flatDoc).not.toMatch(/(טוקן Apify|APIFY_TOKEN|Apify)[^.]{0,120}אחרי צעד 1(?!\d)/);
+    const step1 = flatDoc.slice(flatDoc.indexOf("## צעד 1"), flatDoc.indexOf("## צעד 2"));
+    expect(step1).toContain(
+      "זה החצי הראשון של צעד 6, והוא מותר מיד אחרי צעד 8 (חשבון Apify נפתח עם תיבת המותג).",
+    );
+    const products = fs.readFileSync(path.join(repoRoot, "products/README.md"), "utf-8");
+    const apifyRow = products.split("\n").find((l) => l.startsWith("| `apify-il-open-data` |"))!;
+    expect(apifyRow, "products/README.md has no apify-il-open-data row").toBeTruthy();
+    expect(apifyRow).not.toMatch(/after step 1(?!\d)/);
+    expect(apifyRow).toContain("(allowed straight after step 8, with the brand mailbox as the account's address; **no KYC**)");
+  });
+
+  // Ruling 12.10 Fold 3: the document states the ruling where it gave the owner the order, step 3's own section says
+  // when it is asked, and the Apify account is opened with the brand mailbox of step 8.
+  it("says in step 3 that it is asked only when a paid product is ready, and in step 6 that Apify uses the brand mailbox (ruling 12.10)", () => {
+    const step3 = doc.slice(doc.indexOf("## צעד 3"), doc.indexOf("## צעד 4"));
+    expect(step3).toContain("רק כשמוצר בתשלום מוכן");
+    expect(step3).toContain("קריאת הצפיות של יום 56");
+    expect(step3).toContain(
+      "**מבוקש רק כשמוצר בתשלום מוכן** — כשקריאת הצפיות של יום 56 עוברת (פסיקת 28.9 שורה 9; פסיקת 12.10) — יחד עם צעד 2. עד אז הדוח השעתי לא מבקש אותו.",
+    );
+    expect(step3).toContain("לכן צעד 8 בא לפני צעד 3");
+    const step6 = doc.slice(doc.indexOf("## צעד 6"), doc.indexOf("## צעד 7"));
+    const partB = step6.slice(step6.indexOf("### חלק ב"), step6.indexOf("### חלק ג"));
+    const apifyItem = partB.slice(partB.indexOf("2. **טוקן Apify**"), partB.indexOf("\n3. "));
+    expect(apifyItem).toContain("של המותג מצעד 8");
+    expect(apifyItem).toContain("ולהירשם (**עם כתובת המייל של המותג מצעד 8 — לא כתובת אישית**;");
+    expect(step6).toContain("— **ראשון, מיד אחרי צעד 8**");
+    expect(step6).not.toContain("**ראשון, כבר");
+    expect(doc).toContain("עודכן 12.10.2026");
+    expect(doc).toContain(
+      "**עודכן 12.10.2026 (פסיקה 12.10, `research/channel-loop/RULING-2026-10-12-owner-step-order.md`, FABLE_QUEUE שורה 29): הסדר שבקוד הוא הסדר, והוא לא השתנה;",
+    );
+    const flatDoc = doc.replace(/\s+/g, " ");
+    expect(flatDoc).toContain("את **טוקן Apify** (חלק ב' של צעד 6) אפשר להדביק כבר מיד אחרי צעד 8 (חשבון Apify נפתח עם תיבת המותג)");
+    expect(flatDoc).toContain("(הסדר שבתיבה למעלה הוא אותו סדר אחרי השערים — פסיקת 12.10.)");
+    const table = doc.slice(doc.indexOf("## סיכום בטבלה אחת"));
+    expect(table).toContain(
+      "| 3 | חשבון Gumroad + טוקן — רק כשמוצר בתשלום מוכן (קריאת יום 56 עוברת), יחד עם צעד 2 | 20 | 3 קווים, תשלום בשקלים | הטוקן → צעד 6 |",
+    );
+    expect(table.split("\n").find((l) => l.startsWith("| 8 |"))).toContain(", כתובת ההרשמה של חשבון Apify |");
   });
 
   it("records the standing consent and PR #3 where it talks about merging", () => {
@@ -770,9 +962,11 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(later).toContain("§6.2");
   });
 
-  it("still tells the owner the Apify token may go in right after step 1", () => {
+  // Ruling 12.10 §3(2): the Apify token may go in straight after step 8, whose mailbox the Apify account is opened with
+  // (it was "right after step 1" from 27.9 until then).
+  it("tells the owner the Apify token may go in right after step 8, with the brand mailbox", () => {
     expect(doc).toMatch(/Apify/);
-    expect(doc).toMatch(/מיד אחרי צעד 1|אחרי צעד 1/);
+    expect(doc).toMatch(/מיד אחרי צעד 8 \(חשבון Apify נפתח עם תיבת המותג\)/);
   });
 });
 
@@ -873,12 +1067,23 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
     expect(isSecretRowAsked(key, { projectId: "" })).toBe(false);
     expect(isSecretRowAsked(key, { projectId: "   " })).toBe(false);
     expect(isSecretRowAsked(key, { projectId: "12345" })).toBe(true);
-    expect(askedSecretRows(step6, { projectId: "" }).map((r) => r.name)).toEqual([
+    // Once the steps that make the other tokens are done (steps 3 and 7), only this row's gate holds anything back.
+    const makersDone = withDoneSteps(["gumroad", "github-org"]);
+    expect(askedSecretRows(step6, { projectId: "" }, makersDone).map((r) => r.name)).toEqual([
       "GUMROAD_ACCESS_TOKEN", "APIFY_TOKEN", "BRAND_GITHUB_TOKEN", "ORG_BUDGETS_READ_TOKEN",
     ]);
-    expect(askedSecretRows(step6, { projectId: "12345" }).map((r) => r.name)).toContain("POSTHOG_READ_KEY");
-    expect(heldSecretRows(step6, { projectId: "" }).map((r) => r.name)).toEqual(["POSTHOG_READ_KEY"]);
-    expect(heldSecretRows(step6, { projectId: "12345" })).toEqual([]);
+    expect(askedSecretRows(step6, { projectId: "12345" }, makersDone).map((r) => r.name)).toContain("POSTHOG_READ_KEY");
+    expect(heldSecretRows(step6, { projectId: "" }, makersDone).map((r) => r.name)).toEqual(["POSTHOG_READ_KEY"]);
+    expect(heldSecretRows(step6, { projectId: "12345" }, makersDone)).toEqual([]);
+    // On the checklist as recorded (steps 3 and 7 not done), the rows they make are held too (ruling 12.10 §2(5)).
+    expect(askedSecretRows(step6, { projectId: "" }).map((r) => r.name)).toEqual(["APIFY_TOKEN"]);
+    expect(askedSecretRows(step6, { projectId: "12345" }).map((r) => r.name)).toEqual(["APIFY_TOKEN", "POSTHOG_READ_KEY"]);
+    expect(heldSecretRows(step6, { projectId: "" }).map((r) => r.name)).toEqual([
+      "GUMROAD_ACCESS_TOKEN", "BRAND_GITHUB_TOKEN", "ORG_BUDGETS_READ_TOKEN", "POSTHOG_READ_KEY",
+    ]);
+    expect(heldSecretRows(step6, { projectId: "12345" }).map((r) => r.name)).toEqual([
+      "GUMROAD_ACCESS_TOKEN", "BRAND_GITHUB_TOKEN", "ORG_BUDGETS_READ_TOKEN",
+    ]);
     // The gate reads the same field the page-view reader reads, from the real site.json.
     const site = readSite();
     expect(isSecretRowAsked(key, site)).toBe(site.projectId !== "");
@@ -907,7 +1112,10 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
     expect(step6.minutes).toEqual([18, 23]);
     expect(step6.unlocks).toMatch(/two PostHog organisations/);
     expect(step6Doc).toContain("### חלק ד");
-    expect(step6Doc).toContain("עצור אם");
+    // In part ד itself: since tick 69 part ג carries its own "עצור אם" (Apify's verification), so step 6 as a whole
+    // would keep the words if part ד lost its stop rule (T61-OS6 survived on that until this read part ד alone).
+    const partD = step6Doc.slice(step6Doc.indexOf("### חלק ד"), step6Doc.indexOf("### מה זה עושה"));
+    expect(partD).toContain("**עצור אם:** PostHog מבקש");
   });
 
   // Tick 62 (7.10.2026): the hourly report prints the lines' setup items, and none named PostHog, so part ד was asked
@@ -995,10 +1203,101 @@ describe("a gated row held back when its step was done is asked alone later, as 
     }
   });
 
+  // Ruling 12.10 §2(5): heldRows keeps naming askedOnlyWhen rows only — a madeIn row's wait is a different thing, and
+  // step 6 still cannot be recorded done before the steps that make its tokens (secretRowsPastedBeforeMade).
+  it("keeps heldRows to gated rows: no madeIn row is one, and the record still refuses a step 6 done before steps 3 and 7", () => {
+    const step6 = ownerStepById("ci-tokens")!;
+    const gated = step6.secrets!.filter((r) => r.askedOnlyWhen).map((r) => r.name);
+    const made = step6.secrets!.filter((r) => r.madeIn).map((r) => r.name);
+    expect(gated).toEqual(["POSTHOG_READ_KEY"]);
+    expect(made).toEqual(["GUMROAD_ACCESS_TOKEN", "BRAND_GITHUB_TOKEN", "ORG_BUDGETS_READ_TOKEN"]);
+    for (const name of made) expect(gated).not.toContain(name);
+    expect(secretRowsPastedBeforeMade()).toEqual([]);
+  });
+
   it("tells the owner in the Hebrew row that a done step 6 gets this row alone later", () => {
     const step6Doc = doc.slice(doc.indexOf("## צעד 6"), doc.indexOf("## צעד 7"));
     const row = step6Doc.split("\n").find((l) => l.includes("| `POSTHOG_READ_KEY` |"))!;
     expect(row).toContain("אם צעד 6 כבר בוצע עד אז, השורה הזאת לבדה נשאלת אחר כך, כהשלמה");
+  });
+});
+
+// Ruling 12.10 (RULING-2026-10-12-owner-step-order.md §2(4)-(5)): a secret row whose making step (`madeIn`) is not done
+// is a key to nothing, so it is not asked — named "not asked yet" with that reason — and is asked with its step once
+// the maker is done. "6b" is step 6's GUMROAD_ACCESS_TOKEN row: held while step 3 is.
+describe("a secret row another step makes is not asked until that step is done (ruling 12.10)", () => {
+  const step6 = ownerStepById("ci-tokens")!;
+  const row = (name: string) => step6.secrets!.find((r) => r.name === name)!;
+  const empty = { projectId: "" };
+  const project = { projectId: "12345" };
+
+  it("holds GUMROAD_ACCESS_TOKEN while step 3 is not done, and asks it once step 3 is", () => {
+    expect(ownerStepById("gumroad")!.doneOn).toBeUndefined();
+    expect(isSecretRowAsked(row("GUMROAD_ACCESS_TOKEN"), empty)).toBe(false);
+    expect(isSecretRowAsked(row("GUMROAD_ACCESS_TOKEN"), project)).toBe(false);
+    expect(isSecretRowAsked(row("GUMROAD_ACCESS_TOKEN"), empty, withDoneSteps(["gumroad"]))).toBe(true);
+    // Step 7 done does not make the Gumroad token.
+    expect(isSecretRowAsked(row("GUMROAD_ACCESS_TOKEN"), empty, withDoneSteps(["github-org"]))).toBe(false);
+  });
+
+  it("holds the two step-7 tokens while step 7 is not done, and asks them once it is", () => {
+    expect(ownerStepById("github-org")!.doneOn).toBeUndefined();
+    for (const name of ["BRAND_GITHUB_TOKEN", "ORG_BUDGETS_READ_TOKEN"]) {
+      expect(isSecretRowAsked(row(name), project), name).toBe(false);
+      expect(isSecretRowAsked(row(name), project, withDoneSteps(["github-org"])), name).toBe(true);
+      expect(isSecretRowAsked(row(name), project, withDoneSteps(["gumroad"])), name).toBe(false);
+    }
+  });
+
+  it("asks APIFY_TOKEN, which no other step makes, now; POSTHOG_READ_KEY keeps its own gate", () => {
+    expect(isSecretRowAsked(row("APIFY_TOKEN"), empty)).toBe(true);
+    expect(secretRowHoldReason(row("APIFY_TOKEN"), empty)).toBeNull();
+    expect(isSecretRowAsked(row("POSTHOG_READ_KEY"), empty)).toBe(false);
+    expect(isSecretRowAsked(row("POSTHOG_READ_KEY"), project)).toBe(true);
+    expect(isSecretRowAsked(row("POSTHOG_READ_KEY"), project, withDoneSteps(["gumroad", "github-org"]))).toBe(true);
+  });
+
+  it("says why a held row waits: its gate's reason, or the step that makes it", () => {
+    expect(secretRowHoldReason(row("GUMROAD_ACCESS_TOKEN"), empty)).toBe("waits until step 3, which makes it, is done");
+    expect(secretRowHoldReason(row("BRAND_GITHUB_TOKEN"), empty)).toBe("waits until step 7, which makes it, is done");
+    expect(secretRowHoldReason(row("ORG_BUDGETS_READ_TOKEN"), empty)).toBe("waits until step 7, which makes it, is done");
+    expect(secretRowHoldReason(row("POSTHOG_READ_KEY"), empty)).toBe(SECRET_ROW_GATE_SHORT["posthog-project-exists"]);
+    expect(secretRowHoldReason(row("POSTHOG_READ_KEY"), project)).toBeNull();
+    const done = withDoneSteps(["gumroad", "github-org"]);
+    for (const name of ["GUMROAD_ACCESS_TOKEN", "BRAND_GITHUB_TOKEN", "ORG_BUDGETS_READ_TOKEN"]) {
+      expect(secretRowHoldReason(row(name), empty, done), name).toBeNull();
+    }
+    // A row held both ways says the gate's reason first, then the maker's.
+    const both = { ...row("POSTHOG_READ_KEY"), madeIn: "gumroad" as const };
+    expect(secretRowHoldReason(both, empty)).toBe(
+      `${SECRET_ROW_GATE_SHORT["posthog-project-exists"]}, and waits until step 3, which makes it, is done`,
+    );
+    expect(secretRowHoldReason(both, project)).toBe("waits until step 3, which makes it, is done");
+    expect(secretRowHoldReason(both, empty, withDoneSteps(["gumroad"]))).toBe(SECRET_ROW_GATE_SHORT["posthog-project-exists"]);
+    // The reason is null exactly when the row is asked.
+    for (const r of step6.secrets!) {
+      for (const site of [empty, project]) {
+        for (const steps of [OWNER_STEPS, done]) {
+          expect(secretRowHoldReason(r, site, steps) === null, `${r.name}`).toBe(isSecretRowAsked(r, site, steps));
+        }
+      }
+    }
+  });
+
+  it("follows the steps it is given when asking and holding a step's rows", () => {
+    const done = withDoneSteps(["gumroad", "github-org"]);
+    expect(heldSecretRows(step6, project, done)).toEqual([]);
+    expect(askedSecretRows(step6, project, done).map((r) => r.name)).toEqual(step6.secrets!.map((r) => r.name));
+    // A follow-up row (POSTHOG_READ_KEY held when step 6 was done) is asked by its own gate, whatever steps are given.
+    const steps = done.map((s) => (s.id === "ci-tokens" ? { ...s, doneOn: { date: "2026-10-02", evidence: "test only", heldRows: ["POSTHOG_READ_KEY"] } } : s));
+    expect(followUpSecretRows(project, steps).map(({ row: r }) => r.name)).toEqual(["POSTHOG_READ_KEY"]);
+    expect(heldFollowUpSecretRows(empty, steps).map(({ row: r }) => r.name)).toEqual(["POSTHOG_READ_KEY"]);
+  });
+
+  it("names the Gumroad-token row as 6b in il-biz-tools' read, not a 'paid-tier part' of step 6", () => {
+    const [ilb] = LINE_PAYMENT_WAITS["il-biz-tools"]!;
+    expect(ilb.what).toContain(`the paid tier's owner steps (2, 3 and step 6's Gumroad-token row, "6b") join the ask batch`);
+    expect(ilb.what).not.toContain("paid-tier part");
   });
 });
 
@@ -1280,5 +1579,303 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     const FIXED = ["אתה", "סמן", "צור", "כתוב", "הוסף", "שמור", "אשר", "בעל"];
     const found = [...new Set([...derived, ...FIXED])].filter((w) => words.has(w));
     expect(found).toEqual([]);
+  });
+});
+
+describe("the osek patur ceiling in the owner's documents keeps its grade (ruling 11.10 row 27, decision 4)", () => {
+  // research/channel-loop/RULING-2026-10-11-osek-patur-ceiling.md decision 4(2)-(3): the owner's documents keep the 2026
+  // figure with "לפי מקורות משניים" in the same sentence, and "verified", "מאומת" or "נבדק" never stands beside it until
+  // a primary text is read (decision 3(1)). INCOME_PLAN.he.md:380 is a list of sources and stays as it is.
+  const income = fs.readFileSync(path.join(repoRoot, "docs/INCOME_PLAN.he.md"), "utf-8");
+  const AMOUNT = /122[,_\s]?833/;
+  /** The sentences that state the amount: a paragraph's (or list item's) lines joined, then split after ". " (not "11.10"). */
+  const sentencesWithAmount = (text: string) =>
+    text
+      .split(/\n\s*\n|\n(?=\s*(?:[-*]|\d+\.)\s)/)
+      .map((p) => p.trim().replace(/\s*\n\s*/g, " "))
+      .flatMap((p) => p.split(/(?<=\.)\s+/))
+      .filter((s) => AMOUNT.test(s));
+  /** A grade word as a word: "נבדקה" (the registered-mail cost) and "unverified" are other words. */
+  const GRADE_WORD = /(?<![א-ת])(?:נבדק|מאומת)(?![א-ת])|\bverified\b/i;
+  const SOURCES_LINE = "- עוסק פטור 2026 — kolzchut.org.il/he/עוסק_פטור, mako.co.il (תקרה 122,833 ₪), icount.co.il/blog/osek-patur";
+
+  it("OWNER_STEPS.he.md carries decision 4(2)'s two texts word for word", () => {
+    const flat = doc.replace(/\s*\n\s*/g, " ");
+    expect(flat).toContain(
+      "מותר עד **₪122,833 בשנה** (הנתון ל-2026 לפי מקורות משניים בלבד; אף עמוד ממשלתי ולא טקסט ראשוני אחר נקרא מכאן, ולכן האתר שלנו כבר לא מדפיס אותו — פסיקת 11.10 — אז תאמת אותו במסך של רשות המסים).",
+    );
+    expect(flat).toContain("**לדעת מראש, לא לעשות עכשיו:** ₪122,833 בשנה (לפי מקורות משניים) ≈ ₪10,000 בחודש.");
+  });
+
+  it("INCOME_PLAN.he.md:115 carries decision 4(2)'s text, and the sources list keeps its line", () => {
+    expect(income).toContain("עוסק פטור — תקרה ₪122,833 לשנת 2026 (לפי מקורות משניים; טקסט ראשוני לא נקרא), רישום עצמאי");
+    expect(income.split("\n").filter((l) => l === SOURCES_LINE)).toHaveLength(1);
+  });
+
+  it("every sentence that states the amount says 'לפי מקורות משניים', and none says נבדק, מאומת or verified", () => {
+    const owner = sentencesWithAmount(doc);
+    const plan = sentencesWithAmount(income).filter((s) => s !== SOURCES_LINE);
+    expect(owner).toHaveLength(2);
+    expect(plan).toHaveLength(1);
+    for (const s of [...owner, ...plan]) {
+      expect(s).toContain("לפי מקורות משניים");
+      expect(s).not.toMatch(GRADE_WORD);
+    }
+    // The word check reads words, not substrings: the paragraph's "נבדקה" is not one, a bare "(נבדק)" is.
+    expect(GRADE_WORD.test("עוד לא נבדקה")).toBe(false);
+    expect(GRADE_WORD.test("₪122,833 (נבדק)")).toBe(true);
+    expect(GRADE_WORD.test("unverified")).toBe(false);
+  });
+});
+
+// Tick 69 (11.10.2026): an adversarial check of the owner-facing texts (logs/2026-10-11-owner-can-you-earn-now.md) found
+// step 6 at 18-23 minutes in the code and 18 in the Hebrew document, step 7 and step 6 at their old minutes in
+// INCOME_PLAN.he.md, and Apify's identity verification placed in three different sittings. The minutes are parsed out of
+// both Hebrew documents here and compared with the code, step by step, so the next drift fails the build.
+describe("the owner's documents state each step's minutes as the code does (tick 69)", () => {
+  const income = fs.readFileSync(path.join(repoRoot, "docs/INCOME_PLAN.he.md"), "utf-8");
+  const flat = (t: string) => t.replace(/\s+/g, " ");
+  /** "18–23 דקות" → [18, 23]; "10 דקות" → [10, 10]; the first such phrase in the text. */
+  const minutesIn = (text: string): [number, number] | null => {
+    const m = /(\d+)(?:\s*[–-]\s*(\d+))?\s*דקות/.exec(text);
+    return m ? [Number(m[1]), Number(m[2] ?? m[1])] : null;
+  };
+  /** A table's minutes cell, "18–23" or "2". */
+  const cell = (c: string): [number, number] => {
+    const [a, b] = c.trim().split(/\s*[–-]\s*/).map(Number);
+    return [a, b ?? a];
+  };
+  const section = (n: number) => {
+    const start = doc.search(new RegExp(`^## צעד ${n} —`, "m"));
+    const rest = doc.slice(start + 1);
+    return doc.slice(start, start + 1 + rest.search(/^## /m));
+  };
+
+  it("parses a minutes phrase and a minutes cell", () => {
+    expect(minutesIn("**זמן: 18–23 דקות** (מהן")).toEqual([18, 23]);
+    expect(minutesIn("**זמן (אם יחזור): 10 דקות.**")).toEqual([10, 10]);
+    expect(minutesIn("no minutes here")).toBeNull();
+    expect(cell(" 60–90 ")).toEqual([60, 90]);
+    expect(cell("2")).toEqual([2, 2]);
+  });
+
+  it("each step's own time line in OWNER_STEPS.he.md carries the code's minutes", () => {
+    for (const step of OWNER_STEPS) {
+      const timeLine = section(step.number).split("\n").find((l) => l.startsWith("**זמן"));
+      expect(timeLine, `step ${step.number} has no time line`).toBeDefined();
+      expect(minutesIn(timeLine!), `step ${step.number}: ${timeLine}`).toEqual(step.minutes);
+    }
+    // Step 6's line also states its early part, which may follow step 8 (ruling 12.10; step 1 before it).
+    const six = ownerStepById("ci-tokens")!;
+    const early = /כ-(\d+) לחלק המוקדם/.exec(section(6).split("\n").find((l) => l.startsWith("**זמן"))!);
+    expect(Number(early?.[1])).toBe(six.earlyPart!.minutes);
+  });
+
+  it("the summary table of OWNER_STEPS.he.md has one row per step with the code's minutes", () => {
+    const table = doc.slice(doc.indexOf("## סיכום בטבלה אחת"));
+    const rows = [...table.matchAll(/^\| (\d) \| [^\n]*? \| ([\d–\s-]+) \| [^\n]*\|$/gm)];
+    expect(rows.map((r) => Number(r[1])).sort()).toEqual(OWNER_STEPS.map((s) => s.number).sort());
+    for (const [, n, minutes] of rows) {
+      expect(cell(minutes), `table row ${n}`).toEqual(OWNER_STEPS.find((s) => s.number === Number(n))!.minutes);
+    }
+  });
+
+  // Ruling 12.10 Fold 6 (housekeeping): INCOME_PLAN.he.md §6 said "שבעה צעדים … 1 → 2 → 3 → 5 → 7 → 4 → 6" (7.9),
+  // stale since 28.9. Every order §6 states is now the code's, and the Apify half follows step 8.
+  it("INCOME_PLAN.he.md §6 states only the code's order, and the Apify half after step 8", () => {
+    const start = income.indexOf("## 6.");
+    const six = income.slice(start, start + 1 + income.slice(start + 1).search(/^## /m));
+    const orders = [...six.matchAll(/\d(?:\s*→\s*\d)+/g)].map((m) => m[0].split("→").map((n) => Number(n.trim())));
+    expect(orders.length).toBeGreaterThan(0);
+    for (const order of orders) expect(order).toEqual(ownerStepsInOrder().map((s) => s.number));
+    expect(flat(six)).toContain("**שמונה צעדים, בסדר שבקוד (פסיקות 7.9, 28.9 ו-12.10): 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.**");
+    expect(flat(six)).toContain("**חצי אחד של צעד 6 — טוקן Apify — אפשר לעשות מיד אחרי צעד 8**");
+    expect(six).not.toContain("שבעה צעדים");
+  });
+
+  it("the table in INCOME_PLAN.he.md §6 has one row per step with the code's minutes", () => {
+    const start = income.indexOf("## 6.");
+    const six = income.slice(start, start + 1 + income.slice(start + 1).search(/^## /m));
+    const rows = [...six.matchAll(/^\| (\d) \| [^\n]*? \| ([\d–\s-]+) \| [^\n]*\|$/gm)];
+    expect(rows.map((r) => Number(r[1])).sort()).toEqual(OWNER_STEPS.map((s) => s.number).sort());
+    for (const [, n, minutes] of rows) {
+      expect(cell(minutes), `INCOME_PLAN row ${n}`).toEqual(OWNER_STEPS.find((s) => s.number === Number(n))!.minutes);
+    }
+  });
+
+  it("the totals are the code's: all eight steps, and the free steps asked now", () => {
+    const total = ownerStepMinutes();
+    expect(flat(doc)).toContain(`**סך הכול: ${total.min}–${total.max} דקות`);
+    // The opening paragraph states the same total, not the old "about two and a half hours" (review NOTE 7).
+    const opening = flat(doc.slice(0, doc.indexOf("**מה הצעדים האלה כן ולא:**")));
+    expect(opening).toContain(`שמונה צעדים, פעם אחת כל אחד, ${total.min}–${total.max} דקות בסך הכול`);
+    expect(opening).not.toContain("שעתיים וחצי");
+    expect(flat(income)).toContain(`הרשימה המינימלית בסעיף 6 — ${total.min}–${total.max} דקות`);
+    // The free steps' sentence: step 8, the network setting (no number on the list), step 6's early part and step 7.
+    const sentence = flat(doc.slice(doc.indexOf("ארבעת הצעדים החינמיים שמבוקשים עכשיו")));
+    const network = Number(/שינוי הגדרה של כ-(\d+) דקות/.exec(sentence)?.[1]);
+    expect(network).toBeGreaterThan(0);
+    const [eight, seven, early] = [ownerStepById("brand-mailbox")!, ownerStepById("github-org")!, ownerStepById("ci-tokens")!.earlyPart!];
+    const min = eight.minutes[0] + network + early.minutes + seven.minutes[0];
+    const max = eight.minutes[1] + network + early.minutes + seven.minutes[1];
+    expect(sentence).toContain(`לוקחים יחד ${min}–${max} דקות`);
+  });
+});
+
+describe("each step says whether it needs an identity check, and the Hebrew document agrees (tick 69)", () => {
+  const section = (n: number) => {
+    const start = doc.search(new RegExp(`^## צעד ${n} —`, "m"));
+    const rest = doc.slice(start + 1);
+    return doc.slice(start, start + 1 + rest.search(/^## /m));
+  };
+  const ID_DOCUMENT = /תעודת זהות/;
+
+  it("pins each step's identity check", () => {
+    expect(Object.fromEntries(OWNER_STEPS.map((s) => [s.id, s.identity.needs]))).toEqual({
+      "merge-pr": "no",
+      "brand-mailbox": "no",
+      "tax-file": "yes",
+      gumroad: "yes",
+      domain: "no",
+      "github-org": "no",
+      "algora-stripe": "yes",
+      "ci-tokens": "part",
+    });
+    for (const s of OWNER_STEPS) expect(s.identity.what.length, s.id).toBeGreaterThan(20);
+  });
+
+  it("a step that asks for identity names an ID card in its Hebrew section, and a step that does not, never does", () => {
+    for (const s of OWNER_STEPS) {
+      const text = section(s.number);
+      if (s.identity.needs === "no") expect(text, `step ${s.number}`).not.toMatch(ID_DOCUMENT);
+      else expect(text, `step ${s.number}`).toMatch(ID_DOCUMENT);
+    }
+  });
+
+  it("a step that asks it in one part names the lines that part serves; step 6's part ג serves apify-actors alone", () => {
+    for (const s of OWNER_STEPS) {
+      if (s.identity.needs !== "part") {
+        expect(s.identity.partLines, s.id).toBeUndefined();
+        continue;
+      }
+      expect(s.identity.partLines?.length, `${s.id} names no partLines`).toBeGreaterThan(0);
+      for (const id of s.identity.partLines!) expect(s.lines, `${s.id} partLines`).toContain(id);
+    }
+    expect(ownerStepById("ci-tokens")!.identity.partLines).toEqual(["apify-actors"]);
+    // Part ג publishes the Apify Actor, which is the apify-actors line's product.
+    const six = section(6);
+    const partC = six.slice(six.indexOf("### חלק ג"), six.indexOf("### חלק ד"));
+    expect(partC).toContain("`apify-il-open-data`");
+    expect(DEFAULT_PORTFOLIO.find((l) => l.id === "apify-actors")!.humanSetup.join(" ")).toMatch(/Apify/);
+  });
+
+  it("identityOnLine: a part step asks identity only on its part's lines, any other step as it says, and a part step naming no lines on every line", () => {
+    const six = ownerStepById("ci-tokens")!;
+    expect(identityOnLine(six, "apify-actors")).toBe("part");
+    for (const id of ["il-biz-tools", "oss-bounties", "pcn874"]) expect(identityOnLine(six, id), id).toBe("no");
+    for (const s of OWNER_STEPS.filter((x) => x.identity.needs !== "part")) {
+      for (const id of s.lines) expect(identityOnLine(s, id), `${s.id} ${id}`).toBe(s.identity.needs);
+    }
+    // Never understated: a part step that names no lines counts on every line it gates.
+    const unnamed = { ...six, identity: { needs: "part" as const, what: six.identity.what } };
+    for (const id of six.lines) expect(identityOnLine(unnamed, id), id).toBe("part");
+  });
+
+  it("step 6 asks it in part ג only: Apify's verification at the Publish sitting, with its stop rule (Q5)", () => {
+    const six = section(6);
+    const partC = six.slice(six.indexOf("### חלק ג"), six.indexOf("### חלק ד"));
+    expect(partC).toMatch(ID_DOCUMENT);
+    expect(six.replace(partC, "")).not.toMatch(ID_DOCUMENT);
+    const c = partC.replace(/\s+/g, " ");
+    expect(c).toContain("באותה ישיבה — אימות הזהות של Apify");
+    expect(c).toContain("**עצור אם** המסך מבקש סלפי, בדיקת חיוּת או וידאו");
+    expect(c).toContain("`research/breadth/BOARD.md` Q5");
+    expect(c).toContain("`research/measurements/apify-visibility.md`");
+    expect(ownerStepById("ci-tokens")!.identity.what).toMatch(/^part ג only, the Apify Publish sitting/);
+  });
+
+  it("the read the step rests on exists and says documents only", () => {
+    const read = fs.readFileSync(path.join(repoRoot, "research/measurements/apify-visibility.md"), "utf-8").replace(/\s+/g, " ");
+    expect(read).toContain("Verification is document-only as written");
+    const board = fs.readFileSync(path.join(repoRoot, "research/breadth/BOARD.md"), "utf-8").replace(/\s+/g, " ");
+    expect(board).toContain('Apify identity verification moves from "after 50 stranger users" to **the Publish-click sitting**');
+  });
+
+  it("no owner document puts Apify's verification before pricing or among the steps that wait for income", () => {
+    const income = fs.readFileSync(path.join(repoRoot, "docs/INCOME_PLAN.he.md"), "utf-8").replace(/\s+/g, " ");
+    const flat = doc.replace(/\s+/g, " ");
+    expect(flat).not.toContain("אימות זהות ב-Apify לפני שמתמחרים");
+    const later = flat.slice(flat.indexOf("## מה מגיע רק אם"), flat.indexOf("## מה קורה אחרי שסיימת"));
+    expect(later).toContain("**Apify — אמצעי תשלום**");
+    expect(later).toContain("**אימות הזהות של Apify כבר לא כאן**");
+    expect(later).not.toContain("**Apify — אימות זהות**");
+    expect(income).not.toMatch(/רק אם קו מתחיל להרוויח \(אימות זהות ב-Apify/);
+    expect(income).not.toContain("ולכן לא עכשיו:** אימות זהות ב-Apify");
+    expect(income).toContain("אימות הזהות של Apify הוא לא מהם: הוא נשאל בישיבה של ה-Publish (צעד 6, חלק ג)");
+  });
+});
+
+describe("what each line waits on besides the steps, and the order note (tick 69)", () => {
+  it("names an entry for every live line and only live lines", () => {
+    expect(Object.keys(LINE_PAYMENT_WAITS).sort()).toEqual(DEFAULT_PORTFOLIO.map((l) => l.id).sort());
+    for (const waits of Object.values(LINE_PAYMENT_WAITS)) for (const w of waits) expect(w.rule.length).toBeGreaterThan(10);
+  });
+
+  it("il-biz-tools' and pcn874's reads carry page-views.ts's own numbers, under the rulings that set them", () => {
+    const [ilb] = LINE_PAYMENT_WAITS["il-biz-tools"]!;
+    expect(ilb.kind).toBe("read");
+    expect(ilb.what).toContain(`the day-${PAGE_VIEW_GATES.reachDay} page-view read`);
+    expect(ilb.what).toContain(`under ${PAGE_VIEW_GATES.reachMinTotal} page views over the ${PAGE_VIEW_GATES.reachDay} days`);
+    expect(ilb.what).toContain(`${PAGE_VIEW_GATES.passMinWeeklyAverage} a week or more averaged over weeks 5-8 → PASS`);
+    expect(ilb.what).toContain(`one extension to day ${PAGE_VIEW_GATES.extensionDay}`);
+    expect(ilb.what).toContain("the paid tier's owner steps (2, 3");
+    expect(ilb.rule).toContain("RULING-2026-09-28-floors.md");
+    expect(ilb.rule).toContain("row 9");
+    const [pcn] = LINE_PAYMENT_WAITS.pcn874!;
+    expect(pcn.what).toContain(`day-${PAGE_VIEW_GATES.reachDay} page-view read`);
+    expect(TARGET_BASIS.pcn874!.basis).toContain("no price before the D0+56 PASS of the validator page");
+  });
+
+  it("oss-bounties' read carries supply.ts's own thresholds", () => {
+    const [b] = LINE_PAYMENT_WAITS["oss-bounties"]!;
+    expect(b.kind).toBe("read");
+    expect(b.what).toContain(`the week-${SUPPLY_THRESHOLDS.weeks} claimable-supply read`);
+    expect(b.what).toContain(`under ${SUPPLY_THRESHOLDS.killBelow} → the line is killed and step 4 is never asked`);
+    expect(b.rule).toContain("§4.1");
+  });
+
+  it("apify-actors' read and its owner action outside the steps are the line's own criteria", () => {
+    const [read, later] = LINE_PAYMENT_WAITS["apify-actors"]!;
+    const apify = DEFAULT_PORTFOLIO.find((l) => l.id === "apify-actors")!;
+    expect(read.kind).toBe("read");
+    expect(read.what).toContain("until strangerUsers30d reaches 200 and pricing is designed");
+    expect(apify.scaleCriteria.join(" ")).toContain("strangerUsers30d at or above 200 → design pricing");
+    expect(apify.killCriteria.join(" ")).toContain("strangerUsers30d under 10 at day 30 → TEST_MORE");
+    expect(later.kind).toBe("owner-later");
+    expect(apify.humanSetup.join(" ")).toContain("A PayPal or Wise payout waits for pricing");
+    // The only owner action outside the eight steps the code knows of.
+    expect(Object.entries(LINE_PAYMENT_WAITS).filter(([, ws]) => ws.some((w) => w.kind === "owner-later")).map(([id]) => id)).toEqual(["apify-actors"]);
+  });
+
+  // Ruling 12.10 (RULING-2026-10-12-owner-step-order.md §1, Fold 1): the board has ruled — the code's order is the
+  // checklist's, and the free steps come first because of the gates, not a second order. The line says so.
+  it("states the ruled order beside the code's order, and the Hebrew document says the board ruled 12.10", () => {
+    expect(OWNER_STEP_ORDER_RULED).toMatch(/^the order is the code's, ruled 12\.10\.2026/);
+    expect(OWNER_STEP_ORDER_RULED).toContain("research/channel-loop/RULING-2026-10-12-owner-step-order.md");
+    expect(OWNER_STEP_ORDER_RULED).toContain("FABLE_QUEUE row 29");
+    expect(OWNER_STEP_ORDER_RULED).toContain(`day-${PAGE_VIEW_GATES.reachDay}`);
+    expect(OWNER_STEP_ORDER_RULED).toContain(`day-${PAGE_VIEW_GATES.extensionDay}`);
+    expect(OWNER_STEP_ORDER_RULED).toMatch(/row 9 item 3$/);
+    expect(OWNER_STEP_ORDER_RULED).toBe(
+      "the order is the code's, ruled 12.10.2026 (research/channel-loop/RULING-2026-10-12-owner-step-order.md, FABLE_QUEUE row 29): " +
+        "the free steps come first because step 1 is done, step 5 is frozen and steps 2 and 3 are held until a paid product is ready — " +
+        `for il-biz-tools and pcn874 the day-${PAGE_VIEW_GATES.reachDay} page-view PASS, or the day-${PAGE_VIEW_GATES.extensionDay} read after its one extension, ` +
+        "the floors ruling of 28.9 row 9 item 3",
+    );
+    expect(OWNER_STEP_ORDER_RULED).not.toMatch(/under review|has not ruled/);
+    const floors = fs.readFileSync(path.join(repoRoot, "research/channel-loop/RULING-2026-09-28-floors.md"), "utf-8").replace(/\s+/g, " ");
+    expect(floors).toContain("the paid tier's owner steps (2, 3, 6b) join the ask batch");
+    expect(doc).toContain("פסק ב-12.10");
+    expect(doc).not.toContain("**הוא ממתין לפסיקה");
   });
 });

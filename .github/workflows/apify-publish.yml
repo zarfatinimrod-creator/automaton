@@ -13,7 +13,10 @@ name: apify-publish
 #
 # WHY FREE, AND WHY IT STAYS FREE. Two reasons, and the second is the real one:
 #   1. Apify requires developer identity verification before any Actor can carry
-#      a price. The owner has not done that and should not have to for a test.
+#      a price. The owner has not done that yet; the breadth board of 28.9.2026
+#      asks it at the Publish click, when it is documents only, because an
+#      unverified developer's Actors are hidden from default Store search
+#      (research/breadth/BOARD.md Q5) - and a price still waits for the count.
 #   2. Publishing free is the only version of this that measures anything. A
 #      price on a listing nobody opens teaches us nothing; a run count on a free
 #      listing answers the actual question. MISSION.md constraint 8 adds the

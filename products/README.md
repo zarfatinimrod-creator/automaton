@@ -4,7 +4,7 @@ Sellable products built by the revenue colony. Each directory is standalone (own
 
 | Product | Revenue line | Rail | Owner one-time step |
 |---|---|---|---|
-| `apify-il-open-data` | apify-actors | Apify Store, **published free** while the 30-day stranger count runs | step 6 — Apify sign-up with the brand username + `APIFY_TOKEN` (allowed straight after step 1; **no KYC**), then one Console click after the first CI push: Actor → **Publication → Publish to Store** (the push creates the Actor private) |
+| `apify-il-open-data` | apify-actors | Apify Store, **published free** while the 30-day stranger count runs | step 6 — Apify sign-up with the brand username + `APIFY_TOKEN` (allowed straight after step 8, with the brand mailbox as the account's address; **no KYC**), then one Console click after the first CI push: Actor → **Publication → Publish to Store** (the push creates the Actor private) |
 | `il-biz-tools` | il-biz-tools | **Gumroad** (merchant of record, ILS payout rendered) — Paddle retired 7.9.2026 | step 3 — Gumroad account + token; step 5 — domain; step 6 — Netlify link + `GUMROAD_ACCESS_TOKEN` as a GitHub Actions secret |
 | `pcn874` | pcn874 | **Gumroad** (ILS) — validator and generator built, no price set; its free, no-upload validator page is `il-biz-tools/pcn874.html` (28.9.2026), which ships with that site's deploy | step 3 — Gumroad account + token; step 5 — domain; step 7 — GitHub organisation; step 6 — tokens into GitHub secrets |
 | `mcp-il-tools` | (channel test, not a line) | none — free | step 7 — GitHub organisation (the registry name `io.github.mehudak/il-tools` comes from it, not from a domain, while step 5 is frozen); proposed step 9 — the npm user `mehudak` (brand mailbox, step 8), a granular token of that user, and the GitHub environment `npm-publish` (main only, required reviewer) holding it as `NPM_TOKEN` |
@@ -26,7 +26,8 @@ verdict on the code:
   it and nothing is expected from it. It re-opens only if Fragment renders a camera-free withdrawal to
   an Israeli resident (`docs/REJECTED.md`).
 - **`x402-il-api` is a rail on standby.** `paid-apis` and `agent-services` were killed because the
-  x402 arithmetic divides out to single-digit shekels per provider per month. The endpoint may stay
+  x402 arithmetic divides out to single-digit shekels per provider per month. The endpoint is built
+  and tested but **not deployed** (no deploy workflow, runner probe or URL for it exists in the repository); it may be
   deployed **only while it costs ₪0/month**; any USDC that arrives is not yet booked
   automatically — `src/revenue/connectors/x402-local.ts` imports only `transactions` rows tagged `[line:<id>]`, and no code writes such a row for an inbound USDC payment — and nothing is planned on it.
 - **`il-biz-tools` moved from Paddle to Gumroad.** Gumroad is the only merchant of record with rendered

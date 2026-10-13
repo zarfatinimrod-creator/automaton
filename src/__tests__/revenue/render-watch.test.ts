@@ -1998,7 +1998,11 @@ describe("the copying-barred sites, from terms-verdicts.json's copying field", (
   it("reads the barred sites of the real file, and matches a site or any subdomain of it, the longest first", () => {
     const barred = readCopyingBarred();
     expect(barred).toEqual(expect.arrayContaining(["apify.com", "btl.gov.il", "devpost.com", "indiebook.co.il", "kaggle.com", "worksheets4kids.co.il"]));
-    expect(barred).not.toContain("virtualembryo.ai"); // copying: allowed
+    // virtualembryo.ai was the one "allowed" site until tick 68 (8.10), when the Stanford scope ruling barred its copying;
+    // a site whose copying is "unread" (google.com) is not barred.
+    expect(barred).toContain("virtualembryo.ai"); // copying: barred since tick 68
+    expect(barred).not.toContain("google.com"); // copying: unread
+    expect(copyingBarredSite("virtualembryo.ai", barred)).toBe("virtualembryo.ai");
     expect(copyingBarredSite("www.btl.gov.il", barred)).toBe("btl.gov.il");
     expect(copyingBarredSite("WWW.BTL.GOV.IL.", barred)).toBe("btl.gov.il");
     expect(copyingBarredSite("api.apify.com", barred)).toBe("apify.com");

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import {
   APIFY_STRANGER_KPI_LABEL,
   CONDITIONAL_TARGETS,
@@ -269,12 +269,31 @@ describe("the board's decision of 7.9.2026, as arithmetic", () => {
   });
 
   it("keeps the x402 endpoint as a standby rail note rather than as a line", () => {
-    // BOARD.md §3: products/x402-il-api may stay deployed only at ₪0/month cost.
-    // Any USDC that arrives is booked; nothing is planned on it.
+    // BOARD.md §3: products/x402-il-api may be deployed only at ₪0/month cost (a permission: it never was).
+    // Any USDC that arrives is to be booked; nothing is planned on it.
     const paidApis = KILLED_LINES.find((k) => k.id === "paid-apis")!;
     expect(paidApis.standby).toMatch(/x402-il-api/);
     expect(paidApis.standby).toMatch(/₪0\/month/);
     expect(DEFAULT_PORTFOLIO.some((l) => l.id === "paid-apis")).toBe(false);
+  });
+
+  // Tick 69 (11.10.2026), and its review: the note said the endpoint "stays deployed" and that USDC "is booked through"
+  // the x402 connector. Neither holds: no workflow deploys it, and nothing writes the tagged row the connector reads.
+  it("says the x402 endpoint is not deployed and that nothing books its USDC yet, while the repository says so", () => {
+    const standby = KILLED_LINES.find((k) => k.id === "paid-apis")!.standby!;
+    expect(standby).toContain("is built and tested but NOT deployed");
+    expect(standby).not.toMatch(/stays deployed/);
+    expect(standby).toContain("but nothing books it automatically yet");
+    expect(standby).not.toMatch(/is booked through/);
+    // The facts the two sentences rest on: only the products CI names the endpoint among the workflows, and the
+    // connector reads transfer_in rows that only a [line:<id>] tag makes a ledger entry.
+    const workflows = readdirSync(".github/workflows").filter((f) => readFileSync(`.github/workflows/${f}`, "utf8").includes("x402-il-api"));
+    expect(workflows).toEqual(["products-ci.yml"]);
+    expect(readFileSync("src/revenue/connectors/x402-local.ts", "utf8")).toContain("WHERE type = 'transfer_in' AND created_at > ?");
+    const writers = (readdirSync("src", { recursive: true }) as string[])
+      .filter((f) => /\.ts$/.test(f) && !f.includes("__tests__"))
+      .filter((f) => readFileSync(`src/${f}`, "utf8").includes('type: "transfer_in"'));
+    expect(writers, "a transfer_in writer exists: the standby's 'nothing books it' may no longer hold").toEqual([]);
   });
 });
 

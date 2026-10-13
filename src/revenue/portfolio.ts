@@ -226,9 +226,10 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // "Register as osek patur" is gone from every line: it is owner step 2, once.
     ...humanSetupOf([
       {
-        text: "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify identity verification (ID, proof of address, a tax document, ownership information) is asked at that Publish sitting only if the apify-docs read shows it is document-only — no selfie, liveness or video — because an unverified developer's Actors are hidden from default Store-API search; if the read shows any camera step it is never asked (breadth board, 28.9.2026, research/breadth/BOARD.md Q5). A PayPal or Wise payout waits for pricing (scaleCriteria).",
+        text: "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 8, with the brand mailbox as the account's address). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify identity verification (ID, proof of address, a tax document, ownership information) is asked at that Publish sitting only if the apify-docs read shows it is document-only — no selfie, liveness or video — because an unverified developer's Actors are hidden from default Store-API search; if the read shows any camera step it is never asked (breadth board, 28.9.2026, research/breadth/BOARD.md Q5). A PayPal or Wise payout waits for pricing (scaleCriteria).",
         steps: [6],
-        contextSteps: [1],
+        // Ruling 12.10 Fold 5: the half follows step 8, whose mailbox the Apify account is registered with (step 1 before).
+        contextSteps: [8],
       },
     ]),
     skillName: "revenue-apify-actors",
@@ -278,16 +279,20 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
         text: "Create two PostHog organisations, Mehudak and chartsplained, in the PostHog login the connector already reaches, leaving the existing organisation and its project untouched (owner step 6 part ד) — about 3 minutes, free, no card and no identity; if PostHog asks for a card, a payment, an ID or a phone number, or offers the new organisation only a trial or a paid plan, close the tab, create nothing and tell us. Without them no page-view counter runs and no D0 is recorded: the colony configures each one's included project the minute after, and no page goes up with a live counter before that (ruling 7.10 row 25, research/channel-loop/RULING-2026-10-07-posthog-organisation.md §1-§2)",
         steps: [6],
       },
+      // Ruling 12.10 Fold 5: step 3 is held until a paid product is ready, and the item says so, as 4b's text does; step 2
+      // is named as context (asked together), not as the item's step.
       {
-        text: "Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3)",
+        text: "Asked only when a paid product is ready — the day-56 page-view PASS (RULING-2026-09-28-floors.md row 9; ruling 12.10) — together with step 2: Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3)",
         steps: [3],
+        contextSteps: [2],
       },
       // Owner step 5 (the domain) is not asked for: it is frozen by the owner's
       // ₪0 rule of 27.9.2026, and the site ships on *.netlify.app until the owner
       // decides to spend after income. owner-steps.ts keeps the step and says so.
       {
-        text: "Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)",
+        text: "Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — the Gumroad token only once step 3 is done (ruling 12.10)",
         steps: [6],
+        contextSteps: [3],
       },
     ]),
     skillName: "revenue-il-biz-tools",
@@ -383,17 +388,18 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     budgetMonthlyCents: 4000,
     ...humanSetupOf([
       {
-        text: "Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses",
+        text: "Asked only when a paid product is ready — the day-56 page-view PASS (RULING-2026-09-28-floors.md row 9; ruling 12.10) — together with step 2: Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses",
         steps: [3],
+        contextSteps: [2],
       },
       {
         text: "Create the GitHub organisation under the brand name so the open-source core's repository URL carries it and not your username (owner step 7). The npm scope `@mehudak` (the brand the board chose on 27.9.2026) is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.",
         steps: [7],
       },
       {
-        text: "Paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — shared with il-biz-tools; without the token the loop cannot see a sale. (The company domain, owner step 5, is frozen by the owner's ₪0 rule of 27.9.2026 and is not asked for.)",
+        text: "Paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — shared with il-biz-tools; without the token the loop cannot see a sale. (The company domain, owner step 5, is frozen by the owner's ₪0 rule of 27.9.2026 and is not asked for.) — the Gumroad token only once step 3 is done (ruling 12.10)",
         steps: [6],
-        contextSteps: [5],
+        contextSteps: [3, 5],
       },
     ]),
     skillName: "revenue-pcn874",
@@ -681,7 +687,7 @@ export const KILLED_LINES: KilledLine[] = [
       "A rendered per-provider median at or above ₪100/month on x402scan or the Bazaar series, OR BILS opening beyond the institutional pilot. Any USDC that arrives before then is booked, not planned.",
     skillRemoved: "revenue-paid-apis",
     standby:
-      "products/x402-il-api stays deployed only while it costs ₪0/month, as a RAIL ON STANDBY rather than a line: any USDC that arrives is booked through src/revenue/connectors/x402-local.ts, and nothing is planned on it.",
+      "products/x402-il-api is built and tested but NOT deployed: the repository holds no deploy workflow, no runner probe and no URL for it (.github/workflows/products-ci.yml only runs its tests), and its README says so. It is a RAIL ON STANDBY rather than a line, allowed to be deployed only while it costs ₪0/month, and nothing is planned on it. Any USDC that arrives is to be booked (research/colony-sweep/BOARD.md, paid-apis), but nothing books it automatically yet: src/revenue/connectors/x402-local.ts imports only transactions rows of type transfer_in tagged [line:<id>], and no code writes such a row for an inbound USDC payment (products/README.md says so).",
   },
   {
     id: "agent-services",

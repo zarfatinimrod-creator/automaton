@@ -6,6 +6,8 @@
  *   pnpm exec tsx scripts/colony.ts status
  *   pnpm exec tsx scripts/colony.ts record --line paid-apis --kind sale --amount 200 --currency USD --source stripe --external-id ch_abc
  *   pnpm exec tsx scripts/colony.ts fx --currency USDC --date 2026-09-29 --rate 3.71
+ *   pnpm exec tsx scripts/colony.ts verify-gumroad
+ *   pnpm exec tsx scripts/colony.ts place-gumroad-sale --id sha256:<hex> --listed-from 2026-09-30
  *   pnpm exec tsx scripts/colony.ts setup-done apify-actors --evidence "owner confirmed 2026-09-03"
  *
  * The governance half of the colony needs only a SQLite file: no wallet, no
@@ -19,13 +21,17 @@ import { parseArgs } from "node:util";
 import { createDatabase } from "../src/state/database.js";
 import {
   getLine,
+  gumroadHandRefundRefusal,
+  gumroadHandSaleRefusal,
   listLines,
   recordLedgerEntry,
   setHumanSetupDone,
   setTargets,
   updateLineStatus,
 } from "../src/revenue/ledger.js";
-import { agorotFromIls, formatIls, setFxRateOn } from "../src/revenue/money.js";
+import { agorotFromIls, formatIls, setFxRateOn, storedExternalId } from "../src/revenue/money.js";
+import { renderGumroadVerify, verifyGumroadLedger } from "../src/revenue/gumroad-verify.js";
+import { isListingDay, latestListingDay, placeGumroadSale } from "../src/revenue/gumroad-place.js";
 import { seedDefaultPortfolio, syncPortfolio } from "../src/revenue/portfolio.js";
 import { getRevenueStatus } from "../src/revenue/status.js";
 import { renderCommitSummary, renderReport, tick, type TickResult } from "../src/revenue/runner.js";
@@ -45,7 +51,7 @@ import {
   readLastSwept,
   sweepCoverage,
 } from "../src/revenue/criteria.js";
-import type { LedgerKind } from "../src/revenue/types.js";
+import { LEDGER_KINDS, type LedgerKind } from "../src/revenue/types.js";
 
 const DEFAULT_DB = "state/colony/colony.db";
 const DEFAULT_REPORT = "state/colony/REPORT.md";
@@ -83,6 +89,30 @@ Commands:
                        on-chain transaction id as --external-id and --occurred-at; it is flagged
                        unconverted and valued at the rate recorded for its receipt day (see fx),
                        and with none it is refused (RULING-2026-09-28-bounty-rail.md §6.2).
+                       A gumroad refund is booked only as <sale id>:refund (raw or stored) of a sale
+                       already booked, on that sale's line, because the hourly sync re-reads every
+                       Gumroad sale with no refund under that id and would book it again; any other
+                       is refused, and nothing is written.
+                       Gumroad money is booked only under --source gumroad: a refund under another
+                       source whose id is <sale id>:refund (raw or stored) of a Gumroad sale already
+                       booked is refused too. --kind is one of the five kinds below; any other is refused.
+  verify-gumroad       Re-derive the ledger's Gumroad rows (RULING-2026-10-11-ledger-sale-ids.md C3): with
+                       GUMROAD_ACCESS_TOKEN, list the account's sales from a day before the oldest row,
+                       digest each id and match the rows. Prints counts, stored ids and days, never a
+                       sale id, an email or the token; writes nothing. Exit 0 clean, 3 with findings
+                       (a row no sale explains, a row that differs from its sale, a refund row out of
+                       step), 2 when the token is not set (nothing fetched), 1 when the listing is
+                       refused or incomplete. --json for the result as JSON. --since <day> lists from that
+                       day when it is earlier: the reach a hand-booked sale may lie before.
+  place-gumroad-sale   Place one Gumroad sale booked by hand on the day Gumroad made it
+                       (RULING-2026-10-13-gumroad-refund-reread.md §3): with GUMROAD_ACCESS_TOKEN, list the
+                       account's sales from --listed-from, and when exactly one listed sale's digest is --id
+                       and the listing was read to its end, set the sale's occurred_at, and its :refund and
+                       :fee rows', to that sale's created_at. The next re-read then returns it, and the sync's
+                       unlisted line for it ends. Prints the stored form and the old and new days, never a sale
+                       id, an email or the token. Exit 0 placed (or already on that day), 3 not placed
+                       (nothing written), 2 when the token is not set (nothing fetched), 1 an argument refused.
+                       The colony runs it (colony.yml's place_sale input), never the owner.
   fx                   Record one day's rate: --currency USDC --date YYYY-MM-DD --rate <ILS per unit>
                        (the Israeli calendar day of the receipt, not later than today). A held USDC
                        receipt names it.
@@ -119,9 +149,23 @@ record options:
   --source <name>      stripe | lemonsqueezy | gumroad | x402 | manual  (required)
   --external-id <id>   Platform transaction id. REQUIRED for sale, subscription,
                        payout and refund — money only counts when it carries the
-                       platform's id. Only a cost may omit it.
+                       platform's id. Only a cost may omit it. A gumroad id is
+                       stored as its sha256 digest (sha256:<hex>): pass the sale id
+                       or that stored form, and both book as one.
   --note <text>        Free text
-  --occurred-at <iso>  Defaults to now
+  --occurred-at <iso>  Defaults to now. A gumroad sale needs it: Gumroad's created_at
+                       for that sale, as GET /v2/sales returns it, or it is refused.
+
+place-gumroad-sale options:
+  --id <stored id>     The sale's stored id, sha256:<hex>, as the ledger and the sync's
+                       unlisted line print it (never the raw sale id)          (required)
+  --listed-from <day>  YYYY-MM-DD, on or before the day Gumroad made the sale: where the
+                       listing starts; the day written is Gumroad's, never this one (required)
+
+verify-gumroad options:
+  --since <day>        YYYY-MM-DD: list from this day instead of a day before the oldest
+                       row, when it is earlier (a later one is not taken: every row before
+                       it would read as unexplained)
 
 setup-done options:
   --evidence <text>    Where and when the owner confirmed                (required)
@@ -155,9 +199,10 @@ function openDb(dbPath: string) {
  * the scheduled tick records — a last-run time, a ledger sync, a KPI, review, budget or kv row — and so never silences
  * "the loop did not run for N hours", the one blocker that shows the hourly schedule stopped (tick 64, 7.10.2026: a
  * report run by hand ran the due ledger sync and stamped its time). `criteria` renders unless it marks, supervises or
- * reconciles.
+ * reconciles. `verify-gumroad` only reads too (RULING-2026-10-11-ledger-sale-ids.md, decision 2 item 8).
  */
 function rendersOnly(command: string, flags: { mark?: string; supervised?: string; reconcile?: boolean }): boolean {
+  if (command === "verify-gumroad") return true;
   if (["report", "dashboard", "status", "growth"].includes(command)) return true;
   return command === "criteria" && !flags.mark && !flags.supervised && !flags.reconcile;
 }
@@ -198,6 +243,9 @@ async function main(): Promise<void> {
       "external-id": { type: "string" },
       note: { type: "string" },
       "occurred-at": { type: "string" },
+      id: { type: "string" },
+      "listed-from": { type: "string" },
+      since: { type: "string" },
       evidence: { type: "string" },
       undo: { type: "boolean", default: false },
       ils: { type: "string" },
@@ -303,7 +351,9 @@ async function main(): Promise<void> {
 
       case "record": {
         const lineId = values.line ?? fail("--line is required");
-        const kind = (values.kind ?? fail("--kind is required")) as LedgerKind;
+        const kind = (values.kind ?? fail("--kind is required")).trim() as LedgerKind;
+        // As revenue_record checks it: a kind outside the five is booked by no rule, and counted by no sum (the tick-76 review).
+        if (!LEDGER_KINDS.includes(kind)) fail(`--kind must be one of ${LEDGER_KINDS.join(", ")}`);
         const amount = num(values.amount, "amount");
         if (!Number.isInteger(amount) || amount === 0) fail("--amount must be a non-zero integer in minor units");
         const currency = values.currency ?? fail("--currency is required");
@@ -316,7 +366,7 @@ async function main(): Promise<void> {
           );
         }
 
-        const entry = recordLedgerEntry(db.raw, {
+        const input = {
           lineId,
           kind,
           amountMinor: amount,
@@ -325,15 +375,53 @@ async function main(): Promise<void> {
           externalId: values["external-id"] ?? null,
           occurredAt: values["occurred-at"],
           note: values.note ?? null,
-        });
+        };
+        // A Gumroad sale without Gumroad's own time, which no listing would return, is refused before anything is written
+        // (RULING-2026-10-13 §3, ledger.ts); so is a Gumroad refund the sync would book again (tick 76).
+        const undated = gumroadHandSaleRefusal(input);
+        if (undated) fail(undated);
+        const refused = gumroadHandRefundRefusal(db.raw, input);
+        if (refused) fail(refused);
+        const entry = recordLedgerEntry(db.raw, input);
         if (!entry) {
-          console.log(`Already recorded: ${source}/${values["external-id"]}. Nothing changed.`);
+          console.log(`Already recorded: ${source}/${storedExternalId(source, values["external-id"] ?? null)}. Nothing changed.`);
         } else {
           const flag = entry.unconverted ? " unconverted (wallet money, counted in no target)" : "";
           console.log(`Recorded ${entry.kind} ${formatIls(entry.amountAgorot)}${flag} on ${entry.lineId} via ${entry.source}.`);
           const line = getLine(db.raw, lineId)!;
           console.log(`  ${line.id} is now ${line.status}.`);
         }
+        break;
+      }
+
+      case "verify-gumroad": {
+        // C3 of RULING-2026-10-11-ledger-sale-ids.md: the re-derivation as code. The handle is query-only (rendersOnly);
+        // without the token nothing is fetched, so the command costs nothing and makes no call.
+        // --since (RULING-2026-10-13, "does not decide" 4): an earlier day to list from, checked before anything is fetched.
+        const since = values.since;
+        if (since !== undefined && !isListingDay(since, latestListingDay(values.now))) {
+          fail(`--since must be a real day, YYYY-MM-DD, no later than ${latestListingDay(values.now)} (tomorrow in UTC)`);
+        }
+        const result = await verifyGumroadLedger(db.raw, { token: process.env.GUMROAD_ACCESS_TOKEN, nowIso: values.now, since });
+        console.log(values.json ? JSON.stringify(result, null, 2) : renderGumroadVerify(result));
+        if (result.status === "not_configured") process.exitCode = 2;
+        else if (result.status === "incomplete") process.exitCode = 1;
+        else process.exitCode = result.findings > 0 ? 3 : 0;
+        break;
+      }
+
+      case "place-gumroad-sale": {
+        // RULING-2026-10-13-gumroad-refund-reread.md §3 item 3: the one write to an existing ledger row, a value Gumroad's
+        // own listing gives (src/revenue/gumroad-place.ts). It writes, so its handle is not query_only (rendersOnly).
+        const result = await placeGumroadSale(db.raw, {
+          id: values.id ?? fail("--id is required: the sale's stored id, sha256:<hex>"),
+          listedFrom: values["listed-from"] ?? fail("--listed-from is required: YYYY-MM-DD, on or before the day Gumroad made the sale"),
+          token: process.env.GUMROAD_ACCESS_TOKEN,
+          nowIso: values.now,
+        });
+        if (result.status === "invalid") fail(result.lines.join(" "));
+        for (const line of result.lines) console.log(line);
+        process.exitCode = result.exitCode;
         break;
       }
 

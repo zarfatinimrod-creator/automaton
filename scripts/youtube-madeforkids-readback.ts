@@ -13,11 +13,19 @@
  *                          kids-explainers reads state/colony/measurements/kids-explainers-videos.json. No file = nothing
  *                          uploaded = nothing to read (exit 0).
  * WRITES state/colony/measurements/<line>-madeforkids.json: one entry per upload. EVERY listed upload is asked about on
- * every run (an override YouTube sets after the first read must be seen; corrected 4.10): the entry keeps the first read
- * for that id, designated or not (firstRead: readAt, returned, privacyStatus; written once, ruling 7.10 row 24
- * amendment 1), the first read that carried a designation, the latest read (returned, madeForKids "true"/"false"/null,
- * privacyStatus, readAt), and the times a read first contradicted the line's declaration or found a public upload no
- * longer public. readbackOf(<that file>, <the uploads>) is ExperimentReadings.madeForKidsReadback.
+ * every run (an override YouTube sets after the first read must be seen; corrected 4.10). The file holds
+ * no value the API returned — no madeForKids, no privacyStatus, in any field, for any time
+ * (research/channel-loop/RULING-2026-10-12-youtube-derived-metrics.md §2): the API's answer lives in this process from
+ * the fetch to the merge and dies with it. Per upload the entry keeps only the colony's own facts: when the first read
+ * was taken, designated or not, whether it returned the video and P1's API half judged at it (firstReadAt,
+ * firstReadReturned, p1Api; written once, ruling 7.10 row 24 amendment 1); when the first read that carried a designation
+ * was taken (firstDesignationAt) and P2's clock start (p2ClockAt: that time when that read found the upload public); when
+ * a read last found it public (lastPublicAt); and when a read first found a public upload no longer public (leftPublicAt)
+ * or first contradicted the line's declaration (contradictedAt). assertColonyFactsOnly runs on the new state before the
+ * write: a state that fails it is refused (exit 1) and nothing is written. The file is committed like the other colony
+ * state, because it holds nothing of YouTube's (§2 decision 5). It prints, per upload, one word —
+ * as-declared, contrary or unread — never a designation or a privacy status (§2 decision 4).
+ * readbackOf(<that file>, <the uploads>) is ExperimentReadings.madeForKidsReadback.
  *
  * NO LIVE CALL BEFORE STAGE A, AND NONE BEFORE THE API'S TERMS ARE READ. Two gates, each a refusal (exit 2) with
  * nothing asked and nothing written, checked in this order: (1) research/channel-loop/terms-verdicts.json must hold a
@@ -32,6 +40,8 @@
  *
  * USAGE
  *   pnpm exec tsx scripts/youtube-madeforkids-readback.ts --line kids-explainers [--videos <path>] [--state <path>] [--now <iso>]
+ * --now is an ISO 8601 date-time with a zone (Z or ±hh:mm) on a real day; it is written in toISOString() form, the only
+ * form the state's invariant takes, and anything else is refused (exit 2) before a call is made (runClock).
  * Exit 0 read (or nothing to read), 1 the API refused or answered badly (nothing written), 2 refused to run.
  */
 
@@ -42,6 +52,7 @@ import { parseArgs } from "node:util";
 import {
   MAX_IDS_PER_CALL,
   READ_HOST,
+  assertColonyFactsOnly,
   emptyState,
   isReadbackLine,
   mergeReadings,
@@ -103,6 +114,25 @@ export function defaultPaths(line: ReadbackLine): { videosPath: string; statePat
   };
 }
 
+/** An ISO 8601 date-time in extended form with an explicit zone, Z or ±hh:mm; its seconds and their fraction optional. */
+const ISO_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}:\d{2})$/;
+
+/**
+ * The run's clock as the state writes it: `now` in toISOString() form, the only form assertColonyFactsOnly takes for a
+ * time (ruling 12.10 row 28 §2 decision 2), or null when `now` is not an ISO 8601 date-time with a zone on a real calendar
+ * day. A value with no milliseconds, no seconds or an offset is normalised. Refused: a time with no zone (Date.parse would
+ * read it in the machine's own zone), a bare date, any other text Date.parse would still read ("1" is 2001), and a day
+ * the month does not have (Date.parse rolls 2027-02-30 into March). runReadback refuses a null before any call, so a
+ * --now the state cannot hold never spends a read (the tick-73 review).
+ */
+export function runClock(now: string): string | null {
+  const m = ISO_DATE_TIME.exec(now);
+  if (!m) return null;
+  const t = Date.parse(now);
+  if (Number.isNaN(t) || new Date(Date.UTC(+m[1]!, +m[2]! - 1, +m[3]!)).getUTCDate() !== +m[3]!) return null;
+  return new Date(t).toISOString();
+}
+
 type FetchLike = (
   url: string,
   init?: { signal?: AbortSignal; redirect?: "error" },
@@ -116,6 +146,7 @@ export interface ReadbackRun {
   statePath: string;
   /** research/channel-loop/terms-verdicts.json in a real run (main() passes TERMS_VERDICTS and takes no other). */
   verdictsPath: string;
+  /** The run's clock, an ISO 8601 date-time with a zone; runReadback normalises it with runClock or refuses it (exit 2). */
   now: string;
   log: (line: string) => void;
 }
@@ -137,6 +168,14 @@ export async function runReadback(run: ReadbackRun): Promise<number> {
   }
   if (!isReadbackLine(run.experiment)) {
     run.log(`youtube-madeforkids: "${String(run.experiment)}" is not a YouTube line (faceless-youtube, kids-explainers) — refusing to run.`);
+    return 2;
+  }
+  const now = runClock(run.now);
+  if (now === null) {
+    run.log(
+      `youtube-madeforkids: --now ${JSON.stringify(run.now)} is not an ISO 8601 date-time with a zone (Z or ±hh:mm) on a ` +
+        `real day — refusing to run; nothing asked, nothing written.`,
+    );
     return 2;
   }
   const redact = (s: string) => s.split(key).join("[key]");
@@ -173,20 +212,30 @@ export async function runReadback(run: ReadbackRun): Promise<number> {
         run.log(redact(`youtube-madeforkids: videos.list answered HTTP ${res.status}: ${msg} — nothing written.`));
         return 1;
       }
-      fresh.push(...parseVideosList(body, batch, run.now));
+      fresh.push(...parseVideosList(body, batch, now));
     } catch (error) {
       run.log(redact(`youtube-madeforkids: ${error instanceof Error ? error.message : String(error)} — nothing written.`));
       return 1;
     }
   }
 
-  const next = mergeReadings(state, uploads, fresh, run.now);
+  const next = mergeReadings(state, uploads, fresh, now);
+  try {
+    // Ruling 12.10 row 28 §2 decision 4: the state is colony facts only, or it is not written (its message names paths only).
+    assertColonyFactsOnly(next);
+  } catch (error) {
+    run.log(redact(`youtube-madeforkids: ${error instanceof Error ? error.message : String(error)} — nothing written.`));
+    return 1;
+  }
   mkdirSync(dirname(run.statePath), { recursive: true });
   writeFileSync(run.statePath, JSON.stringify(next, null, 2) + "\n");
-  const rb = readbackOf(next, uploads);
+  // One word per upload, never a designation or a privacy status (§2 decision 4): the line's own declaration, the
+  // contrary one recorded, or no designation read yet.
+  const declared = String(next.declaresMadeForKids);
+  const words = readbackOf(next, uploads).map((v) => (v === null ? "unread" : v === declared ? "as-declared" : "contrary"));
   run.log(
     `youtube-madeforkids: ${run.experiment} (declares made for kids: ${next.declaresMadeForKids}): asked ${ids.length}, ` +
-      `read-back ${rb.map((v) => v ?? "unread").join(", ")}; wrote ${run.statePath}`,
+      `read-back ${words.join(", ")}; wrote ${run.statePath}`,
   );
   return 0;
 }

@@ -271,5 +271,472 @@
     "replace": "# the last ledger sync, which only a tick records:",
     "test": "src/__tests__/revenue/colony-cli.test.ts",
     "note": "tick 64 review note 3: the header names one writer of the last ledger sync; the heartbeat's revenue_ledger_sync task writes the same kv key"
+  },
+  {
+    "id": "T69-A1",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "    if (raw > 0) out.chiefFindings.push(",
+    "replace": "    if (raw > 1) out.chiefFindings.push(",
+    "test": "src/__tests__/revenue/loop.test.ts",
+    "note": "tick 69, RULING-2026-10-11-ledger-sale-ids.md C4 (fold 4): the raw-id finding pushed only when n > 1, so one raw gumroad row passes the audit (killed by the audit test)"
+  },
+  {
+    "id": "T69-A2",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "    const raw = ids.filter((r) => !isStoredForm(source, r.externalId)).length;",
+    "replace": "    const raw = ids.length;",
+    "test": "src/__tests__/revenue/loop.test.ts",
+    "note": "tick 69, C4: every gumroad row counted raw, stored-form rows included (killed by the stored-form rows' no-finding test)"
+  },
+  {
+    "id": "T69-C1",
+    "file": "scripts/colony.ts",
+    "find": "          console.log(`Already recorded: ${source}/${storedExternalId(source, values[\"external-id\"] ?? null)}. Nothing changed.`);",
+    "replace": "          console.log(`Already recorded: ${source}/${values[\"external-id\"]}. Nothing changed.`);",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 69, fold 5: colony.ts record prints the raw id on a duplicate (killed by the CLI stdout test)"
+  },
+  {
+    "id": "T69-C2",
+    "file": "scripts/colony.ts",
+    "find": "        else process.exitCode = result.findings > 0 ? 3 : 0;",
+    "replace": "        else process.exitCode = 0;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 69, fold 6: verify-gumroad exits 0 on a finding (killed by the extra-row test's exit 3)"
+  },
+  {
+    "id": "T69-C3",
+    "file": "scripts/colony.ts",
+    "find": "        if (result.status === \"not_configured\") process.exitCode = 2;",
+    "replace": "        if (result.status === \"not_configured\") process.exitCode = 0;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 69, fold 6: verify-gumroad without the token exits 0, as if the ledger were verified (killed by the no-token test's exit 2)"
+  },
+  {
+    "id": "T69-C4",
+    "file": "scripts/colony.ts",
+    "find": "  if (command === \"verify-gumroad\") return true;",
+    "replace": "  if (command === \"verify-gumroad-off\") return true;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 69, fold 6: verify-gumroad's handle no longer query-only. Killed by the source pin only: the command writes nothing on any path today, as T64-C4 for the render commands"
+  },
+  {
+    "id": "T69-T1",
+    "file": "src/revenue/tools.ts",
+    "find": "`Duplicate: ${source}/${storedExternalId(source, str(args, \"external_id\"))} was already recorded. Nothing changed.`",
+    "replace": "`Duplicate: ${source}/${str(args, \"external_id\")} was already recorded. Nothing changed.`",
+    "test": "src/__tests__/revenue/loop.test.ts",
+    "note": "tick 69, fold 5: revenue_record prints the raw id on a duplicate (killed by the tool test's exact message)"
+  },
+  {
+    "id": "T69-C5",
+    "file": "scripts/colony.ts",
+    "find": "        else if (result.status === \"incomplete\") process.exitCode = 1;",
+    "replace": "        else if (result.status === \"incomplete\") process.exitCode = 0;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 69 review (R-4): verify-gumroad exits 0 when the listing is refused, as if the ledger were verified (killed by the refused-listing test's exit 1)"
+  },
+  {
+    "id": "T73-C1",
+    "file": "src/revenue/runner.ts",
+    "find": "          notAskedNowNote(line.id) +\n          earlyPartNote(line.id),\n",
+    "replace": "          notAskedNowNote(line.id),\n",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 §3(5): the per-line row loses step 6's early-part clause"
+  },
+  {
+    "id": "T73-C2",
+    "file": "src/revenue/runner.ts",
+    "find": "may follow step ${after?.number ?? s.earlyPart!.afterStep}`",
+    "replace": "may follow step ${s.earlyPart!.afterStep}`",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 §3(5): the clause prints afterStep's id, not its number"
+  },
+  {
+    "id": "T73-C3",
+    "file": "src/revenue/runner.ts",
+    "find": "  return openOwnerStepsForLine(lineId)\n    .filter((s) => s.earlyPart)",
+    "replace": "  return OWNER_STEPS.filter((s) => s.lines.includes(lineId))\n    .filter((s) => s.earlyPart)",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 §3(5): the clause is printed while step 6 is not asked on the line"
+  },
+  {
+    "id": "T73-C4",
+    "file": "src/revenue/runner.ts",
+    "find": "${s.earlyPart!.minutes} min",
+    "replace": "${s.minutes[0]} min",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 §3(5): the clause prints step 6's minutes, not the early part's"
+  },
+  {
+    "id": "T73-C5",
+    "file": "src/revenue/runner.ts",
+    "find": "    gatedRowsFirst(heldSecretRows(step, site)).map(",
+    "replace": "    heldSecretRows(step, site).map(",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: 'Not asked yet' in table order, the Gumroad row before POSTHOG_READ_KEY"
+  },
+  {
+    "id": "T73-C6",
+    "file": "src/revenue/runner.ts",
+    "find": "row ${secretRowHoldReason(row, site)}`,",
+    "replace": "row is held`,",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: 'Not asked yet' names no reason"
+  },
+  {
+    "id": "T73-C7",
+    "file": "src/revenue/runner.ts",
+    "find": "row ${secretRowHoldReason(row, site)} — step ${step.number} ",
+    "replace": "row — step ${step.number} ",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: a done step's owed row is named without its reason"
+  },
+  {
+    "id": "T73-C8",
+    "file": "src/revenue/runner.ts",
+    "find": "  result.blockers.push(...paidProductReadyBlockers(result.pageViewGates));\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the tick no longer raises the PASS guard"
+  },
+  {
+    "id": "T73-C9",
+    "file": "src/revenue/runner.ts",
+    "find": "    return step !== undefined && hasPendingPrecondition(step);",
+    "replace": "    return step !== undefined;",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS guard fires after both preconditions are recorded met"
+  },
+  {
+    "id": "T73-C10",
+    "file": "src/revenue/runner.ts",
+    "find": "    .filter((g) => g.verdict === \"pass\" && unlocked.includes(g.lineId))",
+    "replace": "    .filter((g) => unlocked.includes(g.lineId))",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS guard fires on any verdict (absent on pause)"
+  },
+  {
+    "id": "T73-C11",
+    "file": "src/revenue/runner.ts",
+    "find": "    .filter((g) => g.verdict === \"pass\" && unlocked.includes(g.lineId))",
+    "replace": "    .filter((g) => g.verdict === \"pass\")",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS guard fires for a line step 3 does not unlock"
+  },
+  {
+    "id": "T73-C12",
+    "file": "src/revenue/runner.ts",
+    "find": "const day = firstPassed ? PAGE_VIEW_GATES.reachDay : PAGE_VIEW_GATES.extensionDay;",
+    "replace": "const day = PAGE_VIEW_GATES.reachDay;",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: a day-112 PASS is named as the day-56 read"
+  },
+  {
+    "id": "T73-C13",
+    "file": "src/revenue/runner.ts",
+    "find": ">= PAGE_VIEW_GATES.passMinWeeklyAverage;",
+    "replace": "> PAGE_VIEW_GATES.passMinWeeklyAverage;",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: a day-56 PASS at the bar exactly is named as the day-112 read"
+  },
+  {
+    "id": "T73-C14",
+    "file": "src/revenue/runner.ts",
+    "find": "const date = views.get(endWeekOfDay(day))?.writtenAt.slice(0, 10) ?? \"an unrecorded date\";",
+    "replace": "const date = g.anchorDay ?? \"an unrecorded date\";",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS is dated D0, not the day its last week was written"
+  },
+  {
+    "id": "T73-C15",
+    "file": "src/revenue/runner.ts",
+    "find": "const unlocked = ownerStepById(\"gumroad\", steps)?.lines ?? [];",
+    "replace": "const unlocked = [\"apify-actors\", \"il-biz-tools\", \"pcn874\"];",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS guard's lines are not step 3's"
+  },
+  {
+    "id": "T73-C16",
+    "file": "src/revenue/runner.ts",
+    "find": "([\"tax-file\", \"gumroad\"] as const).some(",
+    "replace": "([\"tax-file\"] as const).some(",
+    "test": "src/__tests__/revenue/runner.test.ts",
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: the PASS guard reads step 2's precondition alone"
+  },
+  {
+    "id": "T73-C17",
+    "file": "src/revenue/runner.ts",
+    "find": "  return [...rows.filter((r) => r.askedOnlyWhen), ...rows.filter((r) => !r.askedOnlyWhen)];",
+    "replace": "  return rows;",
+    "test": [
+      "src/__tests__/revenue/runner.test.ts",
+      "src/__tests__/revenue/owner-report.test.ts"
+    ],
+    "note": "tick 73, ruling 12.10 row 29 Fold 4: gatedRowsFirst keeps table order"
+  },
+  {
+    "id": "T76-T1",
+    "file": "src/revenue/tools.ts",
+    "find": "          if (refused) return `Error: ${refused}`;",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: revenue_record ignores the guard and books every Gumroad refund (killed by ledger.test.ts's refusal tests)"
+  },
+  {
+    "id": "T76-T2",
+    "file": "src/revenue/tools.ts",
+    "find": "          const refused = gumroadHandRefundRefusal(ctx.db.raw, input);\n          if (refused) return `Error: ${refused}`;\n          const entry = recordLedgerEntry(ctx.db.raw, input);",
+    "replace": "          const entry = recordLedgerEntry(ctx.db.raw, input);\n          const refused = gumroadHandRefundRefusal(ctx.db.raw, input);\n          if (refused) return `Error: ${refused}`;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: revenue_record books first and refuses after, so a refused refund is written (killed by the books-nothing assertions)"
+  },
+  {
+    "id": "T76-T3",
+    "file": "src/revenue/tools.ts",
+    "find": " A gumroad refund is booked only under <sale id>:refund (raw or stored) of a sale the ledger holds, on that sale's line, because the hourly sync re-reads every Gumroad sale with no refund under that id and would book its refund again; any other is refused.",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: the tool's description no longer states the rule (killed by the description test)"
+  },
+  {
+    "id": "T76-T4",
+    "file": "src/revenue/tools.ts",
+    "find": " A gumroad refund's id is <sale id>:refund (or sha256:<hex>:refund) of a sale already booked, or the refund is refused.",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: the external_id parameter text no longer states the rule (killed by the description test)"
+  },
+  {
+    "id": "T76-C1",
+    "file": "scripts/colony.ts",
+    "find": "        if (refused) fail(refused);",
+    "replace": "",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 76: colony.ts record ignores the guard and books every Gumroad refund (killed by the CLI's exit-1 tests)"
+  },
+  {
+    "id": "T76-C2",
+    "file": "scripts/colony.ts",
+    "find": "        const refused = gumroadHandRefundRefusal(db.raw, input);\n        if (refused) fail(refused);\n        const entry = recordLedgerEntry(db.raw, input);",
+    "replace": "        const entry = recordLedgerEntry(db.raw, input);\n        const refused = gumroadHandRefundRefusal(db.raw, input);\n        if (refused) fail(refused);",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 76: colony.ts record books first and refuses after, so a refused refund is written (killed by the CLI's nothing-booked assertions)"
+  },
+  {
+    "id": "T76-C3",
+    "file": "scripts/colony.ts",
+    "find": "                       A gumroad refund is booked only as <sale id>:refund (raw or stored) of a sale\n",
+    "replace": "                       A gumroad refund of a sale\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 76: the usage text for record no longer states the rule (killed by the usage test)"
+  },
+  {
+    "id": "T76R-C1",
+    "file": "scripts/colony.ts",
+    "find": "        if (!LEDGER_KINDS.includes(kind)) fail(`--kind must be one of ${LEDGER_KINDS.join(\", \")}`);",
+    "replace": "",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick-76 review, fix 3: colony.ts record books any --kind, so Refund is a positive row nothing counts and the guard is skipped (killed by the --kind test)"
+  },
+  {
+    "id": "T76R-C2",
+    "file": "scripts/colony.ts",
+    "find": "        const kind = (values.kind ?? fail(\"--kind is required\")).trim() as LedgerKind;",
+    "replace": "        const kind = (values.kind ?? fail(\"--kind is required\")) as LedgerKind;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick-76 review, fix 3: --kind not trimmed, so ' sale ' is refused and 'refund ' meets the kind check, not the refund rule (killed by the --kind test)"
+  },
+  {
+    "id": "T76R-C3",
+    "file": "scripts/colony.ts",
+    "find": "                       Gumroad money is booked only under --source gumroad: a refund under another\n",
+    "replace": "                       Gumroad money: a refund under another\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick-76 review, fix 2: the usage text for record no longer says Gumroad money is booked under --source gumroad only (killed by the usage test)"
+  },
+  {
+    "id": "T76R-T1",
+    "file": "src/revenue/tools.ts",
+    "find": " Gumroad money is booked only under source gumroad: a refund under any other source whose id is <sale id>:refund (raw or stored) of a Gumroad sale the ledger holds is refused too, because the sync books that refund under gumroad as well.",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick-76 review, fix 2: the tool's description no longer says Gumroad money is booked under source gumroad only (killed by the description test)"
+  },
+  {
+    "id": "T77-T1",
+    "file": "src/revenue/tools.ts",
+    "find": "          if (undated) return `Error: ${undated}`;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 77 (fold 9 T77-T1): revenue_record does not act on the sale guard, so a gumroad sale with no time is recorded at now (killed by case i)"
+  },
+  {
+    "id": "T77-T2",
+    "file": "src/revenue/tools.ts",
+    "find": " A gumroad sale booked by hand needs occurred_at, Gumroad's created_at for that sale as GET /v2/sales returns it; without it, or with a time that cannot be read, it is refused, because the hourly sync reads a sale's refund from the day the ledger dates it (RULING-2026-10-13-gumroad-refund-reread.md §3).",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 77: the tool's description no longer says a gumroad sale needs Gumroad's created_at (killed by the description test)"
+  },
+  {
+    "id": "T77-C1",
+    "file": "scripts/colony.ts",
+    "find": "        if (undated) fail(undated);\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 77 (fold 9 T77-C1): colony.ts record does not act on gumroadHandSaleRefusal, so a gumroad sale with no --occurred-at is recorded (killed by the CLI record test)"
+  },
+  {
+    "id": "T77-C2",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "(s) => s && s.id !== undefined && s.id !== null && storedExternalId(\"gumroad\", String(s.id)) === id,",
+    "replace": "(s) => s && s.id !== undefined && s.id !== null,",
+    "test": ["src/__tests__/revenue/gumroad-place.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 77 (fold 9 T77-C2): every listed sale matches, so place-gumroad-sale writes another sale's created_at when none has the stored id (killed by the no-match tests, unit and CLI)"
+  },
+  {
+    "id": "T77-C3",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "  const created = Date.parse(String(matches[0].created_at ?? \"\"));",
+    "replace": "  const created = Date.parse(`${params.listedFrom}T00:00:00.000Z`);",
+    "test": ["src/__tests__/revenue/gumroad-place.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 77 (fold 9 T77-C3): the new day taken from --listed-from instead of Gumroad's created_at (killed by the placed tests)"
+  },
+  {
+    "id": "T77-C4",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "    for (const row of family) update.run(occurredAt, row.externalId);",
+    "replace": "    update.run(occurredAt, sale.externalId);",
+    "test": ["src/__tests__/revenue/gumroad-place.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 77 (fold 9 T77-C4): the :refund and :fee rows not moved with the sale (killed by the family tests, unit and CLI)"
+  },
+  {
+    "id": "T77-C5",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "  if (!listing.ok) {",
+    "replace": "  if (false) {",
+    "test": ["src/__tests__/revenue/gumroad-place.test.ts", "src/__tests__/revenue/colony-cli.test.ts"],
+    "note": "tick 77 (fold 9 T77-C5): a listing that stopped short is taken as read, so a sale on a page read before a refusal is placed (killed by the page-2 refusal unit test; the CLI's page-1 refusal loses its words)"
+  },
+  {
+    "id": "T77-C6",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "  if (!token) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77: no token check, so the command lists without one (killed by the not-configured test, whose fetch throws)"
+  },
+  {
+    "id": "T77-C7",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "  if (inConnectorForm(sale.occurredAt) && oldDay === newDay) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77: a sale already on Gumroad's day is written again, its time moved (killed by the unchanged test; the find follows the tick-77 review fixer's connector-form check)"
+  },
+  {
+    "id": "T77-C8",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "  if (sales.length !== 1) {",
+    "replace": "  if (sales.length === 0) {",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77: two sale rows under one stored id are not refused, and the listing is asked (killed by the two-rows test, whose fetch throws)"
+  },
+  {
+    "id": "T77-C9",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "  if (!STORED_SALE_ID_RE.test(id)) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77: an id not in the stored form is not refused as an argument (killed by the invalid-id test)"
+  },
+  {
+    "id": "T77-C10",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "  if (!isListingDay(params.listedFrom, latestDay)) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77: a --listed-from that is no real day is not refused, and the listing is asked (killed by the listed-from test, whose fetch throws)"
+  },
+  {
+    "id": "T77-C11",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": " && day <= latestDay;",
+    "replace": ";",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77: a day after tomorrow (UTC) is a listing day (killed by the listed-from test and isListingDay's own)"
+  },
+  {
+    "id": "T77-C12",
+    "file": "scripts/colony.ts",
+    "find": "        process.exitCode = result.exitCode;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 77: place-gumroad-sale exits 0 whatever happened, so the workflow step never fails on no token or not placed (killed by the CLI exit-2 and exit-3 tests)"
+  },
+  {
+    "id": "T77-Y1",
+    "file": ".github/workflows/colony.yml",
+    "find": "        if: ${{ github.event_name == 'workflow_dispatch' && inputs.place_sale != '' }}",
+    "replace": "        if: ${{ inputs.place_sale != '' }}",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 77: the placement step's condition no longer names the dispatch (killed by the workflow test's pinned condition)"
+  },
+  {
+    "id": "T77-V1",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "  const days = sinceNext !== null && sinceNext < (rowDays[0] ?? shiftDay(nowDay, -FIRST_READ_DAYS)) ? [sinceNext] : rowDays;",
+    "replace": "  const days = rowDays;",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77, fold 7: verify-gumroad ignores since, so the hand-booked row stays unexplained (killed by the since tests)"
+  },
+  {
+    "id": "T77-V2",
+    "file": "src/revenue/gumroad-verify.ts",
+    "find": "  const days = sinceNext !== null && sinceNext < (rowDays[0] ?? shiftDay(nowDay, -FIRST_READ_DAYS)) ? [sinceNext] : rowDays;",
+    "replace": "  const days = sinceNext !== null ? [sinceNext] : rowDays;",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77, fold 7: a later since narrows the listing, and every row before it reads as unexplained (killed by the later-since test)"
+  },
+  {
+    "id": "T77-V3",
+    "file": "scripts/colony.ts",
+    "find": "nowIso: values.now, since });",
+    "replace": "nowIso: values.now });",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 77, fold 7: the CLI does not pass --since (killed by the CLI --since test)"
+  },
+  {
+    "id": "T77-V4",
+    "file": "scripts/colony.ts",
+    "find": "        if (since !== undefined && !isListingDay(since, latestListingDay(values.now))) {",
+    "replace": "        if (false) {",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 77, fold 7: a --since that is no real day is not refused, and the listing is asked (killed by the CLI --since test's request count)"
+  },
+  {
+    "id": "T77R-C1",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "WHERE source = 'gumroad' AND external_id = ?\")",
+    "replace": "WHERE external_id = ?\")",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77 review fixer (the review's survivor R-X1, a condition fold 6 rules): the placement's UPDATE without its source filter re-dates another source's row stored under the sale's exact id (killed by the other-source test)"
+  },
+  {
+    "id": "T77R-C2",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "  if (inConnectorForm(sale.occurredAt) && oldDay === newDay) {",
+    "replace": "  if (oldDay === newDay) {",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77 review fixer (the review's finding 2): a stored time Date.parse reads on Gumroad's day but not in the connector's form, such as 2026-02-31, is taken as placed and never written, so the windows count it in no month (killed by the connector-form test)"
+  },
+  {
+    "id": "T77R-C3",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "    : inConnectorForm(sale.occurredAt) ? oldDay : `a time not in the connector's form (read as ${oldDay})`;",
+    "replace": "    : oldDay;",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77 review fixer: a placed row whose old time was not in the connector's form is said by its parsed day alone (2026-03-03 → 2026-03-03), which misstates it (killed by the connector-form test's exact lines)"
   }
 ]

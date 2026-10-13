@@ -141,13 +141,19 @@ companies for $2 versus hours of Hebrew CSV wrangling.
 
 **To publish free and start measuring — this is the whole list:**
 
-1. **Apify account**: sign up at apify.com and verify the email. That is all; **no identity
-   verification, no payout details, no money.** A free, unpriced Actor requires none of it.
+1. **Apify account**: sign up at apify.com and verify the email. That is all Apify requires: **no
+   identity verification, no payout details, no money** — a free, unpriced Actor requires none of it.
 2. **Create an API token** (*Settings → Integrations → Personal API tokens*) and paste it into
    GitHub as a repository secret named exactly `APIFY_TOKEN`. CI does the rest — see
    *Published free through CI* below.
 3. The first push creates the Actor privately. Open it in the Console once and press
-   **Publication → Publish to Store** to make it visible. One click, once.
+   **Publication → Publish to Store** to make it visible. One click, once. **In the same sitting, Apify's
+   identity verification** (legal name, an ID photo, proof of address, a tax document, ownership information):
+   Apify does not require it for a free listing, but its default Store search hides Actors from developers who
+   have not passed it, so the breadth board of 28.9.2026 asks it here, at the Publish sitting, as long as it is
+   documents only (`research/breadth/BOARD.md` Q5). Apify's own docs, read on 28.9.2026, describe it as documents
+   only (`research/measurements/apify-visibility.md`). If its screen asks for a selfie, a liveness check or a
+   video, stop: it is then never asked (`docs/OWNER_STEPS.he.md`, step 6 part ג).
 
 **Later, only if the run counts justify charging for it:**
 
@@ -164,7 +170,8 @@ companies for $2 versus hours of Hebrew CSV wrangling.
 Deploying is not a manual step any more. `.github/workflows/apify-publish.yml` does it, and the
 only thing it needs is one repository secret named exactly **`APIFY_TOKEN`** (Apify Console →
 *Settings → Integrations → Personal API tokens*; this is step 6 of the owner checklist). **No
-identity verification is required** — a free, unpriced Actor needs none.
+identity verification is required** — a free, unpriced Actor needs none (the owner is asked for it at the Publish
+click anyway, step 3 above, so the count measures demand and not visibility).
 
 | Trigger | What happens |
 |---|---|

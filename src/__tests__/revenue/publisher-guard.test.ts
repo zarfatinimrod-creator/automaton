@@ -660,6 +660,9 @@ const KNOWN_YOUTUBE_API_CODE: Record<string, string> = {
   "src/revenue/youtube-madeforkids.ts": "reader: videos.list part=status (the designation read-back); no upload",
   "scripts/youtube-madeforkids-readback.ts": "reader: runs the read-back with a Data API key; no upload",
   "src/revenue/youtube-analytics.ts": "reader: YouTube Analytics reports (yt-analytics.readonly); no upload",
+  // Since tick 75 (ruling 12.10 row 28 fold 5): its header names the googleapis.com terms gate it runs under. It always
+  // called the Analytics API, through the module's ANALYTICS_REPORTS_URL, which is why the scan had not named it.
+  "scripts/youtube-analytics.ts": "reader: runs the Analytics reports with the analytics-only consent, under the read-back's googleapis.com terms gate; no upload",
 };
 
 /** Runs `fn` on a scratch git repository holding `files`, and removes it afterwards whatever happens. */

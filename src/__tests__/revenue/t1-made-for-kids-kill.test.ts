@@ -66,6 +66,28 @@ describe("P-2: made-for-kids overrides on T1's channel", () => {
     expect(v.notes.join(" ")).toMatch(/never a replacement channel/);
   });
 
+  it.each([2, 3])("the kill's note names the %i overridden uploads by their ordinal, never a tally (ruling 12.10 row 28 §1 decision 2(b))", (n) => {
+    // The override count is a stop rule over the colony's own uploads: it lives in evaluateExperiment and in the kill's id,
+    // and is never stored, printed or shown as a figure; the note names the uploads, as K-mfk-designation's does.
+    const v = evaluateExperiment(SPEC, readings(n));
+    const kill = v.notes.filter((note) => /never a replacement channel/.test(note));
+    expect(kill).toHaveLength(1);
+    expect(kill[0]).toMatch(/upload \d+ of \d+/);
+    expect(kill[0]).not.toMatch(/\d+ made-for-kids overrides/);
+    // readings(n) is one upload read back as declared, then n overridden: uploads 2 to n + 1 of n + 1.
+    const ordinals = Array.from({ length: n }, (_, i) => `upload ${i + 2} of ${n + 1}`).join(", ");
+    expect(kill[0]!.startsWith(`${ordinals} read back the designation this line does not declare`)).toBe(true);
+    expect(kill[0]).toMatch(/this channel's line is killed, not both YouTube lines — never a replacement channel$/);
+    expect(v.notes.join(" ")).not.toMatch(/\d+ made-for-kids overrides/);
+  });
+
+  it("the kill counts the overridden uploads wherever they stand in the read-back", () => {
+    const v = evaluateExperiment(SPEC, { ...readings(0), madeForKidsReadback: ["true", "false", "false", "true"] });
+    expect(v.decision).toBe("kill");
+    expect(v.triggered).toContain("K-mfk");
+    expect(v.notes.find((note) => /never a replacement channel/.test(note))).toMatch(/^upload 1 of 4, upload 4 of 4 read back/);
+  });
+
   it("unread after an upload: a due gate with no reading counts as failed — the board is flagged, not reassured", () => {
     // ASSESSMENT §9.2 item 2: a read-back after each upload, so the count is due from the first one.
     const v = evaluateExperiment(SPEC, readings(null));

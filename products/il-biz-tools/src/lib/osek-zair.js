@@ -22,7 +22,7 @@
 // Pure: no DOM, no storage, no network. The page script (assets/page-osek-zair.js) only wires it to the form.
 import config from '../config/osek-zair.json' with { type: 'json' };
 import { round2, formatILS } from './money.js';
-import { dateHe } from './source-line.js';
+import { documentsSourceLineHe } from './source-line.js';
 
 export const OSEK_ZAIR_CONFIG = config;
 
@@ -198,6 +198,8 @@ export function citesHe(cites, cfg = config) {
  * The line right after the lead: the documents the figures are read in, and when they were read. Only for a
  * verified config with a dated read. A document with `copyOn` is a third-party copy, and the line names the site
  * after the run of documents copied there; a document without it names itself (its name says whose text it is).
+ * The grouping is documentsSourceLineHe in src/lib/source-line.js, shared with osek-patur.html's line (the
+ * osek-patur ceiling ruling of 11.10, research/channel-loop/, fold 7).
  */
 export function trackSourceLineHe(cfg = config) {
   if (cfg?.verified !== true) throw new Error('only a verified config gets a source line');
@@ -205,17 +207,5 @@ export function trackSourceLineHe(cfg = config) {
   if (check?.how !== 'read' || typeof check.record !== 'string' || !check.record.trim()) {
     throw new Error('the osek-zair source line needs a dated read with a record');
   }
-  const groups = [];
-  for (const id of cfg.sourceLine) {
-    const doc = cfg.documents[id];
-    const last = groups[groups.length - 1];
-    if (doc.copyOn && last?.copyOn === doc.copyOn) last.names.push(doc.he);
-    else groups.push({ copyOn: doc.copyOn, names: [doc.he] });
-  }
-  const parts = groups.map(({ copyOn, names }) => {
-    const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} ו${names[names.length - 1]}`;
-    if (!copyOn) return list;
-    return `${list} (${names.length === 1 ? 'עותק' : 'עותקים'} באתר ${copyOn})`;
-  });
-  return `מקור: ${parts.join('; ')} · נבדק: ${dateHe(check.on)}`;
+  return documentsSourceLineHe(cfg);
 }

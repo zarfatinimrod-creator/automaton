@@ -63,6 +63,9 @@ export type ReviewDecision =
 
 export type LedgerKind = "sale" | "subscription" | "payout" | "refund" | "cost";
 
+/** Every ledger kind: both hand paths, `revenue_record` (tools.ts) and `colony.ts record`, refuse any other. */
+export const LEDGER_KINDS: readonly LedgerKind[] = ["sale", "subscription", "payout", "refund", "cost"];
+
 export type LedgerSource =
   | "stripe"
   | "lemonsqueezy"
@@ -99,8 +102,9 @@ export interface RevenueLine {
 /**
  * One item of a line's one-time setup list, linked to the owner steps it belongs to (owner-steps.ts `number`, the
  * number the owner sees). The report asks an item until every one of its `steps` is done. `contextSteps` are steps its
- * text names without being part of them — an order note ("straight after step 1"), a step it says is not asked (the
- * frozen step 5) — and never keep it asked. owner-steps.test.ts holds the two lists to exactly the steps the text names.
+ * text names without being part of them — an order note ("straight after step 8"), a step it says is not asked (the
+ * frozen step 5) or one it is asked together with ("together with step 2") — and never keep it asked.
+ * owner-steps.test.ts holds the two lists to exactly the steps the text names.
  */
 export interface HumanSetupItem {
   text: string;

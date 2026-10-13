@@ -5,6 +5,22 @@ export interface ConnectorFetchResult {
   nextCursor?: string;
   /** Product identifiers seen that had no line mapping (for the board to map). */
   unmapped: string[];
+  /**
+   * Set when the platform's listing could not be read to its end (a page refused, more pages than the cap): `entries`
+   * holds what was read and `nextCursor` passes no sale that was not. The sync reports it in its errors as
+   * `<source>: <problem>`, beside a connector's thrown error (tick 71, the Gumroad connector).
+   */
+  problem?: string;
+  /**
+   * The day the listing asked from, for a connector that lists by day (Gumroad's `after`). The sync's late-refund re-read
+   * asks only for sales its own listing may not have reached: those created before the day after it (tick 74).
+   */
+  listedFrom?: string;
+  /**
+   * True when that listing was read to its last page: then every sale dated from the day after `listedFrom` that it did
+   * not return is one whose state it could not read (the tick-74 review).
+   */
+  listedToEnd?: boolean;
 }
 
 export interface RevenueConnector {
@@ -14,13 +30,20 @@ export interface RevenueConnector {
   /**
    * Fetch ledger entries newer than `cursor`. Implementations must be
    * read-only, idempotent (external ids), and must never throw on HTTP
-   * errors — return an empty result and let the caller log.
+   * errors — return what was read (with `problem` when the listing stopped
+   * short, or an empty result) and let the caller log.
    */
   fetchSince(params: {
     cursor: string | undefined;
     env: NodeJS.ProcessEnv;
     resolveLine: (productKey: string) => string | undefined;
     fetchImpl?: typeof fetch;
+    /**
+     * The line a sale already in the ledger was booked on, by its stored id: a refund or fee of that sale goes there,
+     * not on the line the product map gives at this sync (RULING-2026-10-13 §4); Gumroad only today. Stripe and Lemon
+     * Squeezy do not read it.
+     */
+    lineOfBookedSale?: (externalId: string) => string | undefined;
   }): Promise<ConnectorFetchResult>;
 }
 

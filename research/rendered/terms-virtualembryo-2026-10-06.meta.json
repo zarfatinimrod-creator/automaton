@@ -22,5 +22,232 @@
     "from": "research/rendered/terms-virtualembryo.meta.json",
     "commit": "5f4853a",
     "why": "A dated copy of the render-watch capture of terms-virtualembryo as commit 5f4853a stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/terms-verdicts.json and research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md keep pointing at the lines the terms reading of 6.10 (tick 54: one Opus reader, one adversarial Opus verifier, the main thread's verdict) rests on. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-virtualembryo stays on the weekly watch (its site is NOT_BARRED)."
+  },
+  "trimmed": {
+    "on": "2026-10-11",
+    "ruling": "research/channel-loop/RULING-2026-10-06-robots-and-terms.md decision 4(1) (ruling 6.10 row 21 (d))",
+    "site": "virtualembryo.ai",
+    "copying": "barred",
+    "keptLines": [
+      [
+        10,
+        19
+      ],
+      [
+        31,
+        35
+      ],
+      [
+        41,
+        47
+      ],
+      [
+        52,
+        57
+      ],
+      [
+        62,
+        66
+      ],
+      [
+        73,
+        77
+      ],
+      [
+        82,
+        86
+      ],
+      [
+        95,
+        101
+      ],
+      [
+        107,
+        111
+      ]
+    ],
+    "context": 2,
+    "fullSha256": "812c45d64517534b9aaa17a51a1eb47694a96700cad0066184223fa7155e4899",
+    "fullByteLength": 6264,
+    "lineCount": 111,
+    "body": {
+      "path": "research/rendered/terms-virtualembryo-2026-10-06.html",
+      "sha256": "dabafba6432ca104969d3c2c40543b9a1bffe0ed618d15bf703c5ff12afcea3b",
+      "byteLength": 134581,
+      "lineCount": 42,
+      "keptLines": [],
+      "inTree": false
+    },
+    "cited": [
+      {
+        "file": "txt",
+        "lines": [
+          12,
+          13
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/ZERO-TESTS.md:250",
+          "research/channel-loop/terms-verdicts.json:794",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          14,
+          14
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          16,
+          16
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          17,
+          17
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/ZERO-TESTS.md:250",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          33,
+          33
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:794"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          43,
+          43
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          45,
+          45
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          54,
+          54
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          55,
+          55
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          64,
+          64
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          75,
+          75
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          84,
+          84
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          97,
+          97
+        ],
+        "by": [
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          99,
+          99
+        ],
+        "by": [
+          "research/channel-loop/ZERO-TESTS.md:250"
+        ]
+      },
+      {
+        "file": "txt",
+        "lines": [
+          109,
+          109
+        ],
+        "by": [
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:142",
+          "research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md:1946",
+          "research/channel-loop/terms-verdicts.json:796"
+        ]
+      }
+    ],
+    "wide": [],
+    "captureCheck": "ok",
+    "fullBytesIn": "commit 5579160670471c6e2cddf3d223f6bd9d53ba0dc1 (git show 5579160670471c6e2cddf3d223f6bd9d53ba0dc1:research/rendered/terms-virtualembryo-2026-10-06.<ext>)",
+    "history": "Git history keeps the full bytes (fullBytesIn). Whether to rewrite public history is the owner's decision, listed with the §6 public/private decision (ruling 6.10 row 21 decision 4(1)): a fact for that decision, not an ask."
   }
 }
