@@ -20,6 +20,7 @@ import { parseArgs } from "node:util";
 import { createDatabase } from "../src/state/database.js";
 import {
   getLine,
+  gumroadHandRefundRefusal,
   listLines,
   recordLedgerEntry,
   setHumanSetupDone,
@@ -47,7 +48,7 @@ import {
   readLastSwept,
   sweepCoverage,
 } from "../src/revenue/criteria.js";
-import type { LedgerKind } from "../src/revenue/types.js";
+import { LEDGER_KINDS, type LedgerKind } from "../src/revenue/types.js";
 
 const DEFAULT_DB = "state/colony/colony.db";
 const DEFAULT_REPORT = "state/colony/REPORT.md";
@@ -85,6 +86,13 @@ Commands:
                        on-chain transaction id as --external-id and --occurred-at; it is flagged
                        unconverted and valued at the rate recorded for its receipt day (see fx),
                        and with none it is refused (RULING-2026-09-28-bounty-rail.md §6.2).
+                       A gumroad refund is booked only as <sale id>:refund (raw or stored) of a sale
+                       already booked, on that sale's line, because the hourly sync re-reads every
+                       Gumroad sale with no refund under that id and would book it again; any other
+                       is refused, and nothing is written.
+                       Gumroad money is booked only under --source gumroad: a refund under another
+                       source whose id is <sale id>:refund (raw or stored) of a Gumroad sale already
+                       booked is refused too. --kind is one of the five kinds below; any other is refused.
   verify-gumroad       Re-derive the ledger's Gumroad rows (RULING-2026-10-11-ledger-sale-ids.md C3): with
                        GUMROAD_ACCESS_TOKEN, list the account's sales from a day before the oldest row,
                        digest each id and match the rows. Prints counts, stored ids and days, never a
@@ -315,7 +323,9 @@ async function main(): Promise<void> {
 
       case "record": {
         const lineId = values.line ?? fail("--line is required");
-        const kind = (values.kind ?? fail("--kind is required")) as LedgerKind;
+        const kind = (values.kind ?? fail("--kind is required")).trim() as LedgerKind;
+        // As revenue_record checks it: a kind outside the five is booked by no rule, and counted by no sum (the tick-76 review).
+        if (!LEDGER_KINDS.includes(kind)) fail(`--kind must be one of ${LEDGER_KINDS.join(", ")}`);
         const amount = num(values.amount, "amount");
         if (!Number.isInteger(amount) || amount === 0) fail("--amount must be a non-zero integer in minor units");
         const currency = values.currency ?? fail("--currency is required");
@@ -328,7 +338,7 @@ async function main(): Promise<void> {
           );
         }
 
-        const entry = recordLedgerEntry(db.raw, {
+        const input = {
           lineId,
           kind,
           amountMinor: amount,
@@ -337,7 +347,11 @@ async function main(): Promise<void> {
           externalId: values["external-id"] ?? null,
           occurredAt: values["occurred-at"],
           note: values.note ?? null,
-        });
+        };
+        // A Gumroad refund the sync would book again is refused before anything is written (tick 76, ledger.ts).
+        const refused = gumroadHandRefundRefusal(db.raw, input);
+        if (refused) fail(refused);
+        const entry = recordLedgerEntry(db.raw, input);
         if (!entry) {
           console.log(`Already recorded: ${source}/${storedExternalId(source, values["external-id"] ?? null)}. Nothing changed.`);
         } else {

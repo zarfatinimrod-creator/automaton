@@ -369,3 +369,134 @@ describe("record and verify-gumroad keep the raw Gumroad id and the token out of
     expect(cliSource).toContain("Exit 0 clean, 3 with findings");
   });
 });
+
+// Tick 76 (CHANNEL_LOOP §9 "Queued 12.10 (tick 74)" item 2): `colony.ts record` refuses a Gumroad refund the hourly sync
+// would book again — one whose id, stored, is not `sha256:<hex>:refund` of a Gumroad sale the ledger holds, on that
+// sale's line — exiting 1 with nothing written. The real CLI on a temporary database; every id is invented.
+describe("record books a Gumroad refund only where the sync will find it (tick 76)", () => {
+  const SALE = "fake-sale-T76c==";
+  const SALE_STORED = "fake-sale-T76s==";
+  const stored = (raw: string) => `sha256:${crypto.createHash("sha256").update(raw, "utf8").digest("hex")}`;
+  let dir: string;
+  let db: string;
+
+  const run = (args: string[]) => {
+    const env: NodeJS.ProcessEnv = { ...process.env };
+    for (const k of ["LEMONSQUEEZY_API_KEY", "GUMROAD_ACCESS_TOKEN", "STRIPE_SECRET_KEY", "POSTHOG_READ_KEY", "POSTHOG_PROJECT_ID"]) delete env[k];
+    const out = spawnSync(process.execPath, ["--import", "tsx", "scripts/colony.ts", ...args, "--db", db], { cwd: repoRoot, encoding: "utf-8", env });
+    return { status: out.status, stdout: out.stdout, stderr: out.stderr };
+  };
+  const record = (kind: string, externalId: string, line = "il-biz-tools", source = "gumroad") =>
+    run(["record", "--line", line, "--kind", kind, "--amount", "7900", "--currency", "USD", "--source", source, "--external-id", externalId]);
+  const rows = () => {
+    const conn = new Database(db, { readonly: true, fileMustExist: true });
+    try {
+      return conn.prepare("SELECT kind, line_id AS lineId, source, external_id AS externalId FROM revenue_ledger ORDER BY rowid").all() as
+        { kind: string; lineId: string; source: string; externalId: string }[];
+    } finally {
+      conn.close();
+    }
+  };
+  const refunds = () => rows().filter((r) => r.kind === "refund");
+
+  beforeAll(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "colony-refund-guard-"));
+    db = path.join(dir, "colony.db");
+    const seeded = run(["seed"]);
+    expect(seeded.status, seeded.stderr).toBe(0);
+    const sale = record("sale", SALE);
+    expect(sale.status, sale.stderr).toBe(0);
+  }, 60_000);
+  afterAll(() => {
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("a refund under an unrelated id: exit 1, the form and the reason on stderr, nothing booked", () => {
+    const out = record("refund", "fake-refund-T76c-other");
+    expect(out.status).toBe(1);
+    expect(out.stderr).toContain("Error: a gumroad refund is booked under its sale's own id");
+    expect(out.stderr).toContain("would book its refund again");
+    expect(out.stdout + out.stderr).not.toContain("fake-refund-T76c-other");
+    expect(refunds()).toEqual([]);
+  }, 60_000);
+
+  it("a refund whose sale is not booked: exit 1, named by the sale's stored id, nothing booked", () => {
+    const out = record("refund", "fake-sale-T76c-unbooked:refund");
+    expect(out.status).toBe(1);
+    expect(out.stderr).toContain(`Error: no Gumroad sale ${stored("fake-sale-T76c-unbooked")} is in the ledger`);
+    expect(out.stdout + out.stderr).not.toContain("fake-sale-T76c-unbooked");
+    expect(refunds()).toEqual([]);
+  }, 60_000);
+
+  it("a refund on another line than its sale's: exit 1, the sale's line named, nothing booked", () => {
+    const out = record("refund", `${SALE}:refund`, "apify-actors");
+    expect(out.status).toBe(1);
+    expect(out.stderr).toContain(`Error: the Gumroad sale ${stored(SALE)} is booked on il-biz-tools`);
+    expect(refunds()).toEqual([]);
+  }, 60_000);
+
+  it("the raw `<sale id>:refund` on the sale's line books; again, it is already recorded, by its stored form", () => {
+    const first = record("refund", `${SALE}:refund`);
+    expect(first.status, first.stderr).toBe(0);
+    expect(first.stdout).toContain("Recorded refund");
+    const again = record("refund", `${SALE}:refund`);
+    expect(again.status, again.stderr).toBe(0);
+    expect(again.stdout).toContain(`Already recorded: gumroad/${stored(SALE)}:refund. Nothing changed.`);
+    expect(first.stdout + first.stderr + again.stdout + again.stderr).not.toContain(SALE);
+    expect(refunds()).toEqual([{ kind: "refund", lineId: "il-biz-tools", source: "gumroad", externalId: `${stored(SALE)}:refund` }]);
+  }, 60_000);
+
+  it("the stored form `sha256:<hex>:refund` of a booked sale books", () => {
+    expect(record("sale", SALE_STORED).status).toBe(0);
+    const out = record("refund", `${stored(SALE_STORED)}:refund`);
+    expect(out.status, out.stderr).toBe(0);
+    expect(out.stdout).toContain("Recorded refund");
+    expect(refunds().map((r) => r.externalId)).toEqual([`${stored(SALE)}:refund`, `${stored(SALE_STORED)}:refund`]);
+  }, 60_000);
+
+  it("a refund from another source is untouched by the rule", () => {
+    const out = record("refund", "re_fake_T76c", "il-biz-tools", "stripe");
+    expect(out.status, out.stderr).toBe(0);
+    expect(out.stdout).toContain("Recorded refund");
+    expect(refunds().map((r) => [r.source, r.externalId])).toEqual([
+      ["gumroad", `${stored(SALE)}:refund`], ["gumroad", `${stored(SALE_STORED)}:refund`], ["stripe", "re_fake_T76c"],
+    ]);
+  }, 60_000);
+
+  it("the usage text for record states the rule", () => {
+    const usage = cliSource.slice(cliSource.indexOf("const USAGE ="), cliSource.indexOf("function fail("));
+    expect(usage).toContain("A gumroad refund is booked only as <sale id>:refund");
+  });
+
+  // The tick-76 review. Each of these compares the whole ledger before and after, so it holds wherever it runs.
+  it("--kind is one of the five ledger kinds, trimmed: Refund is refused, and 'refund ' meets the refund rule", () => {
+    const before = rows();
+    const odd = record("Refund", "fake-refund-T76c-kind");
+    expect(odd.status).toBe(1);
+    expect(odd.stderr).toContain("Error: --kind must be one of sale, subscription, payout, refund, cost");
+    expect(odd.stdout).not.toContain("Recorded");
+    const spaced = record("refund ", "fake-refund-T76c-kind");
+    expect(spaced.status).toBe(1);
+    expect(spaced.stderr).toContain("Error: a gumroad refund is booked under its sale's own id");
+    expect(rows()).toEqual(before);
+    const sale = record(" sale ", "fake-sale-T76c-trim");
+    expect(sale.status, sale.stderr).toBe(0);
+    expect(sale.stdout).toContain("Recorded sale");
+    expect(rows()).toEqual([...before, { kind: "sale", lineId: "il-biz-tools", source: "gumroad", externalId: stored("fake-sale-T76c-trim") }]);
+  }, 60_000);
+
+  it("a refund of a booked Gumroad sale under --source manual: exit 1, nothing booked", () => {
+    const before = rows();
+    const out = record("refund", `${SALE}:refund`, "il-biz-tools", "manual");
+    expect(out.status).toBe(1);
+    expect(out.stderr).toContain(`Error: the Gumroad sale ${stored(SALE)} is in the ledger`);
+    expect(out.stderr).toContain("Gumroad money is booked only under source gumroad");
+    expect(out.stdout + out.stderr).not.toContain(SALE);
+    expect(rows()).toEqual(before);
+  }, 60_000);
+
+  it("the usage text for record says Gumroad money is booked under source gumroad only", () => {
+    const usage = cliSource.slice(cliSource.indexOf("const USAGE ="), cliSource.indexOf("function fail("));
+    expect(usage).toContain("Gumroad money is booked only under --source gumroad");
+  });
+});

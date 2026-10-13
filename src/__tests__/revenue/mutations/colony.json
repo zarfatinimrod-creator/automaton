@@ -474,5 +474,93 @@
       "src/__tests__/revenue/owner-report.test.ts"
     ],
     "note": "tick 73, ruling 12.10 row 29 Fold 4: gatedRowsFirst keeps table order"
+  },
+  {
+    "id": "T76-T1",
+    "file": "src/revenue/tools.ts",
+    "find": "          if (refused) return `Error: ${refused}`;",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: revenue_record ignores the guard and books every Gumroad refund (killed by ledger.test.ts's refusal tests)"
+  },
+  {
+    "id": "T76-T2",
+    "file": "src/revenue/tools.ts",
+    "find": "          const refused = gumroadHandRefundRefusal(ctx.db.raw, input);\n          if (refused) return `Error: ${refused}`;\n          const entry = recordLedgerEntry(ctx.db.raw, input);",
+    "replace": "          const entry = recordLedgerEntry(ctx.db.raw, input);\n          const refused = gumroadHandRefundRefusal(ctx.db.raw, input);\n          if (refused) return `Error: ${refused}`;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: revenue_record books first and refuses after, so a refused refund is written (killed by the books-nothing assertions)"
+  },
+  {
+    "id": "T76-T3",
+    "file": "src/revenue/tools.ts",
+    "find": " A gumroad refund is booked only under <sale id>:refund (raw or stored) of a sale the ledger holds, on that sale's line, because the hourly sync re-reads every Gumroad sale with no refund under that id and would book its refund again; any other is refused.",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: the tool's description no longer states the rule (killed by the description test)"
+  },
+  {
+    "id": "T76-T4",
+    "file": "src/revenue/tools.ts",
+    "find": " A gumroad refund's id is <sale id>:refund (or sha256:<hex>:refund) of a sale already booked, or the refund is refused.",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: the external_id parameter text no longer states the rule (killed by the description test)"
+  },
+  {
+    "id": "T76-C1",
+    "file": "scripts/colony.ts",
+    "find": "        if (refused) fail(refused);",
+    "replace": "",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 76: colony.ts record ignores the guard and books every Gumroad refund (killed by the CLI's exit-1 tests)"
+  },
+  {
+    "id": "T76-C2",
+    "file": "scripts/colony.ts",
+    "find": "        const refused = gumroadHandRefundRefusal(db.raw, input);\n        if (refused) fail(refused);\n        const entry = recordLedgerEntry(db.raw, input);",
+    "replace": "        const entry = recordLedgerEntry(db.raw, input);\n        const refused = gumroadHandRefundRefusal(db.raw, input);\n        if (refused) fail(refused);",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 76: colony.ts record books first and refuses after, so a refused refund is written (killed by the CLI's nothing-booked assertions)"
+  },
+  {
+    "id": "T76-C3",
+    "file": "scripts/colony.ts",
+    "find": "                       A gumroad refund is booked only as <sale id>:refund (raw or stored) of a sale\n",
+    "replace": "                       A gumroad refund of a sale\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick 76: the usage text for record no longer states the rule (killed by the usage test)"
+  },
+  {
+    "id": "T76R-C1",
+    "file": "scripts/colony.ts",
+    "find": "        if (!LEDGER_KINDS.includes(kind)) fail(`--kind must be one of ${LEDGER_KINDS.join(\", \")}`);",
+    "replace": "",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick-76 review, fix 3: colony.ts record books any --kind, so Refund is a positive row nothing counts and the guard is skipped (killed by the --kind test)"
+  },
+  {
+    "id": "T76R-C2",
+    "file": "scripts/colony.ts",
+    "find": "        const kind = (values.kind ?? fail(\"--kind is required\")).trim() as LedgerKind;",
+    "replace": "        const kind = (values.kind ?? fail(\"--kind is required\")) as LedgerKind;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick-76 review, fix 3: --kind not trimmed, so ' sale ' is refused and 'refund ' meets the kind check, not the refund rule (killed by the --kind test)"
+  },
+  {
+    "id": "T76R-C3",
+    "file": "scripts/colony.ts",
+    "find": "                       Gumroad money is booked only under --source gumroad: a refund under another\n",
+    "replace": "                       Gumroad money: a refund under another\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick-76 review, fix 2: the usage text for record no longer says Gumroad money is booked under --source gumroad only (killed by the usage test)"
+  },
+  {
+    "id": "T76R-T1",
+    "file": "src/revenue/tools.ts",
+    "find": " Gumroad money is booked only under source gumroad: a refund under any other source whose id is <sale id>:refund (raw or stored) of a Gumroad sale the ledger holds is refused too, because the sync books that refund under gumroad as well.",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick-76 review, fix 2: the tool's description no longer says Gumroad money is booked under source gumroad only (killed by the description test)"
   }
 ]

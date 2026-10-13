@@ -5,6 +5,8 @@ import { getConnectorCursor, insertLineFromSeed, recordLedgerEntry, setConnector
 import { runLedgerSync } from "../../revenue/heartbeat.js";
 import { verifyGumroadLedger } from "../../revenue/gumroad-verify.js";
 import { tick } from "../../revenue/runner.js";
+import { createRevenueTools } from "../../revenue/tools.js";
+import type { ToolContext } from "../../types.js";
 import { agorotFromIls, isStoredForm, storedExternalId, STORED_EXTERNAL_ID_RE } from "../../revenue/money.js";
 import {
   gumroadConnector, gumroadSaleEntries, listGumroadSalesSince, MAX_LEDGER_SYNC_PAGES, MAX_REFUND_RATE_PAGES, readProRefundCount,
@@ -995,5 +997,87 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
       ["sale", `sha256:${sha(hand.id)}`],
       ["refund", `sha256:${sha(hand.id)}:refund`],
     ]);
+  });
+});
+
+// Tick 76 (CHANNEL_LOOP §9 "Queued 12.10 (tick 74)" item 2), end to end: a Gumroad refund booked by hand through the
+// agent's revenue_record, then the real runLedgerSync over a fake index that now reports the sale refunded. Booked the
+// right way, the refund closes its sale and the sync books nothing more; under another id the tool refuses it, and the
+// sync's re-read books the refund once. Exactly one refund row either way. No test reaches Gumroad; every id is invented.
+describe("a Gumroad refund booked by hand is booked once, whatever the sync then reads (tick 76)", () => {
+  const ENV = { GUMROAD_ACCESS_TOKEN: "fake-token-T76", GUMROAD_DEFAULT_LINE: "fake-line-t76" };
+  const NO_PRO = { proSiteDir: "/nonexistent/no-pro-site-t76" };
+  const SALE = { id: "fake-sale-T76e", product_id: "fake-product-t76", price: 7900, currency: "usd", created_at: "2026-10-01T10:00:00Z", gumroad_fee: 0, refunded: true, partially_refunded: false };
+
+  /** A fake index over one sale, filtered on `created_at >= after` as the index filters; one page. */
+  function index() {
+    const afters: string[] = [];
+    const fetchImpl = (async (url: string | URL) => {
+      const after = new URL(String(url)).searchParams.get("after") ?? "";
+      afters.push(after);
+      const sales = Date.parse(SALE.created_at) >= Date.parse(`${after}T00:00:00Z`) ? [SALE] : [];
+      return new Response(JSON.stringify({ success: true, sales }), { status: 200 });
+    }) as typeof fetch;
+    return { fetchImpl, afters };
+  }
+
+  let db: ReturnType<typeof createInMemoryDb>;
+  beforeEach(() => {
+    db = createInMemoryDb();
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-10-10T12:00:00Z"));
+    insertLineFromSeed(db, {
+      id: "fake-line-t76", name: "T", category: "digital_product", tier: "growth", directorRole: "d", operatingLoop: "x",
+      kpis: [], killCriteria: [], scaleCriteria: [], targetMonthlyAgorot: agorotFromIls(100), budgetMonthlyCents: 0, humanSetup: [], skillName: null,
+    });
+    // The sync's own listing starts on 2026-10-04, past the sale: only the re-read reaches it.
+    setConnectorCursor(db, "gumroad", "2026-10-05");
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    db.close();
+  });
+
+  const record = (args: Record<string, unknown>) =>
+    createRevenueTools().find((t) => t.name === "revenue_record")!.execute(
+      { line_id: "fake-line-t76", amount_minor: 7900, currency: "USD", source: "gumroad", occurred_at: "2026-10-01T10:00:00.000Z", ...args },
+      { db: { raw: db }, identity: { name: "tester" } } as unknown as ToolContext,
+    );
+  const refundRows = () =>
+    db.prepare("SELECT line_id AS lineId, amount_minor AS amountMinor, external_id AS externalId FROM revenue_ledger WHERE kind = 'refund'").all();
+
+  it("booked the right way, `<sale id>:refund`: the sale is closed, nothing is re-read, and the refund row is the hand's alone", async () => {
+    expect(await record({ kind: "sale", external_id: SALE.id })).toContain("Recorded sale");
+    expect(await record({ kind: "refund", external_id: `${SALE.id}:refund` })).toContain("Recorded refund");
+    const { fetchImpl, afters } = index();
+    expect(await runLedgerSync(db, ENV, fetchImpl, NO_PRO)).toMatchObject({ recorded: 0, duplicates: 0, errors: [] });
+    expect(afters).toEqual(["2026-10-04"]);
+    expect(refundRows()).toEqual([{ lineId: "fake-line-t76", amountMinor: -7900, externalId: `sha256:${sha(SALE.id)}:refund` }]);
+  });
+
+  it("under another id: the tool refuses it, the sync's re-read books the refund, and there is still one refund row", async () => {
+    expect(await record({ kind: "sale", external_id: SALE.id })).toContain("Recorded sale");
+    expect(await record({ kind: "refund", external_id: "fake-refund-T76e-other" })).toMatch(/^Error: a gumroad refund is booked under its sale's own id/);
+    const { fetchImpl, afters } = index();
+    expect(await runLedgerSync(db, ENV, fetchImpl, NO_PRO)).toMatchObject({ recorded: 1, duplicates: 0, errors: [] });
+    expect(afters).toEqual(["2026-10-04", "2026-09-30"]);
+    expect(refundRows()).toEqual([{ lineId: "fake-line-t76", amountMinor: -7900, externalId: `sha256:${sha(SALE.id)}:refund` }]);
+    // A later sync books nothing more.
+    expect(await runLedgerSync(db, ENV, index().fetchImpl, NO_PRO)).toMatchObject({ recorded: 0, errors: [] });
+    expect(refundRows()).toHaveLength(1);
+  });
+
+  // The tick-76 review's probe: under source manual, the sale's own refund id booked a second refund row beside the
+  // sync's, and the raw form put the raw sale id in the ledger.
+  it("under source manual, raw or stored: the tool refuses it, and the sync's re-read books the one refund under gumroad", async () => {
+    expect(await record({ kind: "sale", external_id: SALE.id })).toContain("Recorded sale");
+    for (const id of [`${SALE.id}:refund`, `sha256:${sha(SALE.id)}:refund`]) {
+      expect(await record({ kind: "refund", source: "manual", external_id: id }), id).toContain("Gumroad money is booked only under source gumroad");
+    }
+    expect(await runLedgerSync(db, ENV, index().fetchImpl, NO_PRO)).toMatchObject({ recorded: 1, duplicates: 0, errors: [] });
+    expect(db.prepare("SELECT source, amount_minor AS amountMinor, external_id AS externalId FROM revenue_ledger WHERE kind = 'refund'").all())
+      .toEqual([{ source: "gumroad", amountMinor: -7900, externalId: `sha256:${sha(SALE.id)}:refund` }]);
+    const raw = db.prepare("SELECT COUNT(*) AS n FROM revenue_ledger WHERE external_id LIKE ?").get(`%${SALE.id}%`) as { n: number };
+    expect(raw.n).toBe(0);
   });
 });

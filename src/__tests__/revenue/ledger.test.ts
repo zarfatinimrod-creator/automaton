@@ -5,6 +5,7 @@ import {
   computeLineMetrics,
   computePortfolioSummary,
   getLine,
+  gumroadHandRefundRefusal,
   insertLineFromSeed,
   insertReview,
   latestKpis,
@@ -32,7 +33,9 @@ import {
   STORED_EXTERNAL_ID_RE,
 } from "../../revenue/money.js";
 import { DEFAULT_PORTFOLIO, KILLED_LINES, seedDefaultPortfolio, syncPortfolio } from "../../revenue/portfolio.js";
+import { createRevenueTools } from "../../revenue/tools.js";
 import type { RevenueLineSeed } from "../../revenue/types.js";
+import type { ToolContext } from "../../types.js";
 
 function seed(overrides: Partial<RevenueLineSeed> = {}): RevenueLineSeed {
   return {
@@ -473,5 +476,223 @@ describe("a seed sync keeps what the board decided in the database", () => {
     expect(out.tierDiffers).toEqual([]);
     expect(listLines(db)).toHaveLength(DEFAULT_PORTFOLIO.length + KILLED_LINES.length);
     expect(listLines(db).filter((l) => l.budgetMonthlyCents !== 0).map((l) => l.id)).toEqual([]);
+  });
+});
+
+// Tick 76 (CHANNEL_LOOP §9 "Queued 12.10 (tick 74)" item 2). The hourly sync re-reads every Gumroad sale the ledger holds
+// with no refund row under `<the sale's stored id>:refund` and books the refund Gumroad reports under that id, on the
+// sale's line (tick 74, readLateGumroadRefunds); the ledger deduplicates on (source, external_id) alone. A Gumroad refund
+// booked by hand under any other id leaves its sale open, and the next sync books the same refund again. So the agent's
+// revenue_record refuses it, changing nothing, unless its id, stored, is `sha256:<hex>:refund` of a Gumroad sale the
+// ledger holds, on that sale's line. Every booking here goes through the real tool's execute. The ids are invented.
+describe("revenue_record books a Gumroad refund only where the sync will find it (tick 76)", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => {
+    db = createInMemoryDb();
+    insertLineFromSeed(db, seed());
+    insertLineFromSeed(db, seed({ id: "other-line", directorRole: "director-other-line" }));
+  });
+  afterEach(() => { db.close(); });
+
+  const SALE = "fake-sale-T76a==";
+  const hex = (text: string) => createHash("sha256").update(text, "utf8").digest("hex");
+  const ctx = () => ({ db: { raw: db }, identity: { name: "tester" } }) as unknown as ToolContext;
+  const record = (args: Record<string, unknown>) =>
+    createRevenueTools().find((t) => t.name === "revenue_record")!.execute(
+      { line_id: "test-line", kind: "refund", amount_minor: 7_900, currency: "USD", source: "gumroad", ...args },
+      ctx(),
+    );
+  const bookSale = async (externalId = SALE, lineId = "test-line") =>
+    expect(await record({ kind: "sale", external_id: externalId, line_id: lineId })).toContain("Recorded sale");
+  type Row = { kind: string; lineId: string; source: string; amountMinor: number; externalId: string | null };
+  const rows = (): Row[] =>
+    db.prepare(
+      "SELECT kind, line_id AS lineId, source, amount_minor AS amountMinor, external_id AS externalId FROM revenue_ledger ORDER BY rowid",
+    ).all() as Row[];
+  const refunds = () => rows().filter((r) => r.kind === "refund");
+
+  it("a raw `<sale id>:refund` of a booked sale books, on the sale's line, under the sale's digest with :refund", async () => {
+    await bookSale();
+    expect(await record({ external_id: `${SALE}:refund` })).toContain("Recorded refund");
+    expect(refunds()).toEqual([
+      { kind: "refund", lineId: "test-line", source: "gumroad", amountMinor: -7_900, externalId: `sha256:${hex(SALE)}:refund` },
+    ]);
+  });
+
+  it("the stored form `sha256:<hex>:refund` books too, and so does a sale booked in the stored form", async () => {
+    await bookSale(`sha256:${hex(SALE)}`);
+    expect(await record({ external_id: `sha256:${hex(SALE)}:refund` })).toContain("Recorded refund");
+    expect(refunds().map((r) => r.externalId)).toEqual([`sha256:${hex(SALE)}:refund`]);
+  });
+
+  it("a refund under an unrelated id is refused, names the form and why, and books nothing", async () => {
+    await bookSale();
+    const out = await record({ external_id: "fake-refund-T76-other" });
+    expect(out).toMatch(/^Error: /);
+    expect(out).toContain('"<sale id>:refund"');
+    expect(out).toContain("sha256:<hex>:refund");
+    expect(out).toContain("the hourly sync re-reads every Gumroad sale the ledger holds with no refund under that id and would book its refund again");
+    expect(out).toContain(`stored as sha256:${hex("fake-refund-T76-other")}`);
+    expect(out).toContain("Nothing was recorded.");
+    expect(out).not.toContain("fake-refund-T76-other");
+    expect(rows()).toHaveLength(1);
+    expect(refunds()).toEqual([]);
+  });
+
+  it("the sale's own id with no suffix, or with :fee, is no refund id: refused, not reported as a duplicate of the sale", async () => {
+    await bookSale();
+    for (const id of [SALE, `sha256:${hex(SALE)}`, `${SALE}:fee`, `sha256:${hex(SALE)}:fee`]) {
+      const out = await record({ external_id: id });
+      expect(out, id).toMatch(/^Error: a gumroad refund is booked under its sale's own id/);
+      expect(out, id).not.toContain("Duplicate");
+    }
+    expect(rows()).toHaveLength(1);
+  });
+
+  it("a refund whose sale is not in the ledger is refused, by the sale's stored id, and books nothing", async () => {
+    await bookSale("fake-sale-T76-booked");
+    const out = await record({ external_id: `${SALE}:refund` });
+    expect(out).toMatch(/^Error: /);
+    expect(out).toContain(`no Gumroad sale sha256:${hex(SALE)} is in the ledger`);
+    expect(out).toContain("Book the sale first.");
+    expect(out).not.toContain(SALE);
+    expect(refunds()).toEqual([]);
+    // A sale the ledger holds under another kind is no sale: the sync re-reads booked sales alone.
+    expect(await record({ kind: "subscription", external_id: "fake-sub-T76" })).toContain("Recorded subscription");
+    expect(await record({ external_id: "fake-sub-T76:refund" })).toContain(`no Gumroad sale sha256:${hex("fake-sub-T76")} is in the ledger`);
+    expect(refunds()).toEqual([]);
+  });
+
+  it("a refund on another line than its sale's is refused, naming the sale's line, and books nothing", async () => {
+    await bookSale();
+    const out = await record({ external_id: `${SALE}:refund`, line_id: "other-line" });
+    expect(out).toMatch(/^Error: /);
+    expect(out).toContain(`the Gumroad sale sha256:${hex(SALE)} is booked on test-line`);
+    expect(out).toContain("other-line is another line");
+    expect(refunds()).toEqual([]);
+    // On the sale's own line it books.
+    expect(await record({ external_id: `${SALE}:refund` })).toContain("Recorded refund");
+    expect(refunds().map((r) => r.lineId)).toEqual(["test-line"]);
+  });
+
+  it("the source's case changes nothing: a Gumroad refund under an unrelated id is refused", async () => {
+    await bookSale();
+    expect(await record({ source: "Gumroad", external_id: "fake-refund-T76-case" })).toMatch(/^Error: a gumroad refund is booked under/);
+    expect(refunds()).toEqual([]);
+  });
+
+  it("a refund from any other source, and a Gumroad sale or cost, are untouched by the rule", async () => {
+    expect(await record({ source: "stripe", external_id: "re_fake_T76" })).toContain("Recorded refund");
+    expect(await record({ source: "manual", currency: "ILS", external_id: "m-refund-T76" })).toContain("Recorded refund");
+    expect(await record({ source: "lemonsqueezy", external_id: "fake-order-T76:refund" })).toContain("Recorded refund");
+    expect(await record({ kind: "cost", amount_minor: 790, external_id: "fake-cost-T76" })).toContain("Recorded cost");
+    expect(await record({ kind: "sale", external_id: "fake-sale-T76-plain" })).toContain("Recorded sale");
+    expect(refunds().map((r) => [r.source, r.externalId])).toEqual([
+      ["stripe", "re_fake_T76"], ["manual", "m-refund-T76"], ["lemonsqueezy", "fake-order-T76:refund"],
+    ]);
+  });
+
+  it("a second refund under the same id stays a duplicate, raw or stored, on any line: Nothing changed", async () => {
+    await bookSale();
+    expect(await record({ external_id: `${SALE}:refund` })).toContain("Recorded refund");
+    const dup = `Duplicate: gumroad/sha256:${hex(SALE)}:refund was already recorded. Nothing changed.`;
+    expect(await record({ external_id: `${SALE}:refund` })).toBe(dup);
+    expect(await record({ external_id: `sha256:${hex(SALE)}:refund` })).toBe(dup);
+    expect(await record({ external_id: `${SALE}:refund`, line_id: "other-line" })).toBe(dup);
+    expect(refunds()).toHaveLength(1);
+  });
+
+  // Rows in the form the ledger held before RULING-2026-10-11-ledger-sale-ids.md, put in by SQL: the sync keys them by
+  // their digests (openGumroadSales), and so does the rule.
+  const insertRaw = (rowId: string, kind: "sale" | "refund", externalId: string) =>
+    db.prepare(
+      `INSERT INTO revenue_ledger (id, line_id, kind, amount_minor, currency, amount_agorot, source, external_id, occurred_at, recorded_at, note)
+       VALUES (?, 'test-line', ?, ?, 'USD', ?, 'gumroad', ?, '2026-10-01T10:00:00.000Z', '2026-10-01T10:00:00.000Z', NULL)`,
+    ).run(rowId, kind, kind === "refund" ? -7_900 : 7_900, kind === "refund" ? -28_440 : 28_440, externalId);
+
+  it("a sale booked before the digest ruling, its raw id in the row, is found by its digest: its refund books", async () => {
+    insertRaw("fake-row-T76-1", "sale", SALE);
+    expect(await record({ external_id: `${SALE}:refund` })).toContain("Recorded refund");
+    expect(refunds().map((r) => r.externalId)).toEqual([`sha256:${hex(SALE)}:refund`]);
+  });
+
+  it("a refund already booked before the digest ruling, under its raw id, is not booked a second time", async () => {
+    insertRaw("fake-row-T76-2", "sale", SALE);
+    insertRaw("fake-row-T76-3", "refund", `${SALE}:refund`);
+    const out = await record({ external_id: `${SALE}:refund` });
+    expect(out).toMatch(/^Error: /);
+    expect(out).toContain(`the refund of the Gumroad sale sha256:${hex(SALE)} is already in the ledger`);
+    expect(out).not.toContain(SALE);
+    expect(refunds()).toHaveLength(1);
+  });
+
+  it("a Gumroad refund with no id meets the ledger's own rule-2 refusal, not this rule's", async () => {
+    await bookSale();
+    expect(await record({})).toMatch(/^Error: externalId is required for a refund/);
+    expect(refunds()).toEqual([]);
+  });
+
+  it("the line is compared as the ledger books it, trimmed", async () => {
+    await bookSale();
+    expect(gumroadHandRefundRefusal(db, { lineId: " test-line ", kind: "refund", source: "gumroad", externalId: `${SALE}:refund` })).toBeNull();
+    expect(gumroadHandRefundRefusal(db, { lineId: "other-line", kind: "refund", source: "gumroad", externalId: `${SALE}:refund` }))
+      .toContain("other-line is another line");
+  });
+
+  // The tick-76 review: rows of another source under a Gumroad stored id are no Gumroad rows. Source manual stores an id
+  // as given, so its rows here sit under `sha256:<hex>` and `sha256:<hex>:refund` with no Gumroad sale behind them.
+  it("a manual row under a Gumroad refund's or sale's stored id is no Gumroad row: the refund is still refused, no sale", async () => {
+    const H = `sha256:${hex(SALE)}`;
+    expect(await record({ source: "manual", kind: "sale", external_id: H })).toContain("Recorded sale");
+    expect(await record({ source: "manual", external_id: `${H}:refund` })).toContain("Recorded refund");
+    const out = await record({ external_id: `${H}:refund` });
+    expect(out).toMatch(/^Error: /);
+    expect(out).toContain(`no Gumroad sale ${H} is in the ledger`);
+    expect(rows().filter((r) => r.source === "gumroad")).toEqual([]);
+  });
+
+  it("a manual sale under a Gumroad sale's stored id does not decide the refund's line: the Gumroad sale's line does", async () => {
+    const H = `sha256:${hex(SALE)}`;
+    expect(await record({ source: "manual", kind: "sale", external_id: H, line_id: "other-line" })).toContain("Recorded sale");
+    await bookSale();
+    const out = await record({ external_id: `${SALE}:refund`, line_id: "other-line" });
+    expect(out).toMatch(/^Error: /);
+    expect(out).toContain(`the Gumroad sale ${H} is booked on test-line`);
+    expect(refunds()).toEqual([]);
+  });
+
+  it("a refund of a booked Gumroad sale under any other source is refused: Gumroad money is booked under gumroad only", async () => {
+    await bookSale();
+    const tries: [string, string][] = [
+      ["manual", `sha256:${hex(SALE)}:refund`],
+      ["manual", `${SALE}:refund`],
+      [" Manual ", ` ${SALE}:refund `],
+      ["stripe", `${SALE}:refund`],
+    ];
+    for (const [source, id] of tries) {
+      const out = await record({ source, external_id: id });
+      expect(out, `${source} ${id}`).toMatch(/^Error: /);
+      expect(out, `${source} ${id}`).toContain(`the Gumroad sale sha256:${hex(SALE)} is in the ledger`);
+      expect(out, `${source} ${id}`).toContain("Gumroad money is booked only under source gumroad");
+      expect(out, `${source} ${id}`).toContain("Book it under source gumroad. Nothing was recorded.");
+      expect(out, `${source} ${id}`).not.toContain(SALE);
+    }
+    expect(refunds()).toEqual([]);
+    // Under gumroad, as the rule says, it books; with that refund booked, one under manual is refused still.
+    expect(await record({ external_id: `${SALE}:refund` })).toContain("Recorded refund");
+    expect(await record({ source: "manual", external_id: `${SALE}:refund` })).toContain("Gumroad money is booked only under source gumroad");
+    expect(refunds().map((r) => r.source)).toEqual(["gumroad"]);
+  });
+
+  it("the tool's description says Gumroad money is booked under source gumroad only", () => {
+    const tool = createRevenueTools().find((t) => t.name === "revenue_record")!;
+    expect(tool.description).toContain("Gumroad money is booked only under source gumroad");
+  });
+
+  it("the tool's description and its external_id text state the rule", () => {
+    const tool = createRevenueTools().find((t) => t.name === "revenue_record")!;
+    expect(tool.description).toContain("A gumroad refund is booked only under <sale id>:refund");
+    const params = tool.parameters as { properties: Record<string, { description: string }> };
+    expect(params.properties.external_id!.description).toContain("A gumroad refund's id is <sale id>:refund");
   });
 });

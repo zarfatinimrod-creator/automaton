@@ -63,6 +63,9 @@ export type ReviewDecision =
 
 export type LedgerKind = "sale" | "subscription" | "payout" | "refund" | "cost";
 
+/** Every ledger kind: both hand paths, `revenue_record` (tools.ts) and `colony.ts record`, refuse any other. */
+export const LEDGER_KINDS: readonly LedgerKind[] = ["sale", "subscription", "payout", "refund", "cost"];
+
 export type LedgerSource =
   | "stripe"
   | "lemonsqueezy"

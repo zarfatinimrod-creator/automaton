@@ -590,6 +590,102 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
   return entry;
 }
 
+/** A Gumroad refund's stored id: its sale's own stored id, then `:refund` (gumroadSaleEntries, connectors/gumroad.ts). */
+const GUMROAD_REFUND_ID_RE = /^(sha256:[0-9a-f]{64}):refund$/;
+
+/**
+ * Why a Gumroad refund booked by hand is refused, or null when the entry is no Gumroad refund or may be booked (tick 76,
+ * CHANNEL_LOOP §9 "Queued 12.10 (tick 74)" item 2). Both hand paths, `revenue_record` (tools.ts) and `colony.ts record`,
+ * call it before `recordLedgerEntry`, so a refusal changes nothing.
+ *
+ * The hourly sync re-reads every Gumroad sale the ledger holds with no refund row under `<the sale's stored id>:refund`
+ * (`openGumroadSales`, heartbeat.ts) and books the refund Gumroad reports under that id on the sale's line
+ * (`readLateGumroadRefunds`), and the ledger deduplicates on (source, external_id) alone: a refund booked by hand under
+ * any other id leaves its sale open, and the next sync books the same refund again. So the id, stored
+ * (`storedExternalId`: the raw `<sale id>:refund` or `sha256:<hex>:refund`, RULING-2026-10-11-ledger-sale-ids.md C2),
+ * must be `sha256:<hex>:refund` where `sha256:<hex>` is a Gumroad sale the ledger holds (kind sale, the only kind the
+ * sync re-reads), and the refund goes on that sale's line, where the sync books it, so the two offset on one line. An id
+ * already booked is left to the ledger, which reports the duplicate. A row from before the digest ruling, its raw id in
+ * the row, is keyed by its digest, as `openGumroadSales` keys it: its sale is found, and its refund is not booked twice.
+ *
+ * Gumroad money is booked only under source gumroad (the tick-76 review): a refund under any other source whose id, read
+ * as a Gumroad id (raw `<sale id>:refund` digested, or the stored form as given), is the refund of a Gumroad sale the
+ * ledger holds is refused too, since the sync books that sale's refund under gumroad as well. A refund under another
+ * source whose id names no booked Gumroad sale is left alone: the rule cannot tell it from another platform's.
+ *
+ * Not called by the connector, which builds every refund id from its sale's own and books the sale first: its listing
+ * books a refund on the line the product map gives at the sync, which can differ from the sale's line, and a refusal
+ * thrown inside the sync's loop would lose every entry after it in that pass. Out of scope (the tick-76 log): a `:fee`
+ * cost, a refund of Gumroad money under another source before its sale is booked, a partial refund, an amount above the
+ * sale's.
+ */
+export function gumroadHandRefundRefusal(
+  db: Database,
+  input: Pick<LedgerEntryInput, "lineId" | "kind" | "source" | "externalId">,
+): string | null {
+  if (input.kind !== "refund") return null;
+  const source = input.source.trim().toLowerCase();
+  // The id read as a Gumroad id, whatever the source, so a refund of Gumroad money under another source is found too.
+  const id = storedExternalId("gumroad", input.externalId?.trim() || null);
+  // No id: recordLedgerEntry refuses a refund without one (MISSION rule 2), in its own words.
+  if (id === null) return null;
+  const saleId = GUMROAD_REFUND_ID_RE.exec(id)?.[1];
+  if (source !== "gumroad") {
+    if (!saleId || !gumroadSaleFamily(db, saleId, id).some((row) => row.kind === "sale")) return null;
+    return (
+      `the Gumroad sale ${saleId} is in the ledger, and this refund's id, read as a Gumroad id, is that sale's refund: ` +
+      "Gumroad money is booked only under source gumroad, because the hourly sync books the sale's refund under gumroad " +
+      `as well, and a second one under ${source} would count it twice. Book it under source gumroad. Nothing was recorded.`
+    );
+  }
+  if (!saleId) {
+    return (
+      `a gumroad refund is booked under its sale's own id with ":refund" after it ("<sale id>:refund", or the stored ` +
+      `form sha256:<hex>:refund), and the id given, stored as ${id}, is not that form: the hourly sync re-reads every ` +
+      "Gumroad sale the ledger holds with no refund under that id and would book its refund again, counting the money " +
+      "twice. Nothing was recorded."
+    );
+  }
+  if (db.prepare("SELECT 1 FROM revenue_ledger WHERE source = 'gumroad' AND external_id = ?").get(id)) return null;
+  const family = gumroadSaleFamily(db, saleId, id);
+  if (family.some((row) => row.kind === "refund")) {
+    return (
+      `the refund of the Gumroad sale ${saleId} is already in the ledger, booked under its id from before ` +
+      "RULING-2026-10-11-ledger-sale-ids.md; a second one would count it twice. Nothing was recorded."
+    );
+  }
+  const sale = family.find((row) => row.kind === "sale");
+  if (!sale) {
+    return (
+      `no Gumroad sale ${saleId} is in the ledger: a gumroad refund is booked only against a sale the ledger holds, ` +
+      "because the sync re-reads booked sales alone, and a refund whose sale matches none (a mistyped id, or a sale not " +
+      "booked yet) would leave the real sale open to be refunded again, or take off money the ledger never counted. " +
+      "Book the sale first. Nothing was recorded."
+    );
+  }
+  if (sale.lineId !== input.lineId.trim()) {
+    return (
+      `the Gumroad sale ${saleId} is booked on ${sale.lineId}, and its refund goes on that line, where the sync books a ` +
+      `late refund, so the sale and its refund offset on one line; ${input.lineId.trim()} is another line. Nothing was ` +
+      "recorded."
+    );
+  }
+  return null;
+}
+
+/**
+ * The Gumroad sale `saleId` (stored form) and its refund `id`, as the ledger holds them under source gumroad, oldest
+ * first. A row from before RULING-2026-10-11-ledger-sale-ids.md, its raw id in the row, is keyed by its digest, as
+ * `openGumroadSales` keys it. Rows of any other source are not Gumroad rows, whatever their id.
+ */
+function gumroadSaleFamily(db: Database, saleId: string, id: string): { kind: string; lineId: string }[] {
+  return (db.prepare(
+    `SELECT kind, line_id AS lineId, external_id AS externalId FROM revenue_ledger
+     WHERE source = 'gumroad' AND kind IN ('sale', 'refund') AND external_id IS NOT NULL ORDER BY rowid`,
+  ).all() as { kind: string; lineId: string; externalId: string }[])
+    .filter((row) => storedExternalId("gumroad", row.externalId) === (row.kind === "sale" ? saleId : id));
+}
+
 export function listLedger(
   db: Database,
   opts?: { lineId?: string; sinceIso?: string; limit?: number },
