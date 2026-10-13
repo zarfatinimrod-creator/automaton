@@ -62,10 +62,21 @@ export interface PlaceGumroadSaleResult {
   lines: string[];
 }
 
-/** The UTC day the sync's reaches read a stored time on (`readLateGumroadRefunds` parses it as this does). */
-function dayOf(occurredAt: string): string {
+/** The UTC day the sync's reaches read a stored time on (`readLateGumroadRefunds` parses it as this does); null if none. */
+function dayOf(occurredAt: string): string | null {
   const t = Date.parse(occurredAt);
-  return Number.isNaN(t) ? "an unreadable time" : new Date(t).toISOString().slice(0, 10);
+  return Number.isNaN(t) ? null : new Date(t).toISOString().slice(0, 10);
+}
+
+/**
+ * Whether a stored time is in the form the connector books (`toISOString`'s, YYYY-MM-DDTHH:mm:ss.sssZ). The reaches parse
+ * the text, but the ledger's windows compare it (`sumWindow`), and a text the two read differently is on no one day:
+ * "2026-02-31", which the hand-sale guard lets through because Date.parse reads it (as 2026-03-03), sorts into no month;
+ * "2026-03-03 05:00" sorts before its day's start, "2026-03-03T23:59:59Z" after its end (the tick-77 review's finding 2).
+ */
+function inConnectorForm(occurredAt: string): boolean {
+  const t = Date.parse(occurredAt);
+  return !Number.isNaN(t) && new Date(t).toISOString() === occurredAt;
 }
 
 const result = (status: PlaceGumroadSaleStatus, exitCode: PlaceGumroadSaleResult["exitCode"], lines: string[]): PlaceGumroadSaleResult =>
@@ -155,15 +166,21 @@ export async function placeGumroadSale(
   const occurredAt = new Date(created).toISOString();
   const oldDay = dayOf(sale.occurredAt);
   const newDay = occurredAt.slice(0, 10);
-  if (oldDay === newDay) {
+  // Already placed only when the row's text is in the connector's form and on Gumroad's day; any other text is written
+  // over with Gumroad's time, so the windows and the reaches read the row on one day (see `inConnectorForm`).
+  if (inConnectorForm(sale.occurredAt) && oldDay === newDay) {
     return result("unchanged", 0, [`${id} is already dated ${newDay}, the day Gumroad made it: nothing written.`]);
   }
+  // The old time is said by its day only, never as typed: a hand-typed text is not printed.
+  const oldSaid = oldDay === null
+    ? "an unreadable time"
+    : inConnectorForm(sale.occurredAt) ? oldDay : `a time not in the connector's form (read as ${oldDay})`;
   const update = db.prepare("UPDATE revenue_ledger SET occurred_at = ? WHERE source = 'gumroad' AND external_id = ?");
   db.transaction(() => {
     for (const row of family) update.run(occurredAt, row.externalId);
   })();
   return result("placed", 0, [
-    `placed ${id}: ${oldDay} → ${newDay}`,
+    `placed ${id}: ${oldSaid} → ${newDay}`,
     `  rows moved: ${family.map((row) => `${row.storedId} (${row.kind})`).join(", ")}`,
   ]);
 }

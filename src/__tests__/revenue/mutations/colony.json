@@ -630,10 +630,10 @@
   {
     "id": "T77-C7",
     "file": "src/revenue/gumroad-place.ts",
-    "find": "  if (oldDay === newDay) {",
+    "find": "  if (inConnectorForm(sale.occurredAt) && oldDay === newDay) {",
     "replace": "  if (false) {",
     "test": "src/__tests__/revenue/gumroad-place.test.ts",
-    "note": "tick 77: a sale already on Gumroad's day is written again, its time moved (killed by the unchanged test)"
+    "note": "tick 77: a sale already on Gumroad's day is written again, its time moved (killed by the unchanged test; the find follows the tick-77 review fixer's connector-form check)"
   },
   {
     "id": "T77-C8",
@@ -714,5 +714,29 @@
     "replace": "        if (false) {",
     "test": "src/__tests__/revenue/colony-cli.test.ts",
     "note": "tick 77, fold 7: a --since that is no real day is not refused, and the listing is asked (killed by the CLI --since test's request count)"
+  },
+  {
+    "id": "T77R-C1",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "WHERE source = 'gumroad' AND external_id = ?\")",
+    "replace": "WHERE external_id = ?\")",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77 review fixer (the review's survivor R-X1, a condition fold 6 rules): the placement's UPDATE without its source filter re-dates another source's row stored under the sale's exact id (killed by the other-source test)"
+  },
+  {
+    "id": "T77R-C2",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "  if (inConnectorForm(sale.occurredAt) && oldDay === newDay) {",
+    "replace": "  if (oldDay === newDay) {",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77 review fixer (the review's finding 2): a stored time Date.parse reads on Gumroad's day but not in the connector's form, such as 2026-02-31, is taken as placed and never written, so the windows count it in no month (killed by the connector-form test)"
+  },
+  {
+    "id": "T77R-C3",
+    "file": "src/revenue/gumroad-place.ts",
+    "find": "    : inConnectorForm(sale.occurredAt) ? oldDay : `a time not in the connector's form (read as ${oldDay})`;",
+    "replace": "    : oldDay;",
+    "test": "src/__tests__/revenue/gumroad-place.test.ts",
+    "note": "tick 77 review fixer: a placed row whose old time was not in the connector's form is said by its parsed day alone (2026-03-03 → 2026-03-03), which misstates it (killed by the connector-form test's exact lines)"
   }
 ]
