@@ -871,5 +871,53 @@
     "replace": "\"Gumroad made it, dated at its booking). Check it with verify-gumroad; if Gumroad reports it refunded, book the \" +\n    `refund by hand as ${id}:refund. Said at every sync while it has no refund row`;",
     "test": "src/__tests__/revenue/gumroad-connector.test.ts",
     "note": "tick 77, RULING-2026-10-13-gumroad-refund-reread.md \u00a73 item 4: the unlisted line's advice restored to verify-gumroad and a refund by hand (killed by the hand-booked tests' exact line)"
+  },
+  {
+    "id": "T77R-H1",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "(options.nowIso ?? new Date().toISOString()).slice(0, 10)",
+    "replace": "new Date().toISOString().slice(0, 10)",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77 review X3, RULING-2026-10-13-gumroad-refund-reread.md \u00a71 item 1: the day taken from Date, options.nowIso ignored (killed by the nowIso-clock case: a nowIso on a new day re-reads while Date is on the recorded day)"
+  },
+  {
+    "id": "T77R-H2",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "last.day !== rereadDay",
+    "replace": "last.day < rereadDay",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77 review X9, RULING-2026-10-13-gumroad-refund-reread.md \u00a71 item 1: a record dated after the sync's day holds the re-read off until that day (killed by the future-dated record case)"
+  },
+  {
+    "id": "T77R-H3",
+    "file": "src/revenue/heartbeat.ts",
+    "find": "carried: due ? [] : (last?.unlisted ?? [])",
+    "replace": "carried: last?.unlisted ?? []",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77 review X4, RULING-2026-10-13-gumroad-refund-reread.md Fold 1: the record's unlisted sales passed on a due sync too, so a refused due re-read says yesterday's lines beside its stop (killed by (f)'s refused due re-read)"
+  },
+  {
+    "id": "T77R-G1",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "const sorted = [...created].sort();",
+    "replace": "const sorted = [...created];",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77 review X1, RULING-2026-10-13-gumroad-refund-reread.md Fold 2: the capped line's span in listing order, not by date (killed by (d)'s newest-first index)"
+  },
+  {
+    "id": "T77R-G2",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": ": \"on no readable day\"",
+    "replace": ": \"\"",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77 review X2, RULING-2026-10-13-gumroad-refund-reread.md Fold 2: the capped line says nothing for a re-read whose sales carry no readable created_at (killed by (d)'s no-readable-day case)"
+  },
+  {
+    "id": "T77R-G3",
+    "file": "src/revenue/connectors/gumroad.ts",
+    "find": "const lineId = resolveLine(`gumroad:${productId}`) ?? env.GUMROAD_DEFAULT_LINE ?? UNASSIGNED_LINE_ID;",
+    "replace": "const lineId = lineOfBookedSale?.(storedSaleId(sale) ?? \"\") ?? resolveLine(`gumroad:${productId}`) ?? env.GUMROAD_DEFAULT_LINE ?? UNASSIGNED_LINE_ID;",
+    "test": "src/__tests__/revenue/gumroad-connector.test.ts",
+    "note": "tick 77 review X5, RULING-2026-10-13-gumroad-refund-reread.md \u00a74: the booked sale's line folded in before the unmapped check, so a booked sale on a product the map does not place leaves unmapped empty (killed by (h)'s booked sale listed alone)"
   }
 ]

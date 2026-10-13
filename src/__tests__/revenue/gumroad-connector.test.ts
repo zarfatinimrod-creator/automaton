@@ -9,7 +9,8 @@ import { createRevenueTools } from "../../revenue/tools.js";
 import type { ToolContext } from "../../types.js";
 import { agorotFromIls, isStoredForm, storedExternalId, STORED_EXTERNAL_ID_RE } from "../../revenue/money.js";
 import {
-  gumroadConnector, gumroadSaleEntries, listGumroadSalesSince, MAX_LEDGER_SYNC_PAGES, MAX_REFUND_RATE_PAGES, readProRefundCount,
+  gumroadConnector, gumroadSaleEntries, listGumroadSalesSince, MAX_LEDGER_SYNC_PAGES, MAX_REFUND_RATE_PAGES, readLateGumroadRefunds,
+  readProRefundCount,
 } from "../../revenue/connectors/gumroad.js";
 
 // RULING-2026-10-11-ledger-sale-ids.md (FABLE_QUEUE row 26), folds 3, 6 and 7: the connector books a sale, its refund and
@@ -588,9 +589,13 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
    * changes), pages of ten in created order with next_page_key, `success` on every answer. `reading` is how it takes
    * `after`: the day's start in UTC, or the day excluded (the recorded source does not say which zone the day starts
    * in). For the `after` days named: `refuse` refuses page 1; `endless` names a next page for ever; `loop` names one key
-   * twice.
+   * twice. `newestFirst` answers in the reverse order, newest sale first (the index's order is not recorded; the tick-77
+   * review's X1).
    */
-  function index(sales: Sale[], opts: { reading?: "inclusive" | "exclusive"; refuse?: string; endless?: string; loop?: string } = {}) {
+  function index(
+    sales: Sale[],
+    opts: { reading?: "inclusive" | "exclusive"; refuse?: string; endless?: string; loop?: string; newestFirst?: boolean } = {},
+  ) {
     const urls: URL[] = [];
     const fetchImpl = (async (url: string | URL) => {
       const u = new URL(String(url));
@@ -599,7 +604,9 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
       const key = u.searchParams.get("page_key");
       if (after === opts.refuse) return new Response(JSON.stringify({ success: false, message: "fake refusal" }), { status: 500 });
       const from = Date.parse(`${after}T00:00:00Z`) + (opts.reading === "exclusive" ? DAY_MS : 0);
-      const listed = sales.filter((s) => Date.parse(s.created_at) >= from).sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
+      const listed = sales
+        .filter((s) => Date.parse(s.created_at) >= from)
+        .sort((a, b) => (Date.parse(a.created_at) - Date.parse(b.created_at)) * (opts.newestFirst ? -1 : 1));
       if (after === opts.loop) {
         return new Response(JSON.stringify({ success: true, sales: key ? [] : listed, next_page_key: "fake-key-t74" }), { status: 200 });
       }
@@ -1021,6 +1028,16 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
     };
     /** Every request from `from` on, by its `after`: the own listing, then the re-read's pages. */
     const capped = (own: string, reread: string) => [own, ...Array.from({ length: MAX_LEDGER_SYNC_PAGES }, () => reread)];
+    /** Store `value` as the record, as a run before this one (or a hand) left it. */
+    const storeRecord = (value: string) =>
+      db.prepare("INSERT OR REPLACE INTO kv (key, value, updated_at) VALUES (?, ?, datetime('now'))").run(LAST_KEY, value);
+    /** The capped re-read's line from 2026-09-30 after `read` sales, `span` the days they were created on (§2 item 2). */
+    const cappedStopLine = (span: string, read: number) =>
+      `the late-refund re-read since 2026-09-30 runs past ${MAX_LEDGER_SYNC_PAGES} pages, the sales read created ${span}: ` +
+      `the refunds among the ${read} sale(s) it read are booked (one booked already is a duplicate), and the cursor is ` +
+      `not moved by it; a refund on a sale after page ${MAX_LEDGER_SYNC_PAGES} is not booked, and no later sync reads ` +
+      "past that page while the oldest open sale holds the re-read's day: past the cap the re-read cannot move on by " +
+      "itself, and this is said at every sync";
 
     it("(a) only the day's first sync re-reads; a refund made later that day is booked at the next day's first sync, on its sale's line, once", async () => {
       const { s1, fetchImpl, urls } = await twoSalesBooked();
@@ -1165,6 +1182,50 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
       expect(lastReread()).toMatchObject({ day: "2026-10-11", problem: stop });
     });
 
+    // The tick-77 review's X1 and X2 (RULING-2026-10-13 Fold 2): the span is by date, not by the index's order, which no
+    // recorded source gives; and a re-read whose sales carry no readable created_at says so in words.
+    it("(d) the capped line's span is by date, not by the index's order: an index that answers newest first still reads 2026-10-01 to 2026-10-05", async () => {
+      const { sales } = await twoSalesBooked();
+      const { fetchImpl, urls } = index(sales, { endless: "2026-09-30", newestFirst: true });
+      at("2026-10-10T00:17:00Z");
+      const result = await sync(fetchImpl, ENV_B);
+      expect(afters(urls, 0)).toEqual(capped("2026-10-04", "2026-09-30"));
+      expect(result.errors).toEqual([`gumroad: ${cappedStopLine("2026-10-01 to 2026-10-05", 2)}`]);
+      expect(lastReread()).toMatchObject({ day: "2026-10-10", read: 2, problem: cappedStopLine("2026-10-01 to 2026-10-05", 2) });
+      // The fake did answer newest first: its first page from 2026-09-30 is sale 2, then sale 1.
+      const page = (await (await fetchImpl("https://api.gumroad.com/v2/sales?after=2026-09-30")).json()) as { sales: Sale[] };
+      expect(page.sales.map((s) => s.created_at)).toEqual(["2026-10-05T09:00:00Z", "2026-10-01T10:00:00Z"]);
+    });
+
+    it(`(d) a capped re-read whose sales carry no readable created_at: the line says "on no readable day"`, async () => {
+      const ownSale = `sha256:${sha("fake-sale-t77r-open-1")}`;
+      let page = 0;
+      // Endless pages of one sale each, none in the ledger: odd pages carry a created_at Date.parse cannot read, even pages
+      // none at all. Each page names a new next_page_key, so the pager runs to its cap, not into a loop.
+      const fetchImpl = (async () => {
+        page += 1;
+        const sold: Record<string, unknown> = {
+          id: `fake-sale-t77r-nd-${page}`, product_id: "fake-product-t74", price: 7900, currency: "usd", refunded: true,
+        };
+        if (page % 2 === 1) sold.created_at = "not-a-time";
+        return new Response(JSON.stringify({ success: true, sales: [sold], next_page_key: `fake-key-t77r-${page}` }), { status: 200 });
+      }) as typeof fetch;
+      const late = await readLateGumroadRefunds({
+        token: TOKEN,
+        open: new Map([[ownSale, { lineId: "fake-line-a", occurredAt: "2026-10-01T10:00:00.000Z" }]]),
+        listedFrom: "2026-10-04",
+        listed: new Set(),
+        listedToEnd: true,
+        reread: true,
+        carried: [],
+        fetchImpl,
+      });
+      expect(page).toBe(MAX_LEDGER_SYNC_PAGES);
+      expect(late).toMatchObject({ after: "2026-09-30", entries: [], stop: "too_many_pages", pages: MAX_LEDGER_SYNC_PAGES, read: MAX_LEDGER_SYNC_PAGES });
+      expect(late.problem).toBe(cappedStopLine("on no readable day", MAX_LEDGER_SYNC_PAGES));
+      expect(late.unlisted).toEqual([]);
+    });
+
     it("(e) a sale on the cursor's day refunded after the day's re-read is booked at the next hourly sync, by the own listing", async () => {
       const { s2, fetchImpl, urls } = await twoSalesBooked();
       at("2026-10-10T00:17:00Z");
@@ -1235,6 +1296,36 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
       expect(second.errors).toEqual([unlistedLine(hand, "2026-10-06", "2026-10-04")]);
     });
 
+    // The tick-77 review's X4: `carried` is the record's unlisted sales only on a sync that does not re-read
+    // (RULING-2026-10-13 Fold 1, `carried: due ? [] : …`). A due re-read that is refused writes no record and says its
+    // own stop; yesterday's lines are not said beside it, and the next sync's re-read names the sale afresh.
+    it("(f) a due re-read refused the day after a sale was named: the refusal is said, not the last re-read's line, and the next sync names the sale afresh", async () => {
+      setConnectorCursor(db, "gumroad", "2026-10-05");
+      const hand = { ...sale(7, "2026-10-01T10:00:00Z"), refunded: true };
+      bookByHand(hand, "2026-10-04T12:00:00.000Z");
+      const ok = index([hand]);
+      at("2026-10-12T00:17:00Z");
+      expect((await sync(ok.fetchImpl)).errors).toEqual([unlistedLine(hand, "2026-10-04", "2026-10-03")]);
+      expect(lastReread()).toMatchObject({ day: "2026-10-12", unlisted: [{ id: `sha256:${sha(hand.id)}`, day: "2026-10-04", from: "2026-10-03" }] });
+
+      at("2026-10-13T00:17:00Z");
+      const refused = index([hand], { refuse: "2026-10-03" });
+      const second = await sync(refused.fetchImpl);
+      expect(afters(refused.urls, 0)).toEqual(["2026-10-04", "2026-10-03"]);
+      expect(second.errors).toEqual([
+        "gumroad: the late-refund re-read since 2026-10-03 was refused at page 1 (HTTP 500): the refunds among the 0 " +
+          "sale(s) it read are booked (one booked already is a duplicate), and the cursor is not moved by it; a refund " +
+          "on a sale it did not read is booked by a later sync's re-read, which asks again from the same day",
+      ]);
+      expect(lastReread()).toMatchObject({ day: "2026-10-12" });
+
+      at("2026-10-13T01:17:00Z");
+      const n = ok.urls.length;
+      expect((await sync(ok.fetchImpl)).errors).toEqual([unlistedLine(hand, "2026-10-04", "2026-10-03")]);
+      expect(afters(ok.urls, n)).toEqual(["2026-10-04", "2026-10-03"]);
+      expect(lastReread()).toMatchObject({ day: "2026-10-13" });
+    });
+
     it("a record that cannot be read as one is no record: the next sync re-reads", async () => {
       const { fetchImpl, urls } = await twoSalesBooked();
       const good = { day: "2026-10-10", after: "2026-09-30", pages: 1, read: 2, refundsBooked: 0, unlisted: [], problem: null };
@@ -1252,6 +1343,44 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
         expect(afters(urls, n), bad).toEqual(["2026-10-04", "2026-09-30"]);
         expect(lastReread(), bad).toEqual({ ...good, day: "2026-10-10" });
       }
+    });
+
+    // The tick-77 review's X3 and X9 (RULING-2026-10-13 §1 item 1): the day is the sync's clock, `options.nowIso` before
+    // `Date`, and the record holds the re-read off on its own day only, not on every day before it.
+    it("the day is the sync's clock: a nowIso on a new day re-reads while Date is still on the recorded day, and one on the recorded day does not while Date is past it", async () => {
+      const { fetchImpl, urls } = await twoSalesBooked();
+      at("2026-10-10T00:17:00Z");
+      expect(await sync(fetchImpl, ENV_B)).toMatchObject({ recorded: 0, duplicates: 1, errors: [] });
+      expect(lastReread()).toMatchObject({ day: "2026-10-10" });
+      at("2026-10-10T12:00:00Z");
+      let n = urls.length;
+      const ahead = await runLedgerSync(db, ENV_B, fetchImpl, { ...NO_PRO, nowIso: "2026-10-11T00:17:00.000Z" });
+      expect(ahead).toMatchObject({ recorded: 0, duplicates: 1, errors: [] });
+      expect(afters(urls, n)).toEqual(["2026-10-04", "2026-09-30"]);
+      expect(lastReread()).toEqual({
+        day: "2026-10-11", after: "2026-09-30", pages: 1, read: 2, refundsBooked: 0, unlisted: [], problem: null,
+      });
+      at("2026-10-12T00:17:00Z");
+      n = urls.length;
+      const behind = await runLedgerSync(db, ENV_B, fetchImpl, { ...NO_PRO, nowIso: "2026-10-11T05:00:00.000Z" });
+      expect(behind).toMatchObject({ recorded: 0, duplicates: 1, errors: [] });
+      expect(afters(urls, n)).toEqual(["2026-10-04"]);
+      expect(lastReread()).toMatchObject({ day: "2026-10-11" });
+    });
+
+    it("a record dated after the sync's day (a run with a later --now) does not hold the re-read off: the sync re-reads, records its own day, and does not say that record's stop", async () => {
+      const { fetchImpl, urls } = await twoSalesBooked();
+      storeRecord(JSON.stringify({
+        day: "2026-10-12", after: "2026-09-30", pages: MAX_LEDGER_SYNC_PAGES, read: 2, refundsBooked: 0, unlisted: [],
+        problem: "fake stop t77r",
+      }));
+      at("2026-10-11T05:00:00Z");
+      const n = urls.length;
+      expect(await sync(fetchImpl, ENV_B)).toMatchObject({ recorded: 0, duplicates: 1, errors: [] });
+      expect(afters(urls, n)).toEqual(["2026-10-04", "2026-09-30"]);
+      expect(lastReread()).toEqual({
+        day: "2026-10-11", after: "2026-09-30", pages: 1, read: 2, refundsBooked: 0, unlisted: [], problem: null,
+      });
     });
   });
 
@@ -1339,6 +1468,30 @@ describe("a refund made long after its sale is booked by the sync's re-read, onc
         ["refund", "fake-line-b", `${digestOf(booked)}:refund`],
         ["sale", "unassigned", digestOf(fresh)],
       ]);
+    });
+
+    // The tick-77 review's X5: `unmapped` is decided by the map's line, not by the family's, so a booked sale listed
+    // alone still names a product the map does not place (RULING-2026-10-13 §4).
+    it("(h) a booked sale listed alone, its product in no map and with no default line: its family keeps its line, and unmapped still names the product", async () => {
+      setConnectorCursor(db, "gumroad", "2026-10-05");
+      const booked = { ...sale(26, "2026-10-05T09:00:00Z"), refunded: true, gumroad_fee: 790 };
+      bookByHand(booked, "2026-10-05T09:00:00.000Z", "fake-line-b");
+      const { fetchImpl } = index([booked]);
+      at("2026-10-06T12:00:00Z");
+      const result = await sync(fetchImpl, { GUMROAD_ACCESS_TOKEN: TOKEN });
+      expect(result).toMatchObject({ recorded: 2, duplicates: 1, unmapped: ["gumroad:fake-product-t74"], errors: [] });
+      expect(rows().map((r) => [r.kind, r.lineId, r.externalId])).toEqual([
+        ["sale", "fake-line-b", digestOf(booked)],
+        ["refund", "fake-line-b", `${digestOf(booked)}:refund`],
+        ["cost", "fake-line-b", `${digestOf(booked)}:fee`],
+      ]);
+      // fetchSince itself, given the resolver: the family on line b, and the product still unmapped.
+      const given = await gumroadConnector.fetchSince({
+        cursor: "2026-10-05", env: { GUMROAD_ACCESS_TOKEN: TOKEN }, resolveLine: () => undefined, fetchImpl,
+        lineOfBookedSale: (id: string) => (id === digestOf(booked) ? "fake-line-b" : undefined),
+      });
+      expect(given.unmapped).toEqual(["gumroad:fake-product-t74"]);
+      expect(given.entries.map((e) => [e.kind, e.lineId])).toEqual([["sale", "fake-line-b"], ["refund", "fake-line-b"], ["cost", "fake-line-b"]]);
     });
   });
 });
