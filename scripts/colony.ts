@@ -20,6 +20,7 @@ import { parseArgs } from "node:util";
 import { createDatabase } from "../src/state/database.js";
 import {
   getLine,
+  gumroadHandRefundRefusal,
   listLines,
   recordLedgerEntry,
   setHumanSetupDone,
@@ -85,6 +86,10 @@ Commands:
                        on-chain transaction id as --external-id and --occurred-at; it is flagged
                        unconverted and valued at the rate recorded for its receipt day (see fx),
                        and with none it is refused (RULING-2026-09-28-bounty-rail.md §6.2).
+                       A gumroad refund is booked only as <sale id>:refund (raw or stored) of a sale
+                       already booked, on that sale's line, because the hourly sync re-reads every
+                       Gumroad sale with no refund under that id and would book it again; any other
+                       is refused, and nothing is written.
   verify-gumroad       Re-derive the ledger's Gumroad rows (RULING-2026-10-11-ledger-sale-ids.md C3): with
                        GUMROAD_ACCESS_TOKEN, list the account's sales from a day before the oldest row,
                        digest each id and match the rows. Prints counts, stored ids and days, never a
@@ -328,7 +333,7 @@ async function main(): Promise<void> {
           );
         }
 
-        const entry = recordLedgerEntry(db.raw, {
+        const input = {
           lineId,
           kind,
           amountMinor: amount,
@@ -337,7 +342,11 @@ async function main(): Promise<void> {
           externalId: values["external-id"] ?? null,
           occurredAt: values["occurred-at"],
           note: values.note ?? null,
-        });
+        };
+        // A Gumroad refund the sync would book again is refused before anything is written (tick 76, ledger.ts).
+        const refused = gumroadHandRefundRefusal(db.raw, input);
+        if (refused) fail(refused);
+        const entry = recordLedgerEntry(db.raw, input);
         if (!entry) {
           console.log(`Already recorded: ${source}/${storedExternalId(source, values["external-id"] ?? null)}. Nothing changed.`);
         } else {
