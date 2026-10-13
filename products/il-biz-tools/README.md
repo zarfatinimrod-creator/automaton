@@ -741,8 +741,9 @@ alone and names the sale; the responder then sends one holding reply (facts only
 `\Answered` and `\Flagged` in one IMAP command: the request itself, flagged in the brand mailbox, is the waiting
 state. Nothing about the buyer is written to a file or committed, no sale id is printed (the responder redacts them),
 and its job holds `contents: read` only. The colony's ledger, which is committed, stores a digest of each Gumroad sale
-id (`sha256:<hex>`), never the id (`RULING-2026-10-11-ledger-sale-ids.md`). A second request for a sale already
-waiting is marked answered, with no second holding reply and no second flag. At the start of every run the responder
+id (`sha256:<hex>`), never the id (`RULING-2026-10-11-ledger-sale-ids.md`); a refund made later is read into it once a
+day, by the first hourly sync of each UTC day (`RULING-2026-10-13-gumroad-refund-reread.md`). A second request for a
+sale already waiting is marked answered, with no second holding reply and no second flag. At the start of every run the responder
 searches the flagged requests, with no date bound - flagged and answered, since it sets the flag only together with
 `\Answered`: a star a person puts on mail nobody has answered yet is not a waiting request, and it comes off when that
 request is answered for good - and runs the first lookup again: `refund --email <the sender> --requested-at <the
