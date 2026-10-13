@@ -201,26 +201,26 @@
   {
     "id": "T76-L1",
     "file": "src/revenue/ledger.ts",
-    "find": "  if (input.kind !== \"refund\" || input.source.trim().toLowerCase() !== \"gumroad\") return null;",
-    "replace": "  if (input.source.trim().toLowerCase() !== \"gumroad\") return null;",
+    "find": "  if (input.kind !== \"refund\") return null;",
+    "replace": "",
     "test": "src/__tests__/revenue/ledger.test.ts",
-    "note": "tick 76, the hand-booked refund guard: every Gumroad entry is read as a refund, so a sale or a cost booked by hand is refused (killed by the untouched test and every sale booked through the tool)"
+    "note": "tick 76, the hand-booked refund guard: every Gumroad entry is read as a refund, so a sale or a cost booked by hand is refused (killed by the untouched test and every sale booked through the tool) The find moved in the tick-76 review fixer, when the guard began to read refunds under every source."
   },
   {
     "id": "T76-L2",
     "file": "src/revenue/ledger.ts",
-    "find": "  if (input.kind !== \"refund\" || input.source.trim().toLowerCase() !== \"gumroad\") return null;",
-    "replace": "  if (input.kind !== \"refund\") return null;",
+    "find": "  if (source !== \"gumroad\") {",
+    "replace": "  if (false) {",
     "test": "src/__tests__/revenue/ledger.test.ts",
-    "note": "tick 76: a refund from every source is held to the Gumroad rule, so a stripe or manual refund is refused (killed by the untouched test)"
+    "note": "tick 76: a refund from every source is held to the Gumroad rule, so a stripe or manual refund is refused (killed by the untouched test). The find moved in the tick-76 review fixer, when the guard began to read refunds under every source."
   },
   {
     "id": "T76-L3",
     "file": "src/revenue/ledger.ts",
-    "find": "  if (input.kind !== \"refund\" || input.source.trim().toLowerCase() !== \"gumroad\") return null;",
-    "replace": "  if (input.kind !== \"refund\" || input.source.trim() !== \"gumroad\") return null;",
+    "find": "  const source = input.source.trim().toLowerCase();\n  // The id read as a Gumroad id, whatever the source, so a refund of Gumroad money under another source is found too.\n",
+    "replace": "  const source = input.source.trim();\n  // The id read as a Gumroad id, whatever the source, so a refund of Gumroad money under another source is found too.\n",
     "test": "src/__tests__/revenue/ledger.test.ts",
-    "note": "tick 76: the source compared with its case, so a refund under source Gumroad escapes the rule while the ledger books it as gumroad (killed by the source-case test)"
+    "note": "tick 76: the source compared with its case, so a refund under source Gumroad escapes the rule while the ledger books it as gumroad (killed by the source-case test) The find moved in the tick-76 review fixer, when the guard began to read refunds under every source."
   },
   {
     "id": "T76-L4",
@@ -293,5 +293,53 @@
     "replace": "  if (sale.lineId !== input.lineId) {",
     "test": "src/__tests__/revenue/ledger.test.ts",
     "note": "tick 76 (b): the line compared untrimmed, as the ledger does not book it (killed by the direct trim test; both hand paths pass a trimmed or exact line)"
+  },
+  {
+    "id": "T76R-L1",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (db.prepare(\"SELECT 1 FROM revenue_ledger WHERE source = 'gumroad' AND external_id = ?\").get(id)) return null;",
+    "replace": "  if (db.prepare(\"SELECT 1 FROM revenue_ledger WHERE external_id = ?\").get(id)) return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick-76 review RX1: the duplicate early return reads every source, so a manual row under a Gumroad refund's stored id lets the Gumroad refund skip the no-sale and line rules (killed by the manual-row test)"
+  },
+  {
+    "id": "T76R-L2",
+    "file": "src/revenue/ledger.ts",
+    "find": "     WHERE source = 'gumroad' AND kind IN ('sale', 'refund') AND external_id IS NOT NULL ORDER BY rowid`,",
+    "replace": "     WHERE kind IN ('sale', 'refund') AND external_id IS NOT NULL ORDER BY rowid`,",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick-76 review RX2: the family query reads every source, so a manual sale under the sale's stored id is taken for the Gumroad sale and decides the line (killed by the manual-row and manual-sale-line tests)"
+  },
+  {
+    "id": "T76R-L3",
+    "file": "src/revenue/ledger.ts",
+    "find": "    if (!saleId || !gumroadSaleFamily(db, saleId, id).some((row) => row.kind === \"sale\")) return null;",
+    "replace": "    return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick-76 review, fix 2: a refund of a booked Gumroad sale under source manual books, and the sync books it again under gumroad (killed by the other-source test)"
+  },
+  {
+    "id": "T76R-L4",
+    "file": "src/revenue/ledger.ts",
+    "find": "    if (!saleId || !gumroadSaleFamily(db, saleId, id).some((row) => row.kind === \"sale\")) return null;",
+    "replace": "    if (!saleId) return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick-76 review, fix 2: every refund under another source whose id has the :refund form is refused, a booked Gumroad sale or not (killed by the untouched test's lemonsqueezy refund)"
+  },
+  {
+    "id": "T76R-L5",
+    "file": "src/revenue/ledger.ts",
+    "find": "    if (!saleId || !gumroadSaleFamily(db, saleId, id).some((row) => row.kind === \"sale\")) return null;",
+    "replace": "    if (!saleId || !gumroadSaleFamily(db, saleId, id).some((row) => row.kind === \"refund\")) return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick-76 review, fix 2: the Gumroad refund, not the sale, decides, so a manual refund before the Gumroad one books (killed by the other-source test)"
+  },
+  {
+    "id": "T76R-L6",
+    "file": "src/revenue/ledger.ts",
+    "find": "  const id = storedExternalId(\"gumroad\", input.externalId?.trim() || null);",
+    "replace": "  const id = storedExternalId(source, input.externalId?.trim() || null);",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick-76 review, fix 2: the id is read as its own source stores it, so a raw <sale id>:refund under manual is not recognised and books, raw sale id and all (killed by the other-source test's raw cases)"
   }
 ]

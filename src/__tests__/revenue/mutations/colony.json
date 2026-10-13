@@ -530,5 +530,37 @@
     "replace": "                       A gumroad refund of a sale\n",
     "test": "src/__tests__/revenue/colony-cli.test.ts",
     "note": "tick 76: the usage text for record no longer states the rule (killed by the usage test)"
+  },
+  {
+    "id": "T76R-C1",
+    "file": "scripts/colony.ts",
+    "find": "        if (!LEDGER_KINDS.includes(kind)) fail(`--kind must be one of ${LEDGER_KINDS.join(\", \")}`);",
+    "replace": "",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick-76 review, fix 3: colony.ts record books any --kind, so Refund is a positive row nothing counts and the guard is skipped (killed by the --kind test)"
+  },
+  {
+    "id": "T76R-C2",
+    "file": "scripts/colony.ts",
+    "find": "        const kind = (values.kind ?? fail(\"--kind is required\")).trim() as LedgerKind;",
+    "replace": "        const kind = (values.kind ?? fail(\"--kind is required\")) as LedgerKind;",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick-76 review, fix 3: --kind not trimmed, so ' sale ' is refused and 'refund ' meets the kind check, not the refund rule (killed by the --kind test)"
+  },
+  {
+    "id": "T76R-C3",
+    "file": "scripts/colony.ts",
+    "find": "                       Gumroad money is booked only under --source gumroad: a refund under another\n",
+    "replace": "                       Gumroad money: a refund under another\n",
+    "test": "src/__tests__/revenue/colony-cli.test.ts",
+    "note": "tick-76 review, fix 2: the usage text for record no longer says Gumroad money is booked under --source gumroad only (killed by the usage test)"
+  },
+  {
+    "id": "T76R-T1",
+    "file": "src/revenue/tools.ts",
+    "find": " Gumroad money is booked only under source gumroad: a refund under any other source whose id is <sale id>:refund (raw or stored) of a Gumroad sale the ledger holds is refused too, because the sync books that refund under gumroad as well.",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick-76 review, fix 2: the tool's description no longer says Gumroad money is booked under source gumroad only (killed by the description test)"
   }
 ]
