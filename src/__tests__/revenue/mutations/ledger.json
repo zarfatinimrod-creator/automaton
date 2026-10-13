@@ -197,5 +197,101 @@
     "replace": "  return STORED_EXTERNAL_ID_RE.test(id);",
     "test": "src/__tests__/revenue/ledger.test.ts",
     "note": "tick 69, fold 1 (C4's check): every other source's id read as raw (killed by 7(e))"
+  },
+  {
+    "id": "T76-L1",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (input.kind !== \"refund\" || input.source.trim().toLowerCase() !== \"gumroad\") return null;",
+    "replace": "  if (input.source.trim().toLowerCase() !== \"gumroad\") return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76, the hand-booked refund guard: every Gumroad entry is read as a refund, so a sale or a cost booked by hand is refused (killed by the untouched test and every sale booked through the tool)"
+  },
+  {
+    "id": "T76-L2",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (input.kind !== \"refund\" || input.source.trim().toLowerCase() !== \"gumroad\") return null;",
+    "replace": "  if (input.kind !== \"refund\") return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: a refund from every source is held to the Gumroad rule, so a stripe or manual refund is refused (killed by the untouched test)"
+  },
+  {
+    "id": "T76-L3",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (input.kind !== \"refund\" || input.source.trim().toLowerCase() !== \"gumroad\") return null;",
+    "replace": "  if (input.kind !== \"refund\" || input.source.trim() !== \"gumroad\") return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: the source compared with its case, so a refund under source Gumroad escapes the rule while the ledger books it as gumroad (killed by the source-case test)"
+  },
+  {
+    "id": "T76-L4",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (id === null) return null;",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: a Gumroad refund with no id meets this rule's refusal instead of the ledger's rule-2 message (killed by the no-id test)"
+  },
+  {
+    "id": "T76-L5",
+    "file": "src/revenue/ledger.ts",
+    "find": "const GUMROAD_REFUND_ID_RE = /^(sha256:[0-9a-f]{64}):refund$/;",
+    "replace": "const GUMROAD_REFUND_ID_RE = /^(sha256:[0-9a-f]{64})(?::refund)?$/;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: the sale's own id read as its refund id, so a refund under the sale's id is reported as a duplicate of the sale and the sale stays open (killed by the sale's-own-id test)"
+  },
+  {
+    "id": "T76-L6",
+    "file": "src/revenue/ledger.ts",
+    "find": "const GUMROAD_REFUND_ID_RE = /^(sha256:[0-9a-f]{64}):refund$/;",
+    "replace": "const GUMROAD_REFUND_ID_RE = /^(sha256:[0-9a-f]{64}):(?:refund|fee)$/;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: a :fee id accepted as a refund id, which the sync never reads as the sale's refund (killed by the sale's-own-id test's :fee ids)"
+  },
+  {
+    "id": "T76-L7",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (db.prepare(\"SELECT 1 FROM revenue_ledger WHERE source = 'gumroad' AND external_id = ?\").get(id)) return null;",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76 (c): a second refund under the same id turned from the ledger's duplicate into this rule's refusal (killed by the duplicate test's exact message)"
+  },
+  {
+    "id": "T76-L8",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (family.some((row) => row.kind === \"refund\")) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: a refund booked before the digest ruling, under its raw id, is booked a second time (killed by the raw-refund test)"
+  },
+  {
+    "id": "T76-L9",
+    "file": "src/revenue/ledger.ts",
+    "find": "    .filter((row) => storedExternalId(\"gumroad\", row.externalId) === (row.kind === \"sale\" ? saleId : id));",
+    "replace": "    .filter((row) => row.externalId === (row.kind === \"sale\" ? saleId : id));",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: rows from before the digest ruling compared raw, so a raw sale is not found and a raw refund is not seen (killed by the two raw-row tests)"
+  },
+  {
+    "id": "T76-L10",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (!sale) {",
+    "replace": "  if (!sale) return null;\n  if (false) {",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76: a refund whose sale the ledger does not hold is booked (killed by the unbooked-sale test)"
+  },
+  {
+    "id": "T76-L11",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (sale.lineId !== input.lineId.trim()) {",
+    "replace": "  if (false) {",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76 (b): a refund on another line than its sale's is booked (killed by the other-line test)"
+  },
+  {
+    "id": "T76-L12",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (sale.lineId !== input.lineId.trim()) {",
+    "replace": "  if (sale.lineId !== input.lineId) {",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 76 (b): the line compared untrimmed, as the ledger does not book it (killed by the direct trim test; both hand paths pass a trimmed or exact line)"
   }
 ]

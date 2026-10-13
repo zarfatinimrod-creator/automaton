@@ -5,6 +5,7 @@ import {
   computeLineMetrics,
   computePortfolioSummary,
   getLine,
+  gumroadHandRefundRefusal,
   insertLineFromSeed,
   insertReview,
   latestKpis,
@@ -623,6 +624,19 @@ describe("revenue_record books a Gumroad refund only where the sync will find it
     expect(out).toContain(`the refund of the Gumroad sale sha256:${hex(SALE)} is already in the ledger`);
     expect(out).not.toContain(SALE);
     expect(refunds()).toHaveLength(1);
+  });
+
+  it("a Gumroad refund with no id meets the ledger's own rule-2 refusal, not this rule's", async () => {
+    await bookSale();
+    expect(await record({})).toMatch(/^Error: externalId is required for a refund/);
+    expect(refunds()).toEqual([]);
+  });
+
+  it("the line is compared as the ledger books it, trimmed", async () => {
+    await bookSale();
+    expect(gumroadHandRefundRefusal(db, { lineId: " test-line ", kind: "refund", source: "gumroad", externalId: `${SALE}:refund` })).toBeNull();
+    expect(gumroadHandRefundRefusal(db, { lineId: "other-line", kind: "refund", source: "gumroad", externalId: `${SALE}:refund` }))
+      .toContain("other-line is another line");
   });
 
   it("the tool's description and its external_id text state the rule", () => {
