@@ -386,8 +386,9 @@ describe("record books a Gumroad refund only where the sync will find it (tick 7
     const out = spawnSync(process.execPath, ["--import", "tsx", "scripts/colony.ts", ...args, "--db", db], { cwd: repoRoot, encoding: "utf-8", env });
     return { status: out.status, stdout: out.stdout, stderr: out.stderr };
   };
+  // Gumroad's created_at for the sale: a gumroad sale booked by hand carries it (RULING-2026-10-13 §3, tick 77).
   const record = (kind: string, externalId: string, line = "il-biz-tools", source = "gumroad") =>
-    run(["record", "--line", line, "--kind", kind, "--amount", "7900", "--currency", "USD", "--source", source, "--external-id", externalId]);
+    run(["record", "--line", line, "--kind", kind, "--amount", "7900", "--currency", "USD", "--source", source, "--external-id", externalId, "--occurred-at", "2026-10-01T10:00:00.000Z"]);
   const rows = () => {
     const conn = new Database(db, { readonly: true, fileMustExist: true });
     try {
@@ -498,5 +499,301 @@ describe("record books a Gumroad refund only where the sync will find it (tick 7
   it("the usage text for record says Gumroad money is booked under source gumroad only", () => {
     const usage = cliSource.slice(cliSource.indexOf("const USAGE ="), cliSource.indexOf("function fail("));
     expect(usage).toContain("Gumroad money is booked only under --source gumroad");
+  });
+});
+
+// RULING-2026-10-13-gumroad-refund-reread.md §3 (folds 5 and 6, FABLE_QUEUE row 32; tick 77). `record` refuses a gumroad
+// sale without Gumroad's own time: exit 1, nothing written. `place-gumroad-sale --id <stored id> --listed-from <day>`
+// lists the account's sales with the token (the fake index, preloaded over globalThis.fetch) and sets the row's
+// occurred_at, and its :refund and :fee rows', to the created_at of the one listed sale whose digest is that stored id:
+// exit 0 placed (or already on that day), 2 without the token (nothing fetched), 3 not placed (nothing written), 1 an
+// argument refused. No line names the raw id, the token or an address. The real CLI on copies of one temporary
+// database, removed in afterAll; every id and token is invented.
+describe("record and place-gumroad-sale keep a hand-booked Gumroad sale on the day Gumroad made it (RULING-2026-10-13 §3)", () => {
+  const FAKE_FETCH = path.join(repoRoot, "src/__tests__/revenue/fixtures/fake-gumroad-fetch.mjs");
+  const TOKEN = "fake-token-T77p";
+  const RAW = "fake-sale-T77p==";
+  const OTHER = "fake-sale-T77q==";
+  const HAND_AT = "2026-10-04T12:00:00.000Z";
+  const CREATED = "2026-10-01T10:00:00Z";
+  const NOW = "2026-10-12T00:30:00Z";
+  const ADDRESS = "fake-buyer-email-field";
+  const stored = (raw: string) => `sha256:${crypto.createHash("sha256").update(raw, "utf8").digest("hex")}`;
+  const listed = (id: string, createdAt: string, over: Record<string, unknown> = {}) =>
+    ({ id, price: 7900, currency: "usd", created_at: createdAt, refunded: false, gumroad_fee: 0, email: ADDRESS, ...over });
+  let dir: string;
+  let fixture: string;
+  let throwing: string;
+
+  type Opts = { token?: string | null; sales?: unknown[]; status?: number; preload?: string };
+  const run = (db: string, args: string[], opts: Opts = {}) => {
+    const salesFile = path.join(dir, "sales.json");
+    const logFile = path.join(dir, "requests.log");
+    fs.writeFileSync(salesFile, JSON.stringify(opts.sales ?? []));
+    fs.rmSync(logFile, { force: true });
+    const env: NodeJS.ProcessEnv = { ...process.env, FAKE_GUMROAD_SALES: salesFile, FAKE_GUMROAD_LOG: logFile };
+    for (const k of ["LEMONSQUEEZY_API_KEY", "GUMROAD_ACCESS_TOKEN", "STRIPE_SECRET_KEY", "POSTHOG_READ_KEY", "POSTHOG_PROJECT_ID", "FAKE_GUMROAD_STATUS"]) delete env[k];
+    if (opts.token !== null) env.GUMROAD_ACCESS_TOKEN = opts.token ?? TOKEN;
+    if (opts.status) env.FAKE_GUMROAD_STATUS = String(opts.status);
+    const out = spawnSync(process.execPath, ["--import", "tsx", "--import", opts.preload ?? FAKE_FETCH, "scripts/colony.ts", ...args, "--db", db], {
+      cwd: repoRoot, encoding: "utf-8", env,
+    });
+    const requests = fs.existsSync(logFile) ? fs.readFileSync(logFile, "utf-8").split("\n").filter(Boolean).length : 0;
+    return { status: out.status, stdout: out.stdout, stderr: out.stderr, requests };
+  };
+  const place = (db: string, opts: Opts = {}, listedFrom = "2026-09-30") =>
+    run(db, ["place-gumroad-sale", "--id", stored(RAW), "--listed-from", listedFrom, "--now", NOW], opts);
+  type Row = { kind: string; source: string; externalId: string | null; occurredAt: string };
+  const rows = (db: string): Row[] => {
+    const conn = new Database(db, { readonly: true, fileMustExist: true });
+    try {
+      return conn.prepare("SELECT kind, source, external_id AS externalId, occurred_at AS occurredAt FROM revenue_ledger ORDER BY rowid").all() as Row[];
+    } finally {
+      conn.close();
+    }
+  };
+  const copy = (name: string) => {
+    const to = path.join(dir, name);
+    fs.copyFileSync(fixture, to);
+    return to;
+  };
+  const free = (text: string) => {
+    for (const secret of [RAW, OTHER, TOKEN, ADDRESS]) expect(text).not.toContain(secret);
+  };
+  const book = (db: string, kind: string, externalId: string, extra: string[], source = "gumroad") =>
+    run(db, ["record", "--line", "il-biz-tools", "--kind", kind, "--amount", "7900", "--currency", "USD", "--source", source, "--external-id", externalId, ...extra]);
+
+  beforeAll(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "colony-place-sale-"));
+    fixture = path.join(dir, "fixture.db");
+    throwing = path.join(dir, "throwing-fetch.mjs");
+    fs.writeFileSync(throwing, 'globalThis.fetch = () => { throw new Error("fake-fetch-T77: no request may be made"); };\n');
+    const seeded = run(fixture, ["seed"]);
+    expect(seeded.status, seeded.stderr).toBe(0);
+    // A Gumroad sale booked by hand three days after Gumroad made it, and its refund booked by hand: both dated at the booking.
+    for (const [kind, id] of [["sale", RAW], ["refund", `${RAW}:refund`]]) {
+      const out = book(fixture, kind, id, ["--occurred-at", HAND_AT]);
+      expect(out.status, out.stderr).toBe(0);
+    }
+  }, 60_000);
+  afterAll(() => {
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("record: a gumroad sale with no --occurred-at, or one that is no time, exits 1 with the refusal and writes nothing; with Gumroad's time it books, dated at it; a stripe sale needs none", () => {
+    const db = copy("record.db");
+    const before = rows(db);
+    for (const extra of [[], ["--occurred-at", "not-a-time"]]) {
+      const out = book(db, "sale", "fake-sale-T77r==", extra);
+      expect(out.status, extra.join(" ")).toBe(1);
+      expect(out.stderr).toContain(
+        "Error: a gumroad sale booked by hand carries the time Gumroad made it — the sale's created_at as GET /v2/sales returns it — as occurred_at",
+      );
+      expect(out.stderr).toContain("Nothing was recorded.");
+      expect(out.stdout).not.toContain("Recorded");
+      expect(out.stdout + out.stderr).not.toContain("fake-sale-T77r==");
+    }
+    expect(rows(db)).toEqual(before);
+    const ok = book(db, "sale", "fake-sale-T77r==", ["--occurred-at", "2026-10-02T08:00:00.000Z"]);
+    expect(ok.status, ok.stderr).toBe(0);
+    expect(ok.stdout).toContain("Recorded sale");
+    const stripe = book(db, "sale", "ch_fake_T77r", [], "stripe");
+    expect(stripe.status, stripe.stderr).toBe(0);
+    expect(stripe.stdout).toContain("Recorded sale");
+    const added = rows(db).slice(before.length);
+    expect(added.map((r) => [r.source, r.externalId])).toEqual([["gumroad", stored("fake-sale-T77r==")], ["stripe", "ch_fake_T77r"]]);
+    expect(added[0]!.occurredAt).toBe("2026-10-02T08:00:00.000Z");
+    expect(Date.now() - Date.parse(added[1]!.occurredAt)).toBeLessThan(120_000);
+  }, 60_000);
+
+  it("the usage text: a gumroad sale's --occurred-at is Gumroad's created_at and required; place-gumroad-sale and --since are listed", () => {
+    const usage = cliSource.slice(cliSource.indexOf("const USAGE ="), cliSource.indexOf("function fail("));
+    expect(usage).toContain("A gumroad sale needs it: Gumroad's created_at");
+    expect(usage).toContain("  place-gumroad-sale   ");
+    expect(usage).toContain("--id <stored id>");
+    expect(usage).toContain("--listed-from <day>");
+    expect(usage).toContain("--since <day>");
+  });
+
+  it("place-gumroad-sale without the token: exit 2, not configured, no request made (a fetch that throws), nothing written", () => {
+    const db = copy("no-token.db");
+    const before = rows(db);
+    const out = place(db, { token: null, preload: throwing });
+    expect(out.status, out.stderr).toBe(2);
+    expect(out.stdout).toContain("not configured");
+    expect(out.stderr).not.toContain("fake-fetch-T77");
+    expect(rows(db)).toEqual(before);
+    free(out.stdout + out.stderr);
+  }, 60_000);
+
+  it("with the listing returning the sale: exit 0, the sale and its :refund row both on Gumroad's created_at, stdout naming the stored form and both days only; run again, already on that day, nothing written", () => {
+    const db = copy("place.db");
+    const sales = [listed(OTHER, "2026-09-30T08:00:00Z"), listed(RAW, CREATED)];
+    const out = place(db, { sales });
+    expect(out.status, out.stderr).toBe(0);
+    expect(out.stdout).toContain(`placed ${stored(RAW)}: 2026-10-04 → 2026-10-01`);
+    expect(out.requests).toBe(1);
+    free(out.stdout + out.stderr);
+    // The rows changed: the command's handle is not query_only (it writes, so rendersOnly is false for it).
+    const placed = rows(db).filter((r) => r.source === "gumroad").map((r) => [r.kind, r.externalId, r.occurredAt]);
+    expect(placed).toEqual([
+      ["sale", stored(RAW), "2026-10-01T10:00:00.000Z"],
+      ["refund", `${stored(RAW)}:refund`, "2026-10-01T10:00:00.000Z"],
+    ]);
+    const again = place(db, { sales });
+    expect(again.status, again.stderr).toBe(0);
+    expect(again.stdout).toContain(`${stored(RAW)} is already dated 2026-10-01, the day Gumroad made it: nothing written`);
+    expect(rows(db).filter((r) => r.source === "gumroad").map((r) => [r.kind, r.externalId, r.occurredAt])).toEqual(placed);
+    free(again.stdout + again.stderr);
+  }, 60_000);
+
+  it("no listed sale with its stored id: exit 3, both rows unchanged", () => {
+    const db = copy("no-match.db");
+    const before = rows(db);
+    const out = place(db, { sales: [listed(OTHER, CREATED)] });
+    expect(out.status, out.stderr).toBe(3);
+    expect(out.stdout).toContain("nothing written");
+    expect(rows(db)).toEqual(before);
+    free(out.stdout + out.stderr);
+  }, 60_000);
+
+  it("two listed sales with its stored id: exit 3, both rows unchanged", () => {
+    const db = copy("two-match.db");
+    const before = rows(db);
+    const out = place(db, { sales: [listed(RAW, CREATED), listed(RAW, "2026-10-02T10:00:00Z")] });
+    expect(out.status, out.stderr).toBe(3);
+    expect(out.stdout).toContain("nothing written");
+    expect(rows(db)).toEqual(before);
+    free(out.stdout + out.stderr);
+  }, 60_000);
+
+  it("a listing refused at page 1: exit 3, both rows unchanged", () => {
+    const db = copy("refused.db");
+    const before = rows(db);
+    const out = place(db, { sales: [listed(RAW, CREATED)], status: 500 });
+    expect(out.status, out.stderr).toBe(3);
+    expect(out.stdout).toContain("refused (HTTP 500, page 1)");
+    expect(out.stdout).toContain("nothing written");
+    expect(rows(db)).toEqual(before);
+    free(out.stdout + out.stderr);
+  }, 60_000);
+
+  it("an --id not in the stored form, or a --listed-from that is no real day: exit 1, nothing fetched, the id not echoed", () => {
+    const db = copy("bad-args.db");
+    const before = rows(db);
+    const raw = run(db, ["place-gumroad-sale", "--id", RAW, "--listed-from", "2026-09-30", "--now", NOW], { sales: [listed(RAW, CREATED)] });
+    expect(raw.status).toBe(1);
+    expect(raw.stderr).toContain("Error: --id must be a Gumroad sale's stored id");
+    expect(raw.requests).toBe(0);
+    free(raw.stdout + raw.stderr);
+    const day = place(db, { sales: [listed(RAW, CREATED)] }, "2026-02-30");
+    expect(day.status).toBe(1);
+    expect(day.stderr).toContain("Error: --listed-from must be a real day");
+    expect(day.requests).toBe(0);
+    expect(rows(db)).toEqual(before);
+  }, 60_000);
+
+  it("verify-gumroad --since lists from that day, so the hand-booked row is found and its day differs; without it the row is unexplained; a --since that is no day exits 1", () => {
+    const sales = [listed(RAW, CREATED, { refunded: true })];
+    const wide = run(fixture, ["verify-gumroad", "--since", "2026-09-30", "--now", NOW], { sales });
+    expect(wide.status, wide.stderr).toBe(3);
+    expect(wide.stdout).toContain("since 2026-09-30");
+    expect(wide.stdout).toContain(`- differs (day): ${stored(RAW)} 2026-10-04`);
+    const narrow = run(fixture, ["verify-gumroad", "--now", NOW], { sales });
+    expect(narrow.status, narrow.stderr).toBe(3);
+    expect(narrow.stdout).toContain("since 2026-10-03");
+    expect(narrow.stdout).toContain(`- unexplained: ${stored(RAW)} 2026-10-04`);
+    const bad = run(fixture, ["verify-gumroad", "--since", "2026-02-30", "--now", NOW], { sales });
+    expect(bad.status).toBe(1);
+    expect(bad.stderr).toContain("Error: --since must be a real day");
+    expect(bad.requests).toBe(0);
+    free(wide.stdout + narrow.stdout + bad.stdout + bad.stderr);
+  }, 60_000);
+
+  it("place-gumroad-sale writes, so its handle is not opened query_only", () => {
+    const fn = cliSource.slice(cliSource.indexOf("function rendersOnly("), cliSource.indexOf("function writeReport("));
+    expect(fn.length).toBeGreaterThan(0);
+    expect(fn).not.toContain("place-gumroad-sale");
+    expect(cliSource).toContain('case "place-gumroad-sale": {');
+  });
+});
+
+// RULING-2026-10-13-gumroad-refund-reread.md §3 item 3: the command runs where the token is, as a workflow_dispatch input
+// of colony.yml, in the job that holds the token, before the tick; the input reaches the script through env, never
+// expanded into its text, and a scheduled run does what it did.
+describe("colony.yml places a hand-booked Gumroad sale only on a dispatch that names one (RULING-2026-10-13 §3)", () => {
+  type Step = { name?: string; run?: string; if?: string; env?: Record<string, string>; "continue-on-error"?: unknown };
+  type Workflow = {
+    on: { schedule: { cron: string }[]; workflow_dispatch: { inputs: Record<string, { description: string; type: string; default: unknown }> } };
+    jobs: Record<string, { steps: Step[] }>;
+  };
+  const wf = parse(workflow) as Workflow;
+  const steps = wf.jobs.tick.steps;
+  const at = (re: RegExp) => steps.findIndex((s) => re.test(s.run ?? ""));
+  const placeAt = at(/pnpm exec tsx scripts\/colony\.ts place-gumroad-sale /);
+
+  it("declares the place_sale input: a string, empty by default, saying what it takes", () => {
+    expect(wf.on.workflow_dispatch.inputs.place_sale).toEqual({
+      description: "<stored id> <YYYY-MM-DD>: place one hand-booked Gumroad sale on the day Gumroad made it (RULING-2026-10-13 §3)",
+      type: "string",
+      default: "",
+    });
+    // The schedule and the force input are as they were.
+    expect(wf.on.schedule).toEqual([{ cron: "17 * * * *" }]);
+    expect(Object.keys(wf.on.workflow_dispatch.inputs)).toEqual(["force", "place_sale"]);
+  });
+
+  it("runs in the tick job, after sync-portfolio and before the tick, only on a dispatch that sets the input, with the token, the input in env", () => {
+    const sync = at(/pnpm exec tsx scripts\/colony\.ts sync-portfolio\n/);
+    const tick = at(/pnpm exec tsx scripts\/colony\.ts tick --no-feed/);
+    expect(placeAt).toBeGreaterThan(sync);
+    expect(placeAt).toBeLessThan(tick);
+    const step = steps[placeAt]!;
+    expect(step.if).toBe("${{ github.event_name == 'workflow_dispatch' && inputs.place_sale != '' }}");
+    expect(step["continue-on-error"]).toBeUndefined();
+    expect(step.env).toEqual({ GUMROAD_ACCESS_TOKEN: "${{ secrets.GUMROAD_ACCESS_TOKEN }}", PLACE_SALE: "${{ inputs.place_sale }}" });
+    expect(step.run!.startsWith("set -euo pipefail\n")).toBe(true);
+    // No expression is expanded into the script's text: the input is read from PLACE_SALE alone.
+    expect(step.run).not.toContain("${{");
+    expect(step.run).not.toContain("inputs.");
+    expect(steps[tick]!.env).not.toHaveProperty("PLACE_SALE");
+  });
+
+  it("its script passes the input's two words as two arguments, never runs what the input holds, refuses any other shape, and fails on the command's exit", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "colony-place-step-"));
+    try {
+      const bin = path.join(tmp, "bin");
+      fs.mkdirSync(bin);
+      const argsFile = path.join(tmp, "args.txt");
+      // A stand-in pnpm that records its arguments, one per line, and exits with STUB_EXIT.
+      // (`for a;` walks the positional parameters, one line each.)
+      fs.writeFileSync(path.join(bin, "pnpm"), '#!/usr/bin/env bash\nfor a; do printf \'%s\\n\' "$a"; done > "$ARGS_FILE"\nexit "${STUB_EXIT:-0}"\n', { mode: 0o755 });
+      const runStep = (input: string, stubExit = 0) => {
+        fs.rmSync(argsFile, { force: true });
+        return spawnSync("bash", ["-c", steps[placeAt]!.run!], {
+          cwd: tmp, encoding: "utf-8",
+          env: { PATH: `${bin}:${process.env.PATH}`, PLACE_SALE: input, ARGS_FILE: argsFile, STUB_EXIT: String(stubExit) },
+        });
+      };
+      const args = () => fs.readFileSync(argsFile, "utf-8").split("\n").filter(Boolean);
+      const id = `sha256:${"a1".repeat(32)}`;
+      const ok = runStep(`${id} 2026-09-30`);
+      expect(ok.status, ok.stderr).toBe(0);
+      expect(args()).toEqual(["exec", "tsx", "scripts/colony.ts", "place-gumroad-sale", "--id", id, "--listed-from", "2026-09-30"]);
+      // A command substitution in the input is a word handed on as it is, never run.
+      const sneaky = runStep("$(>pwned-T77) 2026-09-30");
+      expect(sneaky.status, sneaky.stderr).toBe(0);
+      expect(args()).toEqual(["exec", "tsx", "scripts/colony.ts", "place-gumroad-sale", "--id", "$(>pwned-T77)", "--listed-from", "2026-09-30"]);
+      expect(fs.existsSync(path.join(tmp, "pwned-T77"))).toBe(false);
+      for (const bad of ["only-one-word", `${id} 2026-09-30 extra`, "   "]) {
+        const out = runStep(bad);
+        expect(out.status, bad).toBe(1);
+        expect(fs.existsSync(argsFile), bad).toBe(false);
+      }
+      // The command's own exit fails the step: 2 (no token) and 3 (not placed) stop the run before the tick.
+      for (const code of [2, 3]) expect(runStep(`${id} 2026-09-30`, code).status).toBe(code);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
   });
 });
