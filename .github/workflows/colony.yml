@@ -61,18 +61,6 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Apply portfolio.ts to the database
-        # The tick seeds only an empty database and never re-reads a seed, so a line's operating loop, owner steps,
-        # KPIs, criteria or target changed in src/revenue/portfolio.ts reached no report until someone ran this by hand
-        # (tick 63, 7.10.2026). Before the tick, so this run's REPORT.md and dashboard.html print the texts as the code
-        # has them; in this job, so the commit step's `git add -f state/colony` takes the database it wrote. A line it
-        # inserts starts at budget 0 for the board review to allocate, and a line it refreshes keeps its budget, tier,
-        # status, setup-done flag and launch date (portfolio.ts syncPortfolio, ledger.ts updateLineFromSeed); it kills
-        # only a line KILLED_LINES names that is not killed yet, and changes nothing while kv revenue.enabled is 0.
-        run: |
-          set -euo pipefail
-          pnpm exec tsx scripts/colony.ts sync-portfolio
-
       - name: Place a hand-booked Gumroad sale on the day Gumroad made it
         # RULING-2026-10-13-gumroad-refund-reread.md §3 item 3: a Gumroad sale booked by hand days after Gumroad made it,
         # dated at its booking, lies where no listing returns it, and the sync says so at every sync. The colony closes it
@@ -93,6 +81,18 @@ jobs:
             exit 1
           fi
           pnpm exec tsx scripts/colony.ts place-gumroad-sale --id "$SALE_ID" --listed-from "$LISTED_FROM"
+
+      - name: Apply portfolio.ts to the database
+        # The tick seeds only an empty database and never re-reads a seed, so a line's operating loop, owner steps,
+        # KPIs, criteria or target changed in src/revenue/portfolio.ts reached no report until someone ran this by hand
+        # (tick 63, 7.10.2026). Before the tick, so this run's REPORT.md and dashboard.html print the texts as the code
+        # has them; in this job, so the commit step's `git add -f state/colony` takes the database it wrote. A line it
+        # inserts starts at budget 0 for the board review to allocate, and a line it refreshes keeps its budget, tier,
+        # status, setup-done flag and launch date (portfolio.ts syncPortfolio, ledger.ts updateLineFromSeed); it kills
+        # only a line KILLED_LINES names that is not killed yet, and changes nothing while kv revenue.enabled is 0.
+        run: |
+          set -euo pipefail
+          pnpm exec tsx scripts/colony.ts sync-portfolio
 
       - name: Run one colony tick
         env:

@@ -743,11 +743,14 @@ describe("colony.yml places a hand-booked Gumroad sale only on a dispatch that n
     expect(Object.keys(wf.on.workflow_dispatch.inputs)).toEqual(["force", "place_sale"]);
   });
 
-  it("runs in the tick job, after sync-portfolio and before the tick, only on a dispatch that sets the input, with the token, the input in env", () => {
+  it("runs in the tick job, after the install and before the tick, only on a dispatch that sets the input, with the token, the input in env", () => {
+    // Before sync-portfolio too, so the sync step and the tick step stay adjacent (ledger.json's T63-W4 swaps them).
+    const install = at(/^pnpm install --frozen-lockfile/);
     const sync = at(/pnpm exec tsx scripts\/colony\.ts sync-portfolio\n/);
     const tick = at(/pnpm exec tsx scripts\/colony\.ts tick --no-feed/);
-    expect(placeAt).toBeGreaterThan(sync);
-    expect(placeAt).toBeLessThan(tick);
+    expect(placeAt).toBeGreaterThan(install);
+    expect(placeAt).toBeLessThan(sync);
+    expect(sync).toBeLessThan(tick);
     const step = steps[placeAt]!;
     expect(step.if).toBe("${{ github.event_name == 'workflow_dispatch' && inputs.place_sale != '' }}");
     expect(step["continue-on-error"]).toBeUndefined();
