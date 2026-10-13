@@ -785,6 +785,10 @@ describe("revenue_record books a Gumroad sale only with the time Gumroad made it
     expect(gumroadHandSaleRefusal({ ...base, occurredAt: "not-a-time" })).toBe(REFUSAL);
     expect(gumroadHandSaleRefusal({ ...base, occurredAt: CREATED })).toBeNull();
     expect(gumroadHandSaleRefusal({ ...base, occurredAt: "2026-10-01T13:00:00+03:00" })).toBeNull();
+    // The source as the ledger reads it, trimmed and lower-cased: colony.ts record passes --source untrimmed.
+    for (const source of [" gumroad ", "GUMROAD", "\tGumroad\n"]) {
+      expect(gumroadHandSaleRefusal({ ...base, source }), JSON.stringify(source)).toBe(REFUSAL);
+    }
     for (const kind of ["subscription", "payout", "refund", "cost"] as const) {
       expect(gumroadHandSaleRefusal({ ...base, kind }), kind).toBeNull();
     }
