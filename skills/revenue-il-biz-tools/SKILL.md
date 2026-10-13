@@ -66,7 +66,8 @@ is why `MISSION.md` rule 4 exists.
    back; a price change is a board decision recorded in `TARGET_BASIS`, never a page experiment
    (RULING-2026-09-29-lines (a)).
 5. **Record money only as money:** every Gumroad sale enters the ledger through the Gumroad connector with
-   its sale id (`GUMROAD_ACCESS_TOKEN`, hourly); refunds too. A checkout start is a KPI, never revenue.
+   its sale id (`GUMROAD_ACCESS_TOKEN`, hourly); refunds too: within the hour for the latest sale, within a day for
+   older ones (RULING-2026-10-13). A checkout start is a KPI, never revenue.
 
 ## Video
 

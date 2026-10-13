@@ -18,7 +18,11 @@
  *   Whether it becomes a finding once `enable` opens the Pro sale is a ruling's, and no state in the repository records
  *   that `enable` has run.
  *
- * The listing is one read, from a day before the oldest Gumroad row to now, so it grows with the ledger. Past the pager's
+ * The listing is one read, from a day before the oldest Gumroad row to now, so it grows with the ledger. `since` (the CLI's
+ * --since, RULING-2026-10-13-gumroad-refund-reread.md "What this does not decide" 4) starts it on an earlier day: a sale
+ * booked by hand days after Gumroad made it is dated after its `created_at`, so from the default day its row is
+ * unexplained, and from a day before Gumroad's it is found and its day differs. A later day is not taken, since every row
+ * before it would read as unexplained. Past the pager's
  * cap (MAX_REFUND_RATE_PAGES pages of ten), or at a next_page_key already asked for, it is "incomplete" and nothing is
  * verified; the result then names the part read (`readBeforeStop`: pages, sales, the days they were created on) and the
  * part not read. It is not cut into date chunks: no recorded source shows an upper bound the index accepts, or the order
@@ -90,7 +94,7 @@ function empty(status: GumroadVerifyStatus, detail: string, after: string | null
 /** Compare the ledger's Gumroad rows with every sale the account lists from one day before the oldest of them. */
 export async function verifyGumroadLedger(
   db: Database,
-  params: { token: string | undefined; nowIso?: string; fetchImpl?: typeof fetch },
+  params: { token: string | undefined; nowIso?: string; fetchImpl?: typeof fetch; since?: string },
 ): Promise<GumroadVerifyResult> {
   const rows = db.prepare(
     `SELECT amount_minor AS amountMinor, currency, external_id AS externalId, occurred_at AS occurredAt
@@ -102,7 +106,11 @@ export async function verifyGumroadLedger(
   // One day before the oldest row, as the refund-rate read does, so Gumroad's day filter never cuts off a booked sale;
   // with no Gumroad row, where the connector's first read starts: FIRST_READ_DAYS back, plus one.
   const nowDay = dayOf(new Date(params.nowIso ? Date.parse(params.nowIso) : Date.now()).toISOString());
-  const days = rows.map((r) => dayOf(r.occurredAt)).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+  const rowDays = rows.map((r) => dayOf(r.occurredAt)).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+  // `since`, a real day the caller checked (colony.ts verify-gumroad --since): earlier than the reach, the listing starts
+  // on it, as if a row lay on the day after; later, it is not taken. It widens the read and never narrows it.
+  const sinceNext = params.since === undefined ? null : shiftDay(params.since, 1);
+  const days = sinceNext !== null && sinceNext < (rowDays[0] ?? shiftDay(nowDay, -FIRST_READ_DAYS)) ? [sinceNext] : rowDays;
   const after = shiftDay(days[0] ?? shiftDay(nowDay, -FIRST_READ_DAYS), -1);
 
   const read: unknown[] = [];

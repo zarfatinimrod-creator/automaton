@@ -31,6 +31,10 @@ on:
         description: "Run every step regardless of its interval"
         type: boolean
         default: false
+      place_sale:
+        description: "<stored id> <YYYY-MM-DD>: place one hand-booked Gumroad sale on the day Gumroad made it (RULING-2026-10-13 §3)"
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -56,6 +60,27 @@ jobs:
       - uses: pnpm/action-setup@v4
 
       - run: pnpm install --frozen-lockfile
+
+      - name: Place a hand-booked Gumroad sale on the day Gumroad made it
+        # RULING-2026-10-13-gumroad-refund-reread.md §3 item 3: a Gumroad sale booked by hand days after Gumroad made it,
+        # dated at its booking, lies where no listing returns it, and the sync says so at every sync. The colony closes it
+        # from Gumroad's own listing (src/revenue/gumroad-place.ts), never the owner. Only on a dispatch whose place_sale
+        # names one ("<stored id> <YYYY-MM-DD>"): a scheduled run never runs this step. Before the tick, in the job that
+        # holds the token, so the commit step takes the database with the tick's; the next late-refund re-read then
+        # returns the sale and its unlisted line ends by itself. The input reaches the script through env, never into its
+        # text. Exit 2 (no token) or 3 (not placed, nothing written) fails the run before the tick.
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.place_sale != '' }}
+        env:
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+          PLACE_SALE: ${{ inputs.place_sale }}
+        run: |
+          set -euo pipefail
+          read -r SALE_ID LISTED_FROM EXTRA <<< "$PLACE_SALE"
+          if [ -z "${SALE_ID:-}" ] || [ -z "${LISTED_FROM:-}" ] || [ -n "${EXTRA:-}" ]; then
+            echo "place_sale takes two words: <stored id> <YYYY-MM-DD>" >&2
+            exit 1
+          fi
+          pnpm exec tsx scripts/colony.ts place-gumroad-sale --id "$SALE_ID" --listed-from "$LISTED_FROM"
 
       - name: Apply portfolio.ts to the database
         # The tick seeds only an empty database and never re-reads a seed, so a line's operating loop, owner steps,

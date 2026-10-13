@@ -341,5 +341,53 @@
     "replace": "  const id = storedExternalId(source, input.externalId?.trim() || null);",
     "test": "src/__tests__/revenue/ledger.test.ts",
     "note": "tick-76 review, fix 2: the id is read as its own source stores it, so a raw <sale id>:refund under manual is not recognised and books, raw sale id and all (killed by the other-source test's raw cases)"
+  },
+  {
+    "id": "T77-L1",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (!Number.isNaN(Date.parse(input.occurredAt ?? \"\"))) return null;",
+    "replace": "  return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 77, RULING-2026-10-13 §3 item 1 (fold 9 T77-L1): the time check removed, so a gumroad sale booked by hand with no time is recorded at now (killed by case i's no-time test)"
+  },
+  {
+    "id": "T77-L2",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (input.source.trim().toLowerCase() !== \"gumroad\") return null;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 77 (fold 9 T77-L2): the guard applied to every source, so a stripe or manual sale with no time is refused (killed by the regression test)"
+  },
+  {
+    "id": "T77-L3",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (!Number.isNaN(Date.parse(input.occurredAt ?? \"\"))) return null;",
+    "replace": "  if (input.occurredAt?.trim()) return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 77 (fold 9 T77-L3): the Date.parse check dropped, so 'not-a-time' books a sale no listing can place (killed by the unreadable-time test)"
+  },
+  {
+    "id": "T77-L4",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (input.kind !== \"sale\") return null;\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 77: the guard applied to every kind, so a gumroad fee, subscription or refund booked by hand without a time is refused (killed by the unchanged-behaviour test)"
+  },
+  {
+    "id": "T77-L5",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (input.source.trim().toLowerCase() !== \"gumroad\") return null;",
+    "replace": "  if (input.source.trim() !== \"gumroad\") return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 77: the source compared before lower-casing, so a sale under 'Gumroad' with no time is recorded (killed by the case test)"
+  },
+  {
+    "id": "T77-L6",
+    "file": "src/revenue/ledger.ts",
+    "find": "  if (input.source.trim().toLowerCase() !== \"gumroad\") return null;",
+    "replace": "  if (input.source.toLowerCase() !== \"gumroad\") return null;",
+    "test": "src/__tests__/revenue/ledger.test.ts",
+    "note": "tick 77: the source not trimmed, so a sale under ' gumroad ' with no time is recorded (killed by the case test)"
   }
 ]

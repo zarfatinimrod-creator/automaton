@@ -270,7 +270,8 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
     const line = listLines(db)[0]!;
     const ctx = { db: { raw: db }, identity: { name: "tester" } } as unknown as ToolContext;
     const record = Object.fromEntries(createRevenueTools().map((t) => [t.name, t])).revenue_record;
-    const args = { line_id: line.id, kind: "sale", amount_minor: 7900, currency: "USD", source: "gumroad", external_id: "fake-sale-T1==" };
+    // Gumroad's created_at for the sale: a gumroad sale booked by hand carries it (RULING-2026-10-13 §3, tick 77).
+    const args = { line_id: line.id, kind: "sale", amount_minor: 7900, currency: "USD", source: "gumroad", external_id: "fake-sale-T1==", occurred_at: "2026-10-01T10:00:00.000Z" };
     const stored = `sha256:${createHash("sha256").update("fake-sale-T1==", "utf8").digest("hex")}`;
     expect(await record.execute(args, ctx)).toContain("Recorded sale");
     const dup = await record.execute(args, ctx);

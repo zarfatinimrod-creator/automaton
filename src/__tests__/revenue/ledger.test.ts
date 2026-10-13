@@ -6,6 +6,7 @@ import {
   computePortfolioSummary,
   getLine,
   gumroadHandRefundRefusal,
+  gumroadHandSaleRefusal,
   insertLineFromSeed,
   insertReview,
   latestKpis,
@@ -499,7 +500,8 @@ describe("revenue_record books a Gumroad refund only where the sync will find it
   const ctx = () => ({ db: { raw: db }, identity: { name: "tester" } }) as unknown as ToolContext;
   const record = (args: Record<string, unknown>) =>
     createRevenueTools().find((t) => t.name === "revenue_record")!.execute(
-      { line_id: "test-line", kind: "refund", amount_minor: 7_900, currency: "USD", source: "gumroad", ...args },
+      // Gumroad's created_at for the sale: a gumroad sale booked by hand carries it (RULING-2026-10-13 §3, tick 77).
+      { line_id: "test-line", kind: "refund", amount_minor: 7_900, currency: "USD", source: "gumroad", occurred_at: "2026-10-01T10:00:00.000Z", ...args },
       ctx(),
     );
   const bookSale = async (externalId = SALE, lineId = "test-line") =>
@@ -694,5 +696,115 @@ describe("revenue_record books a Gumroad refund only where the sync will find it
     expect(tool.description).toContain("A gumroad refund is booked only under <sale id>:refund");
     const params = tool.parameters as { properties: Record<string, { description: string }> };
     expect(params.properties.external_id!.description).toContain("A gumroad refund's id is <sale id>:refund");
+  });
+});
+
+// RULING-2026-10-13-gumroad-refund-reread.md §3 item 1 (fold 5, FABLE_QUEUE row 32; tick 77): the hourly sync's own
+// listing and its late-refund re-read take their reach from the day the ledger dates a Gumroad sale, so a sale booked by
+// hand at now, days after Gumroad made it, lies where no listing returns it and its refund is never read. revenue_record
+// refuses a gumroad sale whose occurred_at is missing, blank or not a time Date.parse reads, before anything is written.
+// Other sources and kinds keep their default of now. Every id is invented.
+describe("revenue_record books a Gumroad sale only with the time Gumroad made it (RULING-2026-10-13 §3, case i)", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => {
+    db = createInMemoryDb();
+    insertLineFromSeed(db, seed());
+  });
+  afterEach(() => { db.close(); });
+
+  const SALE = "fake-sale-T77a==";
+  const CREATED = "2026-10-01T10:00:00.000Z";
+  const REFUSAL =
+    "a gumroad sale booked by hand carries the time Gumroad made it — the sale's created_at as GET /v2/sales returns " +
+    "it — as occurred_at: the hourly sync's listing and its late-refund re-read take their reach from that day, and a " +
+    "sale dated at its booking lies where no listing returns it, so its refund could never be read " +
+    "(RULING-2026-10-13 §3). Nothing was recorded.";
+  const hex = (text: string) => createHash("sha256").update(text, "utf8").digest("hex");
+  const ctx = () => ({ db: { raw: db }, identity: { name: "tester" } }) as unknown as ToolContext;
+  const tool = () => createRevenueTools().find((t) => t.name === "revenue_record")!;
+  const record = (args: Record<string, unknown>) =>
+    tool().execute({ line_id: "test-line", kind: "sale", amount_minor: 7_900, currency: "USD", source: "gumroad", external_id: SALE, ...args }, ctx());
+  type Row = { kind: string; source: string; externalId: string | null; occurredAt: string };
+  const rows = (): Row[] =>
+    db.prepare("SELECT kind, source, external_id AS externalId, occurred_at AS occurredAt FROM revenue_ledger ORDER BY rowid").all() as Row[];
+  /** A time stamped by the ledger's default of now, between two readings of the clock. */
+  const isNow = (iso: string, before: string, after: string) => iso >= before && iso <= after;
+
+  it("a gumroad sale with no occurred_at is refused, with the reason, and nothing is written", async () => {
+    expect(await record({})).toBe(`Error: ${REFUSAL}`);
+    expect(rows()).toEqual([]);
+  });
+
+  it("a blank occurred_at, or one Date.parse cannot read, is refused the same way", async () => {
+    for (const occurredAt of ["", "   ", "not-a-time", "2026-13-45T00:00:00Z"]) {
+      expect(await record({ occurred_at: occurredAt }), occurredAt).toBe(`Error: ${REFUSAL}`);
+    }
+    expect(rows()).toEqual([]);
+  });
+
+  it("the source's case and spaces change nothing: Gumroad and ' gumroad ' are refused too, and no id is printed", async () => {
+    for (const source of ["Gumroad", " gumroad "]) {
+      const out = await record({ source });
+      expect(out, source).toBe(`Error: ${REFUSAL}`);
+      expect(out).not.toContain(SALE);
+      expect(out).not.toContain(hex(SALE));
+    }
+    expect(rows()).toEqual([]);
+  });
+
+  it("with Gumroad's created_at it is recorded, dated at it", async () => {
+    expect(await record({ occurred_at: CREATED })).toContain("Recorded sale");
+    expect(rows()).toEqual([{ kind: "sale", source: "gumroad", externalId: `sha256:${hex(SALE)}`, occurredAt: CREATED }]);
+  });
+
+  it("a stripe or manual sale with no occurred_at is recorded, dated now (regression)", async () => {
+    const before = new Date().toISOString();
+    expect(await record({ source: "stripe", external_id: "ch_fake_T77" })).toContain("Recorded sale");
+    expect(await record({ source: "manual", currency: "ILS", external_id: "m-sale-T77" })).toContain("Recorded sale");
+    const after = new Date().toISOString();
+    const booked = rows();
+    expect(booked.map((r) => [r.source, r.externalId])).toEqual([["stripe", "ch_fake_T77"], ["manual", "m-sale-T77"]]);
+    for (const r of booked) expect(isNow(r.occurredAt, before, after), r.occurredAt).toBe(true);
+  });
+
+  it("a gumroad cost, subscription or refund with no occurred_at keeps the default of now (unchanged behaviour)", async () => {
+    expect(await record({ occurred_at: CREATED })).toContain("Recorded sale");
+    const before = new Date().toISOString();
+    expect(await record({ kind: "cost", amount_minor: 790, external_id: `${SALE}:fee` })).toContain("Recorded cost");
+    expect(await record({ kind: "subscription", external_id: "fake-sub-T77" })).toContain("Recorded subscription");
+    expect(await record({ kind: "refund", external_id: `${SALE}:refund` })).toContain("Recorded refund");
+    const after = new Date().toISOString();
+    const later = rows().slice(1);
+    expect(later.map((r) => r.kind)).toEqual(["cost", "subscription", "refund"]);
+    for (const r of later) expect(isNow(r.occurredAt, before, after), `${r.kind} ${r.occurredAt}`).toBe(true);
+  });
+
+  it("gumroadHandSaleRefusal: the refusal for a gumroad sale without a readable time, null for every other kind or source", () => {
+    const base = { kind: "sale" as const, source: "gumroad" };
+    expect(gumroadHandSaleRefusal(base)).toBe(REFUSAL);
+    expect(gumroadHandSaleRefusal({ ...base, occurredAt: "not-a-time" })).toBe(REFUSAL);
+    expect(gumroadHandSaleRefusal({ ...base, occurredAt: CREATED })).toBeNull();
+    expect(gumroadHandSaleRefusal({ ...base, occurredAt: "2026-10-01T13:00:00+03:00" })).toBeNull();
+    // The source as the ledger reads it, trimmed and lower-cased: colony.ts record passes --source untrimmed.
+    for (const source of [" gumroad ", "GUMROAD", "\tGumroad\n"]) {
+      expect(gumroadHandSaleRefusal({ ...base, source }), JSON.stringify(source)).toBe(REFUSAL);
+    }
+    for (const kind of ["subscription", "payout", "refund", "cost"] as const) {
+      expect(gumroadHandSaleRefusal({ ...base, kind }), kind).toBeNull();
+    }
+    for (const source of ["stripe", "manual", "lemonsqueezy", "gumroad-like"]) {
+      expect(gumroadHandSaleRefusal({ ...base, source }), source).toBeNull();
+    }
+  });
+
+  it("the tool's description and its occurred_at text say a gumroad sale's occurred_at is Gumroad's created_at, required", () => {
+    const t = tool();
+    expect(t.description).toContain(
+      "A gumroad sale booked by hand needs occurred_at, Gumroad's created_at for that sale as GET /v2/sales returns it; without it, or with a time that cannot be read, it is refused",
+    );
+    const params = t.parameters as { properties: Record<string, { description: string }> };
+    expect(params.properties.occurred_at!.description).toContain(
+      "A gumroad sale's occurred_at is Gumroad's created_at for that sale, as GET /v2/sales returns it, and is required",
+    );
   });
 });

@@ -590,6 +590,33 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
   return entry;
 }
 
+/**
+ * Why a Gumroad sale booked by hand is refused, or null when the entry is no Gumroad sale or carries a time
+ * (RULING-2026-10-13-gumroad-refund-reread.md §3 item 1, FABLE_QUEUE row 32). Both hand paths, `revenue_record`
+ * (tools.ts) and `colony.ts record`, call it beside `gumroadHandRefundRefusal`, before `recordLedgerEntry`, so a refusal
+ * writes nothing.
+ *
+ * The hourly sync's own listing and its late-refund re-read take their reach from the day the ledger dates each Gumroad
+ * sale (connectors/gumroad.ts `fetchSince` and `readLateGumroadRefunds`; heartbeat.ts `openGumroadSales`), and the
+ * connector dates every sale it books at Gumroad's `created_at`. A sale booked by hand at now, days after Gumroad made
+ * it, lies where no listing returns it, so its refund could never be read. A gumroad sale booked by hand therefore
+ * carries the time Gumroad made it, `created_at` as `GET /v2/sales` returns it, as `occurred_at`: one that is missing,
+ * blank or not a time `Date.parse` reads (the same parse the re-read makes of the stored text) is refused. Only kind
+ * sale of source gumroad: every other source and kind keeps the ledger's default of now. No id is in the text.
+ */
+export function gumroadHandSaleRefusal(input: Pick<LedgerEntryInput, "kind" | "source" | "occurredAt">): string | null {
+  if (input.kind !== "sale") return null;
+  if (input.source.trim().toLowerCase() !== "gumroad") return null;
+  // Date.parse reads no blank text, so a missing, blank or unreadable time is refused alike.
+  if (!Number.isNaN(Date.parse(input.occurredAt ?? ""))) return null;
+  return (
+    "a gumroad sale booked by hand carries the time Gumroad made it — the sale's created_at as GET /v2/sales returns " +
+    "it — as occurred_at: the hourly sync's listing and its late-refund re-read take their reach from that day, and a " +
+    "sale dated at its booking lies where no listing returns it, so its refund could never be read " +
+    "(RULING-2026-10-13 §3). Nothing was recorded."
+  );
+}
+
 /** A Gumroad refund's stored id: its sale's own stored id, then `:refund` (gumroadSaleEntries, connectors/gumroad.ts). */
 const GUMROAD_REFUND_ID_RE = /^(sha256:[0-9a-f]{64}):refund$/;
 
