@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { createHash } from "node:crypto";
 import { createInMemoryDb } from "../orchestration/test-db.js";
-import { recordLedgerEntry, setConnectorCursor } from "../../revenue/ledger.js";
+import { recordLedgerEntry, setConnectorCursor, sumWindow } from "../../revenue/ledger.js";
 import { runLedgerSync } from "../../revenue/heartbeat.js";
 import { verifyGumroadLedger } from "../../revenue/gumroad-verify.js";
 import { isListingDay, placeGumroadSale } from "../../revenue/gumroad-place.js";
@@ -337,6 +337,29 @@ describe("placeGumroadSale writes only Gumroad's own created_at, only on a compl
     ]);
   });
 
+  it("another source's rows under the sale's exact stored id and its :refund's do not move with it: only the source tells them apart (the tick-77 review's R-X1)", async () => {
+    const s = sale(10, "2026-10-01T10:00:00Z");
+    bookByHand(s, "2026-10-04T12:00:00.000Z");
+    bookByHand(s, "2026-10-05T12:00:00.000Z", "cost", ":fee");
+    insertRaw("fake-row-t77-10r", "refund", `${storedOf(s)}:refund`, "2026-10-06T12:00:00.000Z");
+    // Manual rows whose external_id is exactly the Gumroad sale's and its refund's stored id.
+    insertRaw("fake-row-t77-10ms", "sale", storedOf(s), "2026-10-07T12:00:00.000Z", "manual");
+    insertRaw("fake-row-t77-10mr", "refund", `${storedOf(s)}:refund`, "2026-10-08T12:00:00.000Z", "manual");
+    const out = await place(storedOf(s), index([s]).fetchImpl);
+    expect(out).toMatchObject({ status: "placed", exitCode: 0 });
+    expect(out.lines).toEqual([
+      `placed ${storedOf(s)}: 2026-10-04 → 2026-10-01`,
+      `  rows moved: ${storedOf(s)} (sale), ${storedOf(s)}:fee (cost), ${storedOf(s)}:refund (refund)`,
+    ]);
+    expect(rows().map((r) => [r.source, r.kind, r.externalId, r.occurredAt])).toEqual([
+      ["gumroad", "sale", storedOf(s), "2026-10-01T10:00:00.000Z"],
+      ["gumroad", "cost", `${storedOf(s)}:fee`, "2026-10-01T10:00:00.000Z"],
+      ["gumroad", "refund", `${storedOf(s)}:refund`, "2026-10-01T10:00:00.000Z"],
+      ["manual", "sale", storedOf(s), "2026-10-07T12:00:00.000Z"],
+      ["manual", "refund", `${storedOf(s)}:refund`, "2026-10-08T12:00:00.000Z"],
+    ]);
+  });
+
   it("a row from before the digest ruling, its raw id in the row, is placed by its digest", async () => {
     const s = sale(5, "2026-10-01T10:00:00Z");
     insertRaw("fake-row-t77-5", "sale", s.id, "2026-10-04T12:00:00.000Z");
@@ -355,6 +378,45 @@ describe("placeGumroadSale writes only Gumroad's own created_at, only on a compl
     expect(out).toMatchObject({ status: "unchanged", exitCode: 0 });
     expect(out.lines).toEqual([`${storedOf(s)} is already dated 2026-10-01, the day Gumroad made it: nothing written.`]);
     expect(occurred()).toEqual([["sale", storedOf(s), "2026-10-01T23:00:00.000Z"]]);
+  });
+
+  it("a sale whose stored time Date.parse reads on Gumroad's day but which is not in the connector's form is written with Gumroad's time, not left as placed (the tick-77 review's finding 2)", async () => {
+    // Each passes the hand-sale guard (Date.parse reads it on 2026-03-03), but sumWindow compares the text, and none is in
+    // the window of its own day: "2026-02-31" sorts before March (and after February's end, so it is in no month),
+    // "2026-03-03 05:00" before the day's start ("T" sorts after a space), "2026-03-03T23:59:59Z" after its end.
+    const forms: [number, string, string][] = [
+      [11, "2026-02-31", "2026-03-03T05:00:00Z"],
+      [12, "2026-03-03 05:00", "2026-03-03T09:00:00Z"],
+      [13, "2026-03-03T23:59:59Z", "2026-03-03T12:00:00Z"],
+    ];
+    const listedSales = forms.map(([n, , createdAt]) => sale(n, createdAt));
+    forms.forEach(([, stored], i) => bookByHand(listedSales[i]!, stored));
+    const counted = (from: string, to: string) => sumWindow(db, "fake-line-a", from, to).count;
+    const windows = () => [
+      counted("2026-02-01T00:00:00.000Z", "2026-02-28T23:59:59.999Z"),
+      counted("2026-03-01T00:00:00.000Z", "2026-03-31T23:59:59.999Z"),
+      counted("2026-03-03T00:00:00.000Z", "2026-03-03T23:59:59.999Z"),
+    ];
+    expect(windows()).toEqual([0, 2, 0]);
+    const { fetchImpl } = index(listedSales);
+    for (const [i, s] of listedSales.entries()) {
+      const out = await place(storedOf(s), fetchImpl, { listedFrom: "2026-02-25" });
+      expect(out, forms[i]![1]).toMatchObject({ status: "placed", exitCode: 0 });
+      expect(out.lines, forms[i]![1]).toEqual([
+        `placed ${storedOf(s)}: a time not in the connector's form (read as 2026-03-03) → 2026-03-03`,
+        `  rows moved: ${storedOf(s)} (sale)`,
+      ]);
+      free(out.lines, s.id, forms[i]![1]);
+    }
+    expect(occurred()).toEqual([
+      ["sale", storedOf(listedSales[0]!), "2026-03-03T05:00:00.000Z"],
+      ["sale", storedOf(listedSales[1]!), "2026-03-03T09:00:00.000Z"],
+      ["sale", storedOf(listedSales[2]!), "2026-03-03T12:00:00.000Z"],
+    ]);
+    expect(windows()).toEqual([0, 3, 3]);
+    // Now in the connector's form and on Gumroad's day: a second run writes nothing.
+    expect(await place(storedOf(listedSales[0]!), fetchImpl, { listedFrom: "2026-02-25" }))
+      .toMatchObject({ status: "unchanged", exitCode: 0 });
   });
 
   it("a sale dated by hand at a time Date.parse cannot read is placed, its old day said as unreadable", async () => {
